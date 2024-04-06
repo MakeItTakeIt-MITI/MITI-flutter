@@ -21,10 +21,11 @@ Future<BaseModel> signUpCheck(SignUpCheckRef ref,
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
     logger.e(
-        'code = ${error.status_code}\nmessage = ${error.message}\ndata = ${error.data}');
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
     return error;
   });
 }
+
 @riverpod
 Future<BaseModel> signUp(SignUpRef ref, {required SignUpParam param}) async {
   final repository = ref.watch(authRepositoryProvider);
@@ -38,7 +39,7 @@ Future<BaseModel> signUp(SignUpRef ref, {required SignUpParam param}) async {
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
     logger.e(
-        'code = ${error.status_code}\nmessage = ${error.message}\ndata = ${error.data}');
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
     return error;
   });
-}//김정현
+}

@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../util/util.dart';
+
 part 'sign_up_form_provider.g.dart';
 
 class ValidTimer {
@@ -152,7 +154,8 @@ class SignUpForm extends _$SignUpForm {
   }
 
   bool isRequestValidCode() {
-    return  RegExp(r'^01(?:0|1|[6-9])(?:\d{3}|\d{4})\d{4}$').hasMatch(state.phoneNumber);
+    return RegExp(r'^01(?:0|1|[6-9])(?:\d{3}|\d{4})\d{4}$')
+        .hasMatch(state.phoneNumber);
   }
 
   bool validNickname() {
@@ -166,22 +169,23 @@ class SignUpForm extends _$SignUpForm {
   }
 
   bool validPassword({required isPassword}) {
-    return RegExp(
-            r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$%^&]).{8,}$")
-        .hasMatch(isPassword ? state.password : state.checkPassword);
+    return ValidRegExp.userPassword(
+        isPassword ? state.password : state.checkPassword);
+    // return RegExp(
+    //         r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$%^&]).{8,}$")
+    //     .hasMatch(isPassword ? state.password : state.checkPassword);
   }
 
   bool isSamePassword() {
-    final reg =
-        RegExp(r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$%^&]).{8,}$");
-    if (state.password == state.checkPassword && reg.hasMatch(state.password)) {
+    final valid = ValidRegExp.userPassword(state.password);
+    if (state.password == state.checkPassword && valid) {
       return true;
     }
     return false;
   }
 
   bool validName() {
-    return state.name.isNotEmpty;
+    return ValidRegExp.userName(state.name);
   }
 
   bool validPhoneNumber() {
@@ -189,6 +193,7 @@ class SignUpForm extends _$SignUpForm {
   }
 
   bool validBirth() {
+    log('state.birthDate ${state.birthDate}');
     return RegExp(r"^\d{4} / (0[1-9]|1[0-2]) / (0[1-9]|[1-2][0-9]|3[0-1])$")
         .hasMatch(state.birthDate);
   }

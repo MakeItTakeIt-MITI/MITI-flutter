@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/auth/provider/widget/phone_auth_provider.dart';
 import 'package:miti/auth/view/phone_auth/phone_auth_send_screen.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
 import 'package:miti/dio/response_code.dart';
 
+import '../../../common/component/default_appbar.dart';
 import '../../../common/model/default_model.dart';
 import '../../model/code_model.dart';
 import '../../provider/login_provider.dart';
@@ -58,7 +60,7 @@ class _PhoneAuthInfoScreenState extends ConsumerState<PhoneAuthInfoScreen> {
     ref.watch(phoneAuthProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(),
+      appBar: const DefaultAppBar(),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         child: Column(
@@ -93,14 +95,8 @@ class _PhoneAuthInfoScreenState extends ConsumerState<PhoneAuthInfoScreen> {
                                 .read(loginFormProvider.notifier)
                                 .updateFormField(email: '');
                           },
-                          icon: CircleAvatar(
-                            foregroundColor: Colors.white,
-                            backgroundColor: const Color(0xFF585757),
-                            maxRadius: 14.r,
-                            child: Icon(
-                              Icons.close,
-                              size: 20.r,
-                            ),
+                          icon: SvgPicture.asset(
+                            'assets/images/btn/close_btn.svg',
                           ),
                         )
                       : null,
@@ -166,7 +162,8 @@ class _PhoneAuthInfoScreenState extends ConsumerState<PhoneAuthInfoScreen> {
 
   Future<void> requestSMS(BuildContext context) async {
     FocusScope.of(context).requestFocus(FocusNode());
-    final result = await ref.read(requestSMSProvider(type: PhoneAuthType.login).future);
+    final result =
+        await ref.read(requestSMSProvider(type: PhoneAuthType.login).future);
     if (result is ResponseModel<RequestCodeModel> && context.mounted) {
       context.pushNamed(PhoneAuthSendScreen.routeName);
     } else {

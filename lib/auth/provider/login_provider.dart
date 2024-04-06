@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:miti/auth/param/find_info_param.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/auth/provider/signup_provider.dart';
 import 'package:miti/auth/provider/widget/find_info_provider.dart';
@@ -57,13 +60,14 @@ Future<BaseModel> login(LoginRef ref) async {
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
     logger.e(
-        'code = ${error.status_code}\nmessage = ${error.message}\ndata = ${error.data}');
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
     return error;
   });
 }
 
 @riverpod
-Future<BaseModel> oauthLogin(OauthLoginRef ref, {required OauthLoginParam param}) async {
+Future<BaseModel> oauthLogin(OauthLoginRef ref,
+    {required OauthLoginParam param}) async {
   return await ref
       .watch(authRepositoryProvider)
       .oauthLogin(param: param, provider: 'kakao')
@@ -71,26 +75,28 @@ Future<BaseModel> oauthLogin(OauthLoginRef ref, {required OauthLoginParam param}
     logger.i('oauthLogin $param!');
     final model = value.data!;
     final storage = ref.read(secureStorageProvider);
-
+    log('refreshToken = ${model.token.refresh}');
     await Future.wait([
       storage.write(key: 'accessToken', value: model.token.access),
       storage.write(key: 'refreshToken', value: model.token.refresh),
       storage.write(key: 'tokenType', value: model.token.type),
     ]);
+
+    final refresh = await storage.read(key: 'refreshToken');
+    log('refreshrefresh = ${refresh}');
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
     logger.e(
-        'code = ${error.status_code}\nmessage = ${error.message}\ndata = ${error.data}');
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
     return error;
   });
 }
 
-
 enum PhoneAuthType { signup, login }
 
 @riverpod
-Future<BaseModel> requestSMS(LoginRef ref,
+Future<BaseModel> requestSMS(RequestSMSRef ref,
     {required PhoneAuthType type}) async {
   late final RequestCodeParam param;
   switch (type) {
@@ -117,13 +123,13 @@ Future<BaseModel> requestSMS(LoginRef ref,
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
     logger.e(
-        'code = ${error.status_code}\nmessage = ${error.message}\ndata = ${error.data}');
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
     return error;
   });
 }
 
 @riverpod
-Future<BaseModel> sendSMS(LoginRef ref) async {
+Future<BaseModel> sendSMS(SendSMSRef ref) async {
   final model = ref.read(phoneAuthProvider);
   final param = CodeParam(code: model.code);
   return await ref
@@ -135,48 +141,9 @@ Future<BaseModel> sendSMS(LoginRef ref) async {
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
-    logger.e(
-        'code = ${error.status_code}\nmessage = ${error.message}\ndata = ${error.data}');
-    return error;
-  });
-}
 
-@riverpod
-Future<BaseModel> requestNewPassword(LoginRef ref) async {
-  final email = ref.read(emailProvider);
-  final param = RequestNewPasswordParam(email: email);
-  return await ref
-      .watch(authRepositoryProvider)
-      .requestNewPassword(param: param)
-      .then<BaseModel>((value) {
-    logger.i('requestNewPassword $param!');
-    final model = value.data;
-    return value;
-  }).catchError((e) {
-    final error = ErrorModel.respToError(e);
     logger.e(
-        'code = ${error.status_code}\nmessage = ${error.message}\ndata = ${error.data}');
-    return error;
-  });
-}
-
-@riverpod
-Future<BaseModel> resetPassword(LoginRef ref) async {
-  final param = ResetPasswordParam(password: '', password_check: '');
-  return await ref
-      .watch(authRepositoryProvider)
-      .resetPassword(
-        param: param,
-        token: '',
-      )
-      .then<BaseModel>((value) {
-    logger.i('resetPassword $param!');
-    final model = value.data;
-    return value;
-  }).catchError((e) {
-    final error = ErrorModel.respToError(e);
-    logger.e(
-        'code = ${error.status_code}\nmessage = ${error.message}\ndata = ${error.data}');
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
     return error;
   });
 }

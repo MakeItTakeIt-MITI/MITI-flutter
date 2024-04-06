@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:miti/auth/view/find_info/find_info_screen.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
+import 'package:miti/common/component/default_appbar.dart';
+
+import 'find_password_screen.dart';
 
 class FindEmailScreen extends StatelessWidget {
   final bool isOauth;
@@ -45,16 +48,8 @@ class FindEmailScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          '회원 정보 찾기',
-          style: TextStyle(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF000000),
-          ),
-        ),
-        centerTitle: true,
+      appBar: const DefaultAppBar(
+        title: '회원 정보 찾기',
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -82,11 +77,9 @@ class FindEmailScreen extends StatelessWidget {
             SizedBox(height: 12.h),
             InkWell(
                 onTap: () {
-                  Map<String, String> queryParameters = {
-                    'findInfo': 'password'
-                  };
-                  context.goNamed(FindInfoScreen.routeName,
-                      queryParameters: queryParameters);
+                  context.goNamed(
+                    ResetPasswordScreen.routeName,
+                  );
                 },
                 child: Text(
                   'PW를 잊으셨나요?',

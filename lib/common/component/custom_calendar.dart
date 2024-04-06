@@ -11,9 +11,12 @@ import 'package:miti/auth/view/signup/signup_screen.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../util/provider/date_provider.dart';
+import '../provider/widget/datetime_provider.dart';
 
 class CustomCalendar extends StatefulWidget {
-  const CustomCalendar({super.key});
+  final DateTimeType type;
+
+  const CustomCalendar({super.key, required this.type});
 
   @override
   State<CustomCalendar> createState() => _CustomCalendarState();
@@ -82,7 +85,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
       color: const Color(0xFF333333),
     );
     return DaysOfWeekStyle(
-      dowTextFormatter: (date, locale) => DateFormat.E('en').format(date)[0],
+      dowTextFormatter: (date, locale) => DateFormat.E('ko').format(date)[0],
       weekendStyle: textStyle,
       weekdayStyle: textStyle,
     );
@@ -115,7 +118,9 @@ class _CustomCalendarState extends State<CustomCalendar> {
                 daysOfWeekHeight: 44.h,
                 rowHeight: 44.h,
                 onDaySelected: (DateTime selected, DateTime focusedDay) {
-                  ref.read(dateProvider.notifier).update((state) => selected);
+                  ref
+                      .read(dateProvider(widget.type).notifier)
+                      .update((state) => selected);
                   setState(() {
                     selectedDay = selected;
                   });

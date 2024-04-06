@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/auth/view/signup/signup_screen.dart';
 
+import '../../../common/component/default_appbar.dart';
+
 class SignUpSelectScreen extends StatelessWidget {
   static String get routeName => 'signUpSelect';
 
@@ -14,7 +16,7 @@ class SignUpSelectScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(),
+      appBar: const DefaultAppBar(),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 36.w),
         child: Column(

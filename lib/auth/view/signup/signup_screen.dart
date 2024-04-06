@@ -16,9 +16,11 @@ import 'package:miti/auth/provider/signup_provider.dart';
 import 'package:miti/auth/provider/widget/phone_auth_provider.dart';
 import 'package:miti/auth/provider/widget/sign_up_form_provider.dart';
 import 'package:miti/auth/view/phone_auth/phone_auth_send_screen.dart';
+import 'package:miti/common/component/default_appbar.dart';
 
 import '../../../common/component/custom_text_form_field.dart';
 import '../../../common/model/default_model.dart';
+import '../../../common/provider/widget/datetime_provider.dart';
 import '../../../util/provider/date_provider.dart';
 import '../../../util/util.dart';
 import '../../model/signup_model.dart';
@@ -33,17 +35,7 @@ class SignUpScreen extends ConsumerWidget {
     ref.watch(phoneAuthProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: Text(
-          '회원가입',
-          style: TextStyle(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF000000),
-          ),
-        ),
-        centerTitle: true,
-      ),
+      appBar: const DefaultAppBar(title: '회원가입'),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         child: Column(
@@ -382,7 +374,6 @@ class _PasswordFormState extends ConsumerState<PasswordForm> {
           onChanged: (val) {
             ref.read(signUpFormProvider.notifier).updateForm(password: val);
             samePasswordCheck(context);
-
             final validPassword = ref
                 .read(signUpFormProvider.notifier)
                 .validPassword(isPassword: true);
@@ -402,8 +393,6 @@ class _PasswordFormState extends ConsumerState<PasswordForm> {
                   },
                   icon: SvgPicture.asset(
                     'assets/images/btn/close_btn.svg',
-                    height: 24.r,
-                    width: 24.r,
                   ),
                 )
               : null,
@@ -423,6 +412,19 @@ class _PasswordFormState extends ConsumerState<PasswordForm> {
           hintText: '비밀번호를 한번 더 입력해주세요.',
           label: '',
           focusNode: focusNodes[1],
+          suffixIcon: focusNodes[1].hasFocus
+              ? IconButton(
+                  onPressed: () {
+                    checkPasswordController.clear();
+                    ref
+                        .read(signUpFormProvider.notifier)
+                        .updateForm(checkPassword: '');
+                  },
+                  icon: SvgPicture.asset(
+                    'assets/images/btn/close_btn.svg',
+                  ),
+                )
+              : null,
         ),
       ],
     );
@@ -700,6 +702,9 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
   }
 
   void checkValid() {
+    log('ref.read(signUpFormProvider.notifier).validName() ${ref.read(signUpFormProvider.notifier).validName()}');
+    log('ref.read(signUpFormProvider.notifier).validBirth() ${ref.read(signUpFormProvider.notifier).validBirth()}');
+    log('ref.read(signUpFormProvider.notifier).validPhoneNumber() ${ref.read(signUpFormProvider.notifier).validPhoneNumber()}');
     if (ref.read(signUpFormProvider.notifier).validName() &&
         ref.read(signUpFormProvider.notifier).validBirth() &&
         ref.read(signUpFormProvider.notifier).validPhoneNumber()) {
@@ -712,7 +717,7 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
   @override
   Widget build(BuildContext context) {
     ref.watch(signUpFormProvider);
-    ref.listen(dateProvider, (previous, next) {
+    ref.listen(dateProvider(DateTimeType.start), (previous, next) {
       if (next != null) {
         final formatDate = DateTimeUtil.getDate(dateTime: next);
         ref.read(signUpFormProvider.notifier).updateForm(birthDate: formatDate);
@@ -751,13 +756,7 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
             }
             checkValid();
           },
-          inputFormatters: <TextInputFormatter>[
-            // DateInputFormatter(),
-            _TextFormFormatter(
-                sample: 'xxxx/xx/xx', separator: '/', isDateFormat: true)
-          ],
         ),
-
         SizedBox(height: 24.h),
         CustomTextFormField(
           focusNode: focusNodes[1],
@@ -772,185 +771,23 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
           },
           onNext: () {
             FocusScope.of(context).requestFocus(FocusNode());
-            // requestValidCode();
           },
-          // suffixIcon: Padding(
-          //   padding: EdgeInsets.only(right: 8.w),
-          //   child: SizedBox(
-          //     height: 36.h,
-          //     width: 81.w,
-          //     child: Align(
-          //       alignment: Alignment.centerRight,
-          //       child: TextButton(
-          //         onPressed: () {
-          //           requestValidCode();
-          //         },
-          //         style: TextButton.styleFrom(
-          //           backgroundColor: canRequest()
-          //               ? const Color(0xFF4065F6)
-          //               : const Color(0xFFE8E8E8),
-          //         ),
-          //         child: Text(
-          //           isFirstRequest ? '인증하기' : '재요청하기',
-          //           style: TextStyle(
-          //               fontWeight: FontWeight.w400,
-          //               fontSize: 12.sp,
-          //               color: canRequest()
-          //                   ? Colors.white
-          //                   : const Color(0xFF969696)),
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
           keyboardType: TextInputType.number,
-          inputFormatters: <TextInputFormatter>[
-            PhoneNumberFormatter()
-            // TextFormFormatter(
-            //   sample: 'xxx-xxxx-xxxx',
-            //   separator: '-',
-            // )
-          ],
+          inputFormatters: <TextInputFormatter>[PhoneNumberFormatter()],
         ),
-        // if (ref.watch(timerFormProvider(sec: 60)).isShow) SizedBox(height: 6.h),
-        // if (ref.watch(timerFormProvider(sec: 60)).isShow)
-        //   const ValidCodeTimer(
-        //     sec: 60,
-        //     desc: '초 후에 다시 전송할 수 있어요.',
-        //   ),
-        // CustomTextFormField(
-        //   label: '',
-        //   hintText: '인증번호',
-        //   keyboardType: TextInputType.number,
-        //   inputFormatters: <TextInputFormatter>[
-        //     FilteringTextInputFormatter.digitsOnly
-        //   ],
-        //   suffixIcon: ref.watch(timerFormProvider(sec: 180)).isShow
-        //       ? Padding(
-        //           padding: EdgeInsets.only(right: 20.w),
-        //           child: const ValidCodeTimer(
-        //             sec: 180,
-        //           ),
-        //         )
-        //       : null,
-        // ),
       ],
     );
   }
-
-// void requestValidCode() {
-//   if (ref.watch(signUpFormProvider.notifier).isRequestValidCode()) {
-//     isFirstRequest = false;
-//     if (ref.read(timerFormProvider(sec: 60).notifier).isComplete()) {
-//       ref.read(timerFormProvider(sec: 60).notifier).updateTimer(sec: 60);
-//       ref.read(timerFormProvider(sec: 180).notifier).updateTimer(sec: 180);
-//     }
-//     ref.read(timerFormProvider(sec: 60).notifier).updateTimer(isShow: true);
-//     ref.read(timerFormProvider(sec: 180).notifier).updateTimer(isShow: true);
-//   }
-// }
-
-// bool canRequest() {
-//   return ref.watch(signUpFormProvider.notifier).isRequestValidCode() &&
-//       (ref.watch(timerFormProvider(sec: 60).notifier).isComplete() ||
-//           isFirstRequest);
-// }
 }
-
-// class ValidCodeTimer extends ConsumerStatefulWidget {
-//   final int sec;
-//   final String? desc;
-//
-//   const ValidCodeTimer({
-//     super.key,
-//     required this.sec,
-//     this.desc,
-//   });
-//
-//   @override
-//   ConsumerState<ValidCodeTimer> createState() => _ValidCodeTimerState();
-// }
-//
-// class _ValidCodeTimerState extends ConsumerState<ValidCodeTimer> {
-//   late Timer _timer;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     startTimer();
-//   }
-//
-//   void startTimer() {
-//     const oneSec = Duration(seconds: 1);
-//     _timer = Timer.periodic(
-//       oneSec,
-//       (Timer timer) {
-//         if (ref
-//             .read(timerFormProvider(sec: widget.sec).notifier)
-//             .isComplete()) {
-//           setState(() {
-//             ref
-//                 .read(timerFormProvider(sec: widget.sec).notifier)
-//                 .updateTimer(isShow: false);
-//             timer.cancel();
-//           });
-//         } else {
-//           setState(() {
-//             ref.read(timerFormProvider(sec: widget.sec).notifier).timer();
-//           });
-//         }
-//       },
-//     );
-//   }
-//
-//   @override
-//   void dispose() {
-//     _timer.cancel();
-//     super.dispose();
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     if (widget.desc == null) {
-//       final sec = ref.watch(timerFormProvider(sec: widget.sec)).sec;
-//       String s = '';
-//       if (sec % 60 < 10) {
-//         s = '${sec ~/ 60}:0${sec % 60}';
-//       } else {
-//         s = '${sec ~/ 60}:${sec % 60}';
-//       }
-//       return Text(
-//         s,
-//         textAlign: TextAlign.center,
-//         style: TextStyle(
-//           fontWeight: FontWeight.w500,
-//           fontSize: 16.sp,
-//           color: const Color(0xFF1C1C1C),
-//         ),
-//       );
-//     } else {
-//       final sec = ref.watch(timerFormProvider(sec: widget.sec)).sec;
-//
-//       return Text(
-//         '$sec${widget.desc}',
-//         style: TextStyle(
-//             fontWeight: FontWeight.w400,
-//             fontSize: 13.sp,
-//             color: const Color(0xFF969696)),
-//       );
-//     }
-//   }
-// }
 
 class _TextFormFormatter extends TextInputFormatter {
   final String sample;
   final String separator;
-  final bool isDateFormat;
 
-  _TextFormFormatter(
-      {required this.sample,
-      required this.separator,
-      this.isDateFormat = false});
+  _TextFormFormatter({
+    required this.sample,
+    required this.separator,
+  });
 
   @override
   TextEditingValue formatEditUpdate(

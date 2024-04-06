@@ -8,6 +8,7 @@ import '../auth/provider/auth_provider.dart';
 import '../common/logger/custom_logger.dart';
 
 const String serverURL = "https://dev.makeittakeit.kr";
+
 // https://api.makeittakeit.kr
 class CustomDioInterceptor extends Interceptor {
   final FlutterSecureStorage storage;
@@ -30,10 +31,11 @@ class CustomDioInterceptor extends Interceptor {
       options.headers.remove('token');
       options.headers.addAll({'Authorization': 'Bearer $accessToken'});
     }
-    if (options.headers['refreshToken'] == 'true') {
+    if (options.headers['refresh'] == 'true') {
       String? refreshToken = await storage.read(key: 'refreshToken');
-      options.headers.remove('refreshToken');
-      options.headers.addAll({'Authorization': 'Bearer $refreshToken'});
+      log('refresh ${refreshToken}');
+      // options.headers.remove('refreshToken');
+      options.headers.addAll({'refresh': 'Bearer $refreshToken'});
     }
     List<String> requestLog = [];
     requestLog.add(
@@ -55,7 +57,7 @@ class CustomDioInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     List<String> errorLog = [];
-    final noneAuthUrl = ['/auth/send-sms', '/auth/login'];
+    final noneAuthUrl = ['/auth/send-sms', '/auth/login', '/auth/send-sms/authentication'];
     final noneAUth = noneAuthUrl.contains(err.requestOptions.uri.path);
 
     errorLog.add(
@@ -67,13 +69,16 @@ class CustomDioInterceptor extends Interceptor {
     logger.w(errorLog.reduce((value, element) => value + element));
     // 어세스 토큰이 만료되 경우
     if (err.response!.statusCode == 401 &&
-        err.requestOptions.uri.path != '/api/auth/util/reissuetoken' && !noneAUth) {
+        err.requestOptions.uri.path != '/auth/refresh-token' &&
+        !noneAUth) {
       try {
         Dio dio = Dio();
         // dio.options.headers['Content-Type'] =
-        // 'application/x-www-form-urlencoded';
-        // var response = await dio.get('$serverURL/api/auth/util/reissuetoken');
-        // String newAccessToken = response.data["accessToken"]["tokenValue"];
+        //     'application/x-www-form-urlencoded';
+        //
+        // var response = await dio.get('$serverURL/auth/refresh-token');
+        // String newAccessToken = response.data["data"]["access"];
+        // String newRefreshToken = response.data["data"]["refresh"];
         // await storage.write(key: "token", value: newAccessToken);
 
         await ref.read(authProvider.notifier).reIssueToken();

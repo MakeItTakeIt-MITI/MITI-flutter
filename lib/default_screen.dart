@@ -3,29 +3,18 @@ import 'dart:math' hide log;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/auth/view/login_screen.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:miti/common/provider/scroll_provider.dart';
+import 'package:miti/court/component/court_component.dart';
 
-import 'game/view/game_body.dart';
-
-part 'home_screen.g.dart';
-
-@Riverpod(keepAlive: true)
-class PageScrollController extends _$PageScrollController {
-  @override
-  List<ScrollController> build() {
-    return [
-      ScrollController(),
-      ScrollController(),
-      ScrollController(),
-      ScrollController(),
-    ];
-  }
-}
+import 'game/view/game_list_screen.dart';
+import 'court/view/court_map_screen.dart';
+import 'game/view/game_screen.dart';
 
 class ShellRoutePageState with ChangeNotifier {
   ScrollController topController = ScrollController();
@@ -40,38 +29,6 @@ class ShellRoutePageState with ChangeNotifier {
     bottomController.jumpTo(bottomOffset);
   }
 }
-
-class HomBody extends StatelessWidget {
-  static String get routeName => 'home';
-
-  const HomBody({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return NestedScrollView(
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return [
-          SliverAppBar(
-            centerTitle: true,
-            title: Text('나의 참여 경기',
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF000000),
-                )),
-          ),
-        ];
-      },
-      body: CustomScrollView(slivers: [
-
-      ],),
-    );
-  }
-}
-
-
 
 class InfoBody extends StatelessWidget {
   static String get routeName => 'info';
@@ -102,27 +59,23 @@ class MenuBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: TextButton(
-        onPressed: () {
-          context.pushNamed(LoginScreen.routeName);
-        },
-        child: Text('로그인'),
-      ),
+    return SpeechBubble(
+      model: MapMarkerModel(time: '15:00-18:00', cost: '₩10,000', moreCnt: 100, id: 1, latitude: 0, longitude: 80),
+      selected: false,
     );
   }
 }
 
-class DefaultShellScreen extends StatefulWidget {
+class DefaultShellScreen extends ConsumerStatefulWidget {
   final Widget body;
 
   const DefaultShellScreen({super.key, required this.body});
 
   @override
-  State<DefaultShellScreen> createState() => _DefaultShellScreenState();
+  ConsumerState<DefaultShellScreen> createState() => _DefaultShellScreenState();
 }
 
-class _DefaultShellScreenState extends State<DefaultShellScreen> {
+class _DefaultShellScreenState extends ConsumerState<DefaultShellScreen> {
   @override
   void initState() {
     super.initState();
@@ -142,22 +95,47 @@ class _DefaultShellScreenState extends State<DefaultShellScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final controller = ref.watch(pageScrollControllerProvider);
     final index = getIndex(context);
     return Scaffold(
         resizeToAvoidBottomInset: false,
+        backgroundColor: Colors.white,
         body: widget.body,
         bottomNavigationBar: CustomBottomNavigationBar(
           index: index,
           onTap: (int page) {
-            log('page $page index $index');
             if (page == 0) {
-              context.goNamed(HomBody.routeName);
+              if (GoRouterState.of(context).matchedLocation == '/home') {
+                // controller[0].animateTo(0,
+                //     duration: const Duration(milliseconds: 500),
+                //     curve: Curves.easeInOut);
+              } else {
+                context.goNamed(CourtMapScreen.routeName);
+              }
             } else if (page == 1) {
-              context.goNamed(GameBody.routeName);
+              if (GoRouterState.of(context).matchedLocation == '/game') {
+                // controller[1].animateTo(0,
+                //     duration: const Duration(milliseconds: 500),
+                //     curve: Curves.easeInOut);
+              } else {
+                context.goNamed(GameScreen.routeName);
+              }
             } else if (page == 2) {
-              context.goNamed(InfoBody.routeName);
+              if (GoRouterState.of(context).matchedLocation == '/info') {
+                controller[2].animateTo(0,
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeInOut);
+              } else {
+                context.goNamed(InfoBody.routeName);
+              }
             } else {
-              context.goNamed(MenuBody.routeName);
+              if (GoRouterState.of(context).matchedLocation == '/menu') {
+                controller[3].animateTo(0,
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeInOut);
+              } else {
+                context.goNamed(MenuBody.routeName);
+              }
             }
           },
         ));

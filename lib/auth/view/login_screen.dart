@@ -6,16 +6,22 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:miti/auth/error/auth_error.dart';
 import 'package:miti/auth/provider/login_provider.dart';
 import 'package:miti/auth/view/find_info/find_info_screen.dart';
 import 'package:miti/auth/view/phone_auth/phone_auth_screen.dart';
 import 'package:miti/auth/view/signup/signup_select_screen.dart';
+import 'package:miti/common/provider/form_util_provider.dart';
 
 import '../../common/component/custom_text_form_field.dart';
+import '../../common/component/default_appbar.dart';
 import '../../common/model/default_model.dart';
+import '../../default_screen.dart';
 import '../../dio/response_code.dart';
+import '../../court/view/court_map_screen.dart';
 import '../param/auth_param.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -27,12 +33,7 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-          // leading: IconButton(
-          //   onPressed: () => context.pop(),
-          //   icon: const Icon(Icons.chevron_left),
-          // ),
-          ),
+      appBar: const DefaultAppBar(),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         child: Column(
@@ -54,6 +55,7 @@ class LoginScreen extends StatelessWidget {
               style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w400),
               textAlign: TextAlign.center,
             ),
+            SizedBox(height: 36.h),
             const LoginComponent(),
             Text(
               '또는',
@@ -89,7 +91,6 @@ class LoginComponent extends ConsumerStatefulWidget {
 }
 
 class _LoginComponentState extends ConsumerState<LoginComponent> {
-  bool isVisible = false;
   final formKey = GlobalKey<FormState>();
   late final List<FocusNode> focusNodes = [FocusNode(), FocusNode()];
   InteractionDesc? interactionDesc;
@@ -143,14 +144,8 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
                           .read(loginFormProvider.notifier)
                           .updateFormField(email: '');
                     },
-                    icon: CircleAvatar(
-                      foregroundColor: Colors.white,
-                      backgroundColor: const Color(0xFF585757),
-                      maxRadius: 14.r,
-                      child: Icon(
-                        Icons.close,
-                        size: 20.r,
-                      ),
+                    icon: SvgPicture.asset(
+                      'assets/images/btn/close_btn.svg',
                     ),
                   )
                 : null,
@@ -159,36 +154,43 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
               log(ref.read(loginFormProvider).email);
             },
           ),
-          SizedBox(height: 14.h),
-          CustomTextFormField(
-            focusNode: focusNodes[1],
-            textEditingController: passwordController,
-            hintText: '8자리 이상의 PW를 입력해주세요.',
-            textInputAction: TextInputAction.send,
-            label: '비밀번호',
-            obscureText: !isVisible,
-            suffixIcon: focusNodes[1].hasFocus
-                ? IconButton(
-                    onPressed: () {
-                      setState(() {
-                        isVisible = !isVisible;
-                      });
-                    },
-                    icon: Icon(isVisible
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined),
-                  )
-                : null,
-            onChanged: (val) {
-              ref
-                  .read(loginFormProvider.notifier)
-                  .updateFormField(password: val);
-              log(ref.read(loginFormProvider).password);
+          SizedBox(height: 20.h),
+          Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              final interactionDesc =
+                  ref.watch(formDescProvider(InputFormType.login));
+              final isVisible = ref.watch(passwordVisibleProvider);
+              return CustomTextFormField(
+                focusNode: focusNodes[1],
+                textEditingController: passwordController,
+                hintText: '8자리 이상의 PW를 입력해주세요.',
+                textInputAction: TextInputAction.send,
+                label: '비밀번호',
+                obscureText: !isVisible,
+                suffixIcon: focusNodes[1].hasFocus
+                    ? IconButton(
+                        onPressed: () {
+                          ref
+                              .read(passwordVisibleProvider.notifier)
+                              .update((state) => !state);
+                        },
+                        icon: Icon(isVisible
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined),
+                      )
+                    : null,
+                onChanged: (val) {
+                  ref
+                      .read(loginFormProvider.notifier)
+                      .updateFormField(password: val);
+                  log(ref.read(loginFormProvider).password);
+                },
+                onNext: () => login(),
+                interactionDesc: interactionDesc,
+              );
             },
-            onNext: () => login(),
-            interactionDesc: interactionDesc,
           ),
-          SizedBox(height: 46.h),
+          SizedBox(height: 20.h),
           TextButton(
             onPressed: () => login(),
             style: ButtonStyle(
@@ -216,20 +218,16 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
   }
 
   void login() async {
+    FocusScope.of(context).requestFocus(FocusNode());
     if (ref.read(loginFormProvider.notifier).isValid()) {
       final result = await ref.read(loginProvider.future);
-      if (result is ErrorModel) {
-        final model = result;
-        log('model.status_code == Forbidden ${model.status_code}');
-        if (model.status_code == Forbidden && context.mounted) {
-          context.pushNamed(PhoneAuthScreen.routeName);
+      if (mounted) {
+        if (result is ErrorModel) {
+          AuthError.fromModel(model: result)
+              .responseError(context, AuthApiType.login, ref);
+        } else {
+          context.goNamed(CourtMapScreen.routeName);
         }
-        setState(() {
-          interactionDesc = InteractionDesc(
-            isSuccess: false,
-            desc: "일치하는 사용자 정보가 존재하지 않습니다.",
-          );
-        });
       }
     }
   }
@@ -280,7 +278,7 @@ class OtherWayComponent extends StatelessWidget {
 class KakaoLoginButton extends ConsumerWidget {
   const KakaoLoginButton({super.key});
 
-  void signInWithKakao(WidgetRef ref) async {
+  void signInWithKakao(WidgetRef ref, BuildContext context) async {
     try {
       bool isInstalled = await isKakaoTalkInstalled();
 
@@ -296,6 +294,10 @@ class KakaoLoginButton extends ConsumerWidget {
       final result = await ref.read(oauthLoginProvider(param: param).future);
       if (result is ErrorModel) {
         throw Exception();
+      } else {
+        if (context.mounted) {
+          context.goNamed(CourtMapScreen.routeName);
+        }
       }
     } catch (error) {
       print('카카오톡으로 로그인 실패 $error');
@@ -306,7 +308,7 @@ class KakaoLoginButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return InkWell(
       onTap: () {
-        signInWithKakao(ref);
+        signInWithKakao(ref, context);
       },
       child: Container(
         height: 48.h,
@@ -369,9 +371,9 @@ class HelpComponent extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                Map<String, String> queryParameters = {'findInfo': 'email'};
-                context.pushNamed(FindInfoScreen.routeName,
-                    queryParameters: queryParameters);
+                context.pushNamed(
+                  FindInfoScreen.routeName,
+                );
               },
               child: Text(
                 'ID / PW를 잊으셨나요?',

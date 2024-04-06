@@ -79,3 +79,23 @@ class ResponseModel<T> extends BaseModel {
     return _$ResponseModelFromJson(json, fromJsonT);
   }
 }
+
+@JsonSerializable(
+  genericArgumentFactories: true,
+)
+class ResponseListModel<T> extends BaseModel {
+  final int status_code;
+  final String message;
+  final List<T>? data;
+
+  ResponseListModel({
+    required this.status_code,
+    required this.message,
+    required this.data,
+  });
+
+  factory ResponseListModel.fromJson(
+      Map<String, dynamic> json, T Function(Object? json) fromJsonT) {
+    return _$ResponseListModelFromJson(json, fromJsonT);
+  }
+}

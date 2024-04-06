@@ -17,7 +17,6 @@ class SignUpModel {
   factory SignUpModel.fromJson(Map<String, dynamic> json) =>
       _$SignUpModelFromJson(json);
 }
-//김정현
 @JsonSerializable()
 class SignUserModel extends CodeUserModel{
   SignUserModel({required super.email, required super.nickname});

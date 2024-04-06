@@ -8,13 +8,16 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 import 'package:miti/auth/provider/widget/sign_up_form_provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../auth/view/signup/signup_screen.dart';
 import '../../util/provider/date_provider.dart';
 import '../../util/util.dart';
+import '../provider/widget/datetime_provider.dart';
 import 'custom_calendar.dart';
+import 'date_picker.dart';
 
 class InteractionDesc {
   final bool isSuccess;
@@ -93,23 +96,32 @@ class CustomTextFormField extends StatelessWidget {
             fontSize: 16.sp,
           ),
           decoration: InputDecoration(
-              constraints: BoxConstraints.loose(Size(double.infinity, 58.h)),
-              border: OutlineInputBorder(
-                borderRadius: showAutoComplete
-                    ? BorderRadius.vertical(top: Radius.circular(8.r))
-                    : BorderRadius.circular(8.r),
-                borderSide: BorderSide.none,
-              ),
-              hintText: hintText,
-              hintStyle: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 16.sp,
-              ),
-              fillColor: const Color(0xFFF7F7F7),
-              filled: true,
-              suffixIcon: suffixIcon,
-              suffixIconConstraints:
-                  BoxConstraints.loose(Size(double.infinity, 36.h))),
+            constraints: BoxConstraints.loose(Size(double.infinity, 58.h)),
+            border: OutlineInputBorder(
+              borderRadius: showAutoComplete
+                  ? BorderRadius.vertical(top: Radius.circular(8.r))
+                  : BorderRadius.circular(8.r),
+              borderSide: BorderSide.none,
+            ),
+            hintText: hintText,
+            hintStyle: TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 16.sp,
+            ),
+            fillColor: const Color(0xFFF7F7F7),
+            filled: true,
+            suffixIcon: suffixIcon,
+            suffixIconConstraints:
+                BoxConstraints.loose(Size(double.infinity, 36.h)),
+            // suffixText: '명',
+            // suffixStyle: TextStyle(
+            //   color: Color(0xFF444444),
+            //   fontSize: 14,
+            //   fontFamily: 'Pretendard',
+            //   fontWeight: FontWeight.w700,
+            //   letterSpacing: -0.25,
+            // )
+          ),
           validator: validator,
           onChanged: onChanged,
           onEditingComplete: onNext,
@@ -167,6 +179,8 @@ class DateInputForm extends ConsumerStatefulWidget {
   final bool showAutoComplete;
   final TextAlign textAlign;
   final bool enabled;
+  final DateTimeType dateType;
+  final DateTimeType? timeType;
 
   const DateInputForm({
     super.key,
@@ -187,6 +201,8 @@ class DateInputForm extends ConsumerStatefulWidget {
     this.textAlign = TextAlign.start,
     this.enabled = true,
     this.initialValue,
+    this.dateType = DateTimeType.start,
+    this.timeType,
   });
 
   @override
@@ -199,22 +215,51 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
   @override
   void initState() {
     super.initState();
-    dateController = TextEditingController();
+    // final now = DateTime.now();
+    //
+    // final dateFormat = widget.timeType != null
+    //     ? DateFormat('yyyy.MM.dd HH:mm')
+    //     : DateFormat('yyyy / MM / dd');
+    dateController = TextEditingController();//..text = dateFormat.format(now);
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //   ref.read(dateProvider(widget.dateType).notifier).update((state) => now);
+    // });
   }
+
   @override
   void dispose() {
     dateController.dispose();
     super.dispose();
   }
-//김정현
+
   @override
   Widget build(BuildContext context) {
-    ref.listen(dateProvider, (previous, next) {
-      if(next != null){
-          final formatDate = DateTimeUtil.getDate(dateTime: next);
+    ref.listen(dateProvider(widget.dateType), (previous, next) {
+      if (next != null) {
+        final compareDate = widget.dateType == DateTimeType.start
+            ? ref.read(dateProvider(DateTimeType.end))
+            : ref.read(dateProvider(DateTimeType.start));
+        final format = DateFormat('yyyy.MM.dd');
+
+        if (format.format(compareDate!) == format.format(next)) {
+          final formatDate = format.format(next);
           dateController.text = formatDate;
+        } else {
+          final formatDate = format.format(next);
+          final date = dateController.text.split(' ')[0];
+          final time = dateController.text.split(' ')[1];
+          dateController.text = '$formatDate $time';
+        }
       }
     });
+    if (widget.timeType != null) {
+      ref.listen(timeProvider(widget.dateType), (previous, next) {
+        final formatTime = DateTimeUtil.getTime(dateTime: next);
+        final date = dateController.text.split(' ')[0];
+        final time = dateController.text.split(' ')[1];
+        dateController.text = '$date $formatTime';
+      });
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -274,9 +319,26 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
                       context: context,
                       builder: (context) {
                         return Dialog(
-
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
-                          child: const CustomCalendar(),
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.r)),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              CustomCalendar(
+                                type: widget.dateType,
+                              ),
+                              if (widget.timeType != null)
+                                const Divider(
+                                  height: 1,
+                                  color: Color(0xFFE8E8E8),
+                                ),
+                              if (widget.timeType != null)
+                                TimePicker(
+                                  type: widget.timeType!,
+                                ),
+                            ],
+                          ),
                         );
                       });
                 },

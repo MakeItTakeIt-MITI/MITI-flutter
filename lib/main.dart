@@ -6,7 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:uni_links/uni_links.dart';
-
+import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'common/provider/provider_observer.dart';
 import 'common/provider/router_provider.dart';
 
@@ -23,7 +23,7 @@ void main() async {
     log("err: $err");
   });
   await initializeDateFormatting('ko');
-
+  await NaverMapSdk.instance.initialize(clientId: 'cwog9btafs');
   KakaoSdk.init(
     nativeAppKey: '6c982be35c0f15be99a90f823b7da8f5',
     javaScriptAppKey: '	70c742501212b21cb4303ea86cccd074',

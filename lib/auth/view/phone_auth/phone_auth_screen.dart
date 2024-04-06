@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:miti/auth/provider/widget/phone_auth_provider.dart';
 import 'package:miti/auth/view/phone_auth/phone_auth_info_screen.dart';
 
+import '../../../common/component/default_appbar.dart';
+
 class PhoneAuthScreen extends ConsumerWidget {
   static String get routeName => 'phone';
 
@@ -13,7 +15,7 @@ class PhoneAuthScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: const DefaultAppBar(),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         child: Column(

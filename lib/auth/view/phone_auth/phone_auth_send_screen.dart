@@ -9,6 +9,7 @@ import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/common/model/default_model.dart';
 
 import '../../../common/component/custom_text_form_field.dart';
+import '../../../common/component/default_appbar.dart';
 
 class PhoneAuthSendScreen extends ConsumerStatefulWidget {
   static String get routeName => 'phoneSend';
@@ -31,7 +32,7 @@ class _PhoneAuthSendScreenState extends ConsumerState<PhoneAuthSendScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(),
+      appBar: const DefaultAppBar(),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         child: Column(

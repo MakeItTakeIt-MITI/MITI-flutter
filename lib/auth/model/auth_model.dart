@@ -8,6 +8,10 @@ class AuthModel {
   AuthModel({
     required this.token,
   });
+
+  AuthModel copyWith({required TokenModel model}){
+    return AuthModel(token: model);
+  }
 }
 
 @JsonSerializable()

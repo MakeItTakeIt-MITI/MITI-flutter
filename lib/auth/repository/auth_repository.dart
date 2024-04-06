@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart' hide Headers;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:miti/auth/param/find_email_param.dart';
+import 'package:miti/auth/param/find_info_param.dart';
 import 'package:retrofit/http.dart';
 
 import '../../common/model/default_model.dart';
@@ -8,7 +8,7 @@ import '../../dio/dio_interceptor.dart';
 import '../../dio/provider/dio_provider.dart';
 import '../model/auth_model.dart';
 import '../model/code_model.dart';
-import '../model/find_email_model.dart';
+import '../model/find_info_model.dart';
 import '../model/signup_model.dart';
 import '../param/auth_param.dart';
 import '../param/login_param.dart';
@@ -42,8 +42,7 @@ abstract class AuthRepository {
       {@Path() required String user_info_token,
       @Body() required CodeParam param});
 
-
-  @POST('/auth/send-sms')
+  @POST('/auth/send-sms/authentication')
   Future<ResponseModel<RequestCodeModel>> requestCode(
       {@Body() required RequestCodeParam param});
 
@@ -55,13 +54,17 @@ abstract class AuthRepository {
   @POST('/auth/logout')
   Future<CompletedModel> logout();
 
-  @POST('/auth/find-email')
-  Future<ResponseModel<FindEmailModel>> findEmail(
-      {@Body() required FindEmailParam param});
+  @POST('/auth/send-sms/find-email')
+  Future<ResponseModel<FindInfoModel>> findEmail(
+      {@Body() required FindInfoParam param});
 
-  @POST('/auth/password-reset-email')
-  Future<ResponseModel<RequestNewPasswordModel>> requestNewPassword(
-      {@Body() required RequestNewPasswordParam param});
+  @POST('/auth/send-sms/reset-password')
+  Future<ResponseModel<FindInfoModel>> findPassword(
+      {@Body() required FindInfoParam param});
+
+  @GET('/auth/token-issuement/{user_info_token}')
+  Future<ResponseModel<FindInfoModel>> reissueForPassword(
+      {@Path() required String user_info_token});
 
   @POST('/auth/reset-password/{token}')
   Future<ResponseModel<RequestNewPasswordModel>> resetPassword(
@@ -71,5 +74,9 @@ abstract class AuthRepository {
   @POST('/auth/oauth/{provider}/login')
   Future<ResponseModel<LoginModel>> oauthLogin(
       {@Path() required String provider,
-        @Body() required OauthLoginParam param});
+      @Body() required OauthLoginParam param});
+
+  @Headers({'refresh': 'true'})
+  @POST('/auth/refresh-token')
+  Future<ResponseModel<TokenModel>> getReIssueToken();
 }

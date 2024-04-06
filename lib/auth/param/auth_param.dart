@@ -1,5 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import '../provider/widget/sign_up_form_provider.dart';
+
 part 'auth_param.g.dart';
 
 @JsonSerializable()
@@ -18,6 +20,11 @@ class ResetPasswordParam {
 
   ResetPasswordParam({required this.password, required this.password_check});
 
+  factory ResetPasswordParam.fromModel({required SignFormModel model}) {
+    return ResetPasswordParam(
+        password: model.password, password_check: model.checkPassword);
+  }
+
   Map<String, dynamic> toJson() => _$ResetPasswordParamToJson(this);
 }
 
@@ -25,7 +32,9 @@ class ResetPasswordParam {
 class OauthLoginParam {
   final String access_token;
 
-  OauthLoginParam({required this.access_token,});
+  OauthLoginParam({
+    required this.access_token,
+  });
 
   Map<String, dynamic> toJson() => _$OauthLoginParamToJson(this);
 }
