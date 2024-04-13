@@ -2,12 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/dio/response_code.dart';
+import 'package:miti/game/provider/widget/game_form_provider.dart';
 
 import '../../common/component/custom_dialog.dart';
 import '../../common/component/custom_text_form_field.dart';
 import '../../common/model/default_model.dart';
 import '../../common/provider/form_util_provider.dart';
+import '../view/oauth_error_screen.dart';
 import '../view/phone_auth/phone_auth_screen.dart';
 
 enum AuthApiType {
@@ -19,7 +22,8 @@ enum AuthApiType {
   find_email,
   reset_password,
   oauth,
-  reissue
+  reissue,
+  findInfo
 }
 
 abstract class ErrorBase {
@@ -51,13 +55,19 @@ class AuthError extends ErrorBase {
         signupCheck(context, ref);
         break;
       case AuthApiType.signup:
-        signupCheck(context, ref);
+        signup(context, ref);
         break;
       case AuthApiType.oauth:
-        signupCheck(context, ref);
+        oauth(context, ref);
         break;
       case AuthApiType.send_code:
         sendCode(context, ref);
+        break;
+      case AuthApiType.request_code:
+        requestCode(context, ref);
+        break;
+      case AuthApiType.findInfo:
+        findInfo(context, ref);
         break;
       default:
         break;
@@ -81,7 +91,8 @@ class AuthError extends ErrorBase {
         context: context,
         builder: (BuildContext context) {
           return const CustomDialog(
-            title: '탈퇴한 사용자입니다.\n고객센터에 문의해주세요.',
+            title: '계정 조회 실패',
+            content: '탈퇴한 사용자입니다.\n고객센터에 문의해주세요.',
           );
         },
       );
@@ -99,13 +110,12 @@ class AuthError extends ErrorBase {
     }
   }
 
-
   void signup(BuildContext context, WidgetRef ref) {
     if (this.status_code == BadRequest && this.error_code == 101) {
       /// 유효성 검증 실패
     } else if (this.status_code == BadRequest && this.error_code == 101) {
       /// 데이터 중복
-    }else if(this.status_code == ServerError){
+    } else if (this.status_code == ServerError) {
       /// 서버 오류
     }
   }
@@ -115,9 +125,10 @@ class AuthError extends ErrorBase {
       /// path parameter/query string 유효성 검증 실패
     } else if (this.status_code == Forbidden && this.error_code == 301) {
       /// oauth 가입 이력 불일치
-    }else if (this.status_code == Forbidden && this.error_code == 302) {
+    } else if (this.status_code == Forbidden && this.error_code == 302) {
       /// 일반 회원가입 사용자 요청
-    }else if(this.status_code == ServerError){
+      context.pushNamed(OauthErrorScreen.routeName);
+    } else if (this.status_code == ServerError) {
       /// 서버 오류
     }
   }
@@ -125,27 +136,67 @@ class AuthError extends ErrorBase {
   void sendCode(BuildContext context, WidgetRef ref) {
     if (status_code == BadRequest && error_code == 402) {
       /// 탈퇴한 사용자입니다
-      showDialog(context: context, builder:(_){
-        return  const CustomDialog(title: '탈퇴한 사용자입니다.\n고객센터에 문의해주세요.');
-      });
-    }else if(status_code == BadRequest && error_code == 101){
+      showDialog(
+          context: context,
+          builder: (_) {
+            return const CustomDialog(
+              title: '계정 조회 실패',
+              content: '탈퇴한 사용자입니다.\n고객센터에 문의해주세요.',
+            );
+          });
+    } else if (status_code == BadRequest && error_code == 102) {
       ref
           .read(formDescProvider(InputFormType.passwordCode).notifier)
           .update((state) => InteractionDesc(
-        isSuccess: false,
-        desc: "인증번호가 일치하지 않습니다.",
-      ));
-    }else if(status_code == BadRequest && error_code == 401){
+                isSuccess: false,
+                desc: "인증번호가 일치하지 않습니다.",
+              ));
+    } else if (status_code == BadRequest && error_code == 401) {
       ref
           .read(formDescProvider(InputFormType.passwordCode).notifier)
           .update((state) => InteractionDesc(
-        isSuccess: false,
-        desc: "요청 유효 시간을 초과하였습니다.",
-      ));
-    }else if(status_code == Forbidden && error_code == 402){
-      showDialog(context: context, builder:(_){
-        return  const CustomDialog(title: '해당 사용자는 카카오 로그인을 통해 가입하셨습니다.\n카카오로 로그인하시겠습니까?');
-      });
+                isSuccess: false,
+                desc: "요청 유효 시간을 초과하였습니다.",
+              ));
+    } else if (status_code == Forbidden && error_code == 402) {
+      showDialog(
+          context: context,
+          builder: (_) {
+            return CustomDialog(
+              title: '카카오 로그인 사용자',
+              onPressed: () => context.goNamed(LoginScreen.routeName),
+              content: '카카오 계정을 사용하여 가입하셨습니다.\n카카오 로그인을 통해 로그인해주세요.',
+            );
+          });
+    }
+  }
+
+  void requestCode(BuildContext context, WidgetRef ref) {
+    if (this.status_code == BadRequest && this.error_code == 101) {
+      /// 이메일/비밀번호 유효성 검증 실패
+    } else if (this.status_code == BadRequest && this.error_code == 301) {
+      /// 인증 완료 사용자
+      // context.pushNamed(name);
+    } else if (this.status_code == UnAuthorized && this.error_code == 101) {
+      /// 일치 사용자 없음
+      ref
+          .read(interactionDescProvider(InteractionType.normal).notifier)
+          .update((state) => InteractionDesc(
+                isSuccess: false,
+                desc: "일치하는 사용자 정보가 존재하지 않습니다.",
+              ));
+    }
+  }
+
+  void findInfo(BuildContext context, WidgetRef ref) {
+    if (this.status_code == NotFound && this.error_code == 101) {
+      /// 일치 사용자 없음
+      ref
+          .read(interactionDescProvider(InteractionType.email).notifier)
+          .update((state) => InteractionDesc(
+                isSuccess: false,
+                desc: "일치하는 사용자 정보가 존재하지 않습니다.",
+              ));
     }
   }
 }

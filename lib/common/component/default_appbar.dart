@@ -8,12 +8,20 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
   final PreferredSizeWidget? bottom;
   final bool isSliver;
+  final List<Widget>? actions;
+  final Color? backgroundColor;
 
-  const DefaultAppBar({super.key, this.title, this.bottom, this.isSliver = false});
+  const DefaultAppBar(
+      {super.key,
+      this.title,
+      this.bottom,
+      this.isSliver = false,
+      this.actions,
+      this.backgroundColor});
 
   @override
   Widget build(BuildContext context) {
-    if (isSliver){
+    if (isSliver) {
       return SliverAppBar(
         title: Text(
           title ?? '',
@@ -21,10 +29,10 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
             color: Colors.black,
             fontSize: 16.sp,
             fontWeight: FontWeight.w700,
-            letterSpacing: -0.25,
+            letterSpacing: -0.25.sp,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: backgroundColor ?? Colors.white,
         shape: const Border(bottom: BorderSide(color: Color(0xFFE8E8E8))),
         centerTitle: true,
         leading: IconButton(
@@ -32,6 +40,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
           icon: SvgPicture.asset('assets/images/icon/chevron_left.svg'),
         ),
         bottom: bottom,
+        actions: actions,
       );
     }
     return AppBar(
@@ -41,10 +50,10 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
           color: Colors.black,
           fontSize: 16.sp,
           fontWeight: FontWeight.w700,
-          letterSpacing: -0.25,
+          letterSpacing: -0.25.sp,
         ),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: backgroundColor ?? Colors.white,
       shape: const Border(bottom: BorderSide(color: Color(0xFFE8E8E8))),
       centerTitle: true,
       leading: IconButton(
@@ -53,7 +62,6 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       bottom: bottom,
     );
-
   }
 
   @override
@@ -62,5 +70,3 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Size.fromHeight(48.h + bottomHeight);
   }
 }
-
-

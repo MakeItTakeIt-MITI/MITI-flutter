@@ -19,6 +19,7 @@ class ResetPasswordScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
       appBar: const DefaultAppBar(
         title: '회원 정보 찾기',
@@ -36,7 +37,7 @@ class ResetPasswordScreen extends StatelessWidget {
                 fontSize: 24.sp,
                 fontFamily: 'Pretendard',
                 fontWeight: FontWeight.w700,
-                letterSpacing: -0.25,
+                letterSpacing: -0.25.sp,
               ),
             ),
             SizedBox(height: 25.h),
@@ -48,14 +49,19 @@ class ResetPasswordScreen extends StatelessWidget {
                 final validNext = progressModel.validNext;
                 return TextButton(
                     onPressed: () async {
-                      final result =
-                          await ref.read(resetPasswordProvider.future);
-                      if (context.mounted) {
-                        if (result is ErrorModel) {
-                          AuthError.fromModel(model: result)
-                              .responseError(context, AuthApiType.login, ref);
-                        } else {
-                          context.goNamed(CompleteRestPasswordScreen.routeName);
+                      final reissueToken = await ref.read(reissueForPasswordProvider.future);
+                      if (reissueToken is ErrorModel) {
+
+                      }else{
+                        final result =
+                        await ref.read(resetPasswordProvider.future);
+                        if (context.mounted) {
+                          if (result is ErrorModel) {
+                            AuthError.fromModel(model: result)
+                                .responseError(context, AuthApiType.login, ref);
+                          } else {
+                            context.goNamed(CompleteRestPasswordScreen.routeName);
+                          }
                         }
                       }
                     },
@@ -67,6 +73,7 @@ class ResetPasswordScreen extends StatelessWidget {
                       '비밀번호 재설정',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
+                          letterSpacing: -0.25.sp,
                           fontSize: 14.sp,
                           color: validNext
                               ? Colors.white
@@ -90,6 +97,7 @@ class CompleteRestPasswordScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
       appBar: const DefaultAppBar(
         title: '회원 정보 찾기',
@@ -97,7 +105,7 @@ class CompleteRestPasswordScreen extends StatelessWidget {
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(height: 208.h),
             Text(
@@ -107,7 +115,7 @@ class CompleteRestPasswordScreen extends StatelessWidget {
                 fontSize: 25.sp,
                 fontFamily: 'Pretendard',
                 fontWeight: FontWeight.w700,
-                letterSpacing: -0.25,
+                letterSpacing: -0.25.sp,
               ),
             ),
             SizedBox(height: 10.h),
@@ -117,8 +125,8 @@ class CompleteRestPasswordScreen extends StatelessWidget {
                 color: const Color(0xFF333333),
                 fontSize: 16.sp,
                 fontFamily: 'Pretendard',
-                fontWeight: FontWeight.w700,
-                letterSpacing: -0.25,
+                fontWeight: FontWeight.w400,
+                letterSpacing: -0.25.sp,
               ),
             ),
             const Spacer(),
@@ -129,6 +137,7 @@ class CompleteRestPasswordScreen extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14.sp,
+                  letterSpacing: -0.25.sp,
                 ),
               ),
             ),

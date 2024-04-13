@@ -6,17 +6,17 @@ part 'game_param.g.dart';
 @JsonSerializable()
 class GameListParam extends Equatable {
   final String? startdate;
-  final String? starttime;
+  // final String? starttime;
 
   const GameListParam({
     this.startdate,
-    this.starttime,
+    // this.starttime,
   });
 
   Map<String, dynamic> toJson() => _$GameListParamToJson(this);
 
   @override
-  List<Object?> get props => [startdate, starttime];
+  List<Object?> get props => [startdate];
 
   @override
   bool? get stringify => true;
@@ -33,7 +33,7 @@ class GameCreateParam extends Equatable {
   final String max_invitation;
   final String info;
   final String fee;
-  final String court;
+  final GameCourtParam court;
 
   const GameCreateParam({
     required this.title,
@@ -58,8 +58,8 @@ class GameCreateParam extends Equatable {
     String? max_invitation,
     String? info,
     String? fee,
-    String? court,
-}) {
+    GameCourtParam? court,
+  }) {
     return GameCreateParam(
       title: title ?? this.title,
       startdate: startdate ?? this.startdate,
@@ -75,6 +75,7 @@ class GameCreateParam extends Equatable {
   }
 
   Map<String, dynamic> toJson() => _$GameCreateParamToJson(this);
+
 
   @override
   List<Object?> get props => [
@@ -93,6 +94,7 @@ class GameCreateParam extends Equatable {
   @override
   bool? get stringify => true;
 }
+
 
 @JsonSerializable()
 class GameCourtParam extends Equatable {
@@ -119,6 +121,9 @@ class GameCourtParam extends Equatable {
   }
 
   Map<String, dynamic> toJson() => _$GameCourtParamToJson(this);
+
+  factory GameCourtParam.fromJson(Map<String, dynamic> json) =>
+      _$GameCourtParamFromJson(json);
 
   @override
   List<Object?> get props => [name, address, address_detail];

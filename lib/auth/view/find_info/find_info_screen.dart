@@ -9,6 +9,7 @@ import 'package:miti/auth/view/find_info/find_email_screen.dart';
 import 'package:miti/auth/view/find_info/find_password_screen.dart';
 import 'package:miti/auth/view/signup/signup_screen.dart';
 import 'package:miti/common/component/custom_dialog.dart';
+import 'package:miti/game/provider/widget/game_form_provider.dart';
 
 import '../../../common/component/custom_text_form_field.dart';
 import '../../../common/component/default_appbar.dart';
@@ -63,6 +64,7 @@ class _FindEmailScreenState extends ConsumerState<FindInfoScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
       appBar: DefaultAppBar(
         title: '회원 정보 찾기',
@@ -73,6 +75,7 @@ class _FindEmailScreenState extends ConsumerState<FindInfoScreen>
           labelStyle: TextStyle(
             fontSize: 12.sp,
             fontWeight: FontWeight.w400,
+            letterSpacing: -0.25.sp,
             color: const Color(0xFF4065F6),
           ),
           controller: tabController,
@@ -108,15 +111,13 @@ class FindInfoBody extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<FindInfoBody> createState() => _FindEmailBodyState();
+  ConsumerState<FindInfoBody> createState() => _FindInfoBodyState();
 }
 
-class _FindEmailBodyState extends ConsumerState<FindInfoBody> {
+class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
   bool isFirstRequest = true;
   String findEmail = '';
   bool? isOauth;
-  InteractionDesc? interactionDescPhone;
-  InteractionDesc? interactionDescCode;
   late final List<FocusNode> focusNodes = [FocusNode(), FocusNode()];
   bool validFindInfo = false;
 
@@ -126,6 +127,9 @@ class _FindEmailBodyState extends ConsumerState<FindInfoBody> {
 
   @override
   Widget build(BuildContext context) {
+    final interactionDescPhone = widget.type == FindInfoType.email
+        ? ref.watch(interactionDescProvider(InteractionType.email))
+        : ref.watch(interactionDescProvider(InteractionType.password));
     final phone = ref.watch(phoneNumberProvider);
 
     return Padding(
@@ -139,6 +143,7 @@ class _FindEmailBodyState extends ConsumerState<FindInfoBody> {
             style: TextStyle(
               fontSize: 24.sp,
               fontWeight: FontWeight.bold,
+              letterSpacing: -0.25.sp,
               color: const Color(0xFF000000),
             ),
           ),
@@ -148,6 +153,7 @@ class _FindEmailBodyState extends ConsumerState<FindInfoBody> {
             style: TextStyle(
               fontSize: 12.sp,
               fontWeight: FontWeight.w400,
+              letterSpacing: -0.25.sp,
               color: const Color(0xFF1C1C1C),
             ),
           ),
@@ -193,6 +199,7 @@ class _FindEmailBodyState extends ConsumerState<FindInfoBody> {
                       style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontSize: 12.sp,
+                          letterSpacing: -0.25.sp,
                           color: canRequest(phone)
                               ? Colors.white
                               : const Color(0xFF969696)),
@@ -252,6 +259,7 @@ class _FindEmailBodyState extends ConsumerState<FindInfoBody> {
                           style: TextStyle(
                               fontWeight: FontWeight.w400,
                               fontSize: 12.sp,
+                              letterSpacing: -0.25.sp,
                               color: valid
                                   ? Colors.white
                                   : const Color(0xFF969696)),
@@ -285,8 +293,9 @@ class _FindEmailBodyState extends ConsumerState<FindInfoBody> {
                               context: context,
                               builder: (_) {
                                 return const CustomDialog(
-                                  title:
-                                      '해당 사용자는 카카오 로그인을 통해 가입하셨습니다. 카카오로 로그인하시겠습니까?',
+                                  title: '카카오 로그인 사용자',
+                                  content:
+                                      '카카오 계정을 사용하여 가입하셨습니다.\n카카오 로그인을 통해 로그인해주세요.',
                                 );
                               });
                         } else {
@@ -303,6 +312,7 @@ class _FindEmailBodyState extends ConsumerState<FindInfoBody> {
                 widget.type == FindInfoType.email ? '이메일 찾기' : '비밀번호 재설정',
                 style: TextStyle(
                   color: validFindInfo ? Colors.white : const Color(0xFF969696),
+                  letterSpacing: -0.25.sp,
                 ),
               )),
           SizedBox(height: 14.h),
@@ -317,18 +327,34 @@ class _FindEmailBodyState extends ConsumerState<FindInfoBody> {
     if (result is ErrorModel) {
       if (mounted) {
         FocusScope.of(context).requestFocus(FocusNode());
+
+        if (type == FindInfoType.email) {
+          ref
+              .read(interactionDescProvider(InteractionType.email).notifier)
+              .update((state) => InteractionDesc(
+                    isSuccess: false,
+                    desc: "해당 정보와 일치하는 사용자가 존재하지 않습니다.",
+                  ));
+        } else {
+          ref
+              .read(interactionDescProvider(InteractionType.password).notifier)
+              .update((state) => InteractionDesc(
+                    isSuccess: false,
+                    desc: "해당 정보와 일치하는 사용자가 존재하지 않습니다.",
+                  ));
+        }
       }
 
-      setState(() {
-        String desc = '';
-        switch (result.status_code) {
-          case NotFound:
-            context.pushNamed(NotFoundUserInfoScreen.routeName);
-            desc = '해당 정보와 일치하는 사용자가 존재하지 않습니다.';
-            break;
-        }
-        interactionDescPhone = InteractionDesc(isSuccess: false, desc: desc);
-      });
+      // setState(() {
+      //   String desc = '';
+      //   switch (result.status_code) {
+      //     case NotFound:
+      //       context.pushNamed(NotFoundUserInfoScreen.routeName);
+      //       desc = '해당 정보와 일치하는 사용자가 존재하지 않습니다.';
+      //       break;
+      //   }
+      //   interactionDescPhone = InteractionDesc(isSuccess: false, desc: desc);
+      // });
     } else {
       if (mounted) {
         ref.read(validCodeProvider.notifier).update((state) => true);
@@ -349,108 +375,21 @@ class _FindEmailBodyState extends ConsumerState<FindInfoBody> {
         AuthError.fromModel(model: result)
             .responseError(context, AuthApiType.send_code, ref);
       } else {
-        ref.read(formDescProvider(InputFormType.passwordCode).notifier).update(
-            (state) => InteractionDesc(isSuccess: true, desc: '인증번호가 일치해요.'));
-        validFindInfo = true;
-        result as ResponseModel<ResponseCodeModel>;
-        findEmail = result.data!.email;
-        isOauth = result.data!.is_oauth;
+        setState(() {
+          ref
+              .read(formDescProvider(InputFormType.passwordCode).notifier)
+              .update((state) =>
+                  InteractionDesc(isSuccess: true, desc: '인증번호가 일치해요.'));
+          validFindInfo = true;
+          result as ResponseModel<ResponseCodeModel>;
+          findEmail = result.data!.email;
+          isOauth = result.data!.is_oauth;
+        });
       }
     }
   }
 }
 
-// class FindPasswordBody extends ConsumerStatefulWidget {
-//   const FindPasswordBody({super.key});
-//
-//   @override
-//   ConsumerState<FindPasswordBody> createState() => _FindPasswordBodyState();
-// }
-//
-// class _FindPasswordBodyState extends ConsumerState<FindPasswordBody> {
-//   InteractionDesc? interactionDesc;
-//
-//   bool validEmail(String email) {
-//     return RegExp(
-//             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-//         .hasMatch(email);
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final email = ref.watch(emailProvider);
-//     return Padding(
-//       padding: EdgeInsets.symmetric(horizontal: 16.w),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.stretch,
-//         children: [
-//           SizedBox(height: 70.h),
-//           Text(
-//             '이메일을 입력해주세요.',
-//             style: TextStyle(
-//               fontSize: 24.sp,
-//               fontWeight: FontWeight.bold,
-//               color: const Color(0xFF000000),
-//             ),
-//           ),
-//           SizedBox(height: 8.h),
-//           Text(
-//             '가입하신 메일 주소로 비밀번호 재설정 이메일이 전송됩니다.',
-//             style: TextStyle(
-//               fontSize: 12.sp,
-//               fontWeight: FontWeight.w400,
-//               color: const Color(0xFF1C1C1C),
-//             ),
-//           ),
-//           SizedBox(height: 24.h),
-//           CustomTextFormField(
-//             hintText: '이메일을 입력해주세요.',
-//             label: '',
-//             interactionDesc: interactionDesc,
-//             onChanged: (val) {
-//               ref.read(emailProvider.notifier).update((state) => val);
-//             },
-//             onNext: () {
-//               resetPassword(email: email);
-//             },
-//           ),
-//           const Spacer(),
-//           TextButton(
-//               onPressed: () {
-//                 resetPassword(email: email);
-//               },
-//               style: TextButton.styleFrom(
-//                 backgroundColor: validEmail(email)
-//                     ? const Color(0xFF4065F6)
-//                     : const Color(0xFFE8E8E8),
-//               ),
-//               child: Text(
-//                 '비밀번호 재설정',
-//                 style: TextStyle(
-//                   color: validEmail(email)
-//                       ? Colors.white
-//                       : const Color(0xFF969696),
-//                 ),
-//               )),
-//           SizedBox(height: 14.h),
-//         ],
-//       ),
-//     );
-//   }
-//
-//   void resetPassword({required String email}) async {
-//     final result = await ref.read(requestNewPasswordProvider.future);
-//     if (mounted) {
-//       FocusScope.of(context).requestFocus(FocusNode());
-//       if (result is ErrorModel) {
-//       } else {
-//         final Map<String, String> queryParameters = {'email': email};
-//         context.pushNamed(FindPasswordByEmailScreen.routeName,
-//             queryParameters: queryParameters);
-//       }
-//     }
-//   }
-// }
 
 class NotFoundUserInfoScreen extends StatelessWidget {
   static String get routeName => 'notFoundUser';
@@ -460,6 +399,7 @@ class NotFoundUserInfoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: const DefaultAppBar(),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -471,6 +411,7 @@ class NotFoundUserInfoScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 25.sp,
                 fontWeight: FontWeight.w700,
+                letterSpacing: -0.25.sp,
                 color: const Color(0xFF000000),
               ),
             ),
@@ -481,6 +422,7 @@ class NotFoundUserInfoScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w400,
+                letterSpacing: -0.25.sp,
                 color: const Color(0xFF333333),
               ),
             ),

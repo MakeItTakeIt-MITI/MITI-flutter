@@ -32,6 +32,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
       appBar: const DefaultAppBar(),
       body: Padding(
@@ -52,7 +53,10 @@ class LoginScreen extends StatelessWidget {
             SizedBox(height: 8.h),
             Text(
               'Make it, Take it!',
-              style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w400),
+              style: TextStyle(
+                  fontSize: 14.sp,
+                  letterSpacing: -0.25.sp,
+                  fontWeight: FontWeight.w400),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 36.h),
@@ -63,6 +67,7 @@ class LoginScreen extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.w400,
                 fontSize: 12.sp,
+                letterSpacing: -0.25.sp,
                 color: const Color(0xFF8C8C8C),
               ),
             ),
@@ -205,6 +210,7 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 14.sp,
+                letterSpacing: -0.25.sp,
                 color: ref.watch(loginFormProvider.notifier).isValid()
                     ? Colors.white
                     : const Color(0xFF969696),
@@ -251,6 +257,7 @@ class OtherWayComponent extends StatelessWidget {
           style: TextStyle(
               fontWeight: FontWeight.w400,
               fontSize: 14.sp,
+              letterSpacing: -0.25.sp,
               color: const Color(0xFF585757)),
         ),
         SizedBox(width: 18.w),
@@ -293,6 +300,7 @@ class KakaoLoginButton extends ConsumerWidget {
           OauthLoginParam(access_token: token.accessToken);
       final result = await ref.read(oauthLoginProvider(param: param).future);
       if (result is ErrorModel) {
+        AuthError.fromModel(model: result).responseError(context, AuthApiType.oauth, ref);
         throw Exception();
       } else {
         if (context.mounted) {
@@ -332,6 +340,7 @@ class KakaoLoginButton extends ConsumerWidget {
               '카카오로 3초만에 시작하기',
               style: TextStyle(
                 color: const Color(0xFF1C1C1C),
+                letterSpacing: -0.25.sp,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.bold,
               ),
@@ -350,6 +359,7 @@ class HelpComponent extends StatelessWidget {
   Widget build(BuildContext context) {
     final textStyle = TextStyle(
       fontSize: 14.sp,
+      letterSpacing: -0.25.sp,
       fontWeight: FontWeight.w400,
       color: const Color(0xFF8C8C8C),
     );

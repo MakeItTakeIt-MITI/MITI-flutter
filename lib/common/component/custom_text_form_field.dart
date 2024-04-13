@@ -47,6 +47,9 @@ class CustomTextFormField extends StatelessWidget {
   final bool showAutoComplete;
   final TextAlign textAlign;
   final bool enabled;
+  final TextStyle? hintTextStyle;
+  final TextStyle? textStyle;
+  final TextStyle? labelTextStyle;
 
   const CustomTextFormField({
     super.key,
@@ -67,6 +70,9 @@ class CustomTextFormField extends StatelessWidget {
     this.textAlign = TextAlign.start,
     this.enabled = true,
     this.initialValue,
+    this.hintTextStyle,
+    this.textStyle,
+    this.labelTextStyle,
   });
 
   @override
@@ -77,7 +83,12 @@ class CustomTextFormField extends StatelessWidget {
         if (label.isNotEmpty)
           Text(
             label,
-            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12.sp),
+            style: labelTextStyle ??
+                TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 12.sp,
+                  letterSpacing: -0.25.sp,
+                ),
           ),
         if (label.isNotEmpty) SizedBox(height: 8.h),
         TextFormField(
@@ -91,11 +102,16 @@ class CustomTextFormField extends StatelessWidget {
           inputFormatters: inputFormatters,
           textAlign: textAlign,
           enabled: enabled,
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 16.sp,
-          ),
+          style: textStyle ??
+              TextStyle(
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFF1C1C1C),
+                fontSize: 16.sp,
+                letterSpacing: -0.25.sp,
+              ),
           decoration: InputDecoration(
+            contentPadding:
+                EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
             constraints: BoxConstraints.loose(Size(double.infinity, 58.h)),
             border: OutlineInputBorder(
               borderRadius: showAutoComplete
@@ -104,23 +120,18 @@ class CustomTextFormField extends StatelessWidget {
               borderSide: BorderSide.none,
             ),
             hintText: hintText,
-            hintStyle: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 16.sp,
-            ),
+            hintStyle: hintTextStyle ??
+                TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF969696),
+                  letterSpacing: -0.25.sp,
+                  fontSize: 16.sp,
+                ),
             fillColor: const Color(0xFFF7F7F7),
             filled: true,
             suffixIcon: suffixIcon,
             suffixIconConstraints:
                 BoxConstraints.loose(Size(double.infinity, 36.h)),
-            // suffixText: '명',
-            // suffixStyle: TextStyle(
-            //   color: Color(0xFF444444),
-            //   fontSize: 14,
-            //   fontFamily: 'Pretendard',
-            //   fontWeight: FontWeight.w700,
-            //   letterSpacing: -0.25,
-            // )
           ),
           validator: validator,
           onChanged: onChanged,
@@ -149,6 +160,7 @@ class CustomTextFormField extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w400,
+                  letterSpacing: -0.25.sp,
                   color: interactionDesc!.isSuccess
                       ? const Color(0xFF00BA34)
                       : const Color(0xFFE92C2C),
@@ -179,8 +191,10 @@ class DateInputForm extends ConsumerStatefulWidget {
   final bool showAutoComplete;
   final TextAlign textAlign;
   final bool enabled;
-  final DateTimeType dateType;
-  final DateTimeType? timeType;
+  final TextStyle? hintTextStyle;
+  final TextStyle? textStyle;
+  final TextStyle? labelTextStyle;
+  final bool isRangeCalendar;
 
   const DateInputForm({
     super.key,
@@ -201,8 +215,10 @@ class DateInputForm extends ConsumerStatefulWidget {
     this.textAlign = TextAlign.start,
     this.enabled = true,
     this.initialValue,
-    this.dateType = DateTimeType.start,
-    this.timeType,
+    this.hintTextStyle,
+    this.textStyle,
+    this.labelTextStyle,
+    this.isRangeCalendar = false,
   });
 
   @override
@@ -210,63 +226,32 @@ class DateInputForm extends ConsumerStatefulWidget {
 }
 
 class _DateInputFormState extends ConsumerState<DateInputForm> {
-  late final TextEditingController dateController;
-
+  // late final TextEditingController dateController;
   @override
   void initState() {
     super.initState();
-    // final now = DateTime.now();
-    //
-    // final dateFormat = widget.timeType != null
-    //     ? DateFormat('yyyy.MM.dd HH:mm')
-    //     : DateFormat('yyyy / MM / dd');
-    dateController = TextEditingController();//..text = dateFormat.format(now);
-    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    //   ref.read(dateProvider(widget.dateType).notifier).update((state) => now);
-    // });
   }
 
   @override
   void dispose() {
-    dateController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(dateProvider(widget.dateType), (previous, next) {
-      if (next != null) {
-        final compareDate = widget.dateType == DateTimeType.start
-            ? ref.read(dateProvider(DateTimeType.end))
-            : ref.read(dateProvider(DateTimeType.start));
-        final format = DateFormat('yyyy.MM.dd');
-
-        if (format.format(compareDate!) == format.format(next)) {
-          final formatDate = format.format(next);
-          dateController.text = formatDate;
-        } else {
-          final formatDate = format.format(next);
-          final date = dateController.text.split(' ')[0];
-          final time = dateController.text.split(' ')[1];
-          dateController.text = '$formatDate $time';
-        }
-      }
-    });
-    if (widget.timeType != null) {
-      ref.listen(timeProvider(widget.dateType), (previous, next) {
-        final formatTime = DateTimeUtil.getTime(dateTime: next);
-        final date = dateController.text.split(' ')[0];
-        final time = dateController.text.split(' ')[1];
-        dateController.text = '$date $formatTime';
-      });
-    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (widget.label.isNotEmpty)
           Text(
             widget.label,
-            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12.sp),
+            style: widget.labelTextStyle ??
+                TextStyle(
+                  color: const Color(0xFF1C1C1C),
+                  fontWeight: FontWeight.w400,
+                  fontSize: 12.sp,
+                  letterSpacing: -0.25.sp,
+                ),
           ),
         if (widget.label.isNotEmpty) SizedBox(height: 8.h),
         Row(
@@ -275,7 +260,7 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
               child: TextFormField(
                 initialValue: widget.initialValue,
                 focusNode: widget.focusNode,
-                controller: dateController,
+                controller: widget.textEditingController,
                 textInputAction: widget.textInputAction,
                 obscuringCharacter: '●',
                 obscureText: widget.obscureText,
@@ -283,11 +268,15 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
                 inputFormatters: widget.inputFormatters,
                 textAlign: widget.textAlign,
                 enabled: widget.enabled,
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16.sp,
-                ),
+                style: widget.textStyle ??
+                    TextStyle(
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: -0.25.sp,
+                      fontSize: 16.sp,
+                    ),
                 decoration: InputDecoration(
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                     constraints:
                         BoxConstraints.loose(Size(double.infinity, 58.h)),
                     border: OutlineInputBorder(
@@ -297,10 +286,12 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
                       borderSide: BorderSide.none,
                     ),
                     hintText: widget.hintText,
-                    hintStyle: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16.sp,
-                    ),
+                    hintStyle: widget.hintTextStyle ??
+                        TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16.sp,
+                          letterSpacing: -0.25.sp,
+                        ),
                     fillColor: const Color(0xFFF7F7F7),
                     filled: true,
                     suffixIcon: widget.suffixIcon,
@@ -313,32 +304,58 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
             ),
             SizedBox(width: 19.w),
             IconButton(
-                constraints: BoxConstraints.tight(Size(58.r, 58.r)),
+                constraints: BoxConstraints.tight(Size(50.r, 50.r)),
                 onPressed: () {
+                  FocusScope.of(context).requestFocus(FocusNode());
                   showDialog(
                       context: context,
                       builder: (context) {
-                        return Dialog(
-                          backgroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.r)),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              CustomCalendar(
-                                type: widget.dateType,
-                              ),
-                              if (widget.timeType != null)
-                                const Divider(
-                                  height: 1,
-                                  color: Color(0xFFE8E8E8),
-                                ),
-                              if (widget.timeType != null)
-                                TimePicker(
-                                  type: widget.timeType!,
-                                ),
-                            ],
-                          ),
+                        return StatefulBuilder(
+                          builder: (BuildContext context,
+                              void Function(void Function()) setState) {
+                            return Consumer(
+                              builder: (BuildContext context, WidgetRef ref,
+                                  Widget? child) {
+                                return Dialog(
+                                  backgroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8.r)),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      CustomCalendar(
+                                        rangeSelectionMode:
+                                            widget.isRangeCalendar
+                                                ? RangeSelectionMode.toggledOn
+                                                : null,
+                                      ),
+                                      if (widget.isRangeCalendar)
+                                        const Divider(
+                                          height: 1,
+                                          color: Color(0xFFE8E8E8),
+                                        ),
+                                      if (widget.isRangeCalendar)
+                                        const TimePicker(
+                                          type: DateTimeType.start,
+                                        ),
+                                      if (widget.isRangeCalendar)
+                                        const TimePicker(
+                                          type: DateTimeType.end,
+                                        ),
+                                      Container(
+                                        height: 20.h,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.vertical(
+                                              bottom: Radius.circular(8.r)),
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          },
                         );
                       });
                 },
@@ -347,10 +364,11 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
                         borderRadius: BorderRadius.circular(8.r))),
                     backgroundColor:
                         MaterialStateProperty.all(const Color(0xFFDFEFFE))),
-                padding: EdgeInsets.all(16.r),
-                icon: const Icon(
+                // padding: EdgeInsets.all(16.r),
+                icon: Icon(
                   Icons.calendar_today_outlined,
-                  color: Color(0xFF4065F6),
+                  color: const Color(0xFF4065F6),
+                  size: 16.r,
                 )),
           ],
         ),
@@ -377,6 +395,7 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
                 style: TextStyle(
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w400,
+                  letterSpacing: -0.25.sp,
                   color: widget.interactionDesc!.isSuccess
                       ? const Color(0xFF00BA34)
                       : const Color(0xFFE92C2C),
@@ -468,6 +487,7 @@ class _AutoCompleteComponentState extends ConsumerState<AutoCompleteComponent> {
                       prefixEmail + emailSuffixes[index],
                       style: TextStyle(
                         fontSize: 16.sp,
+                        letterSpacing: -0.25.sp,
                         fontWeight: FontWeight.w500,
                         color: const Color(0xFF000000),
                       ),
@@ -543,6 +563,30 @@ class DateInputFormatter extends TextInputFormatter {
   }
 }
 
+class NumberFormatter extends TextInputFormatter {
+  NumberFormatter();
+
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    // 아무 값이 없을 경우 (값을 지운경우) 지운 값을 그대로 설정
+    if (newValue.selection.baseOffset == 0) {
+      return newValue;
+    }
+
+    // 새로 입력된 값을 포멧
+    final int parsedValue = int.parse(
+        newValue.text); // NumberFormat은 숫자 값만 받을 수 있기 때문에 문자를 숫자로 먼저 변환
+    final formatter =
+        NumberFormat.decimalPattern(); // 천단위로 콤마를 표시하고 숫자 앞에 화폐 기호 표시하는 패턴 설정
+    String newText = formatter.format(parsedValue); // 입력된 값을 지정한 패턴으로 포멧
+
+    return newValue.copyWith(
+        text: newText,
+        selection:
+            TextSelection.collapsed(offset: newText.length)); // 커서를 마지막으로 이동
+  }
+}
 // class DateInputFormatter extends TextInputFormatter {
 //   @override
 //   TextEditingValue formatEditUpdate(

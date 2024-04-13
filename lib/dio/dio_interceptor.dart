@@ -8,6 +8,7 @@ import '../auth/provider/auth_provider.dart';
 import '../common/logger/custom_logger.dart';
 
 const String serverURL = "https://dev.makeittakeit.kr";
+const String kakaoPayUrl = 'https://open-api.kakaopay.com/oauth/token';
 
 // https://api.makeittakeit.kr
 class CustomDioInterceptor extends Interceptor {
@@ -35,7 +36,7 @@ class CustomDioInterceptor extends Interceptor {
       String? refreshToken = await storage.read(key: 'refreshToken');
       log('refresh ${refreshToken}');
       // options.headers.remove('refreshToken');
-      options.headers.addAll({'refresh': 'Bearer $refreshToken'});
+      options.headers.addAll({'refresh': '$refreshToken'});
     }
     List<String> requestLog = [];
     requestLog.add(
@@ -57,7 +58,11 @@ class CustomDioInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     List<String> errorLog = [];
-    final noneAuthUrl = ['/auth/send-sms', '/auth/login', '/auth/send-sms/authentication'];
+    final noneAuthUrl = [
+      '/auth/send-sms',
+      '/auth/login',
+      '/auth/send-sms/authentication'
+    ];
     final noneAUth = noneAuthUrl.contains(err.requestOptions.uri.path);
 
     errorLog.add(
@@ -73,17 +78,8 @@ class CustomDioInterceptor extends Interceptor {
         !noneAUth) {
       try {
         Dio dio = Dio();
-        // dio.options.headers['Content-Type'] =
-        //     'application/x-www-form-urlencoded';
-        //
-        // var response = await dio.get('$serverURL/auth/refresh-token');
-        // String newAccessToken = response.data["data"]["access"];
-        // String newRefreshToken = response.data["data"]["refresh"];
-        // await storage.write(key: "token", value: newAccessToken);
-
         await ref.read(authProvider.notifier).reIssueToken();
-        final newAccessToken = ref.read(authProvider)?.token.access;
-
+        final newAccessToken = ref.read(authProvider)?.token?.access;
         err.requestOptions.headers['Authorization'] = 'Bearer $newAccessToken';
         log("[RE-REQUEST] [${err.requestOptions.method}] ${err.requestOptions.baseUrl}${err.requestOptions.path}");
         if (err.requestOptions.uri.queryParameters.isNotEmpty) {
@@ -97,33 +93,10 @@ class CustomDioInterceptor extends Interceptor {
         log("리프레쉬 만료 언어선택으로 이동 !!");
         await ref.read(tokenProvider.notifier).logout();
         return;
-        // handler.reject(e);
       }
     }
-    // switch (err.response?.statusCode) {
-    //   case 400:
-    //     if (err.response!.data['_metadata']['exception'] ==
-    //         'java.rmi.NoSuchObjectException') {
-    //       // showToast(
-    //       //     context: null, message: tr("data_null"), type: ToastType.ERROR);
-    //       log("400 Error = ${err.response!}");
-    //       // return handler.resolve(err.response!);
-    //     }
-    // // case 401:
-    // // case 404:
-    // // case 409:
-    // // case 500:
-    // }
-    // log("err.type = ${err.type}");
-    // if (err.type == DioExceptionType.badResponse) {
-    //   print(
-    //       "err.response!.data['_metadata'] ${err.response!.data}");
-    //   // return handler.resolve(err.response!);
-    //
-    // }
 
     handler.reject(err);
-    // return handler.resolve(err.response!);
   }
 
   @override

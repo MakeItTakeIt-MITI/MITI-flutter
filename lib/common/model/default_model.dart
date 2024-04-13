@@ -52,7 +52,7 @@ class ErrorModel<T> extends BaseModel {
       default:
         return ErrorModel(
           status_code: 500,
-          message: '',
+          message: 'JsonSerializable 에러',
           data: '',
           error_code: 0,
         );
@@ -97,5 +97,27 @@ class ResponseListModel<T> extends BaseModel {
   factory ResponseListModel.fromJson(
       Map<String, dynamic> json, T Function(Object? json) fromJsonT) {
     return _$ResponseListModelFromJson(json, fromJsonT);
+  }
+}
+
+@JsonSerializable(
+  genericArgumentFactories: true,
+)
+class PaginationModel<T> extends BaseModel {
+  final int start_index;
+  final int end_index;
+  final int current_index;
+  final List<T> page_content;
+
+  PaginationModel({
+    required this.start_index,
+    required this.end_index,
+    required this.current_index,
+    required this.page_content,
+  });
+
+  factory PaginationModel.fromJson(
+      Map<String, dynamic> json, T Function(Object? json) fromJsonT) {
+    return _$PaginationModelFromJson(json, fromJsonT);
   }
 }

@@ -3,14 +3,34 @@ import 'package:json_annotation/json_annotation.dart';
 part 'auth_model.g.dart';
 
 class AuthModel {
-  final TokenModel token;
+  final int? id;
+  final String? email;
+  final String? nickname;
+  final bool? is_authenticated;
+  final TokenModel? token;
 
   AuthModel({
+    required this.id,
+    required this.email,
+    required this.nickname,
+    required this.is_authenticated,
     required this.token,
   });
 
-  AuthModel copyWith({required TokenModel model}){
-    return AuthModel(token: model);
+  AuthModel copyWith({
+    int? id,
+    String? email,
+    String? nickname,
+    bool? is_authenticated,
+    TokenModel? token,
+  }) {
+    return AuthModel(
+      token: token ?? this.token,
+      id: id ?? this.id,
+      email: email ?? this.email,
+      nickname: nickname ?? this.nickname,
+      is_authenticated: is_authenticated ?? this.is_authenticated,
+    );
   }
 }
 

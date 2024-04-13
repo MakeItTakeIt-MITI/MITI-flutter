@@ -1,6 +1,15 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+// import 'package:timezone/browser.dart';
 
 class DateTimeUtil {
+  // // 기본 타임존을 Asia/Seoul로 지정
+  // static String timezone = 'Asia/Seoul';
+  //
+  // // 현지 시간을 한국시간으로 변환할때 사용
+  // static final korTimeZone = getLocation('Asia/Seoul');
+
   static DateTime getyMd({required DateTime dateTime}) {
     return DateTime(dateTime.year, dateTime.month, dateTime.day);
   }
@@ -16,14 +25,32 @@ class DateTimeUtil {
     return '$formatStart ~ $formatEnd';
   }
 
-  static String getDate({required DateTime dateTime}) {
-    DateFormat dateFormat = DateFormat('yyyy / MM / dd');
+  static String getDate({required DateTime dateTime, String sep = ' / '}) {
+    DateFormat dateFormat = DateFormat('yyyy${sep}MM${sep}dd');
     return dateFormat.format(dateTime);
   }
 
-  static String getTime({required DateTime dateTime}) {
-    DateFormat dateFormat = DateFormat('HH:mm');
+  static String getDateTime({required DateTime dateTime}) {
+    DateFormat dateFormat = DateFormat('MM.dd aa hh:mm', 'ko');
     return dateFormat.format(dateTime);
+  }
+
+  static DateTime copyWithyMd(
+      {required DateTime newDateTime, required DateTime? baseDateTime}) {
+    if (baseDateTime == null) {
+      return DateTime.now().copyWith(
+          year: newDateTime.year,
+          month: newDateTime.month,
+          day: newDateTime.day);
+    }
+    return baseDateTime.copyWith(
+        year: newDateTime.year, month: newDateTime.month, day: newDateTime.day);
+  }
+
+  static DateTime copyWithHm(
+      {required DateTime newDateTime, required DateTime baseDateTime}) {
+    return baseDateTime.copyWith(
+        hour: newDateTime.hour, minute: newDateTime.minute);
   }
 }
 
@@ -90,5 +117,38 @@ class ValidRegExp {
   static bool courtName(String input) {
     RegExp regex = RegExp(r'^[a-zA-Z0-9가-힣\s\-.()]{2,32}$');
     return regex.hasMatch(input);
+  }
+}
+
+class TextStyleUtil {
+  static TextStyle getLabelTextStyle() {
+    return TextStyle(
+      color: const Color(0xFF999999),
+      fontSize: 14.sp,
+      fontFamily: 'Pretendard',
+      fontWeight: FontWeight.w400,
+      height: 1.4,
+      letterSpacing: -0.25.sp,
+    );
+  }
+
+  static TextStyle getTextStyle() {
+    return TextStyle(
+      color: Colors.black,
+      fontSize: 14.sp,
+      fontFamily: 'Pretendard',
+      fontWeight: FontWeight.w500,
+      letterSpacing: -0.25.sp,
+    );
+  }
+
+  static TextStyle getHintTextStyle() {
+    return TextStyle(
+      color: const Color(0xFF969696),
+      fontSize: 14.sp,
+      fontFamily: 'Pretendard',
+      fontWeight: FontWeight.w400,
+      letterSpacing: -0.25.sp,
+    );
   }
 }

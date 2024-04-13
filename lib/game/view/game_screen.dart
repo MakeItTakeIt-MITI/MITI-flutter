@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/game/view/game_create_screen.dart';
 import 'package:miti/game/view/game_list_screen.dart';
+import 'package:miti/user/provider/user_provider.dart';
+import 'package:miti/user/view/user_host_list_screen.dart';
 
 import '../../common/component/default_appbar.dart';
 
@@ -18,7 +20,7 @@ class GameScreen extends StatelessWidget {
       fontSize: 16.sp,
       fontFamily: 'Pretendard',
       fontWeight: FontWeight.w700,
-      letterSpacing: -0.25,
+      letterSpacing: -0.25.sp,
     );
     return NestedScrollView(
       headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -38,8 +40,10 @@ class GameScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   InkWell(
-                    onTap: () =>
-                        context.pushNamed(GameParticipationScreen.routeName),
+                    onTap: () {
+                      const extra = UserGameType.participation;
+                      context.pushNamed(GameHostScreen.routeName, extra: extra);
+                    },
                     child: Text(
                       '🏀 나의 참여 경기',
                       style: textStyle,
@@ -47,7 +51,10 @@ class GameScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 26.h),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      const extra = UserGameType.host;
+                      context.pushNamed(GameHostScreen.routeName, extra: extra);
+                    },
                     child: Text(
                       '🏁 나의 호스팅 경기',
                       style: textStyle,

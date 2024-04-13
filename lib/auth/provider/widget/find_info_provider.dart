@@ -70,7 +70,8 @@ Future<BaseModel> reissueForPassword(ReissueForPasswordRef ref) async {
       .reissueForPassword(user_info_token: user_info_token)
       .then<BaseModel>((value) {
     logger.i('reissueForPassword !');
-    final model = value.data;
+    final model = value.data!;
+    ref.read(phoneAuthProvider.notifier).update(user_info_token: model.authentication_token);
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);

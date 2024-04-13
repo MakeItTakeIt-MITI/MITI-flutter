@@ -1,21 +1,34 @@
 import 'package:json_annotation/json_annotation.dart';
 
+@JsonEnum(valueField: 'value')
 enum GameStatus {
-  open('모집중'),
-  closed('모집 완료'),
-  cancelled('경기 완료'),
-  completed('경기 취소');
+  @JsonValue('open')
+  open('모집중', 'open'),
+  @JsonValue('closed')
+  closed('모집 완료', 'closed'),
+  @JsonValue('canceled')
+  canceled('경기 완료', 'canceled'),
+  // @JsonValue('completed')
+  completed('경기 취소', 'completed');
 
-  const GameStatus(this.name);
+  const GameStatus(this.displayName, this.value);
 
-  final String name;
+  final String displayName;
+  final String value;
+
+  static GameStatus stringToEnum({required String value}) {
+    return GameStatus.values.firstWhere((e) => e.displayName == value);
+  }
+
 }
 
 enum ParticipationStatus {
   @JsonValue('참여요청')
   apply('참여 신청'),
   @JsonValue('참여확정')
-  paymentComplete('결제 완료'),/// 참여 확정
+  paymentComplete('결제 완료'),
+
+  /// 참여 확정
   @JsonValue('참여취소')
   cancel('취소 상태');
 

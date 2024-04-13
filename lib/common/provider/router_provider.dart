@@ -11,23 +11,40 @@ import 'package:miti/game/view/game_host_list_screen.dart';
 
 import '../../auth/view/find_info/find_email_screen.dart';
 import '../../auth/view/find_info/find_info_screen.dart';
+import '../../auth/view/oauth_error_screen.dart';
 import '../../auth/view/phone_auth/phone_auth_send_screen.dart';
 import '../../auth/view/signup/signup_screen.dart';
 import '../../auth/view/signup/signup_select_screen.dart';
+import '../../game/view/game_create_complete_screen.dart';
 import '../../game/view/game_list_screen.dart';
 import '../../default_screen.dart';
 import '../../court/view/court_map_screen.dart';
 import '../../game/view/game_screen.dart';
+import '../../splash_screen.dart';
+import '../../user/provider/user_provider.dart';
+import '../../user/view/user_host_list_screen.dart';
+import '../view/address_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> shellNavKey = GlobalKey<NavigatorState>();
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-      initialLocation: '/home',
+      initialLocation: '/splash',
       debugLogDiagnostics: true,
       navigatorKey: rootNavKey,
       routes: <RouteBase>[
+        GoRoute(
+          path: '/splash',
+          parentNavigatorKey: rootNavKey,
+          name: SplashScreen.routeName,
+          builder: (context, state) {
+            return SplashScreen();
+          },
+          pageBuilder: (context, state) {
+            return NoTransitionPage(child: SplashScreen());
+          },
+        ),
         ShellRoute(
             navigatorKey: shellNavKey,
             builder: (context, state, child) {
@@ -57,25 +74,45 @@ final routerProvider = Provider<GoRouter>((ref) {
                   },
                   routes: [
                     GoRoute(
-                      path: 'create',
-                      parentNavigatorKey: rootNavKey,
-                      name: GameCreateScreen.routeName,
-                      builder: (context, state) {
-                        return GameCreateScreen();
-                      },
-                      pageBuilder: (context, state) {
-                        return NoTransitionPage(child: GameCreateScreen());
-                      },
-                    ),
+                        path: 'create',
+                        parentNavigatorKey: rootNavKey,
+                        name: GameCreateScreen.routeName,
+                        builder: (context, state) {
+                          return GameCreateScreen();
+                        },
+                        pageBuilder: (context, state) {
+                          return NoTransitionPage(child: GameCreateScreen());
+                        },
+                        routes: [
+                          GoRoute(
+                            path: 'complete',
+                            parentNavigatorKey: rootNavKey,
+                            name: GameCreateCompleteScreen.routeName,
+                            builder: (context, state) {
+                              return GameCreateCompleteScreen();
+                            },
+                            pageBuilder: (context, state) {
+                              return NoTransitionPage(
+                                  child: GameCreateCompleteScreen());
+                            },
+                          ),
+                        ]),
                     GoRoute(
                       path: 'host',
                       parentNavigatorKey: rootNavKey,
                       name: GameHostScreen.routeName,
                       builder: (context, state) {
-                        return GameHostScreen();
+                        UserGameType extra = state.extra as UserGameType;
+                        return GameHostScreen(
+                          type: extra,
+                        );
                       },
                       pageBuilder: (context, state) {
-                        return NoTransitionPage(child: GameHostScreen());
+                        UserGameType extra = state.extra as UserGameType;
+                        return NoTransitionPage(
+                            child: GameHostScreen(
+                          type: extra,
+                        ));
                       },
                     ),
                     GoRoute(
@@ -86,7 +123,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                           return GameParticipationScreen();
                         },
                         pageBuilder: (context, state) {
-                          return NoTransitionPage(child: GameParticipationScreen());
+                          return NoTransitionPage(
+                              child: GameParticipationScreen());
                         },
                         routes: [
                           GoRoute(
@@ -132,6 +170,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                           return const NoTransitionPage(child: LoginScreen());
                         },
                         routes: [
+                          GoRoute(
+                            path: 'oauthError',
+                            parentNavigatorKey: rootNavKey,
+                            name: OauthErrorScreen.routeName,
+                            builder: (_, state) => const OauthErrorScreen(),
+                            pageBuilder: (context, state) {
+                              return const NoTransitionPage(
+                                  child: OauthErrorScreen());
+                            },
+                          ),
                           GoRoute(
                             path: 'completeResetPassword',
                             parentNavigatorKey: rootNavKey,
@@ -282,5 +330,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                 },
               ),
             ]),
+        GoRoute(
+          path: '/address',
+          parentNavigatorKey: rootNavKey,
+          name: AddressScreen.routeName,
+          builder: (context, state) {
+            return AddressScreen();
+          },
+          pageBuilder: (context, state) {
+            return NoTransitionPage(child: AddressScreen());
+          },
+        ),
       ]);
 });

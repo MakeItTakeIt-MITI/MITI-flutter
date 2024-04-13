@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miti/court/view/court_map_screen.dart';
 
+import '../../game/model/game_model.dart';
+
 class CustomNMarker extends NMarker {
   CustomNMarker({required super.id, required super.position});
 }
@@ -27,7 +29,7 @@ class CustomMarker {
         context: context);
     return NMarker(
         id: '${model.id}',
-        position: NLatLng(37.5666 + model.id * 0.01, 126.979),
+        position: NLatLng(model.latitude, model.longitude),
         icon: icon);
   }
 
@@ -62,6 +64,16 @@ class MapMarkerModel {
     required this.latitude,
     required this.longitude,
   });
+
+// factory MapMarkerModel.fromModel({required GameModel model}) {
+//   return MapMarkerModel(
+//       id: id,
+//       time: time,
+//       cost: cost,
+//       moreCnt: moreCnt,
+//       latitude: latitude,
+//       longitude: longitude,);
+// }
 }
 
 class SpeechBubble extends ConsumerStatefulWidget {
@@ -128,7 +140,7 @@ class _SpeechBubblePainter extends CustomPainter {
           fontSize: 10.sp,
           fontFamily: 'Pretendard',
           fontWeight: FontWeight.w400,
-          letterSpacing: -0.25,
+          letterSpacing: -0.25.sp,
         ));
 
     final costSpan = TextSpan(
@@ -138,17 +150,17 @@ class _SpeechBubblePainter extends CustomPainter {
           fontSize: 13.sp,
           fontFamily: 'Pretendard',
           fontWeight: FontWeight.bold,
-          letterSpacing: -0.25,
+          letterSpacing: -0.25.sp,
         ));
 
     final moreCntSpan = TextSpan(
-        text: '+${model.moreCnt}',
+        text: '+${model.moreCnt - 1}',
         style: TextStyle(
           color: selected ? Colors.white : Colors.black,
           fontSize: 12.sp,
           fontFamily: 'Pretendard',
           fontWeight: FontWeight.w700,
-          letterSpacing: -0.25,
+          letterSpacing: -0.25.sp,
         ));
 
     final timeTextPainter = TextPainter(
@@ -167,7 +179,7 @@ class _SpeechBubblePainter extends CustomPainter {
           style: TextStyle(
             fontSize: 20.sp,
             fontWeight: FontWeight.w400,
-            letterSpacing: -0.25,
+            letterSpacing: -0.25.sp,
           )),
       textDirection: TextDirection.ltr,
       textAlign: TextAlign.left,
@@ -232,10 +244,12 @@ class _SpeechBubblePainter extends CustomPainter {
 
     /// (글자 너비 = circle width) / 2 <= 반지름 + padding
     final newSubRadius = moreCntWidth / 2 + 4.r;
-    canvas.drawCircle(
-        Offset(x - subRadius, subRadius), newSubRadius, markerFillPainter);
-    canvas.drawCircle(
-        Offset(x - subRadius, subRadius), newSubRadius, markerBorderPainter);
+    if (model.moreCnt > 1) {
+      canvas.drawCircle(
+          Offset(x - subRadius, subRadius), newSubRadius, markerFillPainter);
+      canvas.drawCircle(
+          Offset(x - subRadius, subRadius), newSubRadius, markerBorderPainter);
+    }
 
     /// Text 그리기
     basketballPinter.paint(canvas, Offset(14.w, subRadius + 8.h));
@@ -246,8 +260,10 @@ class _SpeechBubblePainter extends CustomPainter {
         canvas, Offset(14.w + 7.w + basketballWidth, 6.h + subRadius));
     costTextPainter.paint(canvas,
         Offset(14.w + 7.w + basketballWidth, 6.h + subRadius + timeHeight));
-    moreCntTextPainter.paint(
-        canvas, Offset(x - (newSubRadius) - newSubRadius / 2, 2.r));
+    if (model.moreCnt > 1) {
+      moreCntTextPainter.paint(
+          canvas, Offset(x - (newSubRadius) - newSubRadius / 2, 2.r));
+    }
   }
 
   @override

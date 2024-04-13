@@ -26,7 +26,7 @@ class GameStateLabel extends StatelessWidget {
         backgroundColor = const Color(0xFFF5CCFF);
         textColor = const Color(0xFFCA00FC);
         break;
-      case GameStatus.cancelled:
+      case GameStatus.canceled:
         backgroundColor = const Color(0xFFFFC0C0);
         textColor = const Color(0xFFFC0000);
         break;
@@ -38,7 +38,7 @@ class GameStateLabel extends StatelessWidget {
       ),
       padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
       child: Text(
-        gameStatus.name,
+        gameStatus.displayName,
         style: TextStyle(
           fontSize: 10.sp,
           fontWeight: FontWeight.w600,

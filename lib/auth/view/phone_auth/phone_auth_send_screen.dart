@@ -3,10 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miti/auth/error/auth_error.dart';
 import 'package:miti/auth/provider/login_provider.dart';
 import 'package:miti/auth/provider/widget/phone_auth_provider.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/common/model/default_model.dart';
+import 'package:miti/game/provider/widget/game_form_provider.dart';
 
 import '../../../common/component/custom_text_form_field.dart';
 import '../../../common/component/default_appbar.dart';
@@ -22,15 +24,15 @@ class PhoneAuthSendScreen extends ConsumerStatefulWidget {
 }
 
 class _PhoneAuthSendScreenState extends ConsumerState<PhoneAuthSendScreen> {
-  InteractionDesc? interactionDesc;
-
   @override
   Widget build(BuildContext context) {
     final code = ref.watch(phoneAuthProvider).code;
 
     final valid = code.length == 6;
-
+    final interactionDesc =
+        ref.watch(interactionDescProvider(InteractionType.normal));
     return Scaffold(
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
       appBar: const DefaultAppBar(),
       body: Padding(
@@ -47,6 +49,7 @@ class _PhoneAuthSendScreenState extends ConsumerState<PhoneAuthSendScreen> {
                   style: TextStyle(
                     fontSize: 24.sp,
                     fontWeight: FontWeight.bold,
+                    letterSpacing: -0.25.sp,
                     color: const Color(0xFF000000),
                   ),
                 ),
@@ -55,6 +58,7 @@ class _PhoneAuthSendScreenState extends ConsumerState<PhoneAuthSendScreen> {
                   '회원가입시 입력한 번호로 인증번호를 발송했어요.',
                   style: TextStyle(
                     fontSize: 16.sp,
+                    letterSpacing: -0.25.sp,
                     fontWeight: FontWeight.w400,
                     color: const Color(0xFF1C1C1C),
                   ),
@@ -94,6 +98,7 @@ class _PhoneAuthSendScreenState extends ConsumerState<PhoneAuthSendScreen> {
                 '인증하기',
                 style: TextStyle(
                     fontSize: 14.sp,
+                    letterSpacing: -0.25.sp,
                     fontWeight: FontWeight.bold,
                     color: valid ? Colors.white : const Color(0xFF969696)),
               ),
@@ -109,10 +114,10 @@ class _PhoneAuthSendScreenState extends ConsumerState<PhoneAuthSendScreen> {
     FocusScope.of(context).requestFocus(FocusNode());
     final result = await ref.read(sendSMSProvider.future);
     if (result is ErrorModel) {
-      setState(() {
-        interactionDesc =
-            InteractionDesc(isSuccess: false, desc: '인증번호가 일치하지 않습니다.');
-      });
+      if (context.mounted) {
+        AuthError.fromModel(model: result)
+            .responseError(context, AuthApiType.send_code, ref);
+      }
     } else {
       if (context.mounted) {
         context.goNamed(PhoneAuthSuccess.routeName);
@@ -143,6 +148,7 @@ class PhoneAuthSuccess extends StatelessWidget {
               style: TextStyle(
                 fontSize: 24.sp,
                 fontWeight: FontWeight.bold,
+                letterSpacing: -0.25.sp,
                 color: const Color(0xFF000000),
               ),
             ),
@@ -150,6 +156,7 @@ class PhoneAuthSuccess extends StatelessWidget {
               '로그인을 완료하고 MITI를 사용해보세요.',
               style: TextStyle(
                 fontSize: 16.sp,
+                letterSpacing: -0.25.sp,
                 fontWeight: FontWeight.w400,
                 color: const Color(0xFF333333),
               ),
@@ -157,9 +164,12 @@ class PhoneAuthSuccess extends StatelessWidget {
             const Spacer(),
             TextButton(
               onPressed: () => context.goNamed(LoginScreen.routeName),
-              child: const Text(
+              child: Text(
                 '로그인하기',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(
+                  color: Colors.white,
+                  letterSpacing: -0.25.sp,
+                ),
               ),
             ),
             SizedBox(height: 52.h),

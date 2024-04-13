@@ -34,6 +34,7 @@ class SignUpScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(phoneAuthProvider);
     return Scaffold(
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
       appBar: const DefaultAppBar(title: '회원가입'),
       body: Padding(
@@ -99,6 +100,7 @@ class _CheckBoxFormState extends ConsumerState<CheckBoxForm> {
     final subCheckBoxTextStyle = TextStyle(
       fontSize: 14.sp,
       fontWeight: FontWeight.w400,
+      letterSpacing: -0.25.sp,
       color: const Color(0xFF585757),
     );
     final show = showDetail.where((e) => e).isNotEmpty;
@@ -112,6 +114,7 @@ class _CheckBoxFormState extends ConsumerState<CheckBoxForm> {
                 textStyle: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w500,
+                  letterSpacing: -0.25.sp,
                   color: const Color(0xFF1C1C1C),
                 ),
                 check: allCheck,
@@ -690,14 +693,17 @@ class PersonalInfoForm extends ConsumerStatefulWidget {
 class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
   bool isFirstRequest = true;
   late final List<FocusNode> focusNodes = [FocusNode(), FocusNode()];
+  late final TextEditingController dateController;
 
   @override
   void initState() {
     super.initState();
+    dateController = TextEditingController();
   }
 
   @override
   void dispose() {
+    dateController.dispose();
     super.dispose();
   }
 
@@ -721,6 +727,7 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
       if (next != null) {
         final formatDate = DateTimeUtil.getDate(dateTime: next);
         ref.read(signUpFormProvider.notifier).updateForm(birthDate: formatDate);
+        dateController.text = formatDate;
       }
     });
     return Column(
@@ -744,8 +751,9 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
           label: '생년월일',
           enabled: false,
           hintText: 'YYYY / MM / DD',
-          textInputAction: TextInputAction.next,
-          keyboardType: TextInputType.number,
+          textEditingController: dateController,
+          // textInputAction: TextInputAction.next,
+          // keyboardType: TextInputType.number,
           onNext: () {
             FocusScope.of(context).requestFocus(focusNodes[1]);
           },

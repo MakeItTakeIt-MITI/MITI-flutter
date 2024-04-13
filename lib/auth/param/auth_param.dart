@@ -15,14 +15,15 @@ class RequestNewPasswordParam {
 
 @JsonSerializable()
 class ResetPasswordParam {
-  final String password;
-  final String password_check;
+  final String new_password;
+  final String new_password_check;
 
-  ResetPasswordParam({required this.password, required this.password_check});
+  ResetPasswordParam(
+      {required this.new_password, required this.new_password_check});
 
   factory ResetPasswordParam.fromModel({required SignFormModel model}) {
     return ResetPasswordParam(
-        password: model.password, password_check: model.checkPassword);
+        new_password: model.password, new_password_check: model.checkPassword);
   }
 
   Map<String, dynamic> toJson() => _$ResetPasswordParamToJson(this);

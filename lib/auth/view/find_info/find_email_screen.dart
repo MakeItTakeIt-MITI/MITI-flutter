@@ -39,6 +39,7 @@ class FindEmailScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w400,
+                    letterSpacing: -0.25.sp,
                     color: const Color(0xFF000000),
                   ))
             ],
@@ -48,6 +49,7 @@ class FindEmailScreen extends StatelessWidget {
     }
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: const DefaultAppBar(
         title: '회원 정보 찾기',
       ),
@@ -62,6 +64,7 @@ class FindEmailScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 24.sp,
                 fontWeight: FontWeight.bold,
+                letterSpacing: -0.25.sp,
                 color: const Color(0xFF000000),
               ),
             ),
@@ -75,21 +78,23 @@ class FindEmailScreen extends StatelessWidget {
               enabled: false,
             ),
             SizedBox(height: 12.h),
-            InkWell(
-                onTap: () {
-                  context.goNamed(
-                    ResetPasswordScreen.routeName,
-                  );
-                },
-                child: Text(
-                  'PW를 잊으셨나요?',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w400,
-                    color: const Color(0xFF8C8C8C),
-                  ),
-                )),
+            if (!isOauth)
+              InkWell(
+                  onTap: () {
+                    context.goNamed(
+                      ResetPasswordScreen.routeName,
+                    );
+                  },
+                  child: Text(
+                    'PW를 잊으셨나요?',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w400,
+                      letterSpacing: -0.25.sp,
+                      color: const Color(0xFF8C8C8C),
+                    ),
+                  )),
             const Spacer(),
             TextButton(
                 onPressed: () => context.goNamed(LoginScreen.routeName),

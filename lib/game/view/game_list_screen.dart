@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/provider/scroll_provider.dart';
 import 'package:miti/game/param/game_param.dart';
 import 'package:miti/game/provider/game_provider.dart';
@@ -20,116 +21,127 @@ class GameParticipationScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<GameParticipationScreen> createState() => _GameListScreenState();
+  ConsumerState<GameParticipationScreen> createState() =>
+      _GameListScreenState();
 }
 
 class _GameListScreenState extends ConsumerState<GameParticipationScreen> {
   final List<String> items = [
-    'Item1',
-    'Item2',
-    'Item3',
-    'Item4',
+    '모집중',
+    '모집 완료',
+    '경기 취소',
+    '경기 완료',
+    '전체 보기',
   ];
-  String? selectedValue;
+  String? selectedValue = '전체 보기';
 
   @override
   Widget build(BuildContext context) {
-    final menuItems = ['전체 보기', '모집중', '모집 완료', '경기 취소', '경기 완료'];
-
     final controller = ref.watch(pageScrollControllerProvider);
     return Scaffold(
+      backgroundColor: Colors.white,
       body: NestedScrollView(
         controller: controller[1],
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
-            SliverAppBar(
-              centerTitle: true,
-              backgroundColor: Colors.white,
-              title: Text('나의 참여 경기',
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF000000),
-                  )),
+            const DefaultAppBar(
+              title: '나의 참여 경기',
+              isSliver: true,
             ),
           ];
         },
         body: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
-              child: Row(
-                children: [
-                  const Spacer(),
-                  DropdownButtonHideUnderline(
-                    child: DropdownButton2<String>(
-                      hint: Text(
-                        'Select Item',
+              child: Padding(
+                padding: EdgeInsets.only(right: 12.w, top: 12.h),
+                child: Row(
+                  children: [
+                    const Spacer(),
+                    DropdownButtonHideUnderline(
+                      child: DropdownButton2<String>(
+                        // isDense: true,
                         style: TextStyle(
-                          fontFamily: "Pretendard",
+                          color: const Color(0xFF333333),
                           fontSize: 12.sp,
+                          fontFamily: 'Pretendard',
                           fontWeight: FontWeight.w500,
-                          color: const Color(0xff333333),
-                          height: 14 / 12,
+                          letterSpacing: -0.25.sp,
+                        ),
+                        items: items
+                            .map((String item) => DropdownMenuItem<String>(
+                                  value: item,
+                                  child: Text(
+                                    item,
+                                    // style: TextStyle(
+                                    //   color: Colors.red,
+                                    //   fontSize: 12.sp,
+                                    //   fontFamily: 'Pretendard',
+                                    //   fontWeight: FontWeight.w500,
+                                    //   letterSpacing: -0.25.sp,
+                                    // ),
+                                  ),
+                                ))
+                            .toList(),
+                        value: selectedValue,
+                        onChanged: (String? value) {
+                          setState(() {
+                            selectedValue = value;
+                          });
+                        },
+                        buttonStyleData: ButtonStyleData(
+                          padding: EdgeInsets.all(8.r),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4.r),
+                              color: const Color(0xFFF7F7F7)),
+                          height: 32.h,
+                          width: 85.w,
+                        ),
+                        iconStyleData: IconStyleData(
+                            icon: Icon(
+                          Icons.keyboard_arrow_down,
+                          size: 16.r,
+                        )),
+                        dropdownStyleData: DropdownStyleData(
+                            scrollPadding: EdgeInsets.zero,
+                            width: 85.w,
+                            elevation: 0,
+                            padding: EdgeInsets.all(8.r),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.vertical(
+                                  bottom: Radius.circular(4.r),
+                                ),
+                                color: const Color(0xFFF7F7F7))),
+                        menuItemStyleData: MenuItemStyleData(
+                          height: 30.h,
+                          padding: EdgeInsets.zero,
+                          overlayColor: MaterialStateProperty.all(Colors.red),
                         ),
                       ),
-
-                      items: items
-                          .map((String item) => DropdownMenuItem<String>(
-                                value: item,
-                                child: Text(
-                                  item,
-                                  style: TextStyle(
-                                    fontFamily: "Pretendard",
-                                    fontSize: 12.sp,
-                                    fontWeight: FontWeight.w400,
-                                    color: const Color(0xff969696),
-                                    height: 14 / 12,
-                                  ),
-                                ),
-                              ))
-                          .toList(),
-                      value: selectedValue,
-                      onChanged: (String? value) {
-                        setState(() {
-                          selectedValue = value;
-                        });
-                      },
-                      buttonStyleData: ButtonStyleData(
-                        padding: EdgeInsets.all(8.r),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4.r),
-                            color: const Color(0xFFF7F7F7)),
-                        height: 32.h,
-                        // width: 140,
-                      ),
-                      iconStyleData : IconStyleData(icon: Icon(Icons.keyboard_arrow_down)),
-                      menuItemStyleData: const MenuItemStyleData(
-                        // height: 40,
-                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             SliverPadding(
-              padding: EdgeInsets.all(12.r),
+              padding: EdgeInsets.only(right: 12.w, left: 12.w, bottom: 12.h),
               sliver: Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   final param = GameListParam();
-                  final response = ref.watch(gameListProvider(param: param));
+                  final response = ref.watch(gameListProvider);
                   if (response is LoadingModel) {
                     return SliverToBoxAdapter();
                   }
-                  response as ResponseListModel<GameModel>;
+                  response as ResponseListModel<GameListByDateModel>;
                   final model = response.data!;
                   return SliverList.separated(
                     itemBuilder: (_, idx) {
-                      return GameCard.fromModel(
+                      return GameCardByDate.fromModel(
                         model: model[idx],
                       );
                     },
                     separatorBuilder: (_, idx) {
-                      return SizedBox(height: 10.h);
+                      return SizedBox(height: 18.h);
                     },
                     itemCount: model.length,
                   );

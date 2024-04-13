@@ -27,6 +27,21 @@ android {
     compileSdk 34
     ndkVersion flutter.ndkVersion
 
+    flavorDimensions "app"
+
+    productFlavors {
+        dev {
+            dimension "app"
+            applicationId "com.dev.miti"
+            resValue "string", "app_name", "DEV miti"
+        }
+        product {
+            dimension "app"
+            applicationId "com.miti.miti"
+            resValue "string", "app_name", "flavor miti"
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

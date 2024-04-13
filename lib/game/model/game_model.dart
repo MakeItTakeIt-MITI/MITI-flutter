@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:miti/court/model/court_model.dart';
 
@@ -5,6 +6,32 @@ import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
 
 part 'game_model.g.dart';
+
+class MapPosition extends Equatable {
+  final double latitude;
+  final double longitude;
+
+  const MapPosition({
+    required this.longitude,
+    required this.latitude,
+  });
+
+  @override
+  List<Object?> get props => [longitude, latitude];
+
+  @override
+  bool? get stringify => true;
+}
+
+class GameListByDateModel {
+  final String datetime;
+  final List<GameModel> models;
+
+  GameListByDateModel({
+    required this.datetime,
+    required this.models,
+  });
+}
 
 @JsonSerializable()
 class GameModel extends IModelWithId {
@@ -38,20 +65,51 @@ class GameModel extends IModelWithId {
 }
 
 @JsonSerializable()
-class HostModel {
-  final String email;
+class HostModel extends IModelWithId {
   final String nickname;
+  final String rating;
+  final List<ReviewModel> reviews;
 
   HostModel({
-    required this.email,
     required this.nickname,
+    required this.rating,
+    required this.reviews,
+    required super.id,
   });
 
   factory HostModel.fromJson(Map<String, dynamic> json) =>
       _$HostModelFromJson(json);
 }
 
+@JsonSerializable()
+class RatingModel extends IModelWithId {
+  final int num_of_reviews;
+  final double rating;
 
+  RatingModel({
+    required super.id,
+    required this.num_of_reviews,
+    required this.rating,
+  });
+
+  factory RatingModel.fromJson(Map<String, dynamic> json) =>
+      _$RatingModelFromJson(json);
+}
+
+@JsonSerializable()
+class ReviewModel extends IModelWithId {
+  final int num_of_reviews;
+  final double rating;
+
+  ReviewModel({
+    required super.id,
+    required this.num_of_reviews,
+    required this.rating,
+  });
+
+  factory ReviewModel.fromJson(Map<String, dynamic> json) =>
+      _$ReviewModelFromJson(json);
+}
 
 @JsonSerializable()
 class ConfirmedParticipationModel extends IModelWithId {
@@ -90,6 +148,7 @@ class GameDetailModel extends IModelWithId {
   final int num_of_confirmed_participations;
   final bool is_participated;
   final bool is_host;
+  final String? participation;
 
   GameDetailModel({
     required super.id,
@@ -111,6 +170,7 @@ class GameDetailModel extends IModelWithId {
     required this.num_of_confirmed_participations,
     required this.is_participated,
     required this.is_host,
+    required this.participation,
   });
 
   factory GameDetailModel.fromJson(Map<String, dynamic> json) =>

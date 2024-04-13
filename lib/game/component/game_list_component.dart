@@ -10,6 +10,53 @@ import '../../court/model/court_model.dart';
 import '../model/game_model.dart';
 import 'game_state_label.dart';
 
+class GameCardByDate extends StatelessWidget {
+  final String dateTime;
+  final List<GameModel> models;
+
+  const GameCardByDate(
+      {super.key, required this.dateTime, required this.models});
+
+  factory GameCardByDate.fromModel({required GameListByDateModel model}) {
+    return GameCardByDate(
+      dateTime: model.datetime,
+      models: model.models,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          dateTime,
+          style: TextStyle(
+            color: const Color(0xFF040000),
+            fontSize: 12.sp,
+            fontFamily: 'Pretendard',
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.25.sp,
+          ),
+        ),
+        SizedBox(height: 10.h),
+        ListView.separated(
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemBuilder: (_, idx) {
+            return GameCard.fromModel(model: models[idx]);
+          },
+          separatorBuilder: (_, idx) {
+            return SizedBox(height: 10.h);
+          },
+          itemCount: models.length,
+        ),
+      ],
+    );
+  }
+}
+
 class GameCard extends StatelessWidget {
   final int id;
   final GameStatus game_status;
@@ -55,7 +102,7 @@ class GameCard extends StatelessWidget {
       fontSize: 12.sp,
       fontFamily: 'Pretendard',
       fontWeight: FontWeight.w500,
-      letterSpacing: -0.25,
+      letterSpacing: -0.25.sp,
     );
     return InkWell(
       onTap: () {
@@ -87,7 +134,7 @@ class GameCard extends StatelessWidget {
                     color: const Color(0xFF333333),
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w700,
-                    letterSpacing: -0.25,
+                    letterSpacing: -0.25.sp,
                   ),
                 ),
                 SizedBox(height: 6.h),
@@ -100,8 +147,8 @@ class GameCard extends StatelessWidget {
                 SizedBox(height: 2.h),
                 Text(
                   startdate == enddate
-                      ? '$startdate $starttime $endtime'
-                      : '$startdate $starttime $enddate $endtime',
+                      ? '$starttime ~ $endtime'
+                      : '$startdate $starttime ~ $enddate $endtime',
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   style: descStyle,
@@ -120,5 +167,3 @@ class GameCard extends StatelessWidget {
     );
   }
 }
-
-

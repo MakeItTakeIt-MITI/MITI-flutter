@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/game/component/game_state_label.dart';
 import 'package:miti/game/model/game_model.dart';
@@ -19,51 +20,48 @@ class GameDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-      return [
-        SliverAppBar(
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          title: Text('경기 상세',
-              style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFF000000),
-              )),
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.more_horiz),
-            )
-          ],
-        ),
-      ];
-    }, body: Consumer(
-      builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        final result = ref.watch(gameDetailProvider(gameId: gameId));
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+        return [
+          DefaultAppBar(
+            title: '경기 상세',
+            isSliver: true,
+            actions: [
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.more_horiz),
+              )
+            ],
+          ),
+        ];
+      }, body: Consumer(
+        builder: (BuildContext context, WidgetRef ref, Widget? child) {
+          final result = ref.watch(gameDetailProvider(gameId: gameId));
 
-        if (result is LoadingModel) {
+          if (result is LoadingModel) { // todo skeleton
+            return CustomScrollView(
+              slivers: [],
+            );
+          }
+          result as ResponseModel<GameDetailModel>;
+          final model = result.data!;
           return CustomScrollView(
-            slivers: [],
+            slivers: [
+              getDivider(),
+              SliverToBoxAdapter(
+                child: _SummaryComponent.fromModel(model: model),
+              ),
+              getDivider(),
+              SliverToBoxAdapter(
+                  child: ParticipationComponent.fromModel(model: model)),
+              getDivider(),
+            ],
           );
-        }
-        result as ResponseModel<GameDetailModel>;
-        final model = result.data!;
-        return CustomScrollView(
-          slivers: [
-            getDivider(),
-            SliverToBoxAdapter(
-              child: _SummaryComponent.fromModel(model: model),
-            ),
-            getDivider(),
-            SliverToBoxAdapter(
-                child: ParticipationComponent.fromModel(model: model)),
-            getDivider(),
-          ],
-        );
-      },
-    ));
+        },
+      )),
+    );
   }
 
   SliverToBoxAdapter getDivider() {
@@ -78,7 +76,9 @@ class GameDetailScreen extends StatelessWidget {
 
 class HostComponent extends StatelessWidget {
   final String imageUrl;
+
   const HostComponent({super.key, required this.imageUrl});
+
 
   @override
   Widget build(BuildContext context) {
@@ -103,10 +103,13 @@ class HostComponent extends StatelessWidget {
                 radius: 20.r,
               ),
               SizedBox(width: 10.w),
-              Column(children: [
-                Row(children: [],)
-
-              ],)
+              Column(
+                children: [
+                  Row(
+                    children: [],
+                  )
+                ],
+              )
             ],
           ),
           SizedBox(height: 19.h),
@@ -144,11 +147,12 @@ class ParticipationComponent extends StatelessWidget {
         children: [
           Text(
             "참가 완료된 게스트 ($num_of_confirmed_participations/$max_invitation)",
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: "Pretendard",
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: Color(0xff222222),
+              color: const Color(0xff222222),
+              letterSpacing: -0.25.sp,
               height: 16 / 14,
             ),
             textAlign: TextAlign.left,
@@ -175,6 +179,7 @@ class ParticipationComponent extends StatelessWidget {
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w700,
                 color: const Color(0xff222222),
+                letterSpacing: -0.25.sp,
                 height: 16 / 14,
               ),
               textAlign: TextAlign.center,
@@ -207,6 +212,7 @@ class _GuestTile extends StatelessWidget {
             fontSize: 14.sp,
             fontWeight: FontWeight.w500,
             color: const Color(0xff666666),
+            letterSpacing: -0.25.sp,
             height: 20 / 14,
           ),
         )
@@ -272,6 +278,7 @@ class _SummaryComponent extends StatelessWidget {
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w700,
                   color: const Color(0xff222222),
+                  letterSpacing: -0.25.sp,
                   height: 18 / 16,
                 ),
               ),
@@ -282,6 +289,7 @@ class _SummaryComponent extends StatelessWidget {
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w500,
                   color: const Color(0xff999999),
+                  letterSpacing: -0.25.sp,
                   height: 16 / 14,
                 ),
                 textAlign: TextAlign.left,
@@ -296,6 +304,7 @@ class _SummaryComponent extends StatelessWidget {
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w500,
                     color: const Color(0xff444444),
+                    letterSpacing: -0.25.sp,
                     height: 16 / 14,
                   ),
                   textAlign: TextAlign.left,
@@ -306,16 +315,18 @@ class _SummaryComponent extends StatelessWidget {
                 SvgPicture.asset('assets/images/icon/people.svg'),
                 SizedBox(width: 4.w),
                 Text(
-                  "총 $num_of_confirmed_participations명중 $max_invitation명 모집 완료",
+                  "총 $num_of_confirmed_participations명 중 $max_invitation명 모집 완료",
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w500,
                     color: const Color(0xff444444),
+                    letterSpacing: -0.25.sp,
                     height: 16 / 14,
                   ),
                   textAlign: TextAlign.left,
                 )
               ]),
+
               SizedBox(height: 13.h),
               Text(
                 "₩ $fee",
@@ -324,6 +335,7 @@ class _SummaryComponent extends StatelessWidget {
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w700,
                   color: const Color(0xff4065f6),
+                  letterSpacing: -0.25.sp,
                   height: 18 / 16,
                 ),
                 textAlign: TextAlign.left,

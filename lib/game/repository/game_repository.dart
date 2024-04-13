@@ -19,12 +19,12 @@ final gameRepositoryProvider = Provider<GameRepository>((ref) {
 abstract class GameRepository {
   factory GameRepository(Dio dio) = _GameRepository;
 
-  @Headers({'token': 'true'})
+  // @Headers({'token': 'true'})
   @GET('/games')
   Future<ResponseListModel<GameModel>> getGameList(
       {@Queries() required GameListParam param});
 
-  @Headers({'token': 'true'})
+  // @Headers({'token': 'true'})
   @GET('/games/{gameId}')
   Future<ResponseModel<GameDetailModel>> getGameDetail(
       {@Path() required int gameId});
@@ -32,5 +32,5 @@ abstract class GameRepository {
   @Headers({'token': 'true'})
   @POST('/games')
   Future<ResponseModel<GameDetailModel>> createGame(
-      {@Queries() required GameCreateParam param});
+      {@Body() required GameCreateParam param});
 }

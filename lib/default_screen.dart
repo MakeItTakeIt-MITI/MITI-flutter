@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/common/provider/scroll_provider.dart';
 import 'package:miti/court/component/court_component.dart';
@@ -59,9 +60,8 @@ class MenuBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SpeechBubble(
-      model: MapMarkerModel(time: '15:00-18:00', cost: '₩10,000', moreCnt: 100, id: 1, latitude: 0, longitude: 80),
-      selected: false,
+    return Container(
+      child: Lottie.asset('assets/lottie/splash_lottie.json'),
     );
   }
 }
@@ -242,6 +242,7 @@ class CustomBottomItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final textStyle = TextStyle(
       fontSize: 13.sp,
+      letterSpacing: -0.25.sp,
       fontWeight: FontWeight.w600,
     );
     return InkWell(

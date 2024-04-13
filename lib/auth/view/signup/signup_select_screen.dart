@@ -15,6 +15,7 @@ class SignUpSelectScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
       appBar: const DefaultAppBar(),
       body: Padding(
@@ -65,6 +66,7 @@ class _IntroductionComponent extends StatelessWidget {
           '만나서 반가워요!',
           style: TextStyle(
             fontWeight: FontWeight.bold,
+            letterSpacing: -0.25.sp,
             fontSize: 24.sp,
             color: Colors.black,
           ),
@@ -74,6 +76,7 @@ class _IntroductionComponent extends StatelessWidget {
           '어떤 방식으로 MITI에 가입하시겠어요?',
           style: TextStyle(
             fontWeight: FontWeight.w400,
+            letterSpacing: -0.25.sp,
             fontSize: 14.sp,
             color: const Color(0xFF1C1C1C),
           ),
@@ -126,6 +129,7 @@ class EmailSignUpButton extends StatelessWidget {
               '이메일로 시작하기',
               style: TextStyle(
                 color: Colors.white,
+                letterSpacing: -0.25.sp,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.bold,
               ),

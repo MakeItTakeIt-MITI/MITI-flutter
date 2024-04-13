@@ -15,6 +15,7 @@ class PhoneAuthScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: const DefaultAppBar(),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -29,6 +30,7 @@ class PhoneAuthScreen extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 25.sp,
                     fontWeight: FontWeight.bold,
+                    letterSpacing: -0.25.sp,
                     color: const Color(0xFF000000),
                   ),
                 ),
@@ -38,6 +40,7 @@ class PhoneAuthScreen extends ConsumerWidget {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16.sp,
+                    letterSpacing: -0.25.sp,
                     fontWeight: FontWeight.w400,
                     color: const Color(0xFF333333),
                   ),
@@ -50,6 +53,7 @@ class PhoneAuthScreen extends ConsumerWidget {
                 '인증하기',
                 style: TextStyle(
                   fontSize: 14.sp,
+                  letterSpacing: -0.25.sp,
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFFFFFFFF),
                 ),

@@ -1,5 +1,8 @@
 import 'dart:developer';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:miti/auth/model/auth_model.dart';
 import 'package:miti/auth/param/find_info_param.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/auth/provider/signup_provider.dart';
@@ -8,6 +11,7 @@ import 'package:miti/auth/provider/widget/phone_auth_provider.dart';
 import 'package:miti/auth/provider/widget/sign_up_form_provider.dart';
 import 'package:miti/auth/repository/auth_repository.dart';
 import 'package:miti/common/provider/secure_storage_provider.dart';
+import 'package:miti/user/provider/user_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../common/logger/custom_logger.dart';
@@ -51,11 +55,7 @@ Future<BaseModel> login(LoginRef ref) async {
     final model = value.data!;
     final storage = ref.read(secureStorageProvider);
 
-    await Future.wait([
-      storage.write(key: 'accessToken', value: model.token.access),
-      storage.write(key: 'refreshToken', value: model.token.refresh),
-      storage.write(key: 'tokenType', value: model.token.type),
-    ]);
+    await saveUserInfo(storage, model, ref);
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
@@ -63,6 +63,22 @@ Future<BaseModel> login(LoginRef ref) async {
         'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
     return error;
   });
+}
+
+Future<void> saveUserInfo(
+    FlutterSecureStorage storage, LoginModel model, AutoDisposeFutureProviderRef ref) async {
+  await Future.wait([
+    storage.write(key: 'id', value: model.id.toString()),
+    storage.write(key: 'email', value: model.email),
+    storage.write(key: 'nickname', value: model.nickname),
+    storage.write(
+        key: 'is_authenticated', value: model.is_authenticated.toString()),
+    storage.write(key: 'accessToken', value: model.token.access),
+    storage.write(key: 'refreshToken', value: model.token.refresh),
+    storage.write(key: 'tokenType', value: model.token.type),
+  ]);
+  ref.read(authProvider.notifier).autoLogin();
+
 }
 
 @riverpod
@@ -76,11 +92,7 @@ Future<BaseModel> oauthLogin(OauthLoginRef ref,
     final model = value.data!;
     final storage = ref.read(secureStorageProvider);
     log('refreshToken = ${model.token.refresh}');
-    await Future.wait([
-      storage.write(key: 'accessToken', value: model.token.access),
-      storage.write(key: 'refreshToken', value: model.token.refresh),
-      storage.write(key: 'tokenType', value: model.token.type),
-    ]);
+    await saveUserInfo(storage, model, ref);
 
     final refresh = await storage.read(key: 'refreshToken');
     log('refreshrefresh = ${refresh}');

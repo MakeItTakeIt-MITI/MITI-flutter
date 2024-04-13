@@ -10,9 +10,11 @@ import 'package:miti/auth/provider/widget/phone_auth_provider.dart';
 import 'package:miti/auth/view/phone_auth/phone_auth_send_screen.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
 import 'package:miti/dio/response_code.dart';
+import 'package:miti/game/provider/widget/game_form_provider.dart';
 
 import '../../../common/component/default_appbar.dart';
 import '../../../common/model/default_model.dart';
+import '../../error/auth_error.dart';
 import '../../model/code_model.dart';
 import '../../provider/login_provider.dart';
 
@@ -28,7 +30,8 @@ class PhoneAuthInfoScreen extends ConsumerStatefulWidget {
 
 class _PhoneAuthInfoScreenState extends ConsumerState<PhoneAuthInfoScreen> {
   bool isVisible = false;
-  InteractionDesc? interactionDesc;
+
+  // InteractionDesc? interactionDesc;
   late final List<FocusNode> focusNodes = [FocusNode(), FocusNode()];
   late final TextEditingController emailController;
   late final TextEditingController passwordController;
@@ -58,7 +61,10 @@ class _PhoneAuthInfoScreenState extends ConsumerState<PhoneAuthInfoScreen> {
   @override
   Widget build(BuildContext context) {
     ref.watch(phoneAuthProvider);
+    final interactionDesc =
+        ref.watch(interactionDescProvider(InteractionType.normal));
     return Scaffold(
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
       appBar: const DefaultAppBar(),
       body: Padding(
@@ -75,6 +81,7 @@ class _PhoneAuthInfoScreenState extends ConsumerState<PhoneAuthInfoScreen> {
                   style: TextStyle(
                     fontSize: 24.sp,
                     fontWeight: FontWeight.bold,
+                    letterSpacing: -0.25.sp,
                     color: const Color(0xFF000000),
                   ),
                 ),
@@ -149,6 +156,7 @@ class _PhoneAuthInfoScreenState extends ConsumerState<PhoneAuthInfoScreen> {
                 style: TextStyle(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.bold,
+                  letterSpacing: -0.25.sp,
                   color: const Color(0xFFFFFFFF),
                 ),
               ),
@@ -168,17 +176,21 @@ class _PhoneAuthInfoScreenState extends ConsumerState<PhoneAuthInfoScreen> {
       context.pushNamed(PhoneAuthSendScreen.routeName);
     } else {
       result as ErrorModel;
-      if (result.status_code == BadRequest) {
-        // todo 인증 완료 사용자
-      } else if (result.status_code == UnAuthorized) {
-        setState(() {
-          interactionDesc = InteractionDesc(
-            isSuccess: false,
-            desc: "일치하는 사용자 정보가 존재하지 않습니다.",
-          );
-        });
-        // todo 사용자 정보 불일치
+      if (context.mounted) {
+        AuthError.fromModel(model: result)
+            .responseError(context, AuthApiType.request_code, ref);
       }
+      // if (result.status_code == BadRequest) {
+      //   // todo 인증 완료 사용자
+      // } else if (result.status_code == UnAuthorized) {
+      //   setState(() {
+      //     interactionDesc = InteractionDesc(
+      //       isSuccess: false,
+      //       desc: "일치하는 사용자 정보가 존재하지 않습니다.",
+      //     );
+      //   });
+      //   // todo 사용자 정보 불일치
+      // }
     }
   }
 }
