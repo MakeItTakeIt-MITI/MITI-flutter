@@ -36,6 +36,10 @@
 <!--                    android:pathPrefix="/login/signUpSelect"-->
 <!--                    android:scheme="miti" />-->
             </intent-filter>
+<!--            <intent-filter>-->
+<!--                <data android:scheme="https" android:host="www.example.com" />-->
+<!--                <data android:scheme="kakaopay" android:host="open.my.app" />-->
+<!--            </intent-filter>-->
         </activity>
 
         <activity

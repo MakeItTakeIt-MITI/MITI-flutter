@@ -88,6 +88,7 @@ class CustomTextFormField extends StatelessWidget {
                   fontWeight: FontWeight.w400,
                   fontSize: 12.sp,
                   letterSpacing: -0.25.sp,
+                  height: 20 / 12,
                 ),
           ),
         if (label.isNotEmpty) SizedBox(height: 8.h),

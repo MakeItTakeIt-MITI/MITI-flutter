@@ -1,13 +1,14 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+
 // import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
-import 'package:uni_links/uni_links.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:miti/env/environment.dart';
 import 'common/provider/provider_observer.dart';
 import 'common/provider/router_provider.dart';
 
@@ -24,10 +25,10 @@ void main() async {
   //   log("err: $err");
   // });
   await initializeDateFormatting('ko');
-  await NaverMapSdk.instance.initialize(clientId: 'cwog9btafs');
+  await NaverMapSdk.instance.initialize(clientId: Environment.naverMapClientId);
   KakaoSdk.init(
-    nativeAppKey: '6c982be35c0f15be99a90f823b7da8f5',
-    javaScriptAppKey: '	70c742501212b21cb4303ea86cccd074',
+    nativeAppKey: Environment.kakaoNativeAppKey,
+    javaScriptAppKey: Environment.kakaoJavaScriptAppKey,
   );
 
   runApp(
@@ -64,6 +65,20 @@ class MyApp extends ConsumerWidget {
           theme: ThemeData(
               // colorScheme: ColorScheme(background: Colors.white, brightness: null, primary: null, onPrimary: null, secondary: null, onSecondary: null, error: null, onError: null, onBackground: null, surface: null, onSurface: null,),
               fontFamily: 'Pretendard',
+              inputDecorationTheme: InputDecorationTheme(
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                constraints: BoxConstraints.loose(Size(double.infinity, 58.h)),
+                hintStyle: TextStyle(
+                  color: const Color(0xFF969696),
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: -0.25.sp,
+                  height: 24 / 16,
+                ),
+                fillColor: const Color(0xFFF7F7F7),
+                filled: true,
+              ),
               textButtonTheme: TextButtonThemeData(
                 style: ButtonStyle(
                     textStyle: MaterialStateProperty.all(TextStyle(
@@ -71,6 +86,7 @@ class MyApp extends ConsumerWidget {
                       fontWeight: FontWeight.bold,
                       color: const Color(0xFFFFFFFF),
                       letterSpacing: -0.25.sp,
+                      height: 22 / 14,
                     )),
                     foregroundColor:
                         MaterialStateProperty.all(const Color(0xFFFFFFFF)),

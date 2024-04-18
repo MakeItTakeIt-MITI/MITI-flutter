@@ -98,14 +98,16 @@ class AuthStateNotifier extends StateNotifier<AuthModel?> {
     final email = await storage.read(key: 'email');
     final nickname = await storage.read(key: 'nickname');
     final is_authenticated = await storage.read(key: 'is_authenticated');
-    state = AuthModel(
-      token: TokenModel(
-          access: accessToken, refresh: refreshToken, type: tokenType),
-      id: int.parse(id ?? ''),
-      email: email,
-      nickname: nickname,
-      is_authenticated: bool.parse(is_authenticated!),
-    );
+    if (accessToken != null){
+      state = AuthModel(
+        token: TokenModel(
+            access: accessToken, refresh: refreshToken, type: tokenType),
+        id: int.parse(id ?? '0'),
+        email: email,
+        nickname: nickname,
+        is_authenticated: bool.parse(is_authenticated!),
+      );
+    }
 
     if(context != null && context.mounted){
       context.goNamed(CourtMapScreen.routeName);

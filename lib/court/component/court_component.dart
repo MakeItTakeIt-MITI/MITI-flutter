@@ -18,7 +18,7 @@ class CustomMarker {
   Future<NMarker> getMarker(BuildContext context,
       {bool selected = false}) async {
     final icon = await NOverlayImage.fromWidget(
-        widget: SpeechBubble(
+        widget: CustomMapMaker(
           model: model,
           selected: selected,
         ),
@@ -36,7 +36,7 @@ class CustomMarker {
   Future<NOverlayImage> getNOverlayImage(BuildContext context,
       {bool selected = false}) async {
     return await NOverlayImage.fromWidget(
-        widget: SpeechBubble(
+        widget: CustomMapMaker(
           model: model,
           selected: selected,
         ),
@@ -76,21 +76,21 @@ class MapMarkerModel {
 // }
 }
 
-class SpeechBubble extends ConsumerStatefulWidget {
+class CustomMapMaker extends ConsumerStatefulWidget {
   final MapMarkerModel model;
   final bool selected;
 
-  const SpeechBubble({
+  const CustomMapMaker({
     super.key,
     required this.model,
     required this.selected,
   });
 
   @override
-  ConsumerState<SpeechBubble> createState() => _SpeechBubbleState();
+  ConsumerState<CustomMapMaker> createState() => _CustomMapMakerState();
 }
 
-class _SpeechBubbleState extends ConsumerState<SpeechBubble> {
+class _CustomMapMakerState extends ConsumerState<CustomMapMaker> {
   @override
   Widget build(BuildContext context) {
     // final id = ref.watch(selectMakerProvider);
@@ -154,7 +154,7 @@ class _SpeechBubblePainter extends CustomPainter {
         ));
 
     final moreCntSpan = TextSpan(
-        text: '+${model.moreCnt - 1}',
+        text: '+', //${model.moreCnt - 1}
         style: TextStyle(
           color: selected ? Colors.white : Colors.black,
           fontSize: 12.sp,
@@ -206,34 +206,32 @@ class _SpeechBubblePainter extends CustomPainter {
     /// path 설정
     final markerPath = Path()
 
-      /// 왼쪽 윗변부터
+    /// 왼쪽 윗변부터
       ..moveTo(mainRadius, subRadius)
       ..lineTo(x - mainRadius, subRadius)
 
-      /// 으론쪽 윗 꼭지점
+    /// 으론쪽 윗 꼭지점
       ..arcToPoint(Offset(x, subRadius + mainRadius),
           radius: Radius.circular(mainRadius))
 
-      /// 오른쪽 변
+    /// 오른쪽 변
       ..lineTo(x, y - mainRadius - 10.h)
-      // /// 으론쪽 아래 꼭지점
+    // /// 으론쪽 아래 꼭지점
       ..arcToPoint(Offset(x - subRadius, y - 10.h),
           radius: Radius.circular(mainRadius))
 
-      /// 아랫 변
-      ..lineTo(x / 3 * 2, y - 10.h)
-      ..lineTo(x / 2, y)
-      ..lineTo(x / 3, y - 10.h)
-      ..lineTo(mainRadius, y - 10.h)
+    /// 아랫 변
+      ..lineTo(x / 3 * 2, y - 10.h)..lineTo(x / 2, y)..lineTo(
+          x / 3, y - 10.h)..lineTo(mainRadius, y - 10.h)
 
-      /// 왼쪽 아래 꼭지점
+    /// 왼쪽 아래 꼭지점
       ..arcToPoint(Offset(0, y - mainRadius - 10.h),
           radius: Radius.circular(mainRadius))
 
-      /// 왼쪽 변
+    /// 왼쪽 변
       ..lineTo(0, subRadius + mainRadius)
 
-      /// 왼쪽 위 꼭지점
+    /// 왼쪽 위 꼭지점
       ..arcToPoint(Offset(mainRadius, subRadius),
           radius: Radius.circular(mainRadius))
       ..close();

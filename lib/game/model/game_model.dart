@@ -67,7 +67,7 @@ class GameModel extends IModelWithId {
 @JsonSerializable()
 class HostModel extends IModelWithId {
   final String nickname;
-  final String rating;
+  final RatingModel rating;
   final List<ReviewModel> reviews;
 
   HostModel({
