@@ -1,28 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/game/view/game_create_screen.dart';
-import 'package:miti/game/view/game_list_screen.dart';
+import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/provider/user_provider.dart';
 import 'package:miti/user/view/user_host_list_screen.dart';
 
 import '../../common/component/default_appbar.dart';
+import '../../common/provider/scroll_provider.dart';
 
-class GameScreen extends StatelessWidget {
+class GameScreen extends ConsumerWidget {
   static String get routeName => 'game';
 
   const GameScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final textStyle = TextStyle(
-      color: Colors.black,
-      fontSize: 16.sp,
-      fontFamily: 'Pretendard',
-      fontWeight: FontWeight.w700,
-      letterSpacing: -0.25.sp,
-    );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.watch(pageScrollControllerProvider);
+    final textStyle =
+        MITITextStyle.menuChoiceStyle.copyWith(color: Colors.black);
     return NestedScrollView(
+      // controller: controller[1],
       headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
         return [
           const DefaultAppBar(
@@ -35,7 +34,7 @@ class GameScreen extends StatelessWidget {
         slivers: [
           SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.r),
+              padding: EdgeInsets.symmetric(horizontal: 24.r, vertical: 24.r),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -45,26 +44,26 @@ class GameScreen extends StatelessWidget {
                       context.pushNamed(GameHostScreen.routeName, extra: extra);
                     },
                     child: Text(
-                      '🏀 나의 참여 경기',
+                      '나의 참여 경기',
                       style: textStyle,
                     ),
                   ),
-                  SizedBox(height: 26.h),
+                  SizedBox(height: 20.h),
                   InkWell(
                     onTap: () {
                       const extra = UserGameType.host;
                       context.pushNamed(GameHostScreen.routeName, extra: extra);
                     },
                     child: Text(
-                      '🏁 나의 호스팅 경기',
+                      '나의 호스팅 경기',
                       style: textStyle,
                     ),
                   ),
-                  SizedBox(height: 26.h),
+                  SizedBox(height: 20.h),
                   InkWell(
                     onTap: () => context.pushNamed(GameCreateScreen.routeName),
                     child: Text(
-                      '✉️ 경기 생성하기',
+                      '경기 생성하기',
                       style: textStyle,
                     ),
                   ),

@@ -1,4 +1,6 @@
-abstract class IModelWithId {
+abstract class Base {}
+
+abstract class IModelWithId extends Base {
   final int id;
 
   IModelWithId({

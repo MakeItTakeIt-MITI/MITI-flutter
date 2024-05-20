@@ -20,12 +20,12 @@ class CourtAddressCard extends StatelessWidget {
       required this.onTap});
 
   factory CourtAddressCard.fromModel({
-    required CourtAddressModel model,
+    required CourtSearchModel model,
     required VoidCallback onTap,
     required selected,
   }) {
     return CourtAddressCard(
-      address: '${model.address} ${model.address_detail}',
+      address: '${model.address} ${model.address_detail ?? ''}',
       name: model.name,
       id: model.id,
       selected: selected,

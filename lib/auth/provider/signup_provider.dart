@@ -16,7 +16,7 @@ Future<BaseModel> signUpCheck(SignUpCheckRef ref,
   final repository = ref.watch(authRepositoryProvider);
 
   return await repository.signUpCheck(param: param).then<BaseModel>((value) {
-    logger.i('check duplicate $param!');
+    logger.i('check duplicate ${value.data!.email?.is_duplicated}!');
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);

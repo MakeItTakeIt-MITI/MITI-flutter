@@ -6,6 +6,7 @@ part 'game_param.g.dart';
 @JsonSerializable()
 class GameListParam extends Equatable {
   final String? startdate;
+
   // final String? starttime;
 
   const GameListParam({
@@ -76,7 +77,6 @@ class GameCreateParam extends Equatable {
 
   Map<String, dynamic> toJson() => _$GameCreateParamToJson(this);
 
-
   @override
   List<Object?> get props => [
         title,
@@ -94,7 +94,6 @@ class GameCreateParam extends Equatable {
   @override
   bool? get stringify => true;
 }
-
 
 @JsonSerializable()
 class GameCourtParam extends Equatable {
@@ -127,6 +126,80 @@ class GameCourtParam extends Equatable {
 
   @override
   List<Object?> get props => [name, address, address_detail];
+
+  @override
+  bool? get stringify => true;
+}
+
+@JsonSerializable()
+class GameUpdateParam extends Equatable {
+  final int min_invitation;
+  final int max_invitation;
+  final String info;
+
+  const GameUpdateParam({
+    required this.min_invitation,
+    required this.max_invitation,
+    required this.info,
+  });
+
+  factory GameUpdateParam.fromForm({required GameCreateParam form}) {
+    return GameUpdateParam(
+      min_invitation: int.parse(form.min_invitation),
+      max_invitation: int.parse(form.max_invitation),
+      info: form.info,
+    );
+    // if (form.min_invitation.isNotEmpty && form.max_invitation.isNotEmpty) {
+    //   return GameUpdateParam(
+    //     min_invitation: int.parse(form.min_invitation),
+    //     max_invitation: int.parse(form.max_invitation),
+    //   );
+    // } else if (form.info.isNotEmpty) {
+    //   return GameUpdateParam(info: form.info);
+    // } else {
+    //
+    // }
+  }
+
+  Map<String, dynamic> toJson() => _$GameUpdateParamToJson(this);
+
+  factory GameUpdateParam.fromJson(Map<String, dynamic> json) =>
+      _$GameUpdateParamFromJson(json);
+
+  @override
+  List<Object?> get props => [min_invitation, max_invitation];
+
+  @override
+  bool? get stringify => true;
+}
+
+@JsonSerializable()
+class GameReviewParam extends Equatable {
+  final int? rating;
+  final String comment;
+
+  const GameReviewParam({
+    required this.rating,
+    required this.comment,
+  });
+
+  GameReviewParam copyWith({
+    int? rating,
+    String? comment,
+  }) {
+    return GameReviewParam(
+      rating: rating ?? this.rating,
+      comment: comment ?? this.comment,
+    );
+  }
+
+  Map<String, dynamic> toJson() => _$GameReviewParamToJson(this);
+
+  factory GameReviewParam.fromJson(Map<String, dynamic> json) =>
+      _$GameReviewParamFromJson(json);
+
+  @override
+  List<Object?> get props => [rating, comment];
 
   @override
   bool? get stringify => true;

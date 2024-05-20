@@ -1,135 +1,142 @@
-import 'dart:ui';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MITITextStyle {
-  static final gameTitleMainStyle = TextStyle(
+  static final TextStyle gameTitleMainStyle = TextStyle(
     fontSize: 16.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w700,
     height: 18 / 16,
     letterSpacing: -0.25.sp,
   );
-  static final selectionTitleStyle = TextStyle(
+  static final TextStyle sectionTitleStyle = TextStyle(
     fontSize: 16.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w700,
     height: 18 / 16,
     letterSpacing: -0.25.sp,
   );
-  static final gameTimePlainStyle = TextStyle(
+  static final TextStyle sectionSubTitleStyle = TextStyle(
+    fontSize: 12.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w700,
+    height: 14 / 12,
+    letterSpacing: -0.25.sp,
+  );
+  static final TextStyle gameTimePlainStyle = TextStyle(
     fontSize: 14.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w500,
     height: 16 / 14,
     letterSpacing: -0.25.sp,
   );
-  static final gameTimeCardMStyle = TextStyle(
+  static final TextStyle gameTimeCardMStyle = TextStyle(
     fontSize: 12.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w500,
     height: 16 / 12,
     letterSpacing: -0.25.sp,
   );
-  static final gameTimeCardLStyle = TextStyle(
+  static final TextStyle gameTitleCardLStyle = TextStyle(
     fontSize: 16.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w700,
     height: 18 / 16,
     letterSpacing: -0.25.sp,
   );
-  static final courtAddressCardStyle = TextStyle(
+  static final TextStyle courtAddressCardStyle = TextStyle(
     fontSize: 12.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w500,
     height: 16 / 12,
     letterSpacing: -0.25.sp,
   );
-  static final participationCardStyle = TextStyle(
+  static final TextStyle participationCardStyle = TextStyle(
     fontSize: 12.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w500,
     height: 16 / 12,
     letterSpacing: -0.25.sp,
   );
-  static final feeStyle = TextStyle(
+  static final TextStyle feeStyle = TextStyle(
     fontSize: 16.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w700,
     height: 18 / 16,
     letterSpacing: -0.25.sp,
   );
-  static final feeMakerStyle = TextStyle(
+  static final TextStyle  feeMakerStyle = TextStyle(
     fontSize: 12.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w700,
     height: 18 / 12,
     letterSpacing: -0.25.sp,
   );
-  static final courtAddressPlainStyle = TextStyle(
+  static final TextStyle courtAddressPlainStyle = TextStyle(
     fontSize: 14.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w500,
     height: 16 / 14,
     letterSpacing: -0.25.sp,
   );
-  static final participationInfoPlainStyle = TextStyle(
+  static final TextStyle participationInfoPlainStyle = TextStyle(
     fontSize: 14.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w500,
     height: 16 / 14,
     letterSpacing: -0.25.sp,
   );
-  static final gameTimeMarkerStyle = TextStyle(
+  static final TextStyle gameTimeMarkerStyle = TextStyle(
     fontSize: 10.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w400,
     height: 12 / 10,
     letterSpacing: -0.25.sp,
   );
-  static final reviewSummaryStyle = TextStyle(
+  static final TextStyle reviewSummaryStyle = TextStyle(
     fontSize: 14.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w400,
     height: 16 / 14,
     letterSpacing: -0.25.sp,
   );
-  static final tagStyle = TextStyle(
+  static final TextStyle tagStyle = TextStyle(
     fontSize: 10.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w600,
     height: 13 / 10,
     letterSpacing: -0.25.sp,
   );
-  static final hostNameStyle = TextStyle(
+  static final TextStyle hostNameStyle = TextStyle(
     fontSize: 16.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w400,
     height: 18 / 16,
     letterSpacing: -0.25.sp,
   );
-  static final gameInfoStyle = TextStyle(
+  static final TextStyle gameInfoStyle = TextStyle(
     fontSize: 14.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w500,
     height: 1.4,
     letterSpacing: -0.25.sp,
   );
-  static final dropdownChoicesStyle = TextStyle(
+  static final TextStyle dropdownChoicesStyle = TextStyle(
     fontSize: 12.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w400,
     height: 14 / 12,
     letterSpacing: -0.25.sp,
   );
-  static final menuChoiceStyle = TextStyle(
+  static final TextStyle menuChoiceStyle = TextStyle(
     fontSize: 16.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w400,
     height: 18 / 16,
     letterSpacing: -0.25.sp,
   );
-  static final pageNameStyle = TextStyle(
+  static final TextStyle pageNameStyle = TextStyle(
     fontSize: 16.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w700,
@@ -182,7 +189,7 @@ class MITITextStyle {
     fontSize: 14.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w700,
-    height: 22 / 14,
+    // height: 22 / 14,
     letterSpacing: -0.25.sp,
   );
   static final inputLabelIStyle = TextStyle(
@@ -217,7 +224,7 @@ class MITITextStyle {
     fontSize: 12.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w400,
-    height: 20 / 12,
+    // height: 20 / 12,
     letterSpacing: -0.25.sp,
   );
   static final alertMessageStyle = TextStyle(

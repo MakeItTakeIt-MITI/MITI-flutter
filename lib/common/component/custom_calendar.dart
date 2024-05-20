@@ -11,7 +11,6 @@ import 'package:miti/auth/view/signup/signup_screen.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-import '../../util/provider/date_provider.dart';
 import '../../util/util.dart';
 import '../provider/widget/datetime_provider.dart';
 
@@ -61,11 +60,12 @@ class _CustomCalendarState extends ConsumerState<CustomCalendar> {
 
   bool validRangeStartDay() {
     // return ref.read(gameFormProvider.notifier).validDatetime();
-    if(rangeStartDay != null){
-      if (rangeStartDay!.isBefore(DateTime.now())){
+    if (rangeStartDay != null) {
+      if (rangeStartDay!.isBefore(DateTime.now())) {
         return false;
       }
-    }return true;
+    }
+    return true;
   }
 
   bool validToday() {
@@ -173,7 +173,7 @@ class _CustomCalendarState extends ConsumerState<CustomCalendar> {
       weekendDecoration: boxDecoration.copyWith(color: Colors.transparent),
       defaultDecoration: boxDecoration.copyWith(color: Colors.transparent),
       outsideDecoration: boxDecoration.copyWith(color: Colors.transparent),
-      tablePadding: EdgeInsets.only(left: 12.r, right: 12.r, bottom: 12.r),
+      tablePadding: EdgeInsets.only(left: 24.r, right: 24.r, bottom: 12.r),
     );
   }
 
@@ -195,7 +195,7 @@ class _CustomCalendarState extends ConsumerState<CustomCalendar> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8.r),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(8.r)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

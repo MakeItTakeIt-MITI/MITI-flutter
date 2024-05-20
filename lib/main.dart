@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 
@@ -13,6 +14,7 @@ import 'common/provider/provider_observer.dart';
 import 'common/provider/router_provider.dart';
 
 void main() async {
+  HttpOverrides.global = MyHttpOverrides();
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   // FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   // uriLinkStream.listen((Uri? uri) {
@@ -68,7 +70,7 @@ class MyApp extends ConsumerWidget {
               inputDecorationTheme: InputDecorationTheme(
                 contentPadding:
                     EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                constraints: BoxConstraints.loose(Size(double.infinity, 58.h)),
+                // constraints: BoxConstraints.loose(Size(double.infinity, 58.h)),
                 hintStyle: TextStyle(
                   color: const Color(0xFF969696),
                   fontSize: 16.sp,
@@ -86,7 +88,7 @@ class MyApp extends ConsumerWidget {
                       fontWeight: FontWeight.bold,
                       color: const Color(0xFFFFFFFF),
                       letterSpacing: -0.25.sp,
-                      height: 22 / 14,
+                      // height: 22 / 14,
                     )),
                     foregroundColor:
                         MaterialStateProperty.all(const Color(0xFFFFFFFF)),
@@ -99,6 +101,7 @@ class MyApp extends ConsumerWidget {
                         ),
                       ),
                     ),
+
                     minimumSize:
                         MaterialStateProperty.all(Size(double.infinity, 48.h)),
                     maximumSize:
@@ -109,5 +112,13 @@ class MyApp extends ConsumerWidget {
       },
       // child: const HomeScreen(), // LoginScreen(),
     );
+  }
+}
+
+class MyHttpOverrides extends HttpOverrides{
+  @override
+  HttpClient createHttpClient(SecurityContext? context){
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
   }
 }

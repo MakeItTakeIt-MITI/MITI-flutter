@@ -12,6 +12,8 @@ import 'package:miti/game/provider/widget/game_form_provider.dart';
 
 import '../../../common/component/custom_text_form_field.dart';
 import '../../../common/component/default_appbar.dart';
+import '../../../common/provider/form_util_provider.dart';
+import '../../model/find_info_model.dart';
 
 class PhoneAuthSendScreen extends ConsumerStatefulWidget {
   static String get routeName => 'phoneSend';
@@ -29,8 +31,7 @@ class _PhoneAuthSendScreenState extends ConsumerState<PhoneAuthSendScreen> {
     final code = ref.watch(phoneAuthProvider).code;
 
     final valid = code.length == 6;
-    final interactionDesc =
-        ref.watch(interactionDescProvider(InteractionType.normal));
+    final interactionDesc = ref.watch(codeDescProvider(FindInfoType.email));
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
@@ -115,8 +116,9 @@ class _PhoneAuthSendScreenState extends ConsumerState<PhoneAuthSendScreen> {
     final result = await ref.read(sendSMSProvider.future);
     if (result is ErrorModel) {
       if (context.mounted) {
-        AuthError.fromModel(model: result)
-            .responseError(context, AuthApiType.send_code, ref);
+        AuthError.fromModel(model: result).responseError(
+            context, AuthApiType.send_code, ref,
+            object: FindInfoType.email);
       }
     } else {
       if (context.mounted) {

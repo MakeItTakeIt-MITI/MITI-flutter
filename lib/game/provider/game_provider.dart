@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:miti/game/model/game_model.dart';
 import 'package:miti/game/param/game_param.dart';
@@ -24,9 +27,7 @@ class GameList extends _$GameList {
     final repository = ref.watch(gameRepositoryProvider);
     repository.getGameList(param: param).then((value) {
       logger.i(value);
-      ref
-          .read(selectGameListProvider.notifier)
-          .update((state) => value.data!);
+      ref.read(selectGameListProvider.notifier).update((state) => value.data!);
       state = value;
       // state = value;
     }).catchError((e) {
@@ -48,8 +49,14 @@ class GameDetail extends _$GameDetail {
 
   Future<void> get({required int gameId}) async {
     final repository = ref.watch(gameRepositoryProvider);
+    final response =
+        await Dio().request('https://dev.makeittakeit.kr/games/1229');
+    final data = response.data['data'];
+    log('data $data');
+
     repository.getGameDetail(gameId: gameId).then((value) {
       logger.i(value);
+      log('value.data!.is_host = ${value.data!.is_host} value.data!.is_participated ${value.data!.is_participated}');
       state = value;
     }).catchError((e) {
       final error = ErrorModel.respToError(e);
@@ -66,6 +73,211 @@ Future<BaseModel> gameCreate(GameCreateRef ref) async {
   final param = ref.watch(gameFormProvider);
 
   return await repository.createGame(param: param).then<BaseModel>((value) {
+    logger.i(value);
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
+}
+
+@riverpod
+Future<BaseModel> gameUpdate(GameUpdateRef ref, {required int gameId}) async {
+  final repository = ref.watch(gameRepositoryProvider);
+  final form = ref.read(gameFormProvider);
+  final param = GameUpdateParam.fromForm(form: form);
+  return await repository
+      .updateGame(param: param, gameId: gameId)
+      .then<BaseModel>((value) {
+    logger.i(value);
+    ref.read(gameDetailProvider(gameId: gameId).notifier).get(gameId: gameId);
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
+}
+
+@riverpod
+Future<BaseModel> gameCancel(GameCancelRef ref,
+    {required int gameId, required int participationId}) async {
+  final repository = ref.watch(gameRepositoryProvider);
+
+  return await repository
+      .cancelGame(gameId: gameId, participationId: participationId)
+      .then<BaseModel>((value) {
+    logger.i(value);
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
+}
+
+@riverpod
+class Host extends _$Host {
+  @override
+  BaseModel build({required int gameId}) {
+    getHost(gameId: gameId);
+    return LoadingModel();
+  }
+
+  void getHost({required int gameId}) {
+    final repository = ref.watch(gameRepositoryProvider);
+    repository.getHost(gameId: gameId).then<BaseModel>((value) {
+      logger.i(value);
+      state = value;
+      return value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      return error;
+    });
+  }
+}
+
+@riverpod
+class Payment extends _$Payment {
+  @override
+  BaseModel build({required int gameId}) {
+    getPayment(gameId: gameId);
+    return LoadingModel();
+  }
+
+  void getPayment({required int gameId}) {
+    final repository = ref.watch(gameRepositoryProvider);
+    repository.getPayment(gameId: gameId).then<BaseModel>((value) {
+      logger.i(value);
+      state = value;
+      return value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      return error;
+    });
+  }
+}
+
+@Riverpod(keepAlive: false)
+class RefundInfo extends _$RefundInfo {
+  @override
+  BaseModel build({required int gameId, required int participationId}) {
+    get(gameId: gameId, participationId: participationId);
+    return LoadingModel();
+  }
+
+  // todo 환불 정보 조회시  에러  경기 시작 6시간 이내에는 참여를 취소할 수 없습니다.
+  // 명세 갱신 필요
+  //  status_code = 403
+  // error.error_code = 470
+  Future<void> get({required int gameId, required int participationId}) async {
+    final repository = ref.watch(gameRepositoryProvider);
+    repository
+        .refundInfo(gameId: gameId, participationId: participationId)
+        .then((value) {
+      logger.i(value);
+      state = value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state = error;
+    });
+  }
+}
+
+@Riverpod(keepAlive: false)
+class GamePlayers extends _$GamePlayers {
+  @override
+  BaseModel build({required int gameId}) {
+    getPlayers(gameId: gameId);
+    return LoadingModel();
+  }
+
+  Future<void> getPlayers({required int gameId}) async {
+    state = LoadingModel();
+    final repository = ref.watch(gameRepositoryProvider);
+    repository.getPlayers(gameId: gameId).then((value) {
+      logger.i(value);
+      state = value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state = error;
+    });
+  }
+}
+
+@Riverpod(keepAlive: false)
+class Rating extends _$Rating {
+  @override
+  BaseModel build({required int ratingId}) {
+    getRating(ratingId: ratingId);
+    return LoadingModel();
+  }
+
+  Future<void> getRating({required int ratingId}) async {
+    state = LoadingModel();
+    final repository = ref.watch(gameRepositoryProvider);
+    repository.getRating(ratingId: ratingId).then((value) {
+      logger.i(value);
+      state = value;
+      // state = value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state = error;
+    });
+  }
+}
+
+@riverpod
+Future<BaseModel> guestReview(
+  GuestReviewRef ref, {
+  required int gameId,
+  required int participationId,
+}) async {
+  final repository = ref.watch(gameRepositoryProvider);
+  final param = ref.read(reviewFormProvider);
+
+  return await repository
+      .createGuestReview(
+          param: param, gameId: gameId, participationId: participationId)
+      .then<BaseModel>((value) {
+    logger.i(value);
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
+}
+
+@riverpod
+Future<BaseModel> hostReview(
+  HostReviewRef ref, {
+  required int gameId,
+}) async {
+  final repository = ref.watch(gameRepositoryProvider);
+  final param = ref.read(reviewFormProvider);
+
+  return await repository
+      .createHostReview(
+    param: param,
+    gameId: gameId,
+  )
+      .then<BaseModel>((value) {
     logger.i(value);
     return value;
   }).catchError((e) {

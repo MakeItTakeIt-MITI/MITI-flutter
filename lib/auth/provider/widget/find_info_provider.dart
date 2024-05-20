@@ -16,14 +16,15 @@ import '../../param/find_info_param.dart';
 
 part 'find_info_provider.g.dart';
 
-final phoneNumberProvider = StateProvider.autoDispose<String>((ref) => '');
+final phoneNumberProvider =
+    StateProvider.family.autoDispose<String, FindInfoType>((ref, type) => '');
 final emailProvider = StateProvider.autoDispose<String>((ref) => '');
 
 @riverpod
 Future<BaseModel> findInfo(FindInfoRef ref,
     {required FindInfoType type}) async {
   final repository = ref.watch(authRepositoryProvider);
-  final phone = ref.read(phoneNumberProvider).replaceAll('-', '');
+  final phone = ref.read(phoneNumberProvider(type)).replaceAll('-', '');
   final FindInfoParam param = FindInfoParam(phone: phone);
 
   switch (type) {
@@ -71,11 +72,13 @@ Future<BaseModel> reissueForPassword(ReissueForPasswordRef ref) async {
       .then<BaseModel>((value) {
     logger.i('reissueForPassword !');
     final model = value.data!;
-    ref.read(phoneAuthProvider.notifier).update(user_info_token: model.authentication_token);
+    ref
+        .read(phoneAuthProvider.notifier)
+        .update(user_info_token: model.authentication_token);
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
-logger.e(
+    logger.e(
         'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
     return error;
   });
@@ -98,7 +101,7 @@ Future<BaseModel> resetPassword(ResetPasswordRef ref) async {
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
-logger.e(
+    logger.e(
         'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
     return error;
   });

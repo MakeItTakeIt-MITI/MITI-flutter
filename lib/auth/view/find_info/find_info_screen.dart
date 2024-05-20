@@ -100,7 +100,8 @@ class _FindEmailScreenState extends ConsumerState<FindInfoScreen>
   }
 }
 
-final validCodeProvider = StateProvider.autoDispose<bool>((ref) => false);
+final validCodeProvider =
+    StateProvider.family.autoDispose<bool, FindInfoType>((ref, type) => false);
 
 class FindInfoBody extends ConsumerStatefulWidget {
   final FindInfoType type;
@@ -130,7 +131,7 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
     final interactionDescPhone = widget.type == FindInfoType.email
         ? ref.watch(interactionDescProvider(InteractionType.email))
         : ref.watch(interactionDescProvider(InteractionType.password));
-    final phone = ref.watch(phoneNumberProvider);
+    final phone = ref.watch(phoneNumberProvider(widget.type));
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -164,10 +165,14 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
             hintText: '휴대폰 번호를 입력해주세요.',
             interactionDesc: interactionDescPhone,
             onChanged: (val) {
-              ref.read(phoneNumberProvider.notifier).update((state) => val);
+              ref
+                  .read(phoneNumberProvider(widget.type).notifier)
+                  .update((state) => val);
               if (!canRequest(val)) {
                 isFirstRequest = true;
-                ref.read(validCodeProvider.notifier).update((state) => false);
+                ref
+                    .read(validCodeProvider(widget.type).notifier)
+                    .update((state) => false);
               }
             },
             onNext: () {
@@ -215,9 +220,9 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
           Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
               final phoneAuth = ref.watch(phoneAuthProvider);
-              final valid = ref.watch(validCodeProvider);
+              final valid = ref.watch(validCodeProvider(widget.type));
               final interactionDescCode =
-                  ref.watch(formDescProvider(InputFormType.passwordCode));
+                  ref.watch(codeDescProvider(widget.type));
               return CustomTextFormField(
                 enabled: validPhone(phone) ? true : false,
                 focusNode: focusNodes[1],
@@ -357,8 +362,16 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
       // });
     } else {
       if (mounted) {
-        ref.read(validCodeProvider.notifier).update((state) => true);
+        ref
+            .read(validCodeProvider(widget.type).notifier)
+            .update((state) => true);
         FocusScope.of(context).requestFocus(focusNodes[1]);
+        ref
+            .read(codeDescProvider(widget.type).notifier)
+            .update((state) => InteractionDesc(
+                  isSuccess: true,
+                  desc: "인증번호가 발송되었어요!",
+                ));
       }
     }
   }
@@ -372,8 +385,9 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
     final result = await ref.read(sendSMSProvider.future);
     if (context.mounted) {
       if (result is ErrorModel) {
-        AuthError.fromModel(model: result)
-            .responseError(context, AuthApiType.send_code, ref);
+        AuthError.fromModel(model: result).responseError(
+            context, AuthApiType.send_code, ref,
+            object: widget.type);
       } else {
         setState(() {
           ref
@@ -389,7 +403,6 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
     }
   }
 }
-
 
 class NotFoundUserInfoScreen extends StatelessWidget {
   static String get routeName => 'notFoundUser';

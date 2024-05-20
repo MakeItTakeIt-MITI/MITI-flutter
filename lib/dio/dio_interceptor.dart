@@ -8,7 +8,6 @@ import '../auth/provider/auth_provider.dart';
 import '../common/logger/custom_logger.dart';
 
 const String serverURL = "https://dev.makeittakeit.kr";
-const String kakaoPayUrl = 'https://open-api.kakaopay.com/oauth/token';
 
 // https://api.makeittakeit.kr
 class CustomDioInterceptor extends Interceptor {
@@ -30,7 +29,16 @@ class CustomDioInterceptor extends Interceptor {
     if (options.headers['token'] == 'true') {
       String? accessToken = await storage.read(key: 'accessToken');
       options.headers.remove('token');
-      options.headers.addAll({'Authorization': 'Bearer $accessToken'});
+      if (options.headers.containsKey('required') &&
+          options.headers['required'] == 'false') {
+        options.headers.remove('required');
+        if (accessToken != null) {
+          /// 토큰이 필수가 아니면서 토큰 값이 없으면 토큰 주입 X
+          options.headers.addAll({'Authorization': 'Bearer $accessToken'});
+        }
+      } else {
+        options.headers.addAll({'Authorization': 'Bearer $accessToken'});
+      }
     }
     if (options.headers['refresh'] == 'true') {
       String? refreshToken = await storage.read(key: 'refreshToken');
@@ -63,6 +71,9 @@ class CustomDioInterceptor extends Interceptor {
       '/auth/login',
       '/auth/send-sms/authentication'
     ];
+
+
+    log('err.message ${err.message} , err.error = ${err.error}, err.type = ${err.type}');
     final noneAUth = noneAuthUrl.contains(err.requestOptions.uri.path);
 
     errorLog.add(
@@ -78,8 +89,8 @@ class CustomDioInterceptor extends Interceptor {
         !noneAUth) {
       try {
         Dio dio = Dio();
-        await ref.read(authProvider.notifier).reIssueToken();
-        final newAccessToken = ref.read(authProvider)?.token?.access;
+        final newAccessToken =  await ref.read(authProvider.notifier).reIssueToken();
+        // = ref.read(authProvider)?.token?.access;
         err.requestOptions.headers['Authorization'] = 'Bearer $newAccessToken';
         log("[RE-REQUEST] [${err.requestOptions.method}] ${err.requestOptions.baseUrl}${err.requestOptions.path}");
         if (err.requestOptions.uri.queryParameters.isNotEmpty) {

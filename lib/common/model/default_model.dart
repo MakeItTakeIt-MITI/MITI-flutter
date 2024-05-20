@@ -78,6 +78,18 @@ class ResponseModel<T> extends BaseModel {
       Map<String, dynamic> json, T Function(Object? json) fromJsonT) {
     return _$ResponseModelFromJson(json, fromJsonT);
   }
+
+  ResponseModel<T> copyWith({
+    int? status_code,
+    String? message,
+    T? data,
+  }) {
+    return ResponseModel<T>(
+      status_code: status_code ?? this.status_code,
+      message: message ?? this.message,
+      data: data ?? this.data,
+    );
+  }
 }
 
 @JsonSerializable(
@@ -116,8 +128,38 @@ class PaginationModel<T> extends BaseModel {
     required this.page_content,
   });
 
+  PaginationModel<T> copyWith({
+    int? start_index,
+    int? end_index,
+    int? current_index,
+    List<T>? page_content,
+  }) {
+    return PaginationModel<T>(
+      start_index: start_index ?? this.start_index,
+      end_index: end_index ?? this.end_index,
+      current_index: current_index ?? this.current_index,
+      page_content: page_content ?? this.page_content,
+    );
+  }
+
   factory PaginationModel.fromJson(
       Map<String, dynamic> json, T Function(Object? json) fromJsonT) {
     return _$PaginationModelFromJson(json, fromJsonT);
   }
+}
+
+class PaginationModelRefetching<T> extends PaginationModel<T> {
+  PaginationModelRefetching(
+      {required super.start_index,
+      required super.end_index,
+      required super.current_index,
+      required super.page_content});
+}
+
+class PaginationModelFetchingMore<T> extends PaginationModel<T> {
+  PaginationModelFetchingMore(
+      {required super.start_index,
+      required super.end_index,
+      required super.current_index,
+      required super.page_content});
 }

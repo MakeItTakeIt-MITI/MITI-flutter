@@ -14,6 +14,11 @@ class DateTimeUtil {
     return DateTime(dateTime.year, dateTime.month, dateTime.day);
   }
 
+  static String parseMd({required DateTime dateTime}) {
+    DateFormat dateFormat = DateFormat('MM.dd');
+    return dateFormat.format(dateTime);
+  }
+
   static int getMonth({required String dateTime}) {
     return int.parse(DateFormat('MM').format(DateTime.parse(dateTime)));
   }
@@ -94,7 +99,7 @@ class ValidRegExp {
   }
 
   static bool userNickname(String input) {
-    RegExp regex = RegExp(r'^[가-힣a-zA-Z0-9]{2,15}$');
+    RegExp regex = RegExp(r'^[가-힣a-zA-Z0-9]{3,15}$');
     return regex.hasMatch(input);
   }
 
@@ -117,6 +122,17 @@ class ValidRegExp {
   static bool courtName(String input) {
     RegExp regex = RegExp(r'^[a-zA-Z0-9가-힣\s\-.()]{2,32}$');
     return regex.hasMatch(input);
+  }
+
+  static bool validForm(String min_invitation, String max_invitation) {
+    if (min_invitation.isNotEmpty && max_invitation.isNotEmpty) {
+      if (int.parse(min_invitation) >= int.parse(max_invitation)) {
+        return false;
+      } else if (int.parse(max_invitation) <= 0) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 

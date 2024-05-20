@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:miti/game/param/game_param.dart';
+import 'package:miti/util/util.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../common/component/custom_text_form_field.dart';
@@ -8,7 +11,15 @@ import '../../../common/provider/widget/datetime_provider.dart';
 
 part 'game_form_provider.g.dart';
 
-enum InteractionType { normal, email, password, date }
+enum InteractionType {
+  normal,
+  email,
+  password,
+  date,
+  nickname,
+  newPassword,
+  newPasswordCheck
+}
 
 final interactionDescProvider = StateProvider.autoDispose
     .family<InteractionDesc?, InteractionType>((ref, interactionType) => null);
@@ -102,32 +113,101 @@ class GameForm extends _$GameForm {
       // Checking if startDateTime is equal to or after endDateTime
       if (startDateTime.isAtSameMomentAs(endDateTime) ||
           startDateTime.isAfter(endDateTime)) {
-        ref.read(interactionDescProvider(InteractionType.date).notifier).update((state) =>
-            InteractionDesc(
+        return false;
+      } else if (startDateTime.isBefore(currentDateTime) &&
+          endDateTime.isBefore(currentDateTime)) {
+        return false;
+      } else if (currentDateTime.isAfter(startDateTime) &&
+          currentDateTime.isBefore(endDateTime)) {
+        return false;
+      } else {
+        ref
+            .read(interactionDescProvider(InteractionType.date).notifier)
+            .update((state) => null);
+        return true;
+      }
+    }
+    ref
+        .read(interactionDescProvider(InteractionType.date).notifier)
+        .update((state) => null);
+    return false;
+  }
+
+  bool validDatetimeInteraction() {
+    if (state.startdate.isNotEmpty &&
+        state.starttime.isNotEmpty &&
+        state.enddate.isNotEmpty &&
+        state.endtime.isNotEmpty) {
+      DateTime startDateTime =
+          DateTime.parse("${state.startdate} ${state.starttime}:00");
+      DateTime endDateTime =
+          DateTime.parse("${state.enddate} ${state.endtime}:00");
+      DateTime currentDateTime = DateTime.now();
+
+      // Checking if startDateTime is equal to or after endDateTime
+      if (startDateTime.isAtSameMomentAs(endDateTime) ||
+          startDateTime.isAfter(endDateTime)) {
+        ref.read(interactionDescProvider(InteractionType.date).notifier).update(
+            (state) => InteractionDesc(
                 isSuccess: false, desc: '시작 시간이 종료 시간보다 같거나 이후일 수 없습니다.'));
         return false;
       } else if (startDateTime.isBefore(currentDateTime) &&
           endDateTime.isBefore(currentDateTime)) {
-        ref.read(interactionDescProvider(InteractionType.date).notifier).update((state) =>
-            InteractionDesc(
+        ref.read(interactionDescProvider(InteractionType.date).notifier).update(
+            (state) => InteractionDesc(
                 isSuccess: false, desc: '경기 시간이 현재 시간보다 이전일 수 없습니다.'));
         return false;
       } else if (currentDateTime.isAfter(startDateTime) &&
           currentDateTime.isBefore(endDateTime)) {
-        ref.read(interactionDescProvider(InteractionType.date).notifier).update((state) =>
-            InteractionDesc(
+        ref.read(interactionDescProvider(InteractionType.date).notifier).update(
+            (state) => InteractionDesc(
                 isSuccess: false, desc: '현재 시간이 경시 시간 사이에 있을 수 없습니다.'));
         return false;
       } else {
-        ref.read(interactionDescProvider(InteractionType.date).notifier).update((state) => null);
+        ref
+            .read(interactionDescProvider(InteractionType.date).notifier)
+            .update((state) => null);
         return true;
       }
     }
-    ref.read(interactionDescProvider(InteractionType.date).notifier).update((state) => null);
+    ref
+        .read(interactionDescProvider(InteractionType.date).notifier)
+        .update((state) => null);
     return false;
   }
 
   bool formValid() {
-    return validInvitation() && validDatetime();
+    log('validInvitation() = ${validInvitation()} validDatetime() = ${validDatetime()}');
+    final formValid = ValidRegExp.gameTitle(state.title) &
+        ValidRegExp.gameAddress(state.court.address) &
+        ValidRegExp.gameAddressDetail(state.court.address_detail) &
+        ValidRegExp.courtName(state.court.name);
+
+    return validInvitation() && validDatetime() && formValid;
+  }
+}
+
+@riverpod
+class ReviewForm extends _$ReviewForm {
+  @override
+  GameReviewParam build() {
+    return const GameReviewParam(
+      rating: null,
+      comment: '',
+    );
+  }
+
+  void updateRating(int rating) {
+    state = state.copyWith(rating: rating);
+  }
+
+  void updateComment(String comment) {
+    state = state.copyWith(comment: comment);
+  }
+
+  bool valid() {
+    log('state.rating = ${state.rating}');
+    log('state.comment.isNotEmpty = ${state.comment.isNotEmpty}');
+    return state.rating != null && state.comment.isNotEmpty;
   }
 }

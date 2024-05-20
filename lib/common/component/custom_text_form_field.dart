@@ -8,13 +8,16 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:miti/auth/provider/widget/sign_up_form_provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../auth/view/signup/signup_screen.dart';
-import '../../util/provider/date_provider.dart';
+import '../../game/view/game_create_screen.dart';
+import '../../theme/text_theme.dart';
 import '../../util/util.dart';
+import '../provider/router_provider.dart';
 import '../provider/widget/datetime_provider.dart';
 import 'custom_calendar.dart';
 import 'date_picker.dart';
@@ -84,14 +87,10 @@ class CustomTextFormField extends StatelessWidget {
           Text(
             label,
             style: labelTextStyle ??
-                TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 12.sp,
-                  letterSpacing: -0.25.sp,
-                  height: 20 / 12,
-                ),
+                MITITextStyle.inputLabelIStyle
+                    .copyWith(color: const Color(0xFF999999)),
           ),
-        if (label.isNotEmpty) SizedBox(height: 8.h),
+        if (label.isNotEmpty) SizedBox(height: 12.h),
         TextFormField(
           initialValue: initialValue,
           focusNode: focusNode,
@@ -113,7 +112,7 @@ class CustomTextFormField extends StatelessWidget {
           decoration: InputDecoration(
             contentPadding:
                 EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-            constraints: BoxConstraints.loose(Size(double.infinity, 58.h)),
+            constraints: BoxConstraints(maxHeight: 58.h, minHeight: 50.h),
             border: OutlineInputBorder(
               borderRadius: showAutoComplete
                   ? BorderRadius.vertical(top: Radius.circular(8.r))
@@ -122,12 +121,8 @@ class CustomTextFormField extends StatelessWidget {
             ),
             hintText: hintText,
             hintStyle: hintTextStyle ??
-                TextStyle(
-                  fontWeight: FontWeight.w500,
-                  color: const Color(0xFF969696),
-                  letterSpacing: -0.25.sp,
-                  fontSize: 16.sp,
-                ),
+                MITITextStyle.placeHolderMStyle
+                    .copyWith(color: const Color(0xFF969696)),
             fillColor: const Color(0xFFF7F7F7),
             filled: true,
             suffixIcon: suffixIcon,
@@ -308,57 +303,100 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
                 constraints: BoxConstraints.tight(Size(50.r, 50.r)),
                 onPressed: () {
                   FocusScope.of(context).requestFocus(FocusNode());
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return StatefulBuilder(
-                          builder: (BuildContext context,
-                              void Function(void Function()) setState) {
-                            return Consumer(
-                              builder: (BuildContext context, WidgetRef ref,
-                                  Widget? child) {
-                                return Dialog(
-                                  backgroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8.r)),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      CustomCalendar(
-                                        rangeSelectionMode:
-                                            widget.isRangeCalendar
-                                                ? RangeSelectionMode.toggledOn
-                                                : null,
-                                      ),
-                                      if (widget.isRangeCalendar)
-                                        const Divider(
-                                          height: 1,
-                                          color: Color(0xFFE8E8E8),
-                                        ),
-                                      if (widget.isRangeCalendar)
-                                        const TimePicker(
-                                          type: DateTimeType.start,
-                                        ),
-                                      if (widget.isRangeCalendar)
-                                        const TimePicker(
-                                          type: DateTimeType.end,
-                                        ),
-                                      Container(
-                                        height: 20.h,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.vertical(
-                                              bottom: Radius.circular(8.r)),
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                        );
-                      });
+
+                  final extra = Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    child: Container(
+                      width: 480.w,
+                      alignment: Alignment.center,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CustomCalendar(
+                            rangeSelectionMode: widget.isRangeCalendar
+                                ? RangeSelectionMode.toggledOn
+                                : null,
+                          ),
+                          if (widget.isRangeCalendar)
+                            const Divider(
+                              height: 1,
+                              color: Color(0xFFE8E8E8),
+                            ),
+                          if (widget.isRangeCalendar)
+                            const TimePicker(
+                              type: DateTimeType.start,
+                            ),
+                          if (widget.isRangeCalendar)
+                            const TimePicker(
+                              type: DateTimeType.end,
+                            ),
+                          Container(
+                            height: 20.h,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.vertical(
+                                  bottom: Radius.circular(8.r)),
+                              border: Border.all(color: Colors.white),
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                  context.pushNamed(DialogPage.routeName, extra: extra);
+                  // showDialog(
+                  //     context: context,
+                  //     builder: (context) {
+                  //       return StatefulBuilder(
+                  //         builder: (BuildContext context,
+                  //             void Function(void Function()) setState) {
+                  //           return Consumer(
+                  //             builder: (BuildContext context, WidgetRef ref,
+                  //                 Widget? child) {
+                  //
+                  //
+                  //               return Dialog(
+                  //                 backgroundColor: Colors.white,
+                  //                 shape: RoundedRectangleBorder(
+                  //                     borderRadius: BorderRadius.circular(8.r)),
+                  //                 child: Column(
+                  //                   mainAxisSize: MainAxisSize.min,
+                  //                   children: [
+                  //                     CustomCalendar(
+                  //                       rangeSelectionMode:
+                  //                           widget.isRangeCalendar
+                  //                               ? RangeSelectionMode.toggledOn
+                  //                               : null,
+                  //                     ),
+                  //                     if (widget.isRangeCalendar)
+                  //                       const Divider(
+                  //                         height: 1,
+                  //                         color: Color(0xFFE8E8E8),
+                  //                       ),
+                  //                     if (widget.isRangeCalendar)
+                  //                       const TimePicker(
+                  //                         type: DateTimeType.start,
+                  //                       ),
+                  //                     if (widget.isRangeCalendar)
+                  //                       const TimePicker(
+                  //                         type: DateTimeType.end,
+                  //                       ),
+                  //                     Container(
+                  //                       height: 20.h,
+                  //                       decoration: BoxDecoration(
+                  //                         borderRadius: BorderRadius.vertical(
+                  //                             bottom: Radius.circular(8.r)),
+                  //                         color: Colors.white,
+                  //                       ),
+                  //                     ),
+                  //                   ],
+                  //                 ),
+                  //               );
+                  //             },
+                  //           );
+                  //         },
+                  //       );
+                  //     });
                 },
                 style: ButtonStyle(
                     shape: MaterialStateProperty.all(RoundedRectangleBorder(
@@ -581,6 +619,31 @@ class NumberFormatter extends TextInputFormatter {
     final formatter =
         NumberFormat.decimalPattern(); // 천단위로 콤마를 표시하고 숫자 앞에 화폐 기호 표시하는 패턴 설정
     String newText = formatter.format(parsedValue); // 입력된 값을 지정한 패턴으로 포멧
+
+    return newValue.copyWith(
+        text: newText,
+        selection:
+            TextSelection.collapsed(offset: newText.length)); // 커서를 마지막으로 이동
+  }
+}
+
+class MoneyFormatter extends TextInputFormatter {
+  MoneyFormatter();
+
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    // 아무 값이 없을 경우 (값을 지운경우) 지운 값을 그대로 설정
+    if (newValue.selection.baseOffset == 0) {
+      return newValue;
+    }
+
+    // 새로 입력된 값을 포멧
+    final int parsedValue = int.parse(
+        newValue.text); // NumberFormat은 숫자 값만 받을 수 있기 때문에 문자를 숫자로 먼저 변환
+    final formatter =
+        NumberFormat.decimalPattern(); // 천단위로 콤마를 표시하고 숫자 앞에 화폐 기호 표시하는 패턴 설정
+    String newText = '₩ ${formatter.format(parsedValue)}'; // 입력된 값을 지정한 패턴으로 포멧
 
     return newValue.copyWith(
         text: newText,

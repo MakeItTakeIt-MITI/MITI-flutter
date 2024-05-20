@@ -1,0 +1,209 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:miti/auth/provider/auth_provider.dart';
+import 'package:miti/common/component/custom_drop_down_button.dart';
+import 'package:miti/common/model/entity_enum.dart';
+import 'package:miti/game/component/game_state_label.dart';
+import 'package:miti/theme/text_theme.dart';
+import 'package:miti/user/provider/user_pagination_provider.dart';
+import 'package:miti/user/provider/user_provider.dart';
+
+import '../../common/component/default_appbar.dart';
+import '../../common/component/dispose_sliver_pagination_list_view.dart';
+import '../../common/model/default_model.dart';
+import '../../common/model/model_id.dart';
+import '../../common/param/pagination_param.dart';
+import '../../common/provider/pagination_provider.dart';
+import '../../common/provider/scroll_provider.dart';
+import '../../common/repository/base_pagination_repository.dart';
+import '../component/review_card.dart';
+import '../model/review_model.dart';
+import '../param/user_profile_param.dart';
+
+class UserWrittenReviewScreen extends ConsumerStatefulWidget {
+  final UserReviewType type;
+
+  static String get routeName => 'review';
+
+  const UserWrittenReviewScreen({
+    super.key,
+    required this.type,
+  });
+
+  @override
+  ConsumerState<UserWrittenReviewScreen> createState() =>
+      _UserWrittenReviewScreenState();
+}
+
+class _UserWrittenReviewScreenState
+    extends ConsumerState<UserWrittenReviewScreen> {
+  late final ScrollController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = ScrollController();
+  }
+
+  ReviewType? getReviewType(String? value) {
+    switch (value) {
+      case '호스트리뷰':
+        return ReviewType.host;
+      case '게스트리뷰':
+        return ReviewType.guest;
+      default:
+        return null;
+    }
+  }
+
+  Future<void> refresh() async {
+    final id = ref.read(authProvider)!.id!;
+    final reviewType = getReviewType(ref.read(dropDownValueProvider));
+    final provider = widget.type == UserReviewType.written
+        ? userWrittenReviewsPProvider(PaginationStateParam(path: id))
+        : userReceiveReviewsPProvider(PaginationStateParam(path: id))
+            as AutoDisposeStateNotifierProvider<
+                PaginationProvider<Base, DefaultParam,
+                    IBasePaginationRepository<Base, DefaultParam>>,
+                BaseModel>;
+    ref.read(provider.notifier).paginate(
+          path: id,
+          forceRefetch: true,
+          param: UserReviewParam(
+            review_type: reviewType,
+          ),
+          paginationParams: const PaginationParam(page: 1),
+        );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final items = [
+      '호스트리뷰',
+      '게스트리뷰',
+      '전체 보기',
+    ];
+    // final controller = ref.watch(pageScrollControllerProvider);
+    final id = ref.watch(authProvider)!.id!;
+    return NestedScrollView(
+        controller: controller,
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            DefaultAppBar(
+              title: widget.type == UserReviewType.written ? '작성 리뷰' : '내 리뷰',
+              isSliver: true,
+            )
+          ];
+        },
+        body: RefreshIndicator(
+          onRefresh: refresh,
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding:
+                      EdgeInsets.only(right: 14.w, top: 14.h, bottom: 14.h),
+                  child: Row(
+                    children: [
+                      const Spacer(),
+                      CustomDropDownButton(
+                        initValue: '전체 보기',
+                        onChanged: (value) {
+                          changeDropButton(value, id);
+                        },
+                        items: items,
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  final reviewType =
+                      getReviewType(ref.watch(dropDownValueProvider));
+                  final provider = widget.type == UserReviewType.written
+                      ? userWrittenReviewsPProvider(
+                          PaginationStateParam(
+                              path: id)) as AutoDisposeStateNotifierProvider<
+                          PaginationProvider<Base, DefaultParam,
+                              IBasePaginationRepository<Base, DefaultParam>>,
+                          BaseModel>
+                      : userReceiveReviewsPProvider(
+                          PaginationStateParam(path: id));
+                  return SliverPadding(
+                    padding:
+                        EdgeInsets.only(right: 12.w, left: 12.w, bottom: 12.h),
+                    sliver: DisposeSliverPaginationListView(
+                      provider: provider,
+                      itemBuilder:
+                          (BuildContext context, int index, Base pModel) {
+                        if (widget.type == UserReviewType.written) {
+                          pModel as WrittenReviewModel;
+                          return ReviewCard.fromWrittenModel(
+                            model: pModel,
+                          );
+                        } else {
+                          pModel as ReceiveReviewModel;
+                          return ReviewCard.fromReceiveModel(model: pModel);
+                        }
+                      },
+                      skeleton: Container(),
+                      param: UserReviewParam(
+                        review_type: reviewType,
+                      ),
+                      controller: controller,
+                      emptyWidget: getEmptyWidget(widget.type),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ));
+  }
+
+  void changeDropButton(String? value, int id) {
+    ref.read(dropDownValueProvider.notifier).update((state) => value);
+    final reviewType = getReviewType(value);
+    final provider = widget.type == UserReviewType.written
+        ? userWrittenReviewsPProvider(PaginationStateParam(path: id))
+        : userReceiveReviewsPProvider(PaginationStateParam(path: id))
+            as AutoDisposeStateNotifierProvider<
+                PaginationProvider<Base, DefaultParam,
+                    IBasePaginationRepository<Base, DefaultParam>>,
+                BaseModel>;
+    ref.read(provider.notifier).paginate(
+          path: id,
+          forceRefetch: true,
+          param: UserReviewParam(
+            review_type: reviewType,
+          ),
+          paginationParams: const PaginationParam(page: 1),
+        );
+  }
+
+  Widget getEmptyWidget(UserReviewType type) {
+    final title = type == UserReviewType.written ? '작성하신' : '';
+    final content = type == UserReviewType.written
+        ? '경기에 참여하신 후 리뷰를 작성해주세요!'
+        : '다른 사용자에게 먼저 리뷰를 작성해보세요!';
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          '$title 리뷰가 없습니다.',
+          style: MITITextStyle.pageMainTextStyle,
+        ),
+        SizedBox(height: 20.h),
+        Text(
+          content,
+          style: MITITextStyle.pageSubTextStyle,
+        )
+      ],
+    );
+  }
+}

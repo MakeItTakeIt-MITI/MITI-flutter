@@ -22,7 +22,8 @@ class TimePicker extends ConsumerWidget {
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 24.w),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.white),
         color: Colors.white,
       ),
       child: Column(

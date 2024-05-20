@@ -159,7 +159,7 @@ class SignUpForm extends _$SignUpForm {
   }
 
   bool validNickname() {
-    return state.nickname.isNotEmpty ? true : false;
+    return ValidRegExp.userNickname(state.nickname);
   }
 
   bool validEmail() {

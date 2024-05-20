@@ -37,14 +37,17 @@ class TokenProvider extends ChangeNotifier {
   String? redirectLogic(GoRouterState goRouteState) {
     log('redirect start!');
     final tokens = ref.read(authProvider);
-    final loginIn = goRouteState.path == '/login';
+    final loginIn = goRouteState.path == '/home/login';
 
     // 유저 정보가 없는데
     // 로그인중이면 그대로 로그인 페이지에 두고
     // 만약에 로그인중이 아니라면 로그인 페이지로 이동
     if (tokens == null) {
-      log("로그인으로 redirect!!");
-      return loginIn ? null : '/home';
+      log("로그인으로 redirect!! ${goRouteState.path}");
+      if (goRouteState.path == '/info') {
+        return '/home/login';
+      }
+      return loginIn ? null : '/home/login';
     }
 
     if (loginIn) {
@@ -54,7 +57,6 @@ class TokenProvider extends ChangeNotifier {
     return null;
   }
 }
-
 
 final authProvider = StateNotifierProvider<AuthStateNotifier, AuthModel?>(
     (StateNotifierProviderRef<AuthStateNotifier, AuthModel?> ref) {
@@ -80,13 +82,14 @@ class AuthStateNotifier extends StateNotifier<AuthModel?> {
     // autoLogin();
   }
 
-  Future<void> reIssueToken() async {
+  Future<String> reIssueToken() async {
     log("reIssueToken");
 
     final ResponseModel<TokenModel> result = await repository.getReIssueToken();
     state = state?.copyWith(token: result.data!);
     await storage.write(key: 'accessToken', value: state!.token?.access);
     await storage.write(key: 'refreshToken', value: state!.token?.refresh);
+    return state!.token?.access ?? '';
   }
 
   Future<void> autoLogin({BuildContext? context}) async {
@@ -98,7 +101,7 @@ class AuthStateNotifier extends StateNotifier<AuthModel?> {
     final email = await storage.read(key: 'email');
     final nickname = await storage.read(key: 'nickname');
     final is_authenticated = await storage.read(key: 'is_authenticated');
-    if (accessToken != null){
+    if (accessToken != null) {
       state = AuthModel(
         token: TokenModel(
             access: accessToken, refresh: refreshToken, type: tokenType),
@@ -109,7 +112,7 @@ class AuthStateNotifier extends StateNotifier<AuthModel?> {
       );
     }
 
-    if(context != null && context.mounted){
+    if (context != null && context.mounted) {
       context.goNamed(CourtMapScreen.routeName);
     }
   }
@@ -119,5 +122,4 @@ class AuthStateNotifier extends StateNotifier<AuthModel?> {
     // ref.read(memberProvider.notifier).logout();
     state = null;
   }
-
 }

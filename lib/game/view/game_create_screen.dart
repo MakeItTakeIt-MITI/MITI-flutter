@@ -17,86 +17,114 @@ import 'package:miti/court/model/court_model.dart';
 import 'package:miti/court/provider/court_provider.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
+import 'package:miti/theme/text_theme.dart';
 
-import '../../common/view/address_screen.dart';
+import '../../common/provider/router_provider.dart';
+import '../../common/provider/scroll_provider.dart';
 import '../../court/component/court_list_component.dart';
 import '../../util/util.dart';
+import '../model/game_model.dart';
 import '../param/game_param.dart';
 import 'game_create_complete_screen.dart';
 
-class GameCreateScreen extends StatelessWidget {
+class GameCreateScreen extends ConsumerWidget {
   static String get routeName => 'create';
 
   const GameCreateScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: false,
-      body: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return [
-            const DefaultAppBar(
-              isSliver: true,
-              title: '매치 생성',
-            )
-          ];
-        },
-        body: Padding(
-          padding: EdgeInsets.only(
-              left: 16.w,
-              right: 16.w,
-              bottom: MediaQuery.of(context).viewInsets.bottom),
-          child: CustomScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            slivers: [
-              getSpacer(height: 18),
-              SliverToBoxAdapter(
-                child: Text(
-                  '경기 정보',
-                  style: TextStyle(
-                    color: const Color(0xFF222222),
-                    fontSize: 16.sp,
-                    fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.25.sp,
-                  ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bottomPadding = MediaQuery.of(context).viewInsets.bottom > 80.h
+        ? MediaQuery.of(context).viewInsets.bottom - 80.h
+        : 0.0;
+    final controller = ref.watch(pageScrollControllerProvider);
+
+    return NestedScrollView(
+      controller: controller[1],
+      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+        return [
+          const DefaultAppBar(
+            isSliver: true,
+            title: '경기 생성하기',
+          )
+        ];
+      },
+      body: Padding(
+        padding: EdgeInsets.only(
+          left: 16.w,
+          right: 16.w,
+          bottom: bottomPadding,
+        ),
+        child: CustomScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          slivers: <Widget>[
+            getSpacer(height: 18),
+            SliverToBoxAdapter(
+              child: Text(
+                '경기 정보',
+                style: TextStyle(
+                  color: const Color(0xFF222222),
+                  fontSize: 16.sp,
+                  fontFamily: 'Pretendard',
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.25.sp,
                 ),
               ),
-              getSpacer(),
-              _TitleForm(),
-              getSpacer(),
-              _DateForm(),
-              getSpacer(),
-              _AddressForm(),
-              getSpacer(),
-              _ApplyForm(),
-              getSpacer(),
-              _FeeForm(),
-              getSpacer(),
-              _AdditionalInfoForm(),
-              getSpacer(height: 28),
-              SliverToBoxAdapter(child: Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  return TextButton(
-                      onPressed: () async {
-                        final result =
-                            await ref.read(gameCreateProvider.future);
-                        if (context.mounted) {
-                          if (result is ErrorModel) {
-                          } else {
-                            context
-                                .pushNamed(GameCreateCompleteScreen.routeName);
-                          }
-                        }
-                      },
-                      child: Text('매치 생성하기'));
-                },
-              )),
-              getSpacer(height: 29.5),
-            ],
-          ),
+            ),
+            getSpacer(),
+            const _TitleForm(),
+            getSpacer(),
+            const _DateForm(),
+            getSpacer(),
+            const _AddressForm(),
+            getSpacer(),
+            const SliverToBoxAdapter(child: ApplyForm()),
+            getSpacer(),
+            const _FeeForm(),
+            getSpacer(),
+            const _AdditionalInfoForm(),
+            getSpacer(height: 19),
+            SliverToBoxAdapter(child: Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                final valid = ref.watch(gameFormProvider.notifier).formValid();
+                return SizedBox(
+                  height: 48.h,
+                  child: TextButton(
+                      onPressed: valid
+                          ? () async {
+                              final result =
+                                  await ref.read(gameCreateProvider.future);
+                              if (context.mounted) {
+                                if (result is ErrorModel) {
+                                } else {
+                                  final model =
+                                      result as ResponseModel<GameDetailModel>;
+                                  Map<String, String> pathParameters = {
+                                    'gameId': model.data!.id.toString()
+                                  };
+                                  context.pushNamed(
+                                      GameCreateCompleteScreen.routeName,
+                                      pathParameters: pathParameters);
+                                }
+                              }
+                            }
+                          : () {},
+                      style: TextButton.styleFrom(
+                          backgroundColor: valid
+                              ? const Color(0xFF4065F6)
+                              : const Color(0xFFE8E8E8),
+                          fixedSize: Size(double.infinity, 48.h)),
+                      child: Text(
+                        '경기 생성하기',
+                        style: TextStyle(
+                          color: valid ? Colors.white : const Color(0xFF969696),
+                        ),
+                      )),
+                );
+              },
+            )),
+            getSpacer(height: 8),
+          ],
         ),
       ),
     );
@@ -123,11 +151,9 @@ class _TitleForm extends StatelessWidget {
           labelTextStyle: TextStyleUtil.getLabelTextStyle(),
           hintTextStyle: TextStyleUtil.getHintTextStyle(),
           textStyle: TextStyleUtil.getTextStyle(),
-          textInputAction: TextInputAction.next,
           onChanged: (val) {
             ref.read(gameFormProvider.notifier).update(title: val);
           },
-          onNext: () {},
         ));
       },
     );
@@ -161,7 +187,7 @@ class _DateFormState extends ConsumerState<_DateForm> {
         ref
             .read(gameFormProvider.notifier)
             .update(startDateTime: next, endDateTime: endDate);
-        ref.read(gameFormProvider.notifier).validDatetime();
+        ref.read(gameFormProvider.notifier).validDatetimeInteraction();
       }
     });
     ref.listen(dateProvider(DateTimeType.end), (previous, next) {
@@ -173,7 +199,7 @@ class _DateFormState extends ConsumerState<_DateForm> {
         ref
             .read(gameFormProvider.notifier)
             .update(startDateTime: startDate, endDateTime: next);
-        ref.read(gameFormProvider.notifier).validDatetime();
+        ref.read(gameFormProvider.notifier).validDatetimeInteraction();
       }
     });
 
@@ -211,13 +237,8 @@ class AddressComponent extends StatelessWidget {
       children: [
         Text(
           '경기 주소',
-          style: TextStyle(
-            color: const Color(0xFF1C1C1C),
-            fontSize: 12.sp,
-            fontFamily: 'Pretendard',
-            fontWeight: FontWeight.w400,
-            letterSpacing: -0.25.sp,
-          ),
+          style: MITITextStyle.inputLabelIStyle
+              .copyWith(color: const Color(0xFF999999)),
         ),
         SizedBox(height: 10.h),
         Container(
@@ -260,7 +281,6 @@ class AddressComponent extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (_) => KpostalView(
-                                  // kakaoKey: '70c742501212b21cb4303ea86cccd074',
                                   callback: (Kpostal kpostal) async {
                                     log('result  =${kpostal}');
                                     final newCourt = court.copyWith(
@@ -274,19 +294,14 @@ class AddressComponent extends StatelessWidget {
                                     if (result is ErrorModel) {
                                     } else {
                                       result as ResponseModel<
-                                          PaginationModel<CourtAddressModel>>;
+                                          PaginationModel<CourtSearchModel>>;
                                       if (context.mounted) {
                                         if (result
                                             .data!.page_content.isNotEmpty) {
-                                          showDialog(
-                                              context: context,
-                                              builder: (_) {
-                                                return Dialog(
-                                                  child: CourtListComponent(
-                                                    model: result,
-                                                  ),
-                                                );
-                                              });
+                                          final extra = CourtListComponent(
+                                            model: result,
+                                          );
+                                          context.pushNamed(DialogPage.routeName, extra: extra);
                                         }
                                       }
                                     }
@@ -396,19 +411,17 @@ class _AddressFormState extends ConsumerState<_AddressForm> {
   }
 }
 
-class _ApplyForm extends ConsumerWidget {
-  const _ApplyForm({super.key});
+class ApplyForm extends ConsumerWidget {
+  final String? initMaxValue;
+  final String? initMinValue;
 
-  bool validForm(String min_invitation, String max_invitation) {
-    if (min_invitation.isNotEmpty && max_invitation.isNotEmpty) {
-      if (int.parse(min_invitation) >= int.parse(max_invitation)) {
-        return false;
-      } else if (int.parse(max_invitation) <= 0) {
-        return false;
-      }
-    }
-    return true;
-  }
+  const ApplyForm({
+    super.key,
+    this.initMaxValue,
+    this.initMinValue,
+  });
+
+
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -417,86 +430,85 @@ class _ApplyForm extends ConsumerWidget {
     final min_invitation =
         ref.watch(gameFormProvider.select((value) => value.min_invitation));
 
-    return SliverToBoxAdapter(
-      child: Column(
-        children: [
-          SizedBox(
-            height: 85.h,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Flexible(
-                  child: CustomTextFormField(
-                    hintText: '0',
-                    label: '총 모집 인원',
-                    labelTextStyle: TextStyleUtil.getLabelTextStyle(),
-                    hintTextStyle: TextStyleUtil.getHintTextStyle(),
-                    textStyle: TextStyleUtil.getTextStyle(),
-                    textAlign: TextAlign.center,
-                    textInputAction: TextInputAction.next,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      NumberFormatter(),
-                    ],
-                    onChanged: (val) {
-                      ref
-                          .read(gameFormProvider.notifier)
-                          .update(max_invitation: val);
-                    },
-                  ),
+    return Column(
+      children: [
+        SizedBox(
+          height: 85.h,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Flexible(
+                child: CustomTextFormField(
+                  initialValue: initMaxValue,
+                  hintText: '0',
+                  label: '총 모집 인원',
+                  labelTextStyle: TextStyleUtil.getLabelTextStyle(),
+                  hintTextStyle: TextStyleUtil.getHintTextStyle(),
+                  textStyle: TextStyleUtil.getTextStyle(),
+                  textAlign: TextAlign.center,
+                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    NumberFormatter(),
+                  ],
+                  onChanged: (val) {
+                    ref
+                        .read(gameFormProvider.notifier)
+                        .update(max_invitation: val);
+                  },
                 ),
-                SizedBox(width: 17.w),
-                Flexible(
-                  child: CustomTextFormField(
-                    hintText: '0',
-                    label: '최소 모집 인원',
-                    labelTextStyle: TextStyleUtil.getLabelTextStyle(),
-                    hintTextStyle: TextStyleUtil.getHintTextStyle(),
-                    textStyle: TextStyleUtil.getTextStyle(),
-                    textAlign: TextAlign.center,
-                    textInputAction: TextInputAction.next,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      NumberFormatter(),
-                    ],
-                    onChanged: (val) {
-                      ref
-                          .read(gameFormProvider.notifier)
-                          .update(min_invitation: val);
-                    },
-                  ),
+              ),
+              SizedBox(width: 17.w),
+              Flexible(
+                child: CustomTextFormField(
+                  initialValue: initMinValue,
+                  hintText: '0',
+                  label: '최소 모집 인원',
+                  labelTextStyle: TextStyleUtil.getLabelTextStyle(),
+                  hintTextStyle: TextStyleUtil.getHintTextStyle(),
+                  textStyle: TextStyleUtil.getTextStyle(),
+                  textAlign: TextAlign.center,
+                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    NumberFormatter(),
+                  ],
+                  onChanged: (val) {
+                    ref
+                        .read(gameFormProvider.notifier)
+                        .update(min_invitation: val);
+                  },
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          if (!validForm(min_invitation, max_invitation))
-            Row(
-              children: [
-                SizedBox(
-                  height: 14.r,
-                  width: 14.r,
-                  child:
-                      SvgPicture.asset('assets/images/icon/system_alert.svg'),
+        ),
+        if (!ValidRegExp.validForm(min_invitation, max_invitation))
+          Row(
+            children: [
+              SizedBox(
+                height: 14.r,
+                width: 14.r,
+                child: SvgPicture.asset('assets/images/icon/system_alert.svg'),
+              ),
+              SizedBox(width: 4.w),
+              Text(
+                int.parse(max_invitation) <= 0
+                    ? '총 모집 인원은 0명 이상이어야해요.'
+                    : '총 모집 인원은 최소 모집 인원보다 많아야해요.',
+                style: TextStyle(
+                  color: const Color(0xFFE92C2C),
+                  fontSize: 13.sp,
+                  fontFamily: 'Pretendard',
+                  fontWeight: FontWeight.w400,
+                  letterSpacing: -0.25.sp,
                 ),
-                SizedBox(width: 4.w),
-                Text(
-                  int.parse(max_invitation) <= 0
-                      ? '총 모집 인원은 0명 이상이어야해요.'
-                      : '총 모집 인원은 최소 모집 인원보다 많아야해요.',
-                  style: TextStyle(
-                    color: const Color(0xFFE92C2C),
-                    fontSize: 13.sp,
-                    fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w400,
-                    letterSpacing: -0.25.sp,
-                  ),
-                ),
-              ],
-            ),
-        ],
-      ),
+              ),
+            ],
+          ),
+      ],
     );
   }
 }
@@ -552,18 +564,13 @@ class _AdditionalInfoForm extends ConsumerWidget {
         children: [
           Text(
             '추가 정보',
-            style: TextStyle(
-              color: const Color(0xFF999999),
-              fontSize: 14.sp,
-              fontFamily: 'Pretendard',
-              fontWeight: FontWeight.w400,
-              height: 1.4,
-              letterSpacing: -0.25.sp,
-            ),
+            style: MITITextStyle.inputLabelIStyle
+                .copyWith(color: const Color(0xFF999999)),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 10.h),
           ConstrainedBox(
             constraints: BoxConstraints(
+              minHeight: 68.h,
               maxHeight: 300.h,
             ),
             child: Scrollbar(
@@ -571,14 +578,10 @@ class _AdditionalInfoForm extends ConsumerWidget {
                 scrollDirection: Axis.vertical,
                 reverse: true,
                 child: TextField(
-                  textInputAction: TextInputAction.send,
                   maxLines: null,
                   textAlignVertical: TextAlignVertical.top,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: -0.25.sp,
-                    height: 1.6,
-                    fontSize: 16.sp,
+                  style: MITITextStyle.inputValueMStyle.copyWith(
+                    color: Colors.black,
                   ),
                   onChanged: (val) {
                     ref.read(gameFormProvider.notifier).update(info: val);
@@ -588,16 +591,14 @@ class _AdditionalInfoForm extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(8.r),
                       borderSide: BorderSide.none,
                     ),
+                    constraints: BoxConstraints(
+                      minHeight: 68.h,
+                      maxHeight: 300.h,
+                    ),
                     hintText:
                         '주차, 샤워 가능 여부, 경기 진행 방식, 필요한 유니폼 색상 등 참가들에게 공지할 정보들을 입력해주세요',
-                    hintStyle: TextStyle(
-                      color: const Color(0xFF969696),
-                      fontSize: 14.sp,
-                      fontFamily: 'Pretendard',
-                      fontWeight: FontWeight.w500,
-                      height: 1.6,
-                      letterSpacing: -0.25.sp,
-                    ),
+                    hintStyle: MITITextStyle.placeHolderMStyle
+                        .copyWith(color: const Color(0xFF969696)),
                     hintMaxLines: 10,
                     fillColor: const Color(0xFFF7F7F7),
                     filled: true,

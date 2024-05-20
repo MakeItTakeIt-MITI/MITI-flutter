@@ -17,12 +17,13 @@ import 'package:miti/auth/provider/widget/phone_auth_provider.dart';
 import 'package:miti/auth/provider/widget/sign_up_form_provider.dart';
 import 'package:miti/auth/view/phone_auth/phone_auth_send_screen.dart';
 import 'package:miti/common/component/default_appbar.dart';
+import 'package:miti/theme/text_theme.dart';
 
 import '../../../common/component/custom_text_form_field.dart';
 import '../../../common/model/default_model.dart';
 import '../../../common/provider/widget/datetime_provider.dart';
-import '../../../util/provider/date_provider.dart';
 import '../../../util/util.dart';
+import '../../error/auth_error.dart';
 import '../../model/signup_model.dart';
 
 class SignUpScreen extends ConsumerWidget {
@@ -505,6 +506,7 @@ class _EmailFormState extends ConsumerState<EmailForm> {
                   ref.watch(signUpFormProvider.notifier).validEmail()
                       ? const Color(0xFF4065F6)
                       : const Color(0xFFE8E8E8),
+              padding: EdgeInsets.symmetric(vertical: 8.h),
             ),
             child: Text(
               '중복확인',
@@ -640,16 +642,15 @@ class _NicknameFormState extends ConsumerState<NicknameForm> {
                   }
                 },
                 style: TextButton.styleFrom(
-                  backgroundColor:
-                      ref.watch(signUpFormProvider.notifier).validNickname()
-                          ? const Color(0xFF4065F6)
-                          : const Color(0xFFE8E8E8),
-                ),
+                    backgroundColor:
+                        ref.watch(signUpFormProvider.notifier).validNickname()
+                            ? const Color(0xFF4065F6)
+                            : const Color(0xFFE8E8E8),
+                    padding: EdgeInsets.zero,
+                    alignment: Alignment.center),
                 child: Text(
                   '중복확인',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontSize: 12.sp,
+                  style: MITITextStyle.btnRStyle.copyWith(
                     color:
                         ref.watch(signUpFormProvider.notifier).validNickname()
                             ? Colors.white
@@ -869,42 +870,49 @@ class _NextButtonState extends ConsumerState<_NextButton> {
             ),
           ),
         if (!show) SizedBox(height: 16.h),
-        TextButton(
-            onPressed: () async {
-              if (validNext) {
-                if (!show && progress == 5) {
-                  final model = ref.read(signUpFormProvider);
-                  final param = SignUpParam.fromForm(model: model);
-                  final result =
-                      await ref.read(signUpProvider(param: param).future);
-                  if (result is ErrorModel) {
-                    log('error');
-                  } else {
-                    ref.read(
-                        requestSMSProvider(type: PhoneAuthType.signup).future);
-                    log('회원가입!');
-                    if (context.mounted) {
-                      context.goNamed(PhoneAuthSendScreen.routeName);
+        SizedBox(
+          height: 48.h,
+          child: TextButton(
+              onPressed: () async {
+                if (validNext) {
+                  if (!show && progress == 5) {
+                    final model = ref.read(signUpFormProvider);
+                    final param = SignUpParam.fromForm(model: model);
+                    final result =
+                        await ref.read(signUpProvider(param: param).future);
+                    if (result is ErrorModel) {
+                      log('error');
+                      if (context.mounted) {
+                        AuthError.fromModel(model: result)
+                            .responseError(context, AuthApiType.signup, ref);
+                      }
+                    } else {
+                      ref.read(requestSMSProvider(type: PhoneAuthType.signup)
+                          .future);
+                      log('회원가입!');
+                      if (context.mounted) {
+                        context.goNamed(PhoneAuthSendScreen.routeName);
+                      }
                     }
+                  } else if (show) {
+                    ref.read(progressProvider.notifier).hideDetail();
+                  } else {
+                    ref.read(progressProvider.notifier).nextProgress();
                   }
-                } else if (show) {
-                  ref.read(progressProvider.notifier).hideDetail();
-                } else {
-                  ref.read(progressProvider.notifier).nextProgress();
                 }
-              }
-            },
-            style: TextButton.styleFrom(
-                backgroundColor: validNext
-                    ? const Color(0xFF4065F6)
-                    : const Color(0xFFE8E8E8)),
-            child: Text(
-              buttonText,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14.sp,
-                  color: validNext ? Colors.white : const Color(0xFF969696)),
-            )),
+              },
+              style: TextButton.styleFrom(
+                  backgroundColor: validNext
+                      ? const Color(0xFF4065F6)
+                      : const Color(0xFFE8E8E8)),
+              child: Text(
+                buttonText,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14.sp,
+                    color: validNext ? Colors.white : const Color(0xFF969696)),
+              )),
+        ),
         SizedBox(height: 48.h),
       ],
     );

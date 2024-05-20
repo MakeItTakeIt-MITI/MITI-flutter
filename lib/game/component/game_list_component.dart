@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
+import 'package:miti/theme/text_theme.dart';
 
 import '../../common/model/entity_enum.dart';
 import '../../court/model/court_model.dart';
@@ -12,15 +13,15 @@ import 'game_state_label.dart';
 
 class GameCardByDate extends StatelessWidget {
   final String dateTime;
-  final List<GameModel> models;
+  final List<GameBaseModel> models;
 
   const GameCardByDate(
       {super.key, required this.dateTime, required this.models});
 
   factory GameCardByDate.fromModel({required GameListByDateModel model}) {
     return GameCardByDate(
-      dateTime: model.datetime,
-      models: model.models,
+      dateTime: model.startdate,
+      models: model.games,
     );
   }
 
@@ -31,13 +32,8 @@ class GameCardByDate extends StatelessWidget {
       children: [
         Text(
           dateTime,
-          style: TextStyle(
-            color: const Color(0xFF040000),
-            fontSize: 12.sp,
-            fontFamily: 'Pretendard',
-            fontWeight: FontWeight.w700,
-            letterSpacing: -0.25.sp,
-          ),
+          style: MITITextStyle.sectionTitleStyle
+              .copyWith(color: const Color(0xFF040000)),
         ),
         SizedBox(height: 10.h),
         ListView.separated(
@@ -65,7 +61,6 @@ class GameCard extends StatelessWidget {
   final String starttime;
   final String enddate;
   final String endtime;
-  final int fee;
   final CourtModel court;
 
   const GameCard({
@@ -76,12 +71,11 @@ class GameCard extends StatelessWidget {
     required this.starttime,
     required this.enddate,
     required this.endtime,
-    required this.fee,
     required this.court,
     required this.id,
   });
 
-  factory GameCard.fromModel({required GameModel model}) {
+  factory GameCard.fromModel({required GameBaseModel model}) {
     return GameCard(
       game_status: model.game_status,
       title: model.title,
@@ -89,7 +83,6 @@ class GameCard extends StatelessWidget {
       starttime: model.starttime,
       enddate: model.enddate,
       endtime: model.endtime,
-      fee: model.fee,
       court: model.court,
       id: model.id,
     );
@@ -97,13 +90,12 @@ class GameCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final descStyle = TextStyle(
+    final descStyle = MITITextStyle.courtAddressCardStyle.copyWith(
       color: const Color(0xFF999999),
-      fontSize: 12.sp,
-      fontFamily: 'Pretendard',
-      fontWeight: FontWeight.w500,
-      letterSpacing: -0.25.sp,
     );
+
+    final startTime = starttime.substring(0, 5);
+    final endTime = endtime.substring(0, 5);
     return InkWell(
       onTap: () {
         Map<String, String> pathParameters = {'gameId': id.toString()};
@@ -130,16 +122,13 @@ class GameCard extends StatelessWidget {
                   title,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
-                  style: TextStyle(
+                  style: MITITextStyle.gameTitleCardLStyle.copyWith(
                     color: const Color(0xFF333333),
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.25.sp,
                   ),
                 ),
                 SizedBox(height: 6.h),
                 Text(
-                  '${court.address} ${court.address_detail}',
+                  '${court.address} ${court.address_detail ?? ''}',
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   style: descStyle,
@@ -147,8 +136,8 @@ class GameCard extends StatelessWidget {
                 SizedBox(height: 2.h),
                 Text(
                   startdate == enddate
-                      ? '$starttime ~ $endtime'
-                      : '$startdate $starttime ~ $enddate $endtime',
+                      ? '$startTime ~ $endTime'
+                      : '$startdate $startTime ~ $enddate $endTime',
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   style: descStyle,

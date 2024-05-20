@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
 
 part 'court_model.g.dart';
@@ -7,7 +8,7 @@ part 'court_model.g.dart';
 @JsonSerializable()
 class CourtModel extends IModelWithId {
   final String address;
-  final String address_detail;
+  final String? address_detail;
   final String latitude;
   final String longitude;
 
@@ -57,4 +58,21 @@ class CourtAddressModel extends IModelWithId {
 
   factory CourtAddressModel.fromJson(Map<String, dynamic> json) =>
       _$CourtAddressModelFromJson(json);
+}
+
+@JsonSerializable()
+class CourtSearchModel extends CourtModel {
+  final String name;
+
+  CourtSearchModel({
+    required super.id,
+    required super.address,
+    required super.address_detail,
+    required super.latitude,
+    required super.longitude,
+    required this.name,
+  });
+
+  factory CourtSearchModel.fromJson(Map<String, dynamic> json) =>
+      _$CourtSearchModelFromJson(json);
 }

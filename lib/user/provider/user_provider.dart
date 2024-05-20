@@ -1,10 +1,12 @@
 import 'package:intl/intl.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/common/param/pagination_param.dart';
+import 'package:miti/user/provider/user_form_provider.dart';
 import 'package:miti/user/repository/user_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../auth/model/auth_model.dart';
+import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../game/model/game_model.dart';
@@ -17,56 +19,134 @@ enum UserGameType {
   participation,
 }
 
+enum UserReviewType {
+  written('written'),
+  receive('receive');
+
+  const UserReviewType(this.value);
+
+  final String value;
+
+  static UserReviewType stringToEnum({required String value}) {
+    return UserReviewType.values.firstWhere((e) => e.value == value);
+  }
+}
+
 @Riverpod(keepAlive: false)
-class UserHosting extends _$UserHosting {
+class Review extends _$Review {
   @override
-  BaseModel build({required UserGameType type}) {
-    getHosting(paginationParam: const PaginationParam(page: 1), type: type);
+  BaseModel build({required UserReviewType type, required int reviewId}) {
+    getReviews(type: type, reviewId: reviewId);
     return LoadingModel();
   }
 
-  void getHosting(
-      {required UserGameType type,
-      required PaginationParam paginationParam,
-      GameStatus? game_status}) async {
+  void getReviews({
+    required UserReviewType type,
+    required int reviewId,
+  }) async {
     state = LoadingModel();
     final repository = ref.watch(userRepositoryProvider);
     final id = ref.read(authProvider)!.id!;
-    ResponseModel<PaginationModel<GameModel>> model;
     switch (type) {
-      case UserGameType.host:
-        model = await repository.getHostGame(
-            userId: id,
-            paginationParam: paginationParam,
-            game_status: game_status);
+      case UserReviewType.written:
+        state =
+            await repository.getWrittenReview(userId: id, reviewId: reviewId);
         break;
       default:
-        model = await repository.getParticipationGame(
-            userId: id,
-            paginationParam: paginationParam,
-            game_status: game_status);
+        state =
+            await repository.getReceiveReview(userId: id, reviewId: reviewId);
         break;
     }
-
-    Map<String, List<GameModel>> models = {};
-    for (GameModel v in model.data!.page_content) {
-      final formatDate =
-          DateFormat('yyyy년 MM월 dd일', 'ko').format(DateTime.parse(v.startdate));
-      if (models.containsKey(formatDate)) {
-        models[formatDate]!.add(v);
-      } else {
-        models[formatDate] = [v];
-      }
-    }
-    List<GameListByDateModel> insertData = [];
-    for (var key in models.keys) {
-      insertData.add(GameListByDateModel(datetime: key, models: models[key]!));
-    }
-    state = PaginationModel<GameListByDateModel>(
-      start_index: model.data?.start_index ?? 1,
-      end_index: model.data?.end_index ?? 1,
-      current_index: model.data?.current_index ?? 1,
-      page_content: insertData,
-    );
   }
+}
+
+@riverpod
+class UserInfo extends _$UserInfo {
+  @override
+  BaseModel build() {
+    getUserInfo();
+    return LoadingModel();
+  }
+
+  void getUserInfo() async {
+    state = LoadingModel();
+    final repository = ref.watch(userRepositoryProvider);
+    final id = ref.read(authProvider)!.id!;
+    await repository.getUserInfo(userId: id).then((value) {
+      logger.i(value);
+      state = value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state = error;
+    });
+  }
+
+  void updateNickname(String newNickname) {
+    final newData = (state as ResponseModel<UserModel>)
+        .data!
+        .copyWith(nickname: newNickname);
+    state = (state as ResponseModel<UserModel>).copyWith(data: newData);
+  }
+}
+
+@riverpod
+Future<BaseModel> deleteUser(DeleteUserRef ref) async {
+  final userId = ref.watch(authProvider)!.id!;
+  return await ref
+      .watch(userRepositoryProvider)
+      .deleteUser(userId: userId)
+      .then<BaseModel>((value) {
+    logger.i(value);
+    ref.read(authProvider.notifier).logout();
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
+}
+
+@riverpod
+Future<BaseModel> updateNickname(UpdateNicknameRef ref) async {
+  final userId = ref.watch(authProvider)!.id!;
+  final param = ref.watch(userNicknameFormProvider);
+  return await ref
+      .watch(userRepositoryProvider)
+      .updateNickname(userId: userId, param: param)
+      .then<BaseModel>((value) {
+    logger.i(value);
+    final result = ref.watch(userInfoProvider);
+
+    // final model = (result as ResponseModel<UserModel>).data!;
+
+    ref.read(userInfoProvider.notifier).updateNickname(param.nickname!);
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
+}
+
+@riverpod
+Future<BaseModel> updatePassword(UpdatePasswordRef ref) async {
+  final userId = ref.watch(authProvider)!.id!;
+  final param = ref.watch(userPasswordFormProvider);
+  return await ref
+      .watch(userRepositoryProvider)
+      .updatePassword(userId: userId, param: param)
+      .then<BaseModel>((value) {
+    logger.i(value);
+    ref.read(userInfoProvider.notifier).getUserInfo();
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
 }

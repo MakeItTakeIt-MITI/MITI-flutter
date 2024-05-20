@@ -16,6 +16,7 @@ import 'package:miti/court/component/court_component.dart';
 import 'package:miti/game/component/game_state_label.dart';
 import 'package:miti/game/param/game_param.dart';
 import 'package:miti/game/provider/game_provider.dart';
+import 'package:miti/theme/text_theme.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:collection/collection.dart';
 
@@ -52,7 +53,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen> {
     super.initState();
     _draggableScrollableController = DraggableScrollableController();
 
-    _permission();
+    // _permission();
     getLocation();
   }
 
@@ -98,6 +99,11 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen> {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
       ref.read(positionProvider.notifier).update((state) => position);
+      _mapController?.updateCamera(NCameraUpdate.scrollAndZoomTo(
+          target: NLatLng(
+        position.latitude,
+        position.longitude,
+      )));
     } catch (e) {
       print(e);
     }
@@ -138,9 +144,9 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen> {
           },
         ),
         DraggableScrollableSheet(
-          initialChildSize: 0.15,
+          initialChildSize: 0.12,
           maxChildSize: 0.9,
-          minChildSize: 0.15,
+          minChildSize: 0.12,
           snap: true,
           controller: _draggableScrollableController,
           builder: (BuildContext context, ScrollController scrollController) {
@@ -173,28 +179,50 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen> {
                           ),
                         ),
                         SizedBox(height: 12.h),
-                        SizedBox(
-                          height: 60.h,
-                          child: ListView.separated(
-                              padding: EdgeInsets.symmetric(horizontal: 12.w),
-                              scrollDirection: Axis.horizontal,
-                              shrinkWrap: true,
-                              itemBuilder: (_, idx) {
-                                return DateBox(
-                                  day: DateTime.parse(day[idx][0]),
-                                  dayOfWeek: day[idx][1],
-                                );
-                              },
-                              separatorBuilder: (_, idx) {
-                                return SizedBox(width: 16.w);
-                              },
-                              itemCount: day.length),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 12.w),
+                            child: Row(
+                              children: [
+                                ...day.mapIndexed((idx, element) {
+                                  return Row(
+                                    children: [
+                                      DateBox(
+                                        day: DateTime.parse(day[idx][0]),
+                                        dayOfWeek: day[idx][1],
+                                      ),
+                                      if (idx != day.length - 1)
+                                        SizedBox(width: 16.w),
+                                    ],
+                                  );
+                                })
+                              ],
+                            ),
+                          ),
                         ),
+                        // SizedBox(
+                        //   height: 60.h,
+                        //   child: ListView.separated(
+                        //       padding: EdgeInsets.symmetric(horizontal: 12.w),
+                        //       scrollDirection: Axis.horizontal,
+                        //       shrinkWrap: true,
+                        //       itemBuilder: (_, idx) {
+                        //         return DateBox(
+                        //           day: DateTime.parse(day[idx][0]),
+                        //           dayOfWeek: day[idx][1],
+                        //         );
+                        //       },
+                        //       separatorBuilder: (_, idx) {
+                        //         return SizedBox(width: 16.w);
+                        //       },
+                        //       itemCount: day.length),
+                        // ),
                       ],
                     ),
                   ),
                   SliverToBoxAdapter(
-                    child: SizedBox(height: 25.h),
+                    child: SizedBox(height: 14.h),
                   ),
                   Consumer(
                     builder:
@@ -214,27 +242,12 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen> {
                           SliverToBoxAdapter(
                             child: Text(
                               '${modelList.length}개의 매치',
-                              style: TextStyle(
+                              style: MITITextStyle.selectionDayStyle.copyWith(
                                 color: const Color(0xFF333333),
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: -0.25.sp,
                               ),
                             ),
                           ),
-                          SliverPadding(
-                            padding: EdgeInsets.symmetric(vertical: 12.h),
-                            sliver: SliverList.separated(
-                              itemBuilder: (_, idx) {
-                                return CourtCard.fromModel(
-                                    model: modelList[idx]);
-                              },
-                              separatorBuilder: (_, idx) {
-                                return SizedBox(height: 12.h);
-                              },
-                              itemCount: modelList.length,
-                            ),
-                          ),
+                          _getCourtComponent(modelList),
                         ]),
                       );
                     },
@@ -245,6 +258,43 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen> {
           },
         )
       ],
+    );
+  }
+
+  Widget _getCourtComponent(List<GameModel> modelList) {
+    if (modelList.isEmpty) {
+      return SliverToBoxAdapter(
+          child: Column(
+        children: [
+          SizedBox(height: 12.h),
+          SvgPicture.asset(
+            'assets/images/icon/system_alert.svg',
+            height: 70.r,
+            width: 70.r,
+            colorFilter:
+                const ColorFilter.mode(Color(0xFF999999), BlendMode.srcIn),
+          ),
+          SizedBox(height: 24.h),
+          Text(
+            '경기가 없습니다.\n경기를 직접 호스팅해보세요!',
+            style: MITITextStyle.pageSubTextStyle
+                .copyWith(color: const Color(0xFF999999)),
+            textAlign: TextAlign.center,
+          )
+        ],
+      ));
+    }
+    return SliverPadding(
+      padding: EdgeInsets.symmetric(vertical: 12.h),
+      sliver: SliverList.separated(
+        itemBuilder: (_, idx) {
+          return CourtCard.fromModel(model: modelList[idx]);
+        },
+        separatorBuilder: (_, idx) {
+          return SizedBox(height: 12.h);
+        },
+        itemCount: modelList.length,
+      ),
     );
   }
 
@@ -267,11 +317,12 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen> {
     final List<MapMarkerModel> markerList = [];
     for (MapPosition key in markers.keys) {
       final GameModel model = markers[key]!.first;
+      final fee = NumberFormat.decimalPattern().format(model.fee);
 
       markerList.add(MapMarkerModel(
           time:
               '${model.starttime.substring(0, 5)}-${model.endtime.substring(0, 5)}',
-          cost: '₩${model.fee}',
+          cost: '₩$fee',
           moreCnt: markers[key]!.length,
           id: model.id,
           latitude: key.latitude,
@@ -428,22 +479,15 @@ class CourtCard extends StatelessWidget {
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
+                    style: MITITextStyle.gameTitleMainStyle.copyWith(
                       color: const Color(0xFF333333),
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.25.sp,
                     ),
                   ),
                   SizedBox(height: 3.h),
                   Text(
                     '${starttime.substring(0, 5)} ~ ${endtime.substring(0, 5)}',
-                    style: TextStyle(
+                    style: MITITextStyle.gameTimeCardMStyle.copyWith(
                       color: const Color(0xFF999999),
-                      fontSize: 12.sp,
-                      fontFamily: 'Pretendard',
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: -0.25.sp,
                     ),
                   ),
                   SizedBox(height: 3.h),
@@ -456,12 +500,9 @@ class CourtCard extends StatelessWidget {
                           SizedBox(width: 5.w),
                           Text(
                             '$num_of_participations/$max_invitation',
-                            style: TextStyle(
+                            style:
+                                MITITextStyle.participationCardStyle.copyWith(
                               color: const Color(0xFF444444),
-                              fontSize: 12.sp,
-                              fontFamily: 'Pretendard',
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: -0.25.sp,
                             ),
                           )
                         ],
@@ -469,11 +510,8 @@ class CourtCard extends StatelessWidget {
                       Text(
                         '₩$fee',
                         textAlign: TextAlign.right,
-                        style: TextStyle(
+                        style: MITITextStyle.feeStyle.copyWith(
                           color: const Color(0xFF4065F6),
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: -0.25.sp,
                         ),
                       )
                     ],
@@ -511,11 +549,8 @@ class DateBox extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectDay = day.day;
     final selectedDay = ref.watch(selectedDayProvider);
-    final textStyle = TextStyle(
+    final textStyle = MITITextStyle.selectionDayStyle.copyWith(
       color: selectedDay == day ? Colors.white : const Color(0xFF707070),
-      fontSize: 14.sp,
-      fontWeight: FontWeight.w500,
-      letterSpacing: -0.25.sp,
     );
     return InkWell(
       onTap: () {
@@ -523,6 +558,7 @@ class DateBox extends ConsumerWidget {
       },
       child: Container(
         width: 60.w,
+        // height: 52.h,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8.r),
           color: selectedDay == day
@@ -531,7 +567,7 @@ class DateBox extends ConsumerWidget {
         ),
         child: Column(
           children: [
-            SizedBox(height: 8.5.h),
+            SizedBox(height: 8.h),
             Text(
               '$selectDay',
               textAlign: TextAlign.center,
@@ -542,7 +578,8 @@ class DateBox extends ConsumerWidget {
               dayOfWeek,
               textAlign: TextAlign.center,
               style: textStyle,
-            )
+            ),
+            SizedBox(height: 8.h),
           ],
         ),
       ),

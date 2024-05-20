@@ -164,7 +164,8 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
               final interactionDesc =
                   ref.watch(formDescProvider(InputFormType.login));
-              final isVisible = ref.watch(passwordVisibleProvider);
+              final isVisible =
+                  ref.watch(passwordVisibleProvider(PasswordFormType.password));
               return CustomTextFormField(
                 focusNode: focusNodes[1],
                 textEditingController: passwordController,
@@ -176,7 +177,9 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
                     ? IconButton(
                         onPressed: () {
                           ref
-                              .read(passwordVisibleProvider.notifier)
+                              .read(passwordVisibleProvider(
+                                      PasswordFormType.password)
+                                  .notifier)
                               .update((state) => !state);
                         },
                         icon: Icon(isVisible
@@ -229,6 +232,7 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
       final result = await ref.read(loginProvider.future);
       if (mounted) {
         if (result is ErrorModel) {
+
           AuthError.fromModel(model: result)
               .responseError(context, AuthApiType.login, ref);
         } else {
@@ -300,7 +304,8 @@ class KakaoLoginButton extends ConsumerWidget {
           OauthLoginParam(access_token: token.accessToken);
       final result = await ref.read(oauthLoginProvider(param: param).future);
       if (result is ErrorModel) {
-        AuthError.fromModel(model: result).responseError(context, AuthApiType.oauth, ref);
+        AuthError.fromModel(model: result)
+            .responseError(context, AuthApiType.oauth, ref);
         throw Exception();
       } else {
         if (context.mounted) {

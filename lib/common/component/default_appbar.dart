@@ -3,6 +3,7 @@ import 'package:flutter/src/foundation/diagnostics.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miti/theme/text_theme.dart';
 
 class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
@@ -46,11 +47,8 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: Text(
         title ?? '',
-        style: TextStyle(
+        style: MITITextStyle.pageNameStyle.copyWith(
           color: Colors.black,
-          fontSize: 16.sp,
-          fontWeight: FontWeight.w700,
-          letterSpacing: -0.25.sp,
         ),
       ),
       backgroundColor: backgroundColor ?? Colors.white,
