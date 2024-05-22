@@ -36,21 +36,22 @@ class _BankTransferScreenState extends ConsumerState<BankTransferScreen> {
     super.initState();
     controller = ScrollController();
   }
+
   Future<void> refresh() async {
     final userId = ref.read(authProvider)!.id!;
     final value = ref.read(dropDownValueProvider);
     final status = getStatus(value!);
     log('status = ${status}');
     final provider =
-    bankTransferPageProvider(PaginationStateParam(path: userId));
+        bankTransferPageProvider(PaginationStateParam(path: userId));
     ref.read(provider.notifier).paginate(
-      path: userId,
-      forceRefetch: true,
-      param: BankTransferPaginationParam(
-        status: status,
-      ),
-      paginationParams: const PaginationParam(page: 1),
-    );
+          path: userId,
+          forceRefetch: true,
+          param: BankTransferPaginationParam(
+            status: status,
+          ),
+          paginationParams: const PaginationParam(page: 1),
+        );
   }
 
   @override
@@ -101,15 +102,16 @@ class _BankTransferScreenState extends ConsumerState<BankTransferScreen> {
                 return DisposeSliverPaginationListView(
                     provider: bankTransferPageProvider(
                         PaginationStateParam(path: userId)),
-                    itemBuilder: (BuildContext context, int index, Base pModel) {
+                    itemBuilder:
+                        (BuildContext context, int index, Base pModel) {
                       final model = pModel as BankModel;
-
                       return _BankTransferCard.fromModel(
                         model: model,
                       );
                     },
                     skeleton: Container(),
                     controller: controller,
+                    separateSize: 0,
                     emptyWidget: getEmptyWidget());
               },
             ),
@@ -201,7 +203,12 @@ class _BankTransferCard extends ConsumerWidget {
     final selected = ref.watch(selectedProvider);
     return InkWell(
       onTap: () {
-        ref.read(selectedProvider.notifier).update((state) => id);
+        final value = ref.read(selectedProvider);
+        if (value == id) {
+          ref.read(selectedProvider.notifier).update((state) => null);
+        } else {
+          ref.read(selectedProvider.notifier).update((state) => id);
+        }
       },
       child: Container(
         decoration: BoxDecoration(

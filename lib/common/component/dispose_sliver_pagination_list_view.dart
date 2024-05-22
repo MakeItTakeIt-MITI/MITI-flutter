@@ -3,7 +3,9 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:miti/common/component/pagination_list_view.dart';
+import 'package:miti/theme/text_theme.dart';
 
 import '../../user/param/user_profile_param.dart';
 import '../../user/repository/user_repository.dart';
@@ -90,23 +92,17 @@ class _PaginationListViewState<T extends Base>
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'error message',
-              textAlign: TextAlign.center,
+            Text(
+              '일시적으로 화면을 불러올 수 없습니다.\n잠시후 다시 이용해주세요.',
+              style: MITITextStyle.pageMainTextStyle,
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
-                final family = widget.provider.argument
-                    as PaginationStateParam;
-                ref.read(widget.provider.notifier).paginate(
-                      forceRefetch: true,
-                      paginationParams: const PaginationParam(page: 1),
-                      path: family.path,
-                    );
+                context.pop();
               },
               child: const Text(
-                '다시시도',
+                '뒤로가기',
               ),
             ),
           ],

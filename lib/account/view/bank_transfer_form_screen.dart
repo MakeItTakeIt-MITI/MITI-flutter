@@ -180,8 +180,9 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
     FocusNode(),
     FocusNode()
   ];
+
   final items = [
-    '카카오 뱅크',
+    '카카오뱅크',
     '농협은행',
     '국민은행',
     '신한은행',

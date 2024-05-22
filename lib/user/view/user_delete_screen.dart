@@ -7,8 +7,10 @@ import 'package:miti/common/model/default_model.dart';
 import 'package:miti/court/view/court_map_screen.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/provider/user_provider.dart';
+import 'package:miti/user/view/user_delete_success_screen.dart';
 
 import '../../common/component/default_appbar.dart';
+import '../error/user_error.dart';
 
 class UserDeleteScreen extends ConsumerWidget {
   static String get routeName => 'deleteUser';
@@ -49,16 +51,18 @@ class UserDeleteScreen extends ConsumerWidget {
                   TextButton(
                     onPressed: () async {
                       final result = await ref.read(deleteUserProvider.future);
-                      if (result is ErrorModel) {
-                      } else {
-                        if (context.mounted) {
-                          context.goNamed(CourtMapScreen.routeName);
+                      if (context.mounted) {
+                        if (result is ErrorModel) {
+                          UserError.fromModel(model: result)
+                              .responseError(context, UserApiType.delete, ref);
+                        } else {
+                          context.goNamed(UserDeleteSuccessScreen.routeName);
                         }
                       }
                     },
-                    child: Text('탈퇴하기'),
                     style: TextButton.styleFrom(
                         backgroundColor: const Color(0xFFF64061)),
+                    child: const Text('탈퇴하기'),
                   ),
                 ],
               ),

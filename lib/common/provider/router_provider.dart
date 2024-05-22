@@ -46,6 +46,7 @@ import '../../splash_screen.dart';
 import '../../support/view/support_detail_screen.dart';
 import '../../support/view/support_screen.dart';
 import '../../user/provider/user_provider.dart';
+import '../../user/view/user_delete_success_screen.dart';
 import '../../user/view/user_host_list_screen.dart';
 import '../../user/view/user_info_screen.dart';
 import '../../user/view/user_review_screen.dart';
@@ -134,6 +135,17 @@ final routerProvider = Provider<GoRouter>((ref) {
                   return NoTransitionPage(child: CourtMapScreen());
                 },
                 routes: [
+                  GoRoute(
+                    path: 'user/delete',
+                    parentNavigatorKey: shellNavKey,
+                    name: UserDeleteSuccessScreen.routeName,
+                    builder: (context, state) {
+                      return UserDeleteSuccessScreen();
+                    },
+                    pageBuilder: (context, state) {
+                      return NoTransitionPage(child: UserDeleteSuccessScreen());
+                    },
+                  ),
                   GoRoute(
                       path: 'login',
                       parentNavigatorKey: rootNavKey,

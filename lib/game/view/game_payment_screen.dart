@@ -346,19 +346,19 @@ class _PaymentAndRefundPolicyComponent extends StatelessWidget {
             ),
           ),
           Text(
-            '• 경기 시작 12시간 전 : 50% 환급',
+            '• 경기 시작 12시간 전 : 60% 환급',
             style: MITITextStyle.plainTextSStyle.copyWith(
               color: const Color(0xff1c1c1c),
             ),
           ),
           Text(
-            '• 경기 시작 6시간 전 : 75% 환급',
+            '• 경기 시작 6시간 전 : 40% 환급',
             style: MITITextStyle.plainTextSStyle.copyWith(
               color: const Color(0xff1c1c1c),
             ),
           ),
           Text(
-            '• 경기 시작 2시간 전 : 참여 취소 불가',
+            '• 경기 시작 2시간 전 : 20% 환급',
             style: MITITextStyle.plainTextSStyle.copyWith(
               color: const Color(0xff1c1c1c),
             ),

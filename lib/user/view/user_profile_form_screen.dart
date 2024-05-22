@@ -13,7 +13,7 @@ import 'package:miti/common/component/custom_text_form_field.dart';
 import 'package:miti/common/provider/router_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:miti/theme/text_theme.dart';
-import 'package:miti/user/error/auth_error.dart';
+import 'package:miti/user/error/user_error.dart';
 import 'package:miti/user/provider/user_form_provider.dart';
 import 'package:miti/user/provider/user_provider.dart';
 import 'package:miti/user/view/user_info_screen.dart';

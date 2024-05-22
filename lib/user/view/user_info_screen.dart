@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/model/default_model.dart';
-import 'package:miti/game/model/game_model.dart';
 import 'package:miti/support/view/support_screen.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/provider/user_provider.dart';
@@ -19,7 +18,6 @@ import 'package:miti/user/view/user_review_screen.dart';
 import '../../account/view/bank_transfer_form_screen.dart';
 import '../../account/view/bank_transfer_screen.dart';
 import '../../account/view/settlement_screen.dart';
-import '../../auth/view/login_screen.dart';
 import '../../common/provider/scroll_provider.dart';
 import '../../support/view/faq_screen.dart';
 import '../model/user_model.dart';
@@ -54,19 +52,11 @@ class InfoBody extends ConsumerWidget {
                   height: 5.h,
                   color: const Color(0xFFF6F6F6),
                 ),
-                _UserButtonComponent(),
+                const _UserButtonComponent(),
               ],
             ),
           )
         ],
-      ),
-    );
-    return Center(
-      child: TextButton(
-        onPressed: () {
-          context.pushNamed(LoginScreen.routeName);
-        },
-        child: Text('로그인'),
       ),
     );
   }
@@ -74,6 +64,28 @@ class InfoBody extends ConsumerWidget {
 
 class _UserInfoCard extends ConsumerWidget {
   const _UserInfoCard({super.key});
+
+  List<Widget> getStar(double rating) {
+    List<Widget> result = [];
+    for (int i = 0; i < 5; i++) {
+      bool flag = false;
+      if (i == rating.toInt()) {
+        final decimalPoint = rating - rating.toInt();
+        flag = decimalPoint != 0;
+      }
+      final String star = flag
+          ? 'half_star'
+          : rating >= i + 1
+              ? 'fill_star'
+              : 'unfill_star';
+      result.add(SvgPicture.asset(
+        'assets/images/icon/$star.svg',
+        height: 14.r,
+        width: 14.r,
+      ));
+    }
+    return result;
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -97,35 +109,40 @@ class _UserInfoCard extends ConsumerWidget {
                 height: 50.r,
               ),
               SizedBox(width: 12.w),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    model.nickname,
-                    style: MITITextStyle.nicknameTextStyle
-                        .copyWith(color: const Color(0xFF444444)),
-                  ),
-                  SizedBox(height: 9.h),
-                  Text(
-                    model.email,
-                    style: MITITextStyle.emailTextStyle
-                        .copyWith(color: const Color(0xFF969696)),
-                  ),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      model.nickname,
+                      style: MITITextStyle.nicknameTextStyle
+                          .copyWith(color: const Color(0xFF444444)),
+                    ),
+                    SizedBox(height: 3.h),
+                    Text(
+                      model.email,
+                      style: MITITextStyle.emailTextStyle
+                          .copyWith(color: const Color(0xFF969696)),
+                    ),
+                    SizedBox(height: 3.h),
+                    Row(
+                      children: [
+                        ...getStar(model.rating.average_rating),
+                        SizedBox(width: 1.w),
+                        Flexible(
+                          child: Text(
+                            model.rating.average_rating.toStringAsFixed(1),
+                            style: MITITextStyle.emailTextStyle,
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               ),
             ],
           ),
           SizedBox(height: 20.h),
-          Row(
-            children: [
-              getInfoBox(
-                  title: '⭐️ 리뷰 평점',
-                  content: '${model.rating.average_rating} / 5.0'),
-              SizedBox(width: 13.w),
-              getInfoBox(title: '🎯 유저 레벨', content: '상위 10% - MVP'),
-            ],
-          ),
-          SizedBox(height: 12.h),
           Container(
             padding: EdgeInsets.all(8.r),
             decoration: BoxDecoration(
@@ -288,15 +305,6 @@ class _UserButtonComponent extends StatelessWidget {
               itemCount: buttons.length,
             ),
           ),
-          // Consumer(
-          //   builder: (BuildContext context, WidgetRef ref, Widget? child) {
-          //     return TextButton(
-          //         onPressed: () {
-          //           ref.read(tokenProvider.notifier).logout();
-          //         },
-          //         child: Text('임시 로그아웃'));
-          //   },
-          // ),
         ],
       ),
     );

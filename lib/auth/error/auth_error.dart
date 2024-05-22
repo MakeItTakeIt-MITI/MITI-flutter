@@ -51,25 +51,25 @@ class AuthError extends ErrorBase {
       {Object? object}) {
     switch (authApi) {
       case AuthApiType.login:
-        login(context, ref);
+        _login(context, ref);
         break;
       case AuthApiType.signup_check:
-        signupCheck(context, ref);
+        _signupCheck(context, ref);
         break;
       case AuthApiType.signup:
-        signup(context, ref);
+        _signup(context, ref);
         break;
       case AuthApiType.oauth:
-        oauth(context, ref);
+        _oauth(context, ref);
         break;
       case AuthApiType.send_code:
-        sendCode(context, ref, object as FindInfoType);
+        _sendCode(context, ref, object as FindInfoType);
         break;
       case AuthApiType.request_code:
-        requestCode(context, ref);
+        _requestCode(context, ref);
         break;
       case AuthApiType.findInfo:
-        findInfo(context, ref);
+        _findInfo(context, ref);
         break;
       default:
         break;
@@ -77,7 +77,7 @@ class AuthError extends ErrorBase {
   }
 
   /// 일반 로그인 API
-  void login(BuildContext context, WidgetRef ref) {
+  void _login(BuildContext context, WidgetRef ref) {
     if (this.status_code == BadRequest && this.error_code == 101) {
       /// 유효성 검증 실패
       ref
@@ -112,7 +112,7 @@ class AuthError extends ErrorBase {
   }
 
   /// 회원가입정보 중복 확인 API
-  void signupCheck(BuildContext context, WidgetRef ref) {
+  void _signupCheck(BuildContext context, WidgetRef ref) {
     if (this.status_code == BadRequest && this.error_code == 101) {
       /// 데이터 입력값 유효성 실패
     } else if (this.status_code == BadRequest && this.error_code == 120) {
@@ -121,7 +121,7 @@ class AuthError extends ErrorBase {
   }
 
   /// 일반 회원가입 API
-  void signup(BuildContext context, WidgetRef ref) {
+  void _signup(BuildContext context, WidgetRef ref) {
     if (this.status_code == BadRequest && this.error_code == 101) {
       /// 유효성 검증 실패
       log('model.data = ${(model.data['phone'])}');
@@ -144,7 +144,7 @@ class AuthError extends ErrorBase {
   }
 
   /// Oauth 엑세스토큰 로그인 API
-  void oauth(BuildContext context, WidgetRef ref) {
+  void _oauth(BuildContext context, WidgetRef ref) {
     if (this.status_code == BadRequest && this.error_code == 101) {
       /// 토큰 유효성 검증 실패
     } else if (this.status_code == Forbidden && this.error_code == 360) {
@@ -162,7 +162,7 @@ class AuthError extends ErrorBase {
   }
 
   /// SMS 인증코드 입력 API
-  void sendCode(BuildContext context, WidgetRef ref, FindInfoType type) {
+  void _sendCode(BuildContext context, WidgetRef ref, FindInfoType type) {
     if (status_code == BadRequest && error_code == 101) {
       /// 코드 유효성 검증 실패
     } else if (status_code == BadRequest && error_code == 102) {
@@ -225,7 +225,7 @@ class AuthError extends ErrorBase {
   }
 
   /// SMS 전송 - 사용자 인증 API
-  void requestCode(BuildContext context, WidgetRef ref) {
+  void _requestCode(BuildContext context, WidgetRef ref) {
     if (this.status_code == BadRequest && this.error_code == 101) {
       /// 이메일/비밀번호 유효성 검증 실패
     } else if (this.status_code == BadRequest && this.error_code == 440) {
@@ -242,7 +242,7 @@ class AuthError extends ErrorBase {
     }
   }
 
-  void findInfo(BuildContext context, WidgetRef ref) {
+  void _findInfo(BuildContext context, WidgetRef ref) {
     if (this.status_code == NotFound && this.error_code == 101) {
       /// 일치 사용자 없음
       ref
