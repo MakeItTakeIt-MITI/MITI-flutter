@@ -179,11 +179,11 @@ class UserError extends ErrorBase {
   }
 
   /// 내 리뷰 상세 조회 API
-  void _updatePassword(BuildContext context, WidgetRef ref) {
-    if (this.status_code == BadRequest && this.error_code == 101) {
-      /// 이외 에러
-    } else {
-      /// 이외 에러
-    }
-  }
+  // void _updatePassword(BuildContext context, WidgetRef ref) {
+  //   if (this.status_code == BadRequest && this.error_code == 101) {
+  //     /// 이외 에러
+  //   } else {
+  //     /// 이외 에러
+  //   }
+  // }
 }

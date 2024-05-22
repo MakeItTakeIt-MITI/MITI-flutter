@@ -26,28 +26,28 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.VIEW" />-->
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="com.miti.miti" android:pathPrefix="/login/signUpSelect" />
-<!--                <data-->
-<!--                    android:pathPrefix="/login/signUpSelect"-->
-<!--                    android:scheme="miti" />-->
-            </intent-filter>
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                <category android:name="android.intent.category.BROWSABLE" />-->
+<!--                <data android:scheme="https" android:host="com.miti.miti" android:pathPrefix="/login/signUpSelect" />-->
+<!--&lt;!&ndash;                <data&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:pathPrefix="/login/signUpSelect"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:scheme="miti" />&ndash;&gt;-->
+<!--            </intent-filter>-->
 
             <!-- Deep linking -->
-            <meta-data android:name="flutter_deeplinking_enabled" android:value="true" />
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="http" android:host="miti.com" />
-                <data android:scheme="https" />
-                <data android:pathPattern="/kakaopay/.*" />
-<!--                <data android:path="/kakaopay/approval" />-->
-            </intent-filter>
+<!--            <meta-data android:name="flutter_deeplinking_enabled" android:value="true" />-->
+<!--            <intent-filter android:autoVerify="true">-->
+<!--                <action android:name="android.intent.action.VIEW" />-->
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                <category android:name="android.intent.category.BROWSABLE" />-->
+<!--                <data android:scheme="http" android:host="miti.com" />-->
+<!--                <data android:scheme="https" />-->
+<!--                <data android:pathPattern="/kakaopay/.*" />-->
+<!--&lt;!&ndash;                <data android:path="/kakaopay/approval" />&ndash;&gt;-->
+<!--            </intent-filter>-->
         </activity>
 
         <activity

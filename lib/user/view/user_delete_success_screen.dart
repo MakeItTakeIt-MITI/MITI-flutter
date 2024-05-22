@@ -9,7 +9,7 @@ import '../../common/component/default_appbar.dart';
 import '../../theme/text_theme.dart';
 
 class UserDeleteSuccessScreen extends StatelessWidget {
-  static String get routeName => 'deleteUser';
+  static String get routeName => 'deleteSuccessUser';
 
   const UserDeleteSuccessScreen({super.key});
 
