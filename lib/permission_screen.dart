@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,6 +31,7 @@ class _PermissionScreenState extends ConsumerState<PermissionScreen> {
   void _permission() async {
     var requestStatus = await Permission.location.request();
     var status = await Permission.location.status;
+    log('requestStatus = ${requestStatus}');
     if (requestStatus.isGranted && status.isLimited) {
       // isLimited - 제한적 동의 (ios 14 < )
       // 요청 동의됨

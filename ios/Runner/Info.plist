@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -20,9 +22,81 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+
+
+
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>miti.com</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>appscheme</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>FlutterDeepLinkingEnabled</key>
+	<true/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>supertoss</string>
+		<string>kb-acp</string>
+		<string>liivbank</string>
+		<string>newliiv</string>
+		<string>kbbank</string>
+		<string>nhappcardansimclick</string>
+		<string>nhallonepayansimclick</string>
+		<string>nonghyupcardansimclick</string>
+		<string>lottesmartpay</string>
+		<string>lotteappcard</string>
+		<string>mpocket.online.ansimclick</string>
+		<string>ansimclickscard</string>
+		<string>tswansimclick</string>
+		<string>ansimclickipcollect</string>
+		<string>vguardstart</string>
+		<string>samsungpay</string>
+		<string>scardcertiapp</string>
+		<string>shinhan-sr-ansimclick</string>
+		<string>smshinhanansimclick</string>
+		<string>com.wooricard.wcard</string>
+		<string>newsmartpib</string>
+		<string>citispay</string>
+		<string>citicardappkr</string>
+		<string>citimobileapp</string>
+		<string>cloudpay</string>
+		<string>hanawalletmembers</string>
+		<string>hdcardappcardansimclick</string>
+		<string>smhyundaiansimclick</string>
+		<string>shinsegaeeasypayment</string>
+		<string>payco</string>
+		<string>lpayapp</string>
+		<string>ispmobile</string>
+		<string>tauthlink</string>
+		<string>ktauthexternalcall</string>
+		<string>upluscorporation</string>
+		<string>kftc-bankpay</string>
+		<string>kakaotalk</string>
+		<string>wooripay</string>
+		<string>lmslpay</string>
+		<string>naversearchthirdlogin</string>
+		<string>hanaskcardmobileportal</string>
+		<string>kb-bankpay</string>
+		<string>kakaopay</string>
+		<string>kakaotalk</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
@@ -41,94 +115,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-	<key>CFBundleURLTypes</key>
-    	<array>
-    		<dict>
-    			<key>CFBundleTypeRole</key>
-    			<string>Editor</string>
-    			<key>CFBundleURLName</key>
-    			<string>{deeplink_name}</string>
-    			<key>CFBundleURLSchemes</key>
-    			<array>
-    				<string>{scheme}</string>
-    			</array>
-    		</dict>
-    	</array>
-   <key>NSAppTransportSecurity</key>
-    <dict>
-        <key>NSAllowsArbitraryLoads</key>
-        <true/>
-    </dict>
-    <key>FlutterDeepLinkingEnabled</key>
-    <true/>
-    <key>CFBundleURLTypes</key>
-    <array>
-        <dict>
-        <key>CFBundleTypeRole</key>
-        <string>Editor</string>
-        <key>CFBundleURLName</key>
-        <string>miti.com</string>
-        <key>CFBundleURLSchemes</key>
-        <array>
-        <string>appscheme</string>
-        </array>
-        </dict>
-    </array>
 
 
-    <key>LSApplicationQueriesSchemes</key>
-    <array>
-    <string>supertoss</string>
-    <string>kb-acp</string>
-    <string>liivbank</string>
-    <string>newliiv</string>
-    <string>kbbank</string>
-    <string>nhappcardansimclick</string>
-    <string>nhallonepayansimclick</string>
-    <string>nonghyupcardansimclick</string>
-    <string>lottesmartpay</string>
-    <string>lotteappcard</string>
-    <string>mpocket.online.ansimclick</string>
-    <string>ansimclickscard</string>
-    <string>tswansimclick</string>
-    <string>ansimclickipcollect</string>
-    <string>vguardstart</string>
-    <string>samsungpay</string>
-    <string>scardcertiapp</string>
-    <string>shinhan-sr-ansimclick</string>
-    <string>smshinhanansimclick</string>
-    <string>com.wooricard.wcard</string>
-    <string>newsmartpib</string>
-    <string>citispay</string>
-    <string>citicardappkr</string>
-    <string>citimobileapp</string>
-    <string>cloudpay</string>
-    <string>hanawalletmembers</string>
-    <string>hdcardappcardansimclick</string>
-    <string>smhyundaiansimclick</string>
-    <string>shinsegaeeasypayment</string>
-    <string>payco</string>
-    <string>lpayapp</string>
-    <string>ispmobile</string>
-    <string>tauthlink</string>
-    <string>ktauthexternalcall</string>
-    <string>upluscorporation</string>
-    <string>kftc-bankpay</string>
-    <string>kakaotalk</string>
-    <string>wooripay</string>
-    <string>lmslpay</string>
-    <string>naversearchthirdlogin</string>
-    <string>hanaskcardmobileportal</string>
-    <string>kb-bankpay</string>
-    <string>kakaopay</string>
-    <string>kakaotalk</string>
-    </array>
-
-
+	<key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
 </dict>
 </plist>
-//Info.plist

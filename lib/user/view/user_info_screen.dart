@@ -20,6 +20,7 @@ import '../../account/view/bank_transfer_screen.dart';
 import '../../account/view/settlement_screen.dart';
 import '../../common/provider/scroll_provider.dart';
 import '../../support/view/faq_screen.dart';
+import '../../util/util.dart';
 import '../model/user_model.dart';
 
 class InfoBody extends ConsumerWidget {
@@ -159,7 +160,7 @@ class _UserInfoCard extends ConsumerWidget {
                           .copyWith(color: const Color(0xFF333333)),
                     ),
                     Text(
-                      '₩ ${model.account.balance}',
+                      '₩ ${NumberUtil.format(model.account.balance.toString())}',
                       style: MITITextStyle.nicknameCardStyle
                           .copyWith(color: const Color(0xFF333333)),
                     ),

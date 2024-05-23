@@ -463,7 +463,7 @@ class _CustomMapMakerPainter extends CustomPainter {
     // /// x: 왼쪽 paading + basketballWidth + basketball 간격,
     // /// y: 위쪽 subRadius + padding
     timeTextPainter.paint(canvas, Offset(35.5.w, size.height * 0.2));
-    costTextPainter.paint(canvas, Offset(35.5.w, size.height * 0.37));
+    costTextPainter.paint(canvas, Offset(35.5.w, size.height * 0.32));
     if (model.moreCnt > 1) {
       moreCntTextPainter.paint(
           canvas, Offset(size.width * 0.77, subRadius / 10));
