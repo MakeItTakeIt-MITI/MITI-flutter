@@ -95,7 +95,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
 
                 return NavigationDecision.prevent;
               } else if (Platform.isIOS) {
-                log('intent ios 진입');
+                log('intent ios 진입 = ${request.url}');
                 if (await canLaunchUrl(Uri.parse(request.url))) {
                   log('navigate url : ${request.url}');
                   await launchUrl(
