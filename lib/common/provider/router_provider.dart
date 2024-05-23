@@ -89,9 +89,9 @@ final routerProvider = Provider<GoRouter>((ref) {
           builder: (context, state) {
             return SplashScreen();
           },
-          pageBuilder: (context, state) {
-            return NoTransitionPage(child: SplashScreen());
-          },
+          // pageBuilder: (context, state) {
+          //   return NoTransitionPage(child: SplashScreen());
+          // },
         ),
         GoRoute(
             path: '/test',
@@ -114,9 +114,9 @@ final routerProvider = Provider<GoRouter>((ref) {
           builder: (context, state) {
             return PermissionScreen();
           },
-          pageBuilder: (context, state) {
-            return NoTransitionPage(child: PermissionScreen());
-          },
+          // pageBuilder: (context, state) {
+          //   return NoTransitionPage(child: PermissionScreen());
+          // },
         ),
         ShellRoute(
             navigatorKey: shellNavKey,
@@ -131,9 +131,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) {
                   return CourtMapScreen();
                 },
-                pageBuilder: (context, state) {
-                  return NoTransitionPage(child: CourtMapScreen());
-                },
+                // pageBuilder: (context, state) {
+                //   return NoTransitionPage(child: CourtMapScreen());
+                // },
                 routes: [
                   GoRoute(
                     path: 'user/delete',
@@ -142,28 +142,28 @@ final routerProvider = Provider<GoRouter>((ref) {
                     builder: (context, state) {
                       return UserDeleteSuccessScreen();
                     },
-                    pageBuilder: (context, state) {
-                      return NoTransitionPage(child: UserDeleteSuccessScreen());
-                    },
+                    // pageBuilder: (context, state) {
+                    //   return NoTransitionPage(child: UserDeleteSuccessScreen());
+                    // },
                   ),
                   GoRoute(
                       path: 'login',
                       parentNavigatorKey: rootNavKey,
                       name: LoginScreen.routeName,
                       builder: (_, state) => const LoginScreen(),
-                      pageBuilder: (context, state) {
-                        return const NoTransitionPage(child: LoginScreen());
-                      },
+                      // pageBuilder: (context, state) {
+                      //   return const NoTransitionPage(child: LoginScreen());
+                      // },
                       routes: [
                         GoRoute(
                           path: 'oauthError',
                           parentNavigatorKey: rootNavKey,
                           name: OauthErrorScreen.routeName,
                           builder: (_, state) => const OauthErrorScreen(),
-                          pageBuilder: (context, state) {
-                            return const NoTransitionPage(
-                                child: OauthErrorScreen());
-                          },
+                          // pageBuilder: (context, state) {
+                          //   return const NoTransitionPage(
+                          //       child: OauthErrorScreen());
+                          // },
                         ),
                         GoRoute(
                           path: 'completeResetPassword',
@@ -171,30 +171,30 @@ final routerProvider = Provider<GoRouter>((ref) {
                           name: CompleteRestPasswordScreen.routeName,
                           builder: (_, state) =>
                               const CompleteRestPasswordScreen(),
-                          pageBuilder: (context, state) {
-                            return const NoTransitionPage(
-                                child: CompleteRestPasswordScreen());
-                          },
+                          // pageBuilder: (context, state) {
+                          //   return const NoTransitionPage(
+                          //       child: CompleteRestPasswordScreen());
+                          // },
                         ),
                         GoRoute(
                           path: 'phoneSuccess',
                           parentNavigatorKey: rootNavKey,
                           name: PhoneAuthSuccess.routeName,
                           builder: (_, state) => const PhoneAuthSuccess(),
-                          pageBuilder: (context, state) {
-                            return const NoTransitionPage(
-                                child: PhoneAuthSuccess());
-                          },
+                          // pageBuilder: (context, state) {
+                          //   return const NoTransitionPage(
+                          //       child: PhoneAuthSuccess());
+                          // },
                         ),
                         GoRoute(
                           path: 'phoneSend',
                           parentNavigatorKey: rootNavKey,
                           name: PhoneAuthSendScreen.routeName,
                           builder: (_, state) => const PhoneAuthSendScreen(),
-                          pageBuilder: (context, state) {
-                            return const NoTransitionPage(
-                                child: PhoneAuthSendScreen());
-                          },
+                          // pageBuilder: (context, state) {
+                          //   return const NoTransitionPage(
+                          //       child: PhoneAuthSendScreen());
+                          // },
                         ),
                         GoRoute(
                             path: 'findInfo',
@@ -203,9 +203,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                             builder: (_, state) {
                               return FindInfoScreen();
                             },
-                            pageBuilder: (context, state) {
-                              return NoTransitionPage(child: FindInfoScreen());
-                            },
+                            // pageBuilder: (context, state) {
+                            //   return NoTransitionPage(child: FindInfoScreen());
+                            // },
                             routes: [
                               GoRoute(
                                 path: 'findEmail',
@@ -221,17 +221,17 @@ final routerProvider = Provider<GoRouter>((ref) {
                                     isOauth: isOauth,
                                   );
                                 },
-                                pageBuilder: (context, state) {
-                                  final isOauth = bool.parse(
-                                      state.uri.queryParameters['isOauth']!);
-                                  final email =
-                                      state.uri.queryParameters['email']!;
-                                  return NoTransitionPage(
-                                      child: FindEmailScreen(
-                                    findEmail: email,
-                                    isOauth: isOauth,
-                                  ));
-                                },
+                                // pageBuilder: (context, state) {
+                                //   final isOauth = bool.parse(
+                                //       state.uri.queryParameters['isOauth']!);
+                                //   final email =
+                                //       state.uri.queryParameters['email']!;
+                                //   return NoTransitionPage(
+                                //       child: FindEmailScreen(
+                                //     findEmail: email,
+                                //     isOauth: isOauth,
+                                //   ));
+                                // },
                               ),
                               GoRoute(
                                 path: 'resetPassword',
@@ -240,10 +240,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 builder: (_, state) {
                                   return ResetPasswordScreen();
                                 },
-                                pageBuilder: (context, state) {
-                                  return NoTransitionPage(
-                                      child: ResetPasswordScreen());
-                                },
+                                // pageBuilder: (context, state) {
+                                //   return NoTransitionPage(
+                                //       child: ResetPasswordScreen());
+                                // },
                               ),
                               GoRoute(
                                 path: 'notFoundUser',
@@ -251,10 +251,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 name: NotFoundUserInfoScreen.routeName,
                                 builder: (_, state) =>
                                     const NotFoundUserInfoScreen(),
-                                pageBuilder: (context, state) {
-                                  return const NoTransitionPage(
-                                      child: NotFoundUserInfoScreen());
-                                },
+                                // pageBuilder: (context, state) {
+                                //   return const NoTransitionPage(
+                                //       child: NotFoundUserInfoScreen());
+                                // },
                               ),
                             ]),
                         GoRoute(
@@ -262,20 +262,20 @@ final routerProvider = Provider<GoRouter>((ref) {
                             parentNavigatorKey: rootNavKey,
                             name: SignUpSelectScreen.routeName,
                             builder: (_, state) => const SignUpSelectScreen(),
-                            pageBuilder: (context, state) {
-                              return const NoTransitionPage(
-                                  child: SignUpSelectScreen());
-                            },
+                            // pageBuilder: (context, state) {
+                            //   return const NoTransitionPage(
+                            //       child: SignUpSelectScreen());
+                            // },
                             routes: [
                               GoRoute(
                                 path: 'signUp',
                                 parentNavigatorKey: rootNavKey,
                                 name: SignUpScreen.routeName,
                                 builder: (_, state) => const SignUpScreen(),
-                                pageBuilder: (context, state) {
-                                  return const NoTransitionPage(
-                                      child: SignUpScreen());
-                                },
+                                // pageBuilder: (context, state) {
+                                //   return const NoTransitionPage(
+                                //       child: SignUpScreen());
+                                // },
                               ),
                             ]),
                         GoRoute(
@@ -283,10 +283,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                             parentNavigatorKey: rootNavKey,
                             name: PhoneAuthScreen.routeName,
                             builder: (_, state) => const PhoneAuthScreen(),
-                            pageBuilder: (context, state) {
-                              return const NoTransitionPage(
-                                  child: PhoneAuthScreen());
-                            },
+                            // pageBuilder: (context, state) {
+                            //   return const NoTransitionPage(
+                            //       child: PhoneAuthScreen());
+                            // },
                             routes: [
                               GoRoute(
                                   path: 'phoneAuthInfo',
@@ -294,10 +294,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                                   name: PhoneAuthInfoScreen.routeName,
                                   builder: (_, state) =>
                                       const PhoneAuthInfoScreen(),
-                                  pageBuilder: (context, state) {
-                                    return const NoTransitionPage(
-                                        child: PhoneAuthInfoScreen());
-                                  },
+                                  // pageBuilder: (context, state) {
+                                  //   return const NoTransitionPage(
+                                  //       child: PhoneAuthInfoScreen());
+                                  // },
                                   routes: []),
                             ]),
                       ]),
@@ -310,9 +310,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                   builder: (context, state) {
                     return CourtSearchScreen();
                   },
-                  pageBuilder: (context, state) {
-                    return NoTransitionPage(child: CourtSearchScreen());
-                  },
+                  // pageBuilder: (context, state) {
+                  //   return NoTransitionPage(child: CourtSearchScreen());
+                  // },
                   routes: []),
               GoRoute(
                 path: '/court/:courtId',
@@ -328,17 +328,17 @@ final routerProvider = Provider<GoRouter>((ref) {
                     model: extra,
                   );
                 },
-                pageBuilder: (context, state) {
-                  final int courtId =
-                      int.parse(state.pathParameters['courtId']!);
-                  final CourtSearchModel extra =
-                      state.extra! as CourtSearchModel;
-                  return NoTransitionPage(
-                      child: CourtGameListScreen(
-                    courtId: courtId,
-                    model: extra,
-                  ));
-                },
+                // pageBuilder: (context, state) {
+                //   final int courtId =
+                //       int.parse(state.pathParameters['courtId']!);
+                //   final CourtSearchModel extra =
+                //       state.extra! as CourtSearchModel;
+                //   return NoTransitionPage(
+                //       child: CourtGameListScreen(
+                //     courtId: courtId,
+                //     model: extra,
+                //   ));
+                // },
               ),
               GoRoute(
                   path: '/game',
@@ -347,9 +347,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                   builder: (context, state) {
                     return GameScreen();
                   },
-                  pageBuilder: (context, state) {
-                    return NoTransitionPage(child: GameScreen());
-                  },
+                  // pageBuilder: (context, state) {
+                  //   return NoTransitionPage(child: GameScreen());
+                  // },
                   routes: [
                     GoRoute(
                       path: 'approval',
@@ -359,10 +359,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                       builder: (context, state) {
                         return KakaoPayApprovalScreen();
                       },
-                      pageBuilder: (context, state) {
-                        return NoTransitionPage(
-                            child: KakaoPayApprovalScreen());
-                      },
+                      // pageBuilder: (context, state) {
+                      //   return NoTransitionPage(
+                      //       child: KakaoPayApprovalScreen());
+                      // },
                     ),
                     GoRoute(
                       path: 'host',
@@ -375,13 +375,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                           type: extra,
                         );
                       },
-                      pageBuilder: (context, state) {
-                        UserGameType extra = state.extra as UserGameType;
-                        return NoTransitionPage(
-                            child: GameHostScreen(
-                          type: extra,
-                        ));
-                      },
+                      // pageBuilder: (context, state) {
+                      //   UserGameType extra = state.extra as UserGameType;
+                      //   return NoTransitionPage(
+                      //       child: GameHostScreen(
+                      //     type: extra,
+                      //   ));
+                      // },
                     ),
                     GoRoute(
                         path: 'create',
@@ -391,9 +391,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                         builder: (context, state) {
                           return GameCreateScreen();
                         },
-                        pageBuilder: (context, state) {
-                          return NoTransitionPage(child: GameCreateScreen());
-                        },
+                        // pageBuilder: (context, state) {
+                        //   return NoTransitionPage(child: GameCreateScreen());
+                        // },
                         routes: [
                           GoRoute(
                             path: ':gameId/complete',
@@ -406,14 +406,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 gameId: gameId,
                               );
                             },
-                            pageBuilder: (context, state) {
-                              final int gameId =
-                                  int.parse(state.pathParameters['gameId']!);
-                              return NoTransitionPage(
-                                  child: GameCreateCompleteScreen(
-                                gameId: gameId,
-                              ));
-                            },
+                            // pageBuilder: (context, state) {
+                            //   final int gameId =
+                            //       int.parse(state.pathParameters['gameId']!);
+                            //   return NoTransitionPage(
+                            //       child: GameCreateCompleteScreen(
+                            //     gameId: gameId,
+                            //   ));
+                            // },
                           ),
                         ]),
                     GoRoute(
@@ -427,14 +427,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                             gameId: gameId,
                           );
                         },
-                        pageBuilder: (context, state) {
-                          final int gameId =
-                              int.parse(state.pathParameters['gameId']!);
-                          return NoTransitionPage(
-                              child: GameDetailScreen(
-                            gameId: gameId,
-                          ));
-                        },
+                        // pageBuilder: (context, state) {
+                        //   final int gameId =
+                        //       int.parse(state.pathParameters['gameId']!);
+                        //   return NoTransitionPage(
+                        //       child: GameDetailScreen(
+                        //     gameId: gameId,
+                        //   ));
+                        // },
                         routes: [
                           GoRoute(
                             path: 'players',
@@ -456,21 +456,21 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 participationId: participationId,
                               );
                             },
-                            pageBuilder: (context, state) {
-                              final int gameId =
-                                  int.parse(state.pathParameters['gameId']!);
-                              int? participationId;
-                              if (state.uri.queryParameters
-                                  .containsKey('participationId')) {
-                                participationId = int.parse(state
-                                    .uri.queryParameters['participationId']!);
-                              }
-                              return NoTransitionPage(
-                                  child: GameParticipationScreen(
-                                gameId: gameId,
-                                participationId: participationId,
-                              ));
-                            },
+                            // pageBuilder: (context, state) {
+                            //   final int gameId =
+                            //       int.parse(state.pathParameters['gameId']!);
+                            //   int? participationId;
+                            //   if (state.uri.queryParameters
+                            //       .containsKey('participationId')) {
+                            //     participationId = int.parse(state
+                            //         .uri.queryParameters['participationId']!);
+                            //   }
+                            //   return NoTransitionPage(
+                            //       child: GameParticipationScreen(
+                            //     gameId: gameId,
+                            //     participationId: participationId,
+                            //   ));
+                            // },
                           ),
                           GoRoute(
                             path: 'review',
@@ -496,24 +496,24 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 ratingId: ratingId,
                               );
                             },
-                            pageBuilder: (context, state) {
-                              final int gameId =
-                                  int.parse(state.pathParameters['gameId']!);
-                              final int ratingId = int.parse(
-                                  state.uri.queryParameters['ratingId']!);
-                              int? participationId;
-                              if (state.uri.queryParameters
-                                  .containsKey('participationId')) {
-                                participationId = int.parse(state
-                                    .uri.queryParameters['participationId']!);
-                              }
-                              return NoTransitionPage(
-                                  child: ReviewScreen(
-                                gameId: gameId,
-                                participationId: participationId,
-                                ratingId: ratingId,
-                              ));
-                            },
+                            // pageBuilder: (context, state) {
+                            //   final int gameId =
+                            //       int.parse(state.pathParameters['gameId']!);
+                            //   final int ratingId = int.parse(
+                            //       state.uri.queryParameters['ratingId']!);
+                            //   int? participationId;
+                            //   if (state.uri.queryParameters
+                            //       .containsKey('participationId')) {
+                            //     participationId = int.parse(state
+                            //         .uri.queryParameters['participationId']!);
+                            //   }
+                            //   return NoTransitionPage(
+                            //       child: ReviewScreen(
+                            //     gameId: gameId,
+                            //     participationId: participationId,
+                            //     ratingId: ratingId,
+                            //   ));
+                            // },
                           ),
                           GoRoute(
                             path: 'cancel/:participationId',
@@ -531,17 +531,17 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 participationId: participationId,
                               );
                             },
-                            pageBuilder: (context, state) {
-                              final int gameId =
-                                  int.parse(state.pathParameters['gameId']!);
-                              final int participationId = int.parse(
-                                  state.pathParameters['participationId']!);
-                              return NoTransitionPage(
-                                  child: GameRefundScreen(
-                                gameId: gameId,
-                                participationId: participationId,
-                              ));
-                            },
+                            // pageBuilder: (context, state) {
+                            //   final int gameId =
+                            //       int.parse(state.pathParameters['gameId']!);
+                            //   final int participationId = int.parse(
+                            //       state.pathParameters['participationId']!);
+                            //   return NoTransitionPage(
+                            //       child: GameRefundScreen(
+                            //     gameId: gameId,
+                            //     participationId: participationId,
+                            //   ));
+                            // },
                           ),
                           GoRoute(
                               path: 'paymentInfo',
@@ -556,15 +556,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                                   gameId: gameId,
                                 );
                               },
-                              pageBuilder: (context, state) {
-                                final int gameId =
-                                    int.parse(state.pathParameters['gameId']!);
-
-                                return NoTransitionPage(
-                                    child: GamePaymentScreen(
-                                  gameId: gameId,
-                                ));
-                              },
+                              // pageBuilder: (context, state) {
+                              //   final int gameId =
+                              //       int.parse(state.pathParameters['gameId']!);
+                              //
+                              //   return NoTransitionPage(
+                              //       child: GamePaymentScreen(
+                              //     gameId: gameId,
+                              //   ));
+                              // },
                               routes: [
                                 GoRoute(
                                   path: 'payment',
@@ -580,18 +580,18 @@ final routerProvider = Provider<GoRouter>((ref) {
                                       redirectUrl: redirectUrl,
                                     );
                                   },
-                                  pageBuilder: (context, state) {
-                                    final int gameId = int.parse(
-                                        state.pathParameters['gameId']!);
-                                    final String redirectUrl = state
-                                        .uri.queryParameters['redirectUrl']!;
-
-                                    return NoTransitionPage(
-                                        child: PaymentScreen(
-                                      gameId: gameId,
-                                      redirectUrl: redirectUrl,
-                                    ));
-                                  },
+                                  // pageBuilder: (context, state) {
+                                  //   final int gameId = int.parse(
+                                  //       state.pathParameters['gameId']!);
+                                  //   final String redirectUrl = state
+                                  //       .uri.queryParameters['redirectUrl']!;
+                                  //
+                                  //   return NoTransitionPage(
+                                  //       child: PaymentScreen(
+                                  //     gameId: gameId,
+                                  //     redirectUrl: redirectUrl,
+                                  //   ));
+                                  // },
                                 ),
                               ]),
                           GoRoute(
@@ -603,14 +603,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                                   int.parse(state.pathParameters['gameId']!);
                               return GameUpdateScreen(gameId: gameId);
                             },
-                            pageBuilder: (context, state) {
-                              final int gameId =
-                                  int.parse(state.pathParameters['gameId']!);
-                              return NoTransitionPage(
-                                  child: GameUpdateScreen(
-                                gameId: gameId,
-                              ));
-                            },
+                            // pageBuilder: (context, state) {
+                            //   final int gameId =
+                            //       int.parse(state.pathParameters['gameId']!);
+                            //   return NoTransitionPage(
+                            //       child: GameUpdateScreen(
+                            //     gameId: gameId,
+                            //   ));
+                            // },
                           ),
                         ]),
                   ]),
@@ -622,9 +622,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                   builder: (context, state) {
                     return InfoBody();
                   },
-                  pageBuilder: (context, state) {
-                    return NoTransitionPage(child: InfoBody());
-                  },
+                  // pageBuilder: (context, state) {
+                  //   return NoTransitionPage(child: InfoBody());
+                  // },
                   routes: [
                     GoRoute(
                       path: 'delete',
@@ -633,9 +633,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                       builder: (context, state) {
                         return UserDeleteScreen();
                       },
-                      pageBuilder: (context, state) {
-                        return NoTransitionPage(child: UserDeleteScreen());
-                      },
+                      // pageBuilder: (context, state) {
+                      //   return NoTransitionPage(child: UserDeleteScreen());
+                      // },
                     ),
                     GoRoute(
                         path: 'support',
@@ -645,9 +645,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                         builder: (context, state) {
                           return SupportScreen();
                         },
-                        pageBuilder: (context, state) {
-                          return NoTransitionPage(child: SupportScreen());
-                        },
+                        // pageBuilder: (context, state) {
+                        //   return NoTransitionPage(child: SupportScreen());
+                        // },
                         routes: [
                           GoRoute(
                             path: 'form',
@@ -658,10 +658,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                             builder: (context, state) {
                               return SupportFormScreen();
                             },
-                            pageBuilder: (context, state) {
-                              return NoTransitionPage(
-                                  child: SupportFormScreen());
-                            },
+                            // pageBuilder: (context, state) {
+                            //   return NoTransitionPage(
+                            //       child: SupportFormScreen());
+                            // },
                           ),
                           GoRoute(
                             path: ':questionId',
@@ -676,14 +676,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 questionId: questionId,
                               );
                             },
-                            pageBuilder: (context, state) {
-                              final int questionId = int.parse(
-                                  state.pathParameters['questionId']!);
-                              return NoTransitionPage(
-                                  child: SupportDetailScreen(
-                                questionId: questionId,
-                              ));
-                            },
+                            // pageBuilder: (context, state) {
+                            //   final int questionId = int.parse(
+                            //       state.pathParameters['questionId']!);
+                            //   return NoTransitionPage(
+                            //       child: SupportDetailScreen(
+                            //     questionId: questionId,
+                            //   ));
+                            // },
                           ),
                         ]),
                     GoRoute(
@@ -694,9 +694,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                       builder: (context, state) {
                         return BankTransferScreen();
                       },
-                      pageBuilder: (context, state) {
-                        return NoTransitionPage(child: BankTransferScreen());
-                      },
+                      // pageBuilder: (context, state) {
+                      //   return NoTransitionPage(child: BankTransferScreen());
+                      // },
                     ),
                     GoRoute(
                         path: 'settlements',
@@ -705,10 +705,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                         builder: (context, state) {
                           return SettlementListScreen();
                         },
-                        pageBuilder: (context, state) {
-                          return NoTransitionPage(
-                              child: SettlementListScreen());
-                        },
+                        // pageBuilder: (context, state) {
+                        //   return NoTransitionPage(
+                        //       child: SettlementListScreen());
+                        // },
                         routes: [
                           GoRoute(
                             path: ':settlementId',
@@ -721,14 +721,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 settlementId: settlementId,
                               );
                             },
-                            pageBuilder: (context, state) {
-                              final int settlementId = int.parse(
-                                  state.pathParameters['settlementId']!);
-                              return NoTransitionPage(
-                                  child: SettlementDetailScreen(
-                                settlementId: settlementId,
-                              ));
-                            },
+                            // pageBuilder: (context, state) {
+                            //   final int settlementId = int.parse(
+                            //       state.pathParameters['settlementId']!);
+                            //   return NoTransitionPage(
+                            //       child: SettlementDetailScreen(
+                            //     settlementId: settlementId,
+                            //   ));
+                            // },
                           ),
                         ]),
                     GoRoute(
@@ -742,14 +742,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                           type: extra,
                         );
                       },
-                      pageBuilder: (context, state) {
-                        final extra = UserReviewType.stringToEnum(
-                            value: state.extra! as String);
-                        return NoTransitionPage(
-                            child: UserWrittenReviewScreen(
-                          type: extra,
-                        ));
-                      },
+                      // pageBuilder: (context, state) {
+                      //   final extra = UserReviewType.stringToEnum(
+                      //       value: state.extra! as String);
+                      //   return NoTransitionPage(
+                      //       child: UserWrittenReviewScreen(
+                      //     type: extra,
+                      //   ));
+                      // },
                       routes: [
                         GoRoute(
                           path: ':reviewId',
@@ -764,17 +764,17 @@ final routerProvider = Provider<GoRouter>((ref) {
                               reviewType: extra,
                             );
                           },
-                          pageBuilder: (context, state) {
-                            final extra = state.extra! as UserReviewType;
-
-                            final int reviewId =
-                                int.parse(state.pathParameters['reviewId']!);
-                            return NoTransitionPage(
-                                child: ReviewDetailScreen(
-                              reviewId: reviewId,
-                              reviewType: extra,
-                            ));
-                          },
+                          // pageBuilder: (context, state) {
+                          //   final extra = state.extra! as UserReviewType;
+                          //
+                          //   final int reviewId =
+                          //       int.parse(state.pathParameters['reviewId']!);
+                          //   return NoTransitionPage(
+                          //       child: ReviewDetailScreen(
+                          //     reviewId: reviewId,
+                          //     reviewType: extra,
+                          //   ));
+                          // },
                         ),
                       ],
                     ),
@@ -785,9 +785,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                       builder: (context, state) {
                         return UserProfileFormScreen();
                       },
-                      pageBuilder: (context, state) {
-                        return NoTransitionPage(child: UserProfileFormScreen());
-                      },
+                      // pageBuilder: (context, state) {
+                      //   return NoTransitionPage(child: UserProfileFormScreen());
+                      // },
                     ),
                     GoRoute(
                       path: ':accountId/transferForm',
@@ -800,14 +800,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                           accountId: accountId,
                         );
                       },
-                      pageBuilder: (context, state) {
-                        final int accountId =
-                            int.parse(state.pathParameters['accountId']!);
-                        return NoTransitionPage(
-                            child: BankTransferFormScreen(
-                          accountId: accountId,
-                        ));
-                      },
+                      // pageBuilder: (context, state) {
+                      //   final int accountId =
+                      //       int.parse(state.pathParameters['accountId']!);
+                      //   return NoTransitionPage(
+                      //       child: BankTransferFormScreen(
+                      //     accountId: accountId,
+                      //   ));
+                      // },
                     ),
                   ]),
               GoRoute(
@@ -817,9 +817,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) {
                   return MenuBody();
                 },
-                pageBuilder: (context, state) {
-                  return NoTransitionPage(child: MenuBody());
-                },
+                // pageBuilder: (context, state) {
+                //   return NoTransitionPage(child: MenuBody());
+                // },
                 routes: [
                   GoRoute(
                     path: 'faq',
@@ -828,9 +828,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                     builder: (context, state) {
                       return FAQScreen();
                     },
-                    pageBuilder: (context, state) {
-                      return NoTransitionPage(child: FAQScreen());
-                    },
+                    // pageBuilder: (context, state) {
+                    //   return NoTransitionPage(child: FAQScreen());
+                    // },
                   ),
                 ],
               ),
