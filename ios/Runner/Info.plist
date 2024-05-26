@@ -13,6 +13,11 @@
     <key>NSLocationAlwaysUsageDescription</key>
     <string>Can I have location always?</string>
 
+    <key>UIBackgroundModes</key>
+    <array>
+       <string>fetch</string>
+       <string>remote-notification</string>
+    </array>
 
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
