@@ -26,28 +26,20 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.VIEW" />-->
+        </activity>
 
-<!--                <category android:name="android.intent.category.DEFAULT" />-->
-<!--                <category android:name="android.intent.category.BROWSABLE" />-->
-<!--                <data android:scheme="https" android:host="com.miti.miti" android:pathPrefix="/login/signUpSelect" />-->
-<!--&lt;!&ndash;                <data&ndash;&gt;-->
-<!--&lt;!&ndash;                    android:pathPrefix="/login/signUpSelect"&ndash;&gt;-->
-<!--&lt;!&ndash;                    android:scheme="miti" />&ndash;&gt;-->
-<!--            </intent-filter>-->
+        <!-- apple login -->
+        <activity
+            android:name="com.aboutyou.dart_packages.sign_in_with_apple.SignInWithAppleCallback"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
 
-            <!-- Deep linking -->
-<!--            <meta-data android:name="flutter_deeplinking_enabled" android:value="true" />-->
-<!--            <intent-filter android:autoVerify="true">-->
-<!--                <action android:name="android.intent.action.VIEW" />-->
-<!--                <category android:name="android.intent.category.DEFAULT" />-->
-<!--                <category android:name="android.intent.category.BROWSABLE" />-->
-<!--                <data android:scheme="http" android:host="miti.com" />-->
-<!--                <data android:scheme="https" />-->
-<!--                <data android:pathPattern="/kakaopay/.*" />-->
-<!--&lt;!&ndash;                <data android:path="/kakaopay/approval" />&ndash;&gt;-->
-<!--            </intent-filter>-->
+                <data android:scheme="signinwithapple" />
+                <data android:path="callback" />
+            </intent-filter>
         </activity>
 
         <activity

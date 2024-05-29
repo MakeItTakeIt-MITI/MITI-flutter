@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ import 'package:miti/auth/view/find_info/find_info_screen.dart';
 import 'package:miti/auth/view/phone_auth/phone_auth_screen.dart';
 import 'package:miti/auth/view/signup/signup_select_screen.dart';
 import 'package:miti/common/provider/form_util_provider.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../common/component/custom_text_form_field.dart';
 import '../../common/component/default_appbar.dart';
@@ -73,6 +75,9 @@ class LoginScreen extends StatelessWidget {
             ),
             SizedBox(height: 8.h),
             const KakaoLoginButton(),
+            SizedBox(height: 4.h),
+            if(Platform.isIOS)
+            const AppleLoginButton(),
             SizedBox(height: 16.h),
             OtherWayComponent(
               desc: '아직 회원이 아니신가요?',
@@ -359,6 +364,61 @@ class KakaoLoginButton extends ConsumerWidget {
     );
   }
 }
+
+class AppleLoginButton extends ConsumerWidget {
+  const AppleLoginButton({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return InkWell(
+      onTap: () async{
+        final credential = await SignInWithApple.getAppleIDCredential(
+          scopes: [
+            AppleIDAuthorizationScopes.email,
+            AppleIDAuthorizationScopes.fullName,
+          ],
+        );
+
+        print(credential);
+
+        // Now send the credential (especially `credential.authorizationCode`) to your server to create a session
+        // after they have been validated with Apple (see `Integration` section for more information on how to do this)
+
+      },
+      child: Container(
+        height: 48.h,
+        decoration: BoxDecoration(
+            color: const Color(0xFFFFFFF1),
+            borderRadius: BorderRadius.circular(8.r)),
+        child: Row(
+          children: [
+            SizedBox(width: 23.w),
+            Container(
+              width: 24.w,
+              height: 20.h,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/logo/kakao_logo.png'),
+                ),
+              ),
+            ),
+            SizedBox(width: 52.w),
+            Text(
+              '애플로 3초만에 시작하기',
+              style: TextStyle(
+                color: const Color(0xFF1C1C1C),
+                letterSpacing: -0.25.sp,
+                fontSize: 14.sp,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 
 class HelpComponent extends StatelessWidget {
   const HelpComponent({super.key});
