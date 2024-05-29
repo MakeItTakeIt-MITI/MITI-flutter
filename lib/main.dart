@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 // import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,16 +17,9 @@ import 'common/provider/router_provider.dart';
 void main() async {
   HttpOverrides.global = MyHttpOverrides();
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  // FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  // uriLinkStream.listen((Uri? uri) {
-  //   log('uri.host : ${uri?.host}');
-  //   if (uri?.host == '') {
-  //     // context.pushNamed(name);
-  //   }
-  //   log("uri: $uri");
-  // }, onError: (Object err) {
-  //   log("err: $err");
-  // });
+
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await initializeDateFormatting('ko');
   await NaverMapSdk.instance.initialize(clientId: Environment.naverMapClientId);
   KakaoSdk.init(
