@@ -11,6 +11,7 @@ import 'package:miti/game/component/game_state_label.dart';
 import '../../auth/provider/auth_provider.dart';
 import '../../common/component/custom_drop_down_button.dart';
 import '../../common/component/default_appbar.dart';
+import '../../common/component/default_layout.dart';
 import '../../common/component/dispose_sliver_pagination_list_view.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
@@ -21,20 +22,30 @@ import '../model/bank_model.dart';
 
 class BankTransferScreen extends ConsumerStatefulWidget {
   static String get routeName => 'bankTransfer';
+  final int bottomIdx;
 
-  const BankTransferScreen({super.key});
+  const BankTransferScreen({
+    super.key,
+    required this.bottomIdx,
+  });
 
   @override
   ConsumerState<BankTransferScreen> createState() => _BankTransferScreenState();
 }
 
 class _BankTransferScreenState extends ConsumerState<BankTransferScreen> {
-  late final ScrollController controller;
+  late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
-    controller = ScrollController();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> refresh() async {
@@ -61,61 +72,67 @@ class _BankTransferScreenState extends ConsumerState<BankTransferScreen> {
       '대기중',
       '전체 보기',
     ];
-    return NestedScrollView(
-      headerSliverBuilder: ((BuildContext context, bool innerBoxIsScrolled) {
-        return [
-          const DefaultAppBar(
-            isSliver: true,
-            title: '송금 내역',
-          ),
-        ];
-      }),
-      body: RefreshIndicator(
-        onRefresh: refresh,
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.only(right: 14.w, top: 14.h, bottom: 14.h),
-                child: Row(
-                  children: [
-                    const Spacer(),
-                    Consumer(
-                      builder:
-                          (BuildContext context, WidgetRef ref, Widget? child) {
-                        return CustomDropDownButton(
-                          initValue: '전체 보기',
-                          onChanged: (value) {
-                            changeDropButton(value, ref);
-                          },
-                          items: items,
-                        );
-                      },
-                    )
-                  ],
+    return DefaultLayout(
+      bottomIdx: widget.bottomIdx,
+      scrollController: _scrollController,
+      body: NestedScrollView(
+        controller: _scrollController,
+        headerSliverBuilder: ((BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            const DefaultAppBar(
+              isSliver: true,
+              title: '송금 내역',
+            ),
+          ];
+        }),
+        body: RefreshIndicator(
+          onRefresh: refresh,
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding:
+                      EdgeInsets.only(right: 14.w, top: 14.h, bottom: 14.h),
+                  child: Row(
+                    children: [
+                      const Spacer(),
+                      Consumer(
+                        builder: (BuildContext context, WidgetRef ref,
+                            Widget? child) {
+                          return CustomDropDownButton(
+                            initValue: '전체 보기',
+                            onChanged: (value) {
+                              changeDropButton(value, ref);
+                            },
+                            items: items,
+                          );
+                        },
+                      )
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Consumer(
-              builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                final userId = ref.watch(authProvider)!.id!;
-                return DisposeSliverPaginationListView(
-                    provider: bankTransferPageProvider(
-                        PaginationStateParam(path: userId)),
-                    itemBuilder:
-                        (BuildContext context, int index, Base pModel) {
-                      final model = pModel as BankModel;
-                      return _BankTransferCard.fromModel(
-                        model: model,
-                      );
-                    },
-                    skeleton: Container(),
-                    controller: controller,
-                    separateSize: 0,
-                    emptyWidget: getEmptyWidget());
-              },
-            ),
-          ],
+              Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  final userId = ref.watch(authProvider)!.id!;
+                  return DisposeSliverPaginationListView(
+                      provider: bankTransferPageProvider(
+                          PaginationStateParam(path: userId)),
+                      itemBuilder:
+                          (BuildContext context, int index, Base pModel) {
+                        final model = pModel as BankModel;
+                        return _BankTransferCard.fromModel(
+                          model: model,
+                        );
+                      },
+                      skeleton: Container(),
+                      controller: _scrollController,
+                      separateSize: 0,
+                      emptyWidget: getEmptyWidget());
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

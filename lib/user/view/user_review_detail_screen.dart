@@ -11,14 +11,16 @@ import 'package:miti/user/provider/user_provider.dart';
 
 import '../../account/model/account_model.dart';
 import '../../common/component/default_appbar.dart';
+import '../../common/component/default_layout.dart';
 import '../../common/model/entity_enum.dart';
 import '../../court/model/court_model.dart';
 import '../../game/model/game_model.dart';
 import '../../game/view/game_detail_screen.dart';
 
-class ReviewDetailScreen extends StatelessWidget {
+class ReviewDetailScreen extends StatefulWidget {
   final UserReviewType reviewType;
   final int reviewId;
+  final int bottomIdx;
 
   static String get routeName => 'reviewDetail';
 
@@ -26,7 +28,27 @@ class ReviewDetailScreen extends StatelessWidget {
     super.key,
     required this.reviewId,
     required this.reviewType,
+    required this.bottomIdx,
   });
+
+  @override
+  State<ReviewDetailScreen> createState() => _ReviewDetailScreenState();
+}
+
+class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   Widget getDivider() {
     return Container(
@@ -37,54 +59,63 @@ class ReviewDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NestedScrollView(
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return [
-          DefaultAppBar(
-            title: reviewType == UserReviewType.written ? '작성 리뷰' : '내 리뷰',
-            isSliver: true,
-          ),
-        ];
-      },
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Consumer(
-              builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                final result = ref.watch(
-                    reviewProvider(type: reviewType, reviewId: reviewId));
-                if (result is LoadingModel) {
-                  return CircularProgressIndicator();
-                } else if (result is ErrorModel) {
-                  return Text('에러');
-                }
-                if (reviewType == UserReviewType.written) {
-                  final model =
-                      (result as ResponseModel<WrittenReviewDetailModel>).data!;
-                  return Column(
-                    children: [
-                      HostComponent.fromModel(model: model.reviewee),
-                      getDivider(),
-                      GameReviewCard.fromModel(model: model.game),
-                      getDivider(),
-                      _ReviewComponent.fromWrittenModel(model: model),
-                    ],
-                  );
-                } else {
-                  final model =
-                      (result as ResponseModel<ReceiveReviewDetailModel>).data!;
-                  return Column(
-                    children: [
-                      GameReviewCard.fromModel(model: model.game),
-                      getDivider(),
-                      _ReviewComponent.fromReceiveModel(model: model),
-                    ],
-                  );
-                }
-              },
+    return DefaultLayout(
+      bottomIdx: widget.bottomIdx,
+      scrollController: _scrollController,
+      body: NestedScrollView(
+        controller: _scrollController,
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            DefaultAppBar(
+              title: widget.reviewType == UserReviewType.written
+                  ? '작성 리뷰'
+                  : '내 리뷰',
+              isSliver: true,
             ),
-          )
-        ],
+          ];
+        },
+        body: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  final result = ref.watch(reviewProvider(
+                      type: widget.reviewType, reviewId: widget.reviewId));
+                  if (result is LoadingModel) {
+                    return CircularProgressIndicator();
+                  } else if (result is ErrorModel) {
+                    return Text('에러');
+                  }
+                  if (widget.reviewType == UserReviewType.written) {
+                    final model =
+                        (result as ResponseModel<WrittenReviewDetailModel>)
+                            .data!;
+                    return Column(
+                      children: [
+                        HostComponent.fromModel(model: model.reviewee),
+                        getDivider(),
+                        GameReviewCard.fromModel(model: model.game),
+                        getDivider(),
+                        _ReviewComponent.fromWrittenModel(model: model),
+                      ],
+                    );
+                  } else {
+                    final model =
+                        (result as ResponseModel<ReceiveReviewDetailModel>)
+                            .data!;
+                    return Column(
+                      children: [
+                        GameReviewCard.fromModel(model: model.game),
+                        getDivider(),
+                        _ReviewComponent.fromReceiveModel(model: model),
+                      ],
+                    );
+                  }
+                },
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -117,8 +148,6 @@ class GameReviewCard extends StatelessWidget {
       fee: model.fee,
     );
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -161,17 +190,16 @@ class GameReviewCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Flexible(
-                      flex : 3,
+                      flex: 3,
                       child: Text(
                         address,
-
                         style: MITITextStyle.gameTimeCardMStyle.copyWith(
                           color: const Color(0xff999999),
                         ),
                       ),
                     ),
                     Flexible(
-                      flex : 1,
+                      flex: 1,
                       child: Text(
                         '₩ $fee',
                         style: MITITextStyle.feeStyle.copyWith(

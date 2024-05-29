@@ -354,7 +354,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen> {
           Map<String, String> pathParameters = {
             'gameId': markers[key]!.first.id.toString()
           };
-          Map<String, String> queryParameters = {'bottomIdx': '0'};
+          final Map<String, String> queryParameters = {'bottomIdx': '0'};
           context.pushNamed(GameDetailScreen.routeName,
               pathParameters: pathParameters, queryParameters: queryParameters);
         }

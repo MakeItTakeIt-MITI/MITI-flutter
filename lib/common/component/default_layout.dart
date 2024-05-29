@@ -9,19 +9,17 @@ import '../../game/view/game_screen.dart';
 import '../../menu/view/menu_screen.dart';
 import '../../user/view/user_info_screen.dart';
 
-
-
-
 class DefaultLayout extends StatefulWidget {
   final int bottomIdx;
   final Widget body;
   final ScrollController scrollController;
 
-  const DefaultLayout(
-      {super.key,
-      required this.bottomIdx,
-      required this.body,
-      required this.scrollController});
+  const DefaultLayout({
+    super.key,
+    required this.bottomIdx,
+    required this.scrollController,
+    required this.body,
+  });
 
   @override
   State<DefaultLayout> createState() => _DefaultLayoutState();

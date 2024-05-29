@@ -15,31 +15,43 @@ import 'package:miti/common/model/entity_enum.dart';
 
 import '../../common/component/custom_drop_down_button.dart';
 import '../../common/component/default_appbar.dart';
+import '../../common/component/default_layout.dart';
 import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
 import '../../game/component/game_state_label.dart';
 import '../../theme/text_theme.dart';
-import '../../user/view/user_review_detail_screen.dart';
 import '../../util/util.dart';
 import '../param/account_param.dart';
 
 class SettlementListScreen extends ConsumerStatefulWidget {
   static String get routeName => 'settlements';
+  final int bottomIdx;
 
-  const SettlementListScreen({super.key});
+  const SettlementListScreen({
+    super.key,
+    required this.bottomIdx,
+  });
 
   @override
-  ConsumerState<SettlementListScreen> createState() => _SettlementListScreenState();
+  ConsumerState<SettlementListScreen> createState() =>
+      _SettlementListScreenState();
 }
 
 class _SettlementListScreenState extends ConsumerState<SettlementListScreen> {
-  late final ScrollController controller;
+  late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
-    controller = ScrollController();
+    _scrollController = ScrollController();
   }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   Future<void> refresh() async {
     final userId = ref.read(authProvider)!.id!;
     final value = ref.read(dropDownValueProvider);
@@ -47,14 +59,15 @@ class _SettlementListScreenState extends ConsumerState<SettlementListScreen> {
     log('status = ${status}');
     final provider = settlementPageProvider(PaginationStateParam(path: userId));
     ref.read(provider.notifier).paginate(
-      path: userId,
-      forceRefetch: true,
-      param: SettlementPaginationParam(
-        status: status,
-      ),
-      paginationParams: const PaginationParam(page: 1),
-    );
+          path: userId,
+          forceRefetch: true,
+          param: SettlementPaginationParam(
+            status: status,
+          ),
+          paginationParams: const PaginationParam(page: 1),
+        );
   }
+
   @override
   Widget build(BuildContext context) {
     final items = [
@@ -63,60 +76,68 @@ class _SettlementListScreenState extends ConsumerState<SettlementListScreen> {
       '대기중',
       '전체 보기',
     ];
-    return NestedScrollView(
-      headerSliverBuilder: ((BuildContext context, bool innerBoxIsScrolled) {
-        return [
-          const DefaultAppBar(
-            isSliver: true,
-            title: '정산 내역',
-          ),
-        ];
-      }),
-      body: RefreshIndicator(
-        onRefresh: refresh,
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.only(right: 14.w, top: 14.h, bottom: 14.h),
-                child: Row(
-                  children: [
-                    const Spacer(),
-                    Consumer(
-                      builder:
-                          (BuildContext context, WidgetRef ref, Widget? child) {
-                        return CustomDropDownButton(
-                          initValue: '전체 보기',
-                          onChanged: (value) {
-                            changeDropButton(value, ref);
-                          },
-                          items: items,
-                        );
-                      },
-                    )
-                  ],
+
+    return DefaultLayout(
+      bottomIdx: widget.bottomIdx,
+      scrollController: _scrollController,
+      body: NestedScrollView(
+        headerSliverBuilder: ((BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            const DefaultAppBar(
+              isSliver: true,
+              title: '정산 내역',
+            ),
+          ];
+        }),
+        body: RefreshIndicator(
+          onRefresh: refresh,
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding:
+                      EdgeInsets.only(right: 14.w, top: 14.h, bottom: 14.h),
+                  child: Row(
+                    children: [
+                      const Spacer(),
+                      Consumer(
+                        builder: (BuildContext context, WidgetRef ref,
+                            Widget? child) {
+                          return CustomDropDownButton(
+                            initValue: '전체 보기',
+                            onChanged: (value) {
+                              changeDropButton(value, ref);
+                            },
+                            items: items,
+                          );
+                        },
+                      )
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Consumer(
-              builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                final userId = ref.watch(authProvider)!.id!;
-                return DisposeSliverPaginationListView(
-                    provider: settlementPageProvider(
-                        PaginationStateParam(path: userId)),
-                    itemBuilder: (BuildContext context, int index, Base pModel) {
-                      final model = pModel as SettlementModel;
+              Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  final userId = ref.watch(authProvider)!.id!;
+                  return DisposeSliverPaginationListView(
+                      provider: settlementPageProvider(
+                          PaginationStateParam(path: userId)),
+                      itemBuilder:
+                          (BuildContext context, int index, Base pModel) {
+                        final model = pModel as SettlementModel;
 
-                      return SettlementCard.fromModel(
-                        model: model,
-                      );
-                    },
-                    skeleton: Container(),
-                    controller: controller,
-                    emptyWidget: getEmptyWidget());
-              },
-            ),
-          ],
+                        return SettlementCard.fromModel(
+                          model: model,
+                          bottomIdx: widget.bottomIdx,
+                        );
+                      },
+                      skeleton: Container(),
+                      controller: _scrollController,
+                      emptyWidget: getEmptyWidget());
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -176,6 +197,7 @@ class SettlementCard extends StatelessWidget {
   final String address;
   final String fee;
   final SettlementType status;
+  final int bottomIdx;
 
   const SettlementCard({
     super.key,
@@ -185,9 +207,13 @@ class SettlementCard extends StatelessWidget {
     required this.id,
     required this.fee,
     required this.status,
+    required this.bottomIdx,
   });
 
-  factory SettlementCard.fromModel({required SettlementModel model}) {
+  factory SettlementCard.fromModel({
+    required SettlementModel model,
+    required int bottomIdx,
+  }) {
     final game = model.game;
     final datetime =
         '${game.startdate.replaceAll('-', '.')} ${game.starttime.substring(0, 5)} ~ ${game.enddate.replaceAll('-', '.')} ${game.endtime.substring(0, 5)}';
@@ -198,6 +224,7 @@ class SettlementCard extends StatelessWidget {
       id: model.id,
       fee: NumberUtil.format(game.fee.toString()),
       status: model.status,
+      bottomIdx: bottomIdx,
     );
   }
 
@@ -208,8 +235,14 @@ class SettlementCard extends StatelessWidget {
       child: InkWell(
         onTap: () {
           Map<String, String> pathParameters = {'settlementId': id.toString()};
-          context.pushNamed(SettlementDetailScreen.routeName,
-              pathParameters: pathParameters);
+          final Map<String, String> queryParameters = {
+            'bottomIdx': bottomIdx.toString()
+          };
+          context.pushNamed(
+            SettlementDetailScreen.routeName,
+            pathParameters: pathParameters,
+            queryParameters: queryParameters,
+          );
         },
         child: Container(
           padding: EdgeInsets.all(12.r),

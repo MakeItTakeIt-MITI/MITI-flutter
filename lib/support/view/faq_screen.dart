@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:miti/common/component/default_layout.dart';
 import 'package:miti/common/component/dispose_sliver_pagination_list_view.dart';
 import 'package:miti/court/component/court_list_component.dart';
 import 'package:miti/support/model/support_model.dart';
@@ -14,51 +15,63 @@ import '../../theme/text_theme.dart';
 
 class FAQScreen extends StatefulWidget {
   static String get routeName => 'faq';
+  final int bottomIdx;
 
-  const FAQScreen({super.key});
+  const FAQScreen({super.key, required this.bottomIdx});
 
   @override
   State<FAQScreen> createState() => _FAQScreenState();
 }
 
 class _FAQScreenState extends State<FAQScreen> {
-  late final ScrollController controller;
+  late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
-    controller = ScrollController();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return NestedScrollView(
-      headerSliverBuilder: ((BuildContext context, bool innerBoxIsScrolled) {
-        return [
-          const DefaultAppBar(
-            isSliver: true,
-            title: 'FAQ',
-          ),
-        ];
-      }),
-      body: CustomScrollView(
-        slivers: [
-          SliverPadding(
-            padding: EdgeInsets.all(12.r),
-            sliver: DisposeSliverPaginationListView(
-                provider: faqProvider(PaginationStateParam()),
-                itemBuilder: (BuildContext context, int index, Base pModel) {
-                  final model = pModel as FAQModel;
+    return DefaultLayout(
+      bottomIdx: widget.bottomIdx,
+      scrollController: _scrollController,
+      body: NestedScrollView(
+        controller: _scrollController,
+        headerSliverBuilder: ((BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            const DefaultAppBar(
+              isSliver: true,
+              title: 'FAQ',
+            ),
+          ];
+        }),
+        body: CustomScrollView(
+          slivers: [
+            SliverPadding(
+              padding: EdgeInsets.all(12.r),
+              sliver: DisposeSliverPaginationListView(
+                  provider: faqProvider(PaginationStateParam()),
+                  itemBuilder: (BuildContext context, int index, Base pModel) {
+                    final model = pModel as FAQModel;
 
-                  return _FAQComponent.fromModel(
-                    model: model,
-                  );
-                },
-                skeleton: Container(),
-                controller: controller,
-                emptyWidget: getEmptyWidget()),
-          ),
-        ],
+                    return _FAQComponent.fromModel(
+                      model: model,
+                    );
+                  },
+                  skeleton: Container(),
+                  controller: _scrollController,
+                  emptyWidget: getEmptyWidget()),
+            ),
+          ],
+        ),
       ),
     );
   }

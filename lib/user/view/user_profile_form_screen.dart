@@ -10,6 +10,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
+import 'package:miti/common/component/default_layout.dart';
 import 'package:miti/common/provider/router_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:miti/theme/text_theme.dart';
@@ -25,31 +26,52 @@ import '../../common/provider/form_util_provider.dart';
 import '../../common/provider/scroll_provider.dart';
 import '../model/user_model.dart';
 
-class UserProfileFormScreen extends ConsumerWidget {
+class UserProfileFormScreen extends ConsumerStatefulWidget {
   static String get routeName => 'userProfile';
+  final int bottomIdx;
 
-  const UserProfileFormScreen({super.key});
+  const UserProfileFormScreen({
+    super.key,
+    required this.bottomIdx,
+  });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final controller = ref.watch(pageScrollControllerProvider);
-    final bottomPadding = MediaQuery.of(context).viewInsets.bottom > 80.h
-        ? MediaQuery.of(context).viewInsets.bottom - 80.h
-        : 0.0;
-    return NestedScrollView(
-      controller: controller[2],
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return [
-          const DefaultAppBar(
-            title: '내 정보',
-            isSliver: true,
-          )
-        ];
-      },
-      body: CustomScrollView(slivers: [
-        SliverPadding(
-          padding: EdgeInsets.only(bottom: bottomPadding),
-          sliver: SliverFillRemaining(
+  ConsumerState<UserProfileFormScreen> createState() =>
+      _UserProfileFormScreenState();
+}
+
+class _UserProfileFormScreenState extends ConsumerState<UserProfileFormScreen> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultLayout(
+      bottomIdx: widget.bottomIdx,
+      scrollController: _scrollController,
+      body: NestedScrollView(
+        controller: _scrollController,
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            const DefaultAppBar(
+              title: '내 정보',
+              isSliver: true,
+            )
+          ];
+        },
+        body: CustomScrollView(slivers: [
+          SliverFillRemaining(
             child: Padding(
               padding: EdgeInsets.only(
                 left: 16.w,
@@ -65,13 +87,13 @@ class UserProfileFormScreen extends ConsumerWidget {
                       height: 75.r,
                     ),
                   ),
-                  Expanded(child: const _ProfileFormComponent()),
+                  const Expanded(child: _ProfileFormComponent()),
                 ],
               ),
             ),
-          ),
-        ),
-      ]),
+          )
+        ]),
+      ),
     );
   }
 }

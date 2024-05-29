@@ -11,15 +11,39 @@ import 'package:miti/game/component/game_state_label.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/default_appbar.dart';
+import '../../common/component/default_layout.dart';
 import '../../common/model/entity_enum.dart';
 import '../../game/view/game_detail_screen.dart';
 import '../../util/util.dart';
 
-class SettlementDetailScreen extends StatelessWidget {
+class SettlementDetailScreen extends ConsumerStatefulWidget {
   static String get routeName => 'settlementDetail';
+  final int bottomIdx;
   final int settlementId;
 
-  const SettlementDetailScreen({super.key, required this.settlementId});
+  const SettlementDetailScreen(
+      {super.key, required this.settlementId, required this.bottomIdx});
+
+  @override
+  ConsumerState<SettlementDetailScreen> createState() =>
+      _SettlementDetailScreenState();
+}
+
+class _SettlementDetailScreenState
+    extends ConsumerState<SettlementDetailScreen> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   Widget getDivider() {
     return Container(
@@ -30,43 +54,48 @@ class SettlementDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NestedScrollView(
-      headerSliverBuilder: ((BuildContext context, bool innerBoxIsScrolled) {
-        return [
-          const DefaultAppBar(
-            isSliver: true,
-            title: '정산 내역',
-          ),
-        ];
-      }),
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Consumer(
-              builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                final userId = ref.watch(authProvider)!.id!;
-                final result = ref.watch(settlementProvider(
-                    settlementId: settlementId, userId: userId));
-                if (result is LoadingModel) {
-                  return CircularProgressIndicator();
-                } else if (result is ErrorModel) {
-                  return Text('에러');
-                }
-                final model =
-                    (result as ResponseModel<SettlementDetailModel>).data!;
-                return Column(
-                  children: [
-                    SummaryComponent.fromSettlementModel(model: model),
-                    getDivider(),
-                    _SettlementComponent.fromModel(model: model),
-                    getDivider(),
-                    _ParticipationComponent.fromModel(model: model),
-                  ],
-                );
-              },
+    return DefaultLayout(
+      bottomIdx: widget.bottomIdx,
+      scrollController: _scrollController,
+      body: NestedScrollView(
+        controller: _scrollController,
+        headerSliverBuilder: ((BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            const DefaultAppBar(
+              isSliver: true,
+              title: '정산 내역',
             ),
-          )
-        ],
+          ];
+        }),
+        body: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  final userId = ref.watch(authProvider)!.id!;
+                  final result = ref.watch(settlementProvider(
+                      settlementId: widget.settlementId, userId: userId));
+                  if (result is LoadingModel) {
+                    return CircularProgressIndicator();
+                  } else if (result is ErrorModel) {
+                    return Text('에러');
+                  }
+                  final model =
+                      (result as ResponseModel<SettlementDetailModel>).data!;
+                  return Column(
+                    children: [
+                      SummaryComponent.fromSettlementModel(model: model),
+                      getDivider(),
+                      _SettlementComponent.fromModel(model: model),
+                      getDivider(),
+                      _ParticipationComponent.fromModel(model: model),
+                    ],
+                  );
+                },
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -228,9 +257,8 @@ class _ParticipationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fee = NumberUtil.format(model.fee.toString());
-    final bankType = model.is_settled
-        ? SettlementType.completed
-        : SettlementType.waiting;
+    final bankType =
+        model.is_settled ? SettlementType.completed : SettlementType.waiting;
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: 20.w,

@@ -10,64 +10,97 @@ import 'package:miti/game/view/review_form_screen.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/default_appbar.dart';
+import '../../common/component/default_layout.dart';
 import '../../common/model/entity_enum.dart';
 import '../model/game_model.dart';
 
-class GameParticipationScreen extends StatelessWidget {
+class GameParticipationScreen extends StatefulWidget {
   final int gameId;
   final int? participationId;
+  final int bottomIdx;
 
   static String get routeName => 'participation';
 
   const GameParticipationScreen(
-      {super.key, required this.gameId, this.participationId});
+      {super.key,
+      required this.gameId,
+      this.participationId,
+      required this.bottomIdx});
+
+  @override
+  State<GameParticipationScreen> createState() =>
+      _GameParticipationScreenState();
+}
+
+class _GameParticipationScreenState extends State<GameParticipationScreen> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return NestedScrollView(
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return [
-          const DefaultAppBar(
-            title: '경기 리뷰 남기기',
-            isSliver: true,
-          )
-        ];
-      },
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Consumer(
-              builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                final result = ref.watch(gamePlayersProvider(gameId: gameId));
-                if (result is LoadingModel) {
-                  return CircularProgressIndicator();
-                } else if (result is ErrorModel) {
+    return DefaultLayout(
+      bottomIdx: widget.bottomIdx,
+      scrollController: _scrollController,
+      body: NestedScrollView(
+        controller: _scrollController,
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            const DefaultAppBar(
+              title: '경기 리뷰 남기기',
+              isSliver: true,
+            )
+          ];
+        },
+        body: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  final result =
+                      ref.watch(gamePlayersProvider(gameId: widget.gameId));
+                  if (result is LoadingModel) {
+                    return CircularProgressIndicator();
+                  } else if (result is ErrorModel) {
+                    return Column(
+                      children: [
+                        Text('에러'),
+                      ],
+                    );
+                  }
+                  final model =
+                      (result as ResponseModel<GamePlayerListModel>).data!;
                   return Column(
                     children: [
-                      Text('에러'),
+                      if (model.host != null)
+                        _HostReviewComponent(
+                          host: model.host!,
+                          gameId: widget.gameId,
+                          bottomIdx: widget.bottomIdx,
+                        ),
+                      _GuestReviewComponent(
+                        participated_users: model.participations,
+                        gameId: widget.gameId,
+                        participationId: widget.participationId,
+                        bottomIdx: widget.bottomIdx,
+                      ),
                     ],
                   );
-                }
-                final model =
-                    (result as ResponseModel<GamePlayerListModel>).data!;
-                return Column(
-                  children: [
-                    if (model.host != null)
-                    _HostReviewComponent(
-                      host: model.host!,
-                      gameId: gameId,
-                    ),
-                    _GuestReviewComponent(
-                      participated_users: model.participations,
-                      gameId: gameId,
-                      participationId: participationId,
-                    ),
-                  ],
-                );
-              },
-            ),
-          )
-        ],
+                },
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -79,6 +112,7 @@ class _PlayerComponent extends StatelessWidget {
   final GamePlayerModel user;
   final int gameId;
   final int? participationId;
+  final int bottomIdx;
 
   const _PlayerComponent(
       {super.key,
@@ -86,11 +120,13 @@ class _PlayerComponent extends StatelessWidget {
       this.participation_status,
       required this.user,
       this.participationId,
-      required this.gameId});
+      required this.gameId,
+      required this.bottomIdx});
 
   factory _PlayerComponent.fromParticipationModel(
       {required GameParticipationModel model,
       required int gameId,
+      required int bottomIdx,
       int? participationId}) {
     return _PlayerComponent(
       id: model.id,
@@ -98,18 +134,21 @@ class _PlayerComponent extends StatelessWidget {
       user: model.user,
       gameId: gameId,
       participationId: participationId,
+      bottomIdx: bottomIdx,
     );
   }
 
   factory _PlayerComponent.fromHostModel(
       {required GamePlayerModel model,
       required int gameId,
+      required int bottomIdx,
       int? participationId}) {
     return _PlayerComponent(
       id: model.id,
       user: model,
       gameId: gameId,
       participationId: participationId,
+      bottomIdx: bottomIdx,
     );
   }
 
@@ -142,7 +181,9 @@ class _PlayerComponent extends StatelessWidget {
         Map<String, String> pathParameters = {
           'gameId': gameId.toString(),
         };
-        Map<String, String> queryParameters = {};
+        Map<String, String> queryParameters = {
+          'bottomIdx': bottomIdx.toString()
+        };
         if (participationId != null) {
           queryParameters['participationId'] = participationId.toString();
         }
@@ -218,12 +259,14 @@ class _HostReviewComponent extends StatelessWidget {
   final GamePlayerModel host;
   final int gameId;
   final int? participationId;
+  final int bottomIdx;
 
   const _HostReviewComponent(
       {super.key,
       required this.host,
       required this.gameId,
-      this.participationId});
+      this.participationId,
+      required this.bottomIdx});
 
   @override
   Widget build(BuildContext context) {
@@ -242,6 +285,7 @@ class _HostReviewComponent extends StatelessWidget {
           _PlayerComponent.fromHostModel(
             model: host,
             gameId: gameId,
+            bottomIdx: bottomIdx,
           ),
         ],
       ),
@@ -252,13 +296,15 @@ class _HostReviewComponent extends StatelessWidget {
 class _GuestReviewComponent extends StatelessWidget {
   final List<GameParticipationModel> participated_users;
   final int gameId;
+  final int bottomIdx;
   final int? participationId;
 
   const _GuestReviewComponent(
       {super.key,
       required this.participated_users,
       required this.gameId,
-      this.participationId});
+      this.participationId,
+      required this.bottomIdx});
 
   @override
   Widget build(BuildContext context) {
@@ -284,6 +330,7 @@ class _GuestReviewComponent extends StatelessWidget {
                     model: participated_users[idx],
                     gameId: gameId,
                     participationId: participationId,
+                    bottomIdx: bottomIdx,
                   );
                 },
                 separatorBuilder: (_, idx) {

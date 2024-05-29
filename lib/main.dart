@@ -65,6 +65,9 @@ class MyApp extends ConsumerWidget {
                 child: child!);
           },
           theme: ThemeData(
+            pageTransitionsTheme: const PageTransitionsTheme(builders: {
+              TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+            }),
               // colorScheme: ColorScheme(background: Colors.white, brightness: null, primary: null, onPrimary: null, secondary: null, onSecondary: null, error: null, onError: null, onBackground: null, surface: null, onSurface: null,),
               fontFamily: 'Pretendard',
               inputDecorationTheme: InputDecorationTheme(

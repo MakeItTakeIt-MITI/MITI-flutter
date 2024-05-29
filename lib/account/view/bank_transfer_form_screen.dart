@@ -22,16 +22,38 @@ import 'package:miti/user/view/user_info_screen.dart';
 
 import '../../common/component/custom_drop_down_button.dart';
 import '../../common/component/default_appbar.dart';
+import '../../common/component/default_layout.dart';
 import '../../common/provider/form_util_provider.dart';
 import '../../common/provider/router_provider.dart';
 import '../../util/util.dart';
 
-class BankTransferFormScreen extends StatelessWidget {
+class BankTransferFormScreen extends StatefulWidget {
   final int accountId;
+  final int bottomIdx;
 
   static String get routeName => 'transferForm';
 
-  const BankTransferFormScreen({super.key, required this.accountId});
+  const BankTransferFormScreen(
+      {super.key, required this.accountId, required this.bottomIdx});
+
+  @override
+  State<BankTransferFormScreen> createState() => _BankTransferFormScreenState();
+}
+
+class _BankTransferFormScreenState extends State<BankTransferFormScreen> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   Widget getDivider() {
     return Container(
@@ -42,37 +64,38 @@ class BankTransferFormScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bottomPadding = MediaQuery.of(context).viewInsets.bottom > 80.h
-        ? MediaQuery.of(context).viewInsets.bottom - 80.h
-        : 0.0;
-    return NestedScrollView(
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return [
-          const DefaultAppBar(
-            title: '송금 신청',
-            isSliver: true,
-          )
-        ];
-      },
-      body: CustomScrollView(
-        slivers: [
-          SliverPadding(
-            padding: EdgeInsets.only(bottom: bottomPadding),
-            sliver: SliverToBoxAdapter(
-              child: Column(
-                children: [
-                  _AccountComponent(
-                    accountId: accountId,
-                  ),
-                  getDivider(),
-                  _AccountForm(
-                    accountId: accountId,
-                  ),
-                ],
+
+    return DefaultLayout(
+      bottomIdx: widget.bottomIdx,
+      scrollController: _scrollController,
+      body: NestedScrollView(
+        controller: _scrollController,
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            const DefaultAppBar(
+              title: '송금 신청',
+              isSliver: true,
+            )
+          ];
+        },
+        body: CustomScrollView(
+          slivers: [
+
+            SliverToBoxAdapter(
+                child: Column(
+                  children: [
+                    _AccountComponent(
+                      accountId: widget.accountId,
+                    ),
+                    getDivider(),
+                    _AccountForm(
+                      accountId: widget.accountId,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

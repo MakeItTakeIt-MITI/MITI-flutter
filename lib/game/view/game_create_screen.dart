@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'package:kpostal/kpostal.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
 import 'package:miti/common/component/default_appbar.dart';
+import 'package:miti/common/component/default_layout.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/provider/widget/datetime_provider.dart';
 import 'package:miti/court/model/court_model.dart';
@@ -27,104 +28,133 @@ import '../model/game_model.dart';
 import '../param/game_param.dart';
 import 'game_create_complete_screen.dart';
 
-class GameCreateScreen extends ConsumerWidget {
+class GameCreateScreen extends ConsumerStatefulWidget {
   static String get routeName => 'create';
+  final int bottomIdx;
 
-  const GameCreateScreen({super.key});
+  const GameCreateScreen({
+    super.key,
+    required this.bottomIdx,
+  });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final bottomPadding = MediaQuery.of(context).viewInsets.bottom > 80.h
-        ? MediaQuery.of(context).viewInsets.bottom - 80.h
-        : 0.0;
-    final controller = ref.watch(pageScrollControllerProvider);
+  ConsumerState<GameCreateScreen> createState() => _GameCreateScreenState();
+}
 
-    return NestedScrollView(
-      controller: controller[1],
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return [
-          const DefaultAppBar(
-            isSliver: true,
-            title: '경기 생성하기',
-          )
-        ];
-      },
-      body: Padding(
-        padding: EdgeInsets.only(
-          left: 16.w,
-          right: 16.w,
-          bottom: bottomPadding,
-        ),
-        child: CustomScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          slivers: <Widget>[
-            getSpacer(height: 18),
-            SliverToBoxAdapter(
-              child: Text(
-                '경기 정보',
-                style: TextStyle(
-                  color: const Color(0xFF222222),
-                  fontSize: 16.sp,
-                  fontFamily: 'Pretendard',
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.25.sp,
+class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultLayout(
+      bottomIdx: widget.bottomIdx,
+      scrollController: _scrollController,
+      body: NestedScrollView(
+        controller: _scrollController,
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            const DefaultAppBar(
+              isSliver: true,
+              title: '경기 생성하기',
+            )
+          ];
+        },
+        body: Padding(
+          padding: EdgeInsets.only(
+            left: 16.w,
+            right: 16.w,
+          ),
+          child: CustomScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            slivers: <Widget>[
+              getSpacer(height: 18),
+              SliverToBoxAdapter(
+                child: Text(
+                  '경기 정보',
+                  style: TextStyle(
+                    color: const Color(0xFF222222),
+                    fontSize: 16.sp,
+                    fontFamily: 'Pretendard',
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.25.sp,
+                  ),
                 ),
               ),
-            ),
-            getSpacer(),
-            const _TitleForm(),
-            getSpacer(),
-            const _DateForm(),
-            getSpacer(),
-            const _AddressForm(),
-            getSpacer(),
-            const SliverToBoxAdapter(child: ApplyForm()),
-            getSpacer(),
-            const _FeeForm(),
-            getSpacer(),
-            const _AdditionalInfoForm(),
-            getSpacer(height: 19),
-            SliverToBoxAdapter(child: Consumer(
-              builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                final valid = ref.watch(gameFormProvider.notifier).formValid();
-                return SizedBox(
-                  height: 48.h,
-                  child: TextButton(
-                      onPressed: valid
-                          ? () async {
-                              final result =
-                                  await ref.read(gameCreateProvider.future);
-                              if (context.mounted) {
-                                if (result is ErrorModel) {
-                                } else {
-                                  final model =
-                                      result as ResponseModel<GameDetailModel>;
-                                  Map<String, String> pathParameters = {
-                                    'gameId': model.data!.id.toString()
-                                  };
-                                  context.pushNamed(
+              getSpacer(),
+              const _TitleForm(),
+              getSpacer(),
+              const _DateForm(),
+              getSpacer(),
+              const _AddressForm(),
+              getSpacer(),
+              const SliverToBoxAdapter(child: ApplyForm()),
+              getSpacer(),
+              const _FeeForm(),
+              getSpacer(),
+              const _AdditionalInfoForm(),
+              getSpacer(height: 19),
+              SliverToBoxAdapter(child: Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  final valid =
+                      ref.watch(gameFormProvider.notifier).formValid();
+                  return SizedBox(
+                    height: 48.h,
+                    child: TextButton(
+                        onPressed: valid
+                            ? () async {
+                                final result =
+                                    await ref.read(gameCreateProvider.future);
+                                if (context.mounted) {
+                                  if (result is ErrorModel) {
+                                  } else {
+                                    final model = result
+                                        as ResponseModel<GameDetailModel>;
+                                    Map<String, String> pathParameters = {
+                                      'gameId': model.data!.id.toString()
+                                    };
+                                    final Map<String, String> queryParameters =
+                                        {
+                                      'bottomIdx': widget.bottomIdx.toString()
+                                    };
+                                    context.pushNamed(
                                       GameCreateCompleteScreen.routeName,
-                                      pathParameters: pathParameters);
+                                      pathParameters: pathParameters,
+                                      queryParameters: queryParameters,
+                                    );
+                                  }
                                 }
                               }
-                            }
-                          : () {},
-                      style: TextButton.styleFrom(
-                          backgroundColor: valid
-                              ? const Color(0xFF4065F6)
-                              : const Color(0xFFE8E8E8),
-                          fixedSize: Size(double.infinity, 48.h)),
-                      child: Text(
-                        '경기 생성하기',
-                        style: TextStyle(
-                          color: valid ? Colors.white : const Color(0xFF969696),
-                        ),
-                      )),
-                );
-              },
-            )),
-            getSpacer(height: 8),
-          ],
+                            : () {},
+                        style: TextButton.styleFrom(
+                            backgroundColor: valid
+                                ? const Color(0xFF4065F6)
+                                : const Color(0xFFE8E8E8),
+                            fixedSize: Size(double.infinity, 48.h)),
+                        child: Text(
+                          '경기 생성하기',
+                          style: TextStyle(
+                            color:
+                                valid ? Colors.white : const Color(0xFF969696),
+                          ),
+                        )),
+                  );
+                },
+              )),
+              getSpacer(height: 8),
+            ],
+          ),
         ),
       ),
     );
@@ -301,7 +331,9 @@ class AddressComponent extends StatelessWidget {
                                           final extra = CourtListComponent(
                                             model: result,
                                           );
-                                          context.pushNamed(DialogPage.routeName, extra: extra);
+                                          context.pushNamed(
+                                              DialogPage.routeName,
+                                              extra: extra);
                                         }
                                       }
                                     }
@@ -420,8 +452,6 @@ class ApplyForm extends ConsumerWidget {
     this.initMaxValue,
     this.initMinValue,
   });
-
-
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

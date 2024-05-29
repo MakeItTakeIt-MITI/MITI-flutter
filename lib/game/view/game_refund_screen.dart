@@ -12,16 +12,40 @@ import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/default_appbar.dart';
+import '../../common/component/default_layout.dart';
 import '../../common/provider/router_provider.dart';
 import '../model/game_payment_model.dart';
 
-class GameRefundScreen extends StatelessWidget {
+class GameRefundScreen extends StatefulWidget {
   static String get routeName => 'gameRefund';
   final int participationId;
   final int gameId;
+  final int bottomIdx;
 
   const GameRefundScreen(
-      {super.key, required this.participationId, required this.gameId});
+      {super.key,
+      required this.participationId,
+      required this.gameId,
+      required this.bottomIdx});
+
+  @override
+  State<GameRefundScreen> createState() => _GameRefundScreenState();
+}
+
+class _GameRefundScreenState extends State<GameRefundScreen> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   Widget getDivider() {
     return Container(
@@ -32,78 +56,86 @@ class GameRefundScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NestedScrollView(
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return [
-          const DefaultAppBar(
-            isSliver: true,
-            title: '참여 경기 취소',
-          ),
-        ];
-      },
-      body: CustomScrollView(
-        slivers: [
-          SliverFillRemaining(
-            child: Stack(
-              children: [
-                SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      _RefundInfoComponent(
-                        gameId: gameId,
-                        participationId: participationId,
-                      ),
-                      getDivider(),
-                      const _CommissionInfoComponent(),
-                    ],
-                  ),
-                ),
-                Consumer(
-                  builder:
-                      (BuildContext context, WidgetRef ref, Widget? child) {
-                    final valid = ref.watch(checkProvider(1));
-                    return Positioned(
-                      bottom: 8.h,
-                      right: 16.w,
-                      left: 16.w,
-                      child: TextButton(
-                        onPressed: valid
-                            ? () async {
-                                await refund(ref, context);
-                              }
-                            : () {},
-                        style: TextButton.styleFrom(
-                          fixedSize: Size(double.infinity, 48.h),
-                          backgroundColor: valid
-                              ? const Color(0xFF4065F5)
-                              : const Color(0xffE8E8E8),
+    return DefaultLayout(
+      bottomIdx: widget.bottomIdx,
+      scrollController: _scrollController,
+      body: NestedScrollView(
+        controller: _scrollController,
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            const DefaultAppBar(
+              isSliver: true,
+              title: '참여 경기 취소',
+            ),
+          ];
+        },
+        body: CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              child: Stack(
+                children: [
+                  SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        _RefundInfoComponent(
+                          gameId: widget.gameId,
+                          participationId: widget.participationId,
                         ),
-                        child: Text(
-                          '참여 취소하기',
-                          style: MITITextStyle.btnTextBStyle.copyWith(
-                            color:
-                                valid ? Colors.white : const Color(0xff969696),
+                        getDivider(),
+                        const _CommissionInfoComponent(),
+                      ],
+                    ),
+                  ),
+                  Consumer(
+                    builder:
+                        (BuildContext context, WidgetRef ref, Widget? child) {
+                      final valid = ref.watch(checkProvider(1));
+                      return Positioned(
+                        bottom: 8.h,
+                        right: 16.w,
+                        left: 16.w,
+                        child: TextButton(
+                          onPressed: valid
+                              ? () async {
+                                  await refund(ref, context);
+                                }
+                              : () {},
+                          style: TextButton.styleFrom(
+                            fixedSize: Size(double.infinity, 48.h),
+                            backgroundColor: valid
+                                ? const Color(0xFF4065F5)
+                                : const Color(0xffE8E8E8),
+                          ),
+                          child: Text(
+                            '참여 취소하기',
+                            style: MITITextStyle.btnTextBStyle.copyWith(
+                              color: valid
+                                  ? Colors.white
+                                  : const Color(0xff969696),
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-              ],
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Future<void> refund(WidgetRef ref, BuildContext context) async {
-    final result = await ref.read(
-        gameCancelProvider(gameId: gameId, participationId: participationId)
-            .future);
+    final result = await ref.read(gameCancelProvider(
+            gameId: widget.gameId, participationId: widget.participationId)
+        .future);
     if (result is ErrorModel) {
     } else {
-      ref.read(gameDetailProvider(gameId: gameId).notifier).get(gameId: gameId);
+      ref
+          .read(gameDetailProvider(gameId: widget.gameId).notifier)
+          .get(gameId: widget.gameId);
       if (context.mounted) {
         final extra = CustomDialog(
           title: '경기 참여 취소',
@@ -111,11 +143,15 @@ class GameRefundScreen extends StatelessWidget {
           onPressed: () {
             Navigator.of(context, rootNavigator: true).pop('dialog');
             Map<String, String> pathParameters = {
-              'gameId': gameId.toString()
+              'gameId': widget.gameId.toString()
+            };
+            final Map<String, String> queryParameters = {
+              'bottomIdx': widget.bottomIdx.toString()
             };
             context.goNamed(
               GameDetailScreen.routeName,
               pathParameters: pathParameters,
+              queryParameters: queryParameters,
             );
           },
         );
@@ -161,11 +197,17 @@ class _RefundInfoComponent extends ConsumerWidget {
             ),
           ),
           SizedBox(height: 14.h),
-          getPayment(title: '경기 참여비', fee: formatFee(model.payment_amount.total_amount)),
+          getPayment(
+              title: '경기 참여비',
+              fee: formatFee(model.payment_amount.total_amount)),
           getDivider(),
-          getPayment(title: '결제 수수료', fee: formatFee(model.payment_amount.vat_amount)),
+          getPayment(
+              title: '결제 수수료', fee: formatFee(model.payment_amount.vat_amount)),
           SizedBox(height: 12.h),
-          getPayment(title: '참여 취소 수수료', fee: formatFee(model.commission_amount.cancelation_commission_amount)),
+          getPayment(
+              title: '참여 취소 수수료',
+              fee: formatFee(
+                  model.commission_amount.cancelation_commission_amount)),
           getDivider(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

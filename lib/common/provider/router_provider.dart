@@ -94,7 +94,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           // },
         ),
         GoRoute(
-            path: '/test',
+            path: '/dialog',
             parentNavigatorKey: rootNavKey,
             name: DialogPage.routeName,
             // builder: (context, state) {
@@ -131,16 +131,21 @@ final routerProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) {
                   return CourtMapScreen();
                 },
-                // pageBuilder: (context, state) {
-                //   return NoTransitionPage(child: CourtMapScreen());
-                // },
+                pageBuilder: (context, state) {
+                  return NoTransitionPage(child: CourtMapScreen());
+                },
                 routes: [
                   GoRoute(
                     path: 'user/delete',
-                    parentNavigatorKey: shellNavKey,
+                    parentNavigatorKey: rootNavKey,
                     name: UserDeleteSuccessScreen.routeName,
                     builder: (context, state) {
-                      return UserDeleteSuccessScreen();
+                      final int bottomIdx =
+                          int.parse(state.uri.queryParameters['bottomIdx']!);
+
+                      return UserDeleteSuccessScreen(
+                        bottomIdx: bottomIdx,
+                      );
                     },
                     // pageBuilder: (context, state) {
                     //   return NoTransitionPage(child: UserDeleteSuccessScreen());
@@ -304,52 +309,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                 ],
               ),
               GoRoute(
-                  path: '/court',
-                  parentNavigatorKey: shellNavKey,
-                  name: CourtSearchScreen.routeName,
-                  builder: (context, state) {
-                    return CourtSearchScreen();
-                  },
-                  // pageBuilder: (context, state) {
-                  //   return NoTransitionPage(child: CourtSearchScreen());
-                  // },
-                  routes: []),
-              GoRoute(
-                path: '/court/:courtId',
-                parentNavigatorKey: shellNavKey,
-                name: CourtGameListScreen.routeName,
-                builder: (context, state) {
-                  final int courtId =
-                      int.parse(state.pathParameters['courtId']!);
-                  final CourtSearchModel extra =
-                      state.extra! as CourtSearchModel;
-                  return CourtGameListScreen(
-                    courtId: courtId,
-                    model: extra,
-                  );
-                },
-                // pageBuilder: (context, state) {
-                //   final int courtId =
-                //       int.parse(state.pathParameters['courtId']!);
-                //   final CourtSearchModel extra =
-                //       state.extra! as CourtSearchModel;
-                //   return NoTransitionPage(
-                //       child: CourtGameListScreen(
-                //     courtId: courtId,
-                //     model: extra,
-                //   ));
-                // },
-              ),
-              GoRoute(
                   path: '/game',
                   parentNavigatorKey: shellNavKey,
                   name: GameScreen.routeName,
                   builder: (context, state) {
                     return GameScreen();
                   },
-                  // pageBuilder: (context, state) {
-                  //   return NoTransitionPage(child: GameScreen());
-                  // },
+                  pageBuilder: (context, state) {
+                    return NoTransitionPage(child: GameScreen());
+                  },
                   routes: [
                     GoRoute(
                       path: 'approval',
@@ -366,13 +334,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                     ),
                     GoRoute(
                       path: 'host',
-                      parentNavigatorKey: shellNavKey,
+                      parentNavigatorKey: rootNavKey,
                       name: GameHostScreen.routeName,
                       redirect: (_, state) => provider.redirectLogic(state),
                       builder: (context, state) {
                         UserGameType extra = state.extra as UserGameType;
+                        final int bottomIdx =
+                            int.parse(state.uri.queryParameters['bottomIdx']!);
                         return GameHostScreen(
                           type: extra,
+                          bottomIdx: bottomIdx,
                         );
                       },
                       // pageBuilder: (context, state) {
@@ -385,11 +356,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                     ),
                     GoRoute(
                         path: 'create',
-                        parentNavigatorKey: shellNavKey,
+                        parentNavigatorKey: rootNavKey,
                         name: GameCreateScreen.routeName,
                         redirect: (_, state) => provider.redirectLogic(state),
                         builder: (context, state) {
-                          return GameCreateScreen();
+                          final int bottomIdx = int.parse(
+                              state.uri.queryParameters['bottomIdx']!);
+                          return GameCreateScreen(
+                            bottomIdx: bottomIdx,
+                          );
                         },
                         // pageBuilder: (context, state) {
                         //   return NoTransitionPage(child: GameCreateScreen());
@@ -402,8 +377,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                             builder: (context, state) {
                               final int gameId =
                                   int.parse(state.pathParameters['gameId']!);
+
+                              final int bottomIdx = int.parse(
+                                  state.uri.queryParameters['bottomIdx']!);
                               return GameCreateCompleteScreen(
-                                gameId: gameId,
+                                gameId: gameId, bottomIdx: bottomIdx,
                               );
                             },
                             // pageBuilder: (context, state) {
@@ -454,9 +432,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 participationId = int.parse(state
                                     .uri.queryParameters['participationId']!);
                               }
+                              final int bottomIdx = int.parse(
+                                  state.uri.queryParameters['bottomIdx']!);
                               return GameParticipationScreen(
                                 gameId: gameId,
                                 participationId: participationId,
+                                bottomIdx: bottomIdx,
                               );
                             },
                             // pageBuilder: (context, state) {
@@ -492,11 +473,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 participationId = int.parse(state
                                     .uri.queryParameters['participationId']!);
                               }
-
+                              final int bottomIdx = int.parse(
+                                  state.uri.queryParameters['bottomIdx']!);
                               return ReviewScreen(
                                 gameId: gameId,
                                 participationId: participationId,
-                                ratingId: ratingId,
+                                ratingId: ratingId, bottomIdx: bottomIdx,
                               );
                             },
                             // pageBuilder: (context, state) {
@@ -529,9 +511,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                                   int.parse(state.pathParameters['gameId']!);
                               final int participationId = int.parse(
                                   state.pathParameters['participationId']!);
+                              final int bottomIdx = int.parse(
+                                  state.uri.queryParameters['bottomIdx']!);
                               return GameRefundScreen(
                                 gameId: gameId,
-                                participationId: participationId,
+                                participationId: participationId, bottomIdx: bottomIdx,
                               );
                             },
                             // pageBuilder: (context, state) {
@@ -604,7 +588,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                             builder: (context, state) {
                               final int gameId =
                                   int.parse(state.pathParameters['gameId']!);
-                              return GameUpdateScreen(gameId: gameId);
+                              final int bottomIdx = int.parse(
+                                  state.uri.queryParameters['bottomIdx']!);
+                              return GameUpdateScreen(
+                                gameId: gameId,
+                                bottomIdx: bottomIdx,
+                              );
                             },
                             // pageBuilder: (context, state) {
                             //   final int gameId =
@@ -625,16 +614,20 @@ final routerProvider = Provider<GoRouter>((ref) {
                   builder: (context, state) {
                     return InfoBody();
                   },
-                  // pageBuilder: (context, state) {
-                  //   return NoTransitionPage(child: InfoBody());
-                  // },
+                  pageBuilder: (context, state) {
+                    return NoTransitionPage(child: InfoBody());
+                  },
                   routes: [
                     GoRoute(
                       path: 'delete',
-                      parentNavigatorKey: shellNavKey,
+                      parentNavigatorKey: rootNavKey,
                       name: UserDeleteScreen.routeName,
                       builder: (context, state) {
-                        return UserDeleteScreen();
+                        final int bottomIdx =
+                            int.parse(state.uri.queryParameters['bottomIdx']!);
+                        return UserDeleteScreen(
+                          bottomIdx: bottomIdx,
+                        );
                       },
                       // pageBuilder: (context, state) {
                       //   return NoTransitionPage(child: UserDeleteScreen());
@@ -642,11 +635,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                     ),
                     GoRoute(
                         path: 'support',
-                        parentNavigatorKey: shellNavKey,
+                        parentNavigatorKey: rootNavKey,
                         name: SupportScreen.routeName,
                         redirect: (_, state) => provider.redirectLogic(state),
                         builder: (context, state) {
-                          return SupportScreen();
+                          final int bottomIdx = int.parse(
+                              state.uri.queryParameters['bottomIdx']!);
+
+                          return SupportScreen(
+                            bottomIdx: bottomIdx,
+                          );
                         },
                         // pageBuilder: (context, state) {
                         //   return NoTransitionPage(child: SupportScreen());
@@ -654,12 +652,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                         routes: [
                           GoRoute(
                             path: 'form',
-                            parentNavigatorKey: shellNavKey,
+                            parentNavigatorKey: rootNavKey,
                             name: SupportFormScreen.routeName,
                             redirect: (_, state) =>
                                 provider.redirectLogic(state),
                             builder: (context, state) {
-                              return SupportFormScreen();
+                              final int bottomIdx = int.parse(
+                                  state.uri.queryParameters['bottomIdx']!);
+                              return SupportFormScreen(
+                                bottomIdx: bottomIdx,
+                              );
                             },
                             // pageBuilder: (context, state) {
                             //   return NoTransitionPage(
@@ -668,15 +670,18 @@ final routerProvider = Provider<GoRouter>((ref) {
                           ),
                           GoRoute(
                             path: ':questionId',
-                            parentNavigatorKey: shellNavKey,
+                            parentNavigatorKey: rootNavKey,
                             name: SupportDetailScreen.routeName,
                             redirect: (_, state) =>
                                 provider.redirectLogic(state),
                             builder: (context, state) {
                               final int questionId = int.parse(
                                   state.pathParameters['questionId']!);
+                              final int bottomIdx = int.parse(
+                                  state.uri.queryParameters['bottomIdx']!);
                               return SupportDetailScreen(
                                 questionId: questionId,
+                                bottomIdx: bottomIdx,
                               );
                             },
                             // pageBuilder: (context, state) {
@@ -691,11 +696,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                         ]),
                     GoRoute(
                       path: 'bankTransfer',
-                      parentNavigatorKey: shellNavKey,
+                      parentNavigatorKey: rootNavKey,
                       name: BankTransferScreen.routeName,
                       redirect: (_, state) => provider.redirectLogic(state),
                       builder: (context, state) {
-                        return BankTransferScreen();
+                        final int bottomIdx =
+                            int.parse(state.uri.queryParameters['bottomIdx']!);
+
+                        return BankTransferScreen(
+                          bottomIdx: bottomIdx,
+                        );
                       },
                       // pageBuilder: (context, state) {
                       //   return NoTransitionPage(child: BankTransferScreen());
@@ -703,10 +713,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                     ),
                     GoRoute(
                         path: 'settlements',
-                        parentNavigatorKey: shellNavKey,
+                        parentNavigatorKey: rootNavKey,
                         name: SettlementListScreen.routeName,
                         builder: (context, state) {
-                          return SettlementListScreen();
+                          final int bottomIdx = int.parse(
+                              state.uri.queryParameters['bottomIdx']!);
+                          return SettlementListScreen(
+                            bottomIdx: bottomIdx,
+                          );
                         },
                         // pageBuilder: (context, state) {
                         //   return NoTransitionPage(
@@ -715,13 +729,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                         routes: [
                           GoRoute(
                             path: ':settlementId',
-                            parentNavigatorKey: shellNavKey,
+                            parentNavigatorKey: rootNavKey,
                             name: SettlementDetailScreen.routeName,
                             builder: (context, state) {
                               final int settlementId = int.parse(
                                   state.pathParameters['settlementId']!);
+                              final int bottomIdx = int.parse(
+                                  state.uri.queryParameters['bottomIdx']!);
                               return SettlementDetailScreen(
                                 settlementId: settlementId,
+                                bottomIdx: bottomIdx,
                               );
                             },
                             // pageBuilder: (context, state) {
@@ -736,13 +753,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                         ]),
                     GoRoute(
                       path: 'review',
-                      parentNavigatorKey: shellNavKey,
+                      parentNavigatorKey: rootNavKey,
                       name: UserWrittenReviewScreen.routeName,
                       builder: (_, state) {
                         final extra = UserReviewType.stringToEnum(
                             value: state.extra! as String);
+                        final int bottomIdx =
+                            int.parse(state.uri.queryParameters['bottomIdx']!);
                         return UserWrittenReviewScreen(
                           type: extra,
+                          bottomIdx: bottomIdx,
                         );
                       },
                       // pageBuilder: (context, state) {
@@ -756,15 +776,19 @@ final routerProvider = Provider<GoRouter>((ref) {
                       routes: [
                         GoRoute(
                           path: ':reviewId',
-                          parentNavigatorKey: shellNavKey,
+                          parentNavigatorKey: rootNavKey,
                           name: ReviewDetailScreen.routeName,
                           builder: (_, state) {
                             final extra = state.extra! as UserReviewType;
                             final int reviewId =
                                 int.parse(state.pathParameters['reviewId']!);
+                            final int bottomIdx = int.parse(
+                                state.uri.queryParameters['bottomIdx']!);
+
                             return ReviewDetailScreen(
                               reviewId: reviewId,
                               reviewType: extra,
+                              bottomIdx: bottomIdx,
                             );
                           },
                           // pageBuilder: (context, state) {
@@ -783,10 +807,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                     ),
                     GoRoute(
                       path: 'profileForm',
-                      parentNavigatorKey: shellNavKey,
+                      parentNavigatorKey: rootNavKey,
                       name: UserProfileFormScreen.routeName,
                       builder: (context, state) {
-                        return UserProfileFormScreen();
+                        final int bottomIdx =
+                            int.parse(state.uri.queryParameters['bottomIdx']!);
+
+                        return UserProfileFormScreen(
+                          bottomIdx: bottomIdx,
+                        );
                       },
                       // pageBuilder: (context, state) {
                       //   return NoTransitionPage(child: UserProfileFormScreen());
@@ -794,13 +823,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                     ),
                     GoRoute(
                       path: ':accountId/transferForm',
-                      parentNavigatorKey: shellNavKey,
+                      parentNavigatorKey: rootNavKey,
                       name: BankTransferFormScreen.routeName,
                       builder: (context, state) {
                         final int accountId =
                             int.parse(state.pathParameters['accountId']!);
+                        final int bottomIdx =
+                            int.parse(state.uri.queryParameters['bottomIdx']!);
                         return BankTransferFormScreen(
                           accountId: accountId,
+                          bottomIdx: bottomIdx,
                         );
                       },
                       // pageBuilder: (context, state) {
@@ -820,21 +852,56 @@ final routerProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) {
                   return MenuBody();
                 },
-                // pageBuilder: (context, state) {
-                //   return NoTransitionPage(child: MenuBody());
-                // },
+                pageBuilder: (context, state) {
+                  return NoTransitionPage(child: MenuBody());
+                },
                 routes: [
                   GoRoute(
                     path: 'faq',
-                    parentNavigatorKey: shellNavKey,
+                    parentNavigatorKey: rootNavKey,
                     name: FAQScreen.routeName,
                     builder: (context, state) {
-                      return FAQScreen();
+                      final int bottomIdx =
+                          int.parse(state.uri.queryParameters['bottomIdx']!);
+                      return FAQScreen(
+                        bottomIdx: bottomIdx,
+                      );
                     },
                     // pageBuilder: (context, state) {
                     //   return NoTransitionPage(child: FAQScreen());
                     // },
                   ),
+                  GoRoute(
+                      path: 'court',
+                      parentNavigatorKey: rootNavKey,
+                      name: CourtSearchScreen.routeName,
+                      builder: (context, state) {
+                        final int bottomIdx =
+                            int.parse(state.uri.queryParameters['bottomIdx']!);
+                        return CourtSearchScreen(
+                          bottomIdx: bottomIdx,
+                        );
+                      },
+                      routes: [
+                        GoRoute(
+                          path: ':courtId',
+                          parentNavigatorKey: rootNavKey,
+                          name: CourtGameListScreen.routeName,
+                          builder: (context, state) {
+                            final int courtId =
+                                int.parse(state.pathParameters['courtId']!);
+                            final CourtSearchModel extra =
+                                state.extra! as CourtSearchModel;
+                            final int bottomIdx = int.parse(
+                                state.uri.queryParameters['bottomIdx']!);
+                            return CourtGameListScreen(
+                              courtId: courtId,
+                              model: extra,
+                              bottomIdx: bottomIdx,
+                            );
+                          },
+                        ),
+                      ]),
                 ],
               ),
             ]),

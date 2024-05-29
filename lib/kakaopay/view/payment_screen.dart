@@ -64,8 +64,12 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               Map<String, String> pathParameters = {
                 'gameId': widget.gameId.toString()
               };
-              context.goNamed(GameDetailScreen.routeName,
-                  pathParameters: pathParameters);
+              final Map<String, String> queryParameters = {'bottomIdx': '1'};
+              context.goNamed(
+                GameDetailScreen.routeName,
+                pathParameters: pathParameters,
+                queryParameters: queryParameters,
+              );
               return NavigationDecision.prevent;
             } else if (request.url.startsWith(
                 'https://www.makeittakeit.kr/payments/kakao/fail')) {
@@ -73,8 +77,12 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               Map<String, String> pathParameters = {
                 'gameId': widget.gameId.toString()
               };
-              context.goNamed(GameDetailScreen.routeName,
-                  pathParameters: pathParameters);
+              final Map<String, String> queryParameters = {'bottomIdx': '1'};
+              context.goNamed(
+                GameDetailScreen.routeName,
+                pathParameters: pathParameters,
+                queryParameters: queryParameters,
+              );
               showDialog(
                   context: context,
                   builder: (_) {

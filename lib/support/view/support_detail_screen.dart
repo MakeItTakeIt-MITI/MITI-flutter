@@ -7,50 +7,77 @@ import 'package:miti/support/provider/support_provider.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/default_appbar.dart';
+import '../../common/component/default_layout.dart';
 import '../model/support_model.dart';
 
-class SupportDetailScreen extends StatelessWidget {
+class SupportDetailScreen extends StatefulWidget {
   static String get routeName => 'supportDetail';
+  final int bottomIdx;
   final int questionId;
 
-  const SupportDetailScreen({super.key, required this.questionId});
+  const SupportDetailScreen(
+      {super.key, required this.questionId, required this.bottomIdx});
+
+  @override
+  State<SupportDetailScreen> createState() => _SupportDetailScreenState();
+}
+
+class _SupportDetailScreenState extends State<SupportDetailScreen> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return NestedScrollView(
-      headerSliverBuilder: ((BuildContext context, bool innerBoxIsScrolled) {
-        return [
-          const DefaultAppBar(
-            isSliver: true,
-            title: '문의 내역',
-          ),
-        ];
-      }),
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Consumer(
-              builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                final result =
-                    ref.watch(questionProvider(questionId: questionId));
-                if (result is LoadingModel) {
-                  return CircularProgressIndicator();
-                } else if (result is ErrorModel) {
-                  return Text('에러');
-                }
-                final model = (result as ResponseModel<QuestionModel>).data!;
-                return Column(
-                  children: [
-                    _QuestionComponent.fromModel(model: model),
-                    _AnswerComponent(
-                      answers: model.answers,
-                    ),
-                  ],
-                );
-              },
+    return DefaultLayout(
+      bottomIdx: widget.bottomIdx,
+      scrollController: _scrollController,
+      body: NestedScrollView(
+        controller: _scrollController,
+        headerSliverBuilder: ((BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            const DefaultAppBar(
+              isSliver: true,
+              title: '문의 내역',
             ),
-          )
-        ],
+          ];
+        }),
+        body: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  final result = ref
+                      .watch(questionProvider(questionId: widget.questionId));
+                  if (result is LoadingModel) {
+                    return CircularProgressIndicator();
+                  } else if (result is ErrorModel) {
+                    return Text('에러');
+                  }
+                  final model = (result as ResponseModel<QuestionModel>).data!;
+                  return Column(
+                    children: [
+                      _QuestionComponent.fromModel(model: model),
+                      _AnswerComponent(
+                        answers: model.answers,
+                      ),
+                    ],
+                  );
+                },
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

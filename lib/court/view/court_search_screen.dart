@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/common/component/custom_drop_down_button.dart';
+import 'package:miti/common/component/default_layout.dart';
 import 'package:miti/common/component/dispose_sliver_pagination_list_view.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/model/entity_enum.dart';
@@ -27,8 +28,12 @@ import '../model/court_model.dart';
 
 class CourtSearchScreen extends ConsumerStatefulWidget {
   static String get routeName => 'courtSearch';
+  final int bottomIdx;
 
-  const CourtSearchScreen({super.key});
+  const CourtSearchScreen({
+    super.key,
+    required this.bottomIdx,
+  });
 
   @override
   ConsumerState<CourtSearchScreen> createState() => _CourtSearchScreenState();
@@ -53,68 +58,77 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final controller = ref.watch(pageScrollControllerProvider);
-    return NestedScrollView(
-        headerSliverBuilder: ((BuildContext context, bool innerBoxIsScrolled) {
-          return [
-            const DefaultAppBar(
-              isSliver: true,
-              title: '경기장 조회',
-            ),
-          ];
-        }),
-        body: RefreshIndicator(
-          onRefresh: refresh,
-          child: CustomScrollView(
-            controller: controller,
-            slivers: [
-              SliverPadding(
-                padding: EdgeInsets.all(14.r),
-                sliver: SliverMainAxisGroup(slivers: [
-                  SliverToBoxAdapter(
-                    child: Column(
-                      children: [
-                        _SearchComponent(),
-                        SizedBox(height: 14.h),
-                      ],
-                    ),
-                  ),
-                  Consumer(
-                    builder:
-                        (BuildContext context, WidgetRef ref, Widget? child) {
-                      final form = ref.watch(courtSearchProvider);
-
-                      return DisposeSliverPaginationListView(
-                        provider: courtPageProvider(PaginationStateParam()),
-                        itemBuilder:
-                            (BuildContext context, int index, Base model) {
-                          model as CourtSearchModel;
-                          return ResultCard.fromModel(
-                            model: model,
-                            onTap: () {
-                              onTap(model, context);
-                            },
-                          );
-                        },
-                        param: form,
-                        skeleton: Container(),
-                        controller: controller,
-                        emptyWidget: getEmptyWidget(),
-                      );
-                    },
-                  ),
-                ]),
+    return DefaultLayout(
+      bottomIdx: widget.bottomIdx,
+      body: NestedScrollView(
+          headerSliverBuilder:
+              ((BuildContext context, bool innerBoxIsScrolled) {
+            return [
+              const DefaultAppBar(
+                isSliver: true,
+                title: '경기장 조회',
               ),
-            ],
-          ),
-        ));
+            ];
+          }),
+          body: RefreshIndicator(
+            onRefresh: refresh,
+            child: CustomScrollView(
+              controller: controller,
+              slivers: [
+                SliverPadding(
+                  padding: EdgeInsets.all(14.r),
+                  sliver: SliverMainAxisGroup(slivers: [
+                    SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          _SearchComponent(),
+                          SizedBox(height: 14.h),
+                        ],
+                      ),
+                    ),
+                    Consumer(
+                      builder:
+                          (BuildContext context, WidgetRef ref, Widget? child) {
+                        final form = ref.watch(courtSearchProvider);
+
+                        return DisposeSliverPaginationListView(
+                          provider: courtPageProvider(PaginationStateParam()),
+                          itemBuilder:
+                              (BuildContext context, int index, Base model) {
+                            model as CourtSearchModel;
+                            return ResultCard.fromModel(
+                              model: model,
+                              onTap: () {
+                                onTap(model, context);
+                              },
+                            );
+                          },
+                          param: form,
+                          skeleton: Container(),
+                          controller: controller,
+                          emptyWidget: getEmptyWidget(),
+                        );
+                      },
+                    ),
+                  ]),
+                ),
+              ],
+            ),
+          )),
+      scrollController: controller,
+    );
   }
 
   void onTap(CourtSearchModel model, BuildContext context) {
     Map<String, String> pathParameters = {'courtId': model.id.toString()};
+    final Map<String, String> queryParameters = {'bottomIdx': '3'};
     final extra = model;
-    context.pushNamed(CourtGameListScreen.routeName,
-        pathParameters: pathParameters, extra: extra);
+    context.pushNamed(
+      CourtGameListScreen.routeName,
+      pathParameters: pathParameters,
+      extra: extra,
+      queryParameters: queryParameters,
+    );
   }
 
   Widget getEmptyWidget() {

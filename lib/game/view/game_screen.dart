@@ -41,7 +41,14 @@ class GameScreen extends ConsumerWidget {
                   InkWell(
                     onTap: () {
                       const extra = UserGameType.participation;
-                      context.pushNamed(GameHostScreen.routeName, extra: extra);
+                      final Map<String, String> queryParameters = {
+                        'bottomIdx': '1'
+                      };
+                      context.pushNamed(
+                        GameHostScreen.routeName,
+                        extra: extra,
+                        queryParameters: queryParameters,
+                      );
                     },
                     child: Text(
                       '나의 참여 경기',
@@ -52,7 +59,14 @@ class GameScreen extends ConsumerWidget {
                   InkWell(
                     onTap: () {
                       const extra = UserGameType.host;
-                      context.pushNamed(GameHostScreen.routeName, extra: extra);
+                      final Map<String, String> queryParameters = {
+                        'bottomIdx': '1'
+                      };
+                      context.pushNamed(
+                        GameHostScreen.routeName,
+                        extra: extra,
+                        queryParameters: queryParameters,
+                      );
                     },
                     child: Text(
                       '나의 호스팅 경기',
@@ -61,7 +75,15 @@ class GameScreen extends ConsumerWidget {
                   ),
                   SizedBox(height: 20.h),
                   InkWell(
-                    onTap: () => context.pushNamed(GameCreateScreen.routeName),
+                    onTap: () {
+                      final Map<String, String> queryParameters = {
+                        'bottomIdx': '1'
+                      };
+                      context.pushNamed(
+                        GameCreateScreen.routeName,
+                        queryParameters: queryParameters,
+                      );
+                    },
                     child: Text(
                       '경기 생성하기',
                       style: textStyle,

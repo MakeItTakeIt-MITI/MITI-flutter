@@ -182,8 +182,14 @@ class _UserInfoCard extends ConsumerWidget {
                       Map<String, String> pathParameters = {
                         'accountId': model.account.id.toString()
                       };
-                      context.pushNamed(BankTransferFormScreen.routeName,
-                          pathParameters: pathParameters);
+                      final Map<String, String> queryParameters = {
+                        'bottomIdx': '2'
+                      };
+                      context.pushNamed(
+                        BankTransferFormScreen.routeName,
+                        pathParameters: pathParameters,
+                        queryParameters: queryParameters,
+                      );
                     },
                     child: Text(
                       '송금하기',
@@ -287,7 +293,14 @@ class _UserButtonComponent extends StatelessWidget {
                           ref.read(tokenProvider.notifier).logout();
                         } else {
                           final extra = buttons[idx][2];
-                          context.pushNamed(buttons[idx][1], extra: extra);
+                          final Map<String, String> queryParameters = {
+                            'bottomIdx': '2'
+                          };
+                          context.pushNamed(
+                            buttons[idx][1],
+                            extra: extra,
+                            queryParameters: queryParameters,
+                          );
                         }
                       },
                       child: Text(

@@ -8,10 +8,11 @@ import 'package:miti/theme/text_theme.dart';
 
 class GameCreateCompleteScreen extends StatelessWidget {
   final int gameId;
+  final int bottomIdx;
 
   static String get routeName => 'gameCreateComplete';
 
-  const GameCreateCompleteScreen({super.key, required this.gameId});
+  const GameCreateCompleteScreen({super.key, required this.gameId, required this.bottomIdx});
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +47,14 @@ class GameCreateCompleteScreen extends StatelessWidget {
                   Map<String, String> pathParameters = {
                     'gameId': gameId.toString()
                   };
-                  context.goNamed(GameDetailScreen.routeName,
-                      pathParameters: pathParameters);
+                  final Map<String, String> queryParameters = {
+                    'bottomIdx': bottomIdx.toString()
+                  };
+                  context.goNamed(
+                    GameDetailScreen.routeName,
+                    pathParameters: pathParameters,
+                    queryParameters: queryParameters,
+                  );
                 },
                 style: TextButton.styleFrom(
                     fixedSize: Size(double.infinity, 48.h)),

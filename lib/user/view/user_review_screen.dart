@@ -3,22 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/common/component/custom_drop_down_button.dart';
 import 'package:miti/common/model/entity_enum.dart';
-import 'package:miti/game/component/game_state_label.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/provider/user_pagination_provider.dart';
 import 'package:miti/user/provider/user_provider.dart';
 
 import '../../common/component/default_appbar.dart';
+import '../../common/component/default_layout.dart';
 import '../../common/component/dispose_sliver_pagination_list_view.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
 import '../../common/provider/pagination_provider.dart';
-import '../../common/provider/scroll_provider.dart';
 import '../../common/repository/base_pagination_repository.dart';
 import '../component/review_card.dart';
 import '../model/review_model.dart';
@@ -26,12 +24,14 @@ import '../param/user_profile_param.dart';
 
 class UserWrittenReviewScreen extends ConsumerStatefulWidget {
   final UserReviewType type;
+  final int bottomIdx;
 
   static String get routeName => 'review';
 
   const UserWrittenReviewScreen({
     super.key,
     required this.type,
+    required this.bottomIdx,
   });
 
   @override
@@ -41,12 +41,18 @@ class UserWrittenReviewScreen extends ConsumerStatefulWidget {
 
 class _UserWrittenReviewScreenState
     extends ConsumerState<UserWrittenReviewScreen> {
-  late final ScrollController controller;
+  late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
-    controller = ScrollController();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   ReviewType? getReviewType(String? value) {
@@ -87,83 +93,93 @@ class _UserWrittenReviewScreenState
       '게스트리뷰',
       '전체 보기',
     ];
-    // final controller = ref.watch(pageScrollControllerProvider);
+
     final id = ref.watch(authProvider)!.id!;
-    return NestedScrollView(
-        controller: controller,
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return [
-            DefaultAppBar(
-              title: widget.type == UserReviewType.written ? '작성 리뷰' : '내 리뷰',
-              isSliver: true,
-            )
-          ];
-        },
-        body: RefreshIndicator(
-          onRefresh: refresh,
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding:
-                      EdgeInsets.only(right: 14.w, top: 14.h, bottom: 14.h),
-                  child: Row(
-                    children: [
-                      const Spacer(),
-                      CustomDropDownButton(
-                        initValue: '전체 보기',
-                        onChanged: (value) {
-                          changeDropButton(value, id);
-                        },
-                        items: items,
-                      )
-                    ],
+
+    return DefaultLayout(
+      bottomIdx: widget.bottomIdx,
+      scrollController: _scrollController,
+      body: NestedScrollView(
+          controller: _scrollController,
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return [
+              DefaultAppBar(
+                title: widget.type == UserReviewType.written ? '작성 리뷰' : '내 리뷰',
+                isSliver: true,
+              )
+            ];
+          },
+          body: RefreshIndicator(
+            onRefresh: refresh,
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding:
+                        EdgeInsets.only(right: 14.w, top: 14.h, bottom: 14.h),
+                    child: Row(
+                      children: [
+                        const Spacer(),
+                        CustomDropDownButton(
+                          initValue: '전체 보기',
+                          onChanged: (value) {
+                            changeDropButton(value, id);
+                          },
+                          items: items,
+                        )
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  final reviewType =
-                      getReviewType(ref.watch(dropDownValueProvider));
-                  final provider = widget.type == UserReviewType.written
-                      ? userWrittenReviewsPProvider(
-                          PaginationStateParam(
-                              path: id)) as AutoDisposeStateNotifierProvider<
-                          PaginationProvider<Base, DefaultParam,
-                              IBasePaginationRepository<Base, DefaultParam>>,
-                          BaseModel>
-                      : userReceiveReviewsPProvider(
-                          PaginationStateParam(path: id));
-                  return SliverPadding(
-                    padding:
-                        EdgeInsets.only(right: 12.w, left: 12.w, bottom: 12.h),
-                    sliver: DisposeSliverPaginationListView(
-                      provider: provider,
-                      itemBuilder:
-                          (BuildContext context, int index, Base pModel) {
-                        if (widget.type == UserReviewType.written) {
-                          pModel as WrittenReviewModel;
-                          return ReviewCard.fromWrittenModel(
-                            model: pModel,
-                          );
-                        } else {
-                          pModel as ReceiveReviewModel;
-                          return ReviewCard.fromReceiveModel(model: pModel);
-                        }
-                      },
-                      skeleton: Container(),
-                      param: UserReviewParam(
-                        review_type: reviewType,
+                Consumer(
+                  builder:
+                      (BuildContext context, WidgetRef ref, Widget? child) {
+                    final reviewType =
+                        getReviewType(ref.watch(dropDownValueProvider));
+                    final provider = widget.type == UserReviewType.written
+                        ? userWrittenReviewsPProvider(
+                            PaginationStateParam(
+                                path: id)) as AutoDisposeStateNotifierProvider<
+                            PaginationProvider<Base, DefaultParam,
+                                IBasePaginationRepository<Base, DefaultParam>>,
+                            BaseModel>
+                        : userReceiveReviewsPProvider(
+                            PaginationStateParam(path: id));
+                    return SliverPadding(
+                      padding: EdgeInsets.only(
+                          right: 12.w, left: 12.w, bottom: 12.h),
+                      sliver: DisposeSliverPaginationListView(
+                        provider: provider,
+                        itemBuilder:
+                            (BuildContext context, int index, Base pModel) {
+                          if (widget.type == UserReviewType.written) {
+                            pModel as WrittenReviewModel;
+                            return ReviewCard.fromWrittenModel(
+                              model: pModel,
+                              bottomIdx: widget.bottomIdx,
+                            );
+                          } else {
+                            pModel as ReceiveReviewModel;
+                            return ReviewCard.fromReceiveModel(
+                              model: pModel,
+                              bottomIdx: widget.bottomIdx,
+                            );
+                          }
+                        },
+                        skeleton: Container(),
+                        param: UserReviewParam(
+                          review_type: reviewType,
+                        ),
+                        controller: _scrollController,
+                        emptyWidget: getEmptyWidget(widget.type),
                       ),
-                      controller: controller,
-                      emptyWidget: getEmptyWidget(widget.type),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-        ));
+                    );
+                  },
+                ),
+              ],
+            ),
+          )),
+    );
   }
 
   void changeDropButton(String? value, int id) {

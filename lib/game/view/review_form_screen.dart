@@ -15,14 +15,16 @@ import 'package:miti/theme/text_theme.dart';
 import 'package:collection/collection.dart';
 
 import '../../common/component/default_appbar.dart';
+import '../../common/component/default_layout.dart';
 import '../../common/model/default_model.dart';
 import '../../common/provider/router_provider.dart';
 import 'game_detail_screen.dart';
 
-class ReviewScreen extends StatelessWidget {
+class ReviewScreen extends StatefulWidget {
   final int gameId;
   final int ratingId;
   final int? participationId;
+  final int bottomIdx;
 
   static String get routeName => 'reviewForm';
 
@@ -30,7 +32,27 @@ class ReviewScreen extends StatelessWidget {
       {super.key,
       required this.gameId,
       this.participationId,
-      required this.ratingId});
+      required this.ratingId,
+      required this.bottomIdx});
+
+  @override
+  State<ReviewScreen> createState() => _ReviewScreenState();
+}
+
+class _ReviewScreenState extends State<ReviewScreen> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   Widget getDivider() {
     return Container(
@@ -44,71 +66,77 @@ class ReviewScreen extends StatelessWidget {
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom > 80.h
         ? MediaQuery.of(context).viewInsets.bottom - 80.h
         : 0.0;
-    return NestedScrollView(
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return [
-          DefaultAppBar(
-            title: participationId != null ? '게스트 리뷰' : '호스트 리뷰',
-            isSliver: true,
-          )
-        ];
-      },
-      body: CustomScrollView(
-        slivers: [
-          SliverPadding(
-            padding: EdgeInsets.only(bottom: bottomPadding),
-            sliver: SliverToBoxAdapter(
-              child: Column(
-                children: [
-                  _PlayerComponent(
-                    participationId: participationId,
-                    ratingId: ratingId,
-                  ),
-                  getDivider(),
-                  _RatingForm(
-                    participationId: participationId,
-                  ),
-                  getDivider(),
-                  _CommentForm(
-                    participationId: participationId,
-                  ),
-                  Consumer(
-                    builder:
-                        (BuildContext context, WidgetRef ref, Widget? child) {
-                      ref.watch(reviewFormProvider);
-                      final valid =
-                          ref.watch(reviewFormProvider.notifier).valid();
-                      return Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 16.w,
-                          vertical: 8.h,
-                        ),
-                        child: TextButton(
-                          onPressed: valid
-                              ? () async {
-                                  createReview(ref, context, '닉네임');
-                                }
-                              : () {},
-                          style: TextButton.styleFrom(
-                              backgroundColor: valid
-                                  ? const Color(0xFF4065F5)
-                                  : const Color(0xFFE8E8E8)),
-                          child: Text(
-                            '리뷰 작성하기',
-                            style: MITITextStyle.btnTextBStyle.copyWith(
-                                color: valid
-                                    ? Colors.white
-                                    : const Color(0xff969696)),
+    return DefaultLayout(
+      bottomIdx: widget.bottomIdx,
+      scrollController: _scrollController,
+      body: NestedScrollView(
+        controller: _scrollController,
+
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            DefaultAppBar(
+              title: widget.participationId != null ? '게스트 리뷰' : '호스트 리뷰',
+              isSliver: true,
+            )
+          ];
+        },
+        body: CustomScrollView(
+          slivers: [
+            SliverPadding(
+              padding: EdgeInsets.only(bottom: bottomPadding),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  children: [
+                    _PlayerComponent(
+                      participationId: widget.participationId,
+                      ratingId: widget.ratingId,
+                    ),
+                    getDivider(),
+                    _RatingForm(
+                      participationId: widget.participationId,
+                    ),
+                    getDivider(),
+                    _CommentForm(
+                      participationId: widget.participationId,
+                    ),
+                    Consumer(
+                      builder:
+                          (BuildContext context, WidgetRef ref, Widget? child) {
+                        ref.watch(reviewFormProvider);
+                        final valid =
+                            ref.watch(reviewFormProvider.notifier).valid();
+                        return Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 8.h,
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
+                          child: TextButton(
+                            onPressed: valid
+                                ? () async {
+                                    createReview(ref, context, '닉네임');
+                                  }
+                                : () {},
+                            style: TextButton.styleFrom(
+                                backgroundColor: valid
+                                    ? const Color(0xFF4065F5)
+                                    : const Color(0xFFE8E8E8)),
+                            child: Text(
+                              '리뷰 작성하기',
+                              style: MITITextStyle.btnTextBStyle.copyWith(
+                                  color: valid
+                                      ? Colors.white
+                                      : const Color(0xff969696)),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -116,38 +144,41 @@ class ReviewScreen extends StatelessWidget {
   void createReview(
       WidgetRef ref, BuildContext context, String nickname) async {
     BaseModel result;
-    if (participationId != null) {
-      result = await ref.read(
-          guestReviewProvider(gameId: gameId, participationId: participationId!)
-              .future);
+    if (widget.participationId != null) {
+      result = await ref.read(guestReviewProvider(
+              gameId: widget.gameId, participationId: widget.participationId!)
+          .future);
     } else {
       result = await ref.read(hostReviewProvider(
-        gameId: gameId,
+        gameId: widget.gameId,
       ).future);
     }
     if (result is ErrorModel) {
     } else {
       if (context.mounted) {
         await ref
-            .read(gamePlayersProvider(gameId: gameId).notifier)
-            .getPlayers(gameId: gameId);
+            .read(gamePlayersProvider(gameId: widget.gameId).notifier)
+            .getPlayers(gameId: widget.gameId);
         final extra = CustomDialog(
           title: '리뷰 작성 완료',
           content: '$nickname 님의 리뷰를 작성하였습니다.',
           onPressed: () {
-            Map<String, String> pathParameters = {'gameId': gameId.toString()};
-            Map<String, String> queryParameters = {};
-            if (participationId != null) {
-              queryParameters['participationId'] = participationId.toString();
+            Map<String, String> pathParameters = {
+              'gameId': widget.gameId.toString()
+            };
+            Map<String, String> queryParameters = {
+              'bottomIdx': widget.bottomIdx.toString()
+            };
+            if (widget.participationId != null) {
+              queryParameters['participationId'] =
+                  widget.participationId.toString();
             }
 
-            // Navigator.of(context, rootNavigator: true).pop('dialog');
             context.goNamed(
               GameParticipationScreen.routeName,
               pathParameters: pathParameters,
               queryParameters: queryParameters,
             );
-            // context.goNamed(GameParticipationScreen.routeName);
           },
         );
         context.pushNamed(DialogPage.routeName, extra: extra);

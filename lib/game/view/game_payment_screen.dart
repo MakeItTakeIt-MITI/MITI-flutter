@@ -36,88 +36,91 @@ class GamePaymentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NestedScrollView(
-      headerSliverBuilder: ((BuildContext context, bool innerBoxIsScrolled) {
-        return [
-          const DefaultAppBar(
-            isSliver: true,
-            title: '경기 상세',
-          ),
-        ];
-      }),
-      body: CustomScrollView(
-        slivers: [
-          SliverFillRemaining(
-            child: Stack(
-              children: [
-                Consumer(
-                  builder:
-                      (BuildContext context, WidgetRef ref, Widget? child) {
-                    final result = ref.watch(paymentProvider(gameId: gameId));
-                    if (result is LoadingModel) {
-                      return CircularProgressIndicator();
-                    } else if (result is ErrorModel) {
-                      return Text('에러');
-                    }
-                    final model =
-                        (result as ResponseModel<GamePaymentModel>).data!;
-
-                    return SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          SummaryComponent.fromPaymentModel(model: model),
-                          InfoComponent(
-                            info: model.info,
-                          ),
-                          getDivider(),
-                          PaymentComponent.fromModel(
-                              model: model.payment_information),
-                          getDivider(),
-                          const PayWayButton(),
-                          getDivider(),
-                          const _PaymentAndRefundPolicyComponent(),
-                          SizedBox(height: 60.h),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-                Consumer(
-                  builder:
-                      (BuildContext context, WidgetRef ref, Widget? child) {
-                    final valid = ref.watch(checkProvider(1)) &&
-                        ref.watch(checkProvider(2));
-                    return Positioned(
-                      bottom: 8.h,
-                      right: 16.w,
-                      left: 16.w,
-                      child: TextButton(
-                        onPressed: valid
-                            ? () async {
-                                await onPay(ref, context);
-                              }
-                            : () {},
-                        style: TextButton.styleFrom(
-                          fixedSize: Size(double.infinity, 48.h),
-                          backgroundColor: valid
-                              ? const Color(0xFF4065F5)
-                              : const Color(0xffE8E8E8),
-                        ),
-                        child: Text(
-                          '결제하기',
-                          style: MITITextStyle.btnTextBStyle.copyWith(
-                            color:
-                                valid ? Colors.white : const Color(0xff969696),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: NestedScrollView(
+        headerSliverBuilder: ((BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            const DefaultAppBar(
+              isSliver: true,
+              title: '경기 상세',
             ),
-          ),
-        ],
+          ];
+        }),
+        body: CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              child: Stack(
+                children: [
+                  Consumer(
+                    builder:
+                        (BuildContext context, WidgetRef ref, Widget? child) {
+                      final result = ref.watch(paymentProvider(gameId: gameId));
+                      if (result is LoadingModel) {
+                        return CircularProgressIndicator();
+                      } else if (result is ErrorModel) {
+                        return Text('에러');
+                      }
+                      final model =
+                          (result as ResponseModel<GamePaymentModel>).data!;
+
+                      return SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            SummaryComponent.fromPaymentModel(model: model),
+                            InfoComponent(
+                              info: model.info,
+                            ),
+                            getDivider(),
+                            PaymentComponent.fromModel(
+                                model: model.payment_information),
+                            getDivider(),
+                            const PayWayButton(),
+                            getDivider(),
+                            const _PaymentAndRefundPolicyComponent(),
+                            SizedBox(height: 60.h),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  Consumer(
+                    builder:
+                        (BuildContext context, WidgetRef ref, Widget? child) {
+                      final valid = ref.watch(checkProvider(1)) &&
+                          ref.watch(checkProvider(2));
+                      return Positioned(
+                        bottom: 8.h,
+                        right: 16.w,
+                        left: 16.w,
+                        child: TextButton(
+                          onPressed: valid
+                              ? () async {
+                                  await onPay(ref, context);
+                                }
+                              : () {},
+                          style: TextButton.styleFrom(
+                            fixedSize: Size(double.infinity, 48.h),
+                            backgroundColor: valid
+                                ? const Color(0xFF4065F5)
+                                : const Color(0xffE8E8E8),
+                          ),
+                          child: Text(
+                            '결제하기',
+                            style: MITITextStyle.btnTextBStyle.copyWith(
+                              color:
+                                  valid ? Colors.white : const Color(0xff969696),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

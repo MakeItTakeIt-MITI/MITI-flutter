@@ -11,6 +11,7 @@ import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/default_appbar.dart';
+import '../../common/component/default_layout.dart';
 import '../../common/provider/router_provider.dart';
 import '../../util/util.dart';
 import '../model/game_model.dart';
@@ -20,14 +21,33 @@ import 'game_detail_screen.dart';
 class GameUpdateScreen extends ConsumerStatefulWidget {
   static String get routeName => 'gameUpdate';
   final int gameId;
+  final int bottomIdx;
 
-  const GameUpdateScreen({super.key, required this.gameId});
+  const GameUpdateScreen({
+    super.key,
+    required this.gameId,
+    required this.bottomIdx,
+  });
 
   @override
   ConsumerState<GameUpdateScreen> createState() => _GameUpdateScreenState();
 }
 
 class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   bool valid() {
     final form = ref.watch(gameFormProvider);
     return form.max_invitation.isNotEmpty &&
@@ -38,25 +58,26 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bottomPadding = MediaQuery.of(context).viewInsets.bottom > 80.h
-        ? MediaQuery.of(context).viewInsets.bottom - 80.h
-        : 0.0;
-    return NestedScrollView(
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return [
-          DefaultAppBar(
-            title: '경기 정보 수정',
-            isSliver: true,
-          ),
-        ];
-      },
-      body: Padding(
-        padding: EdgeInsets.only(bottom: bottomPadding),
-        child: CustomScrollView(
+
+    return DefaultLayout(
+      bottomIdx: widget.bottomIdx,
+      scrollController: _scrollController,
+      body: NestedScrollView(
+        controller: _scrollController,
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            DefaultAppBar(
+              title: '경기 정보 수정',
+              isSliver: true,
+            ),
+          ];
+        },
+        body: CustomScrollView(
           slivers: [
             SliverFillRemaining(
               child: Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                builder:
+                    (BuildContext context, WidgetRef ref, Widget? child) {
                   final result =
                       ref.watch(gameDetailProvider(gameId: widget.gameId));
                   if (result is LoadingModel) {
@@ -86,7 +107,8 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
                           onPressed: valid()
                               ? () async {
                                   final result = await ref.read(
-                                      gameUpdateProvider(gameId: widget.gameId)
+                                      gameUpdateProvider(
+                                              gameId: widget.gameId)
                                           .future);
                                   if (result is ErrorModel) {
                                   } else {
@@ -98,12 +120,19 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
                                           Navigator.of(context,
                                                   rootNavigator: true)
                                               .pop('dialog');
-                                          Map<String, String> pathParameters = {
+                                          Map<String, String> pathParameters =
+                                              {
                                             'gameId': widget.gameId.toString()
                                           };
+                                          final Map<String, String>
+                                              queryParameters = {
+                                            'bottomIdx': widget.bottomIdx.toString()
+                                          };
                                           context.goNamed(
-                                              GameDetailScreen.routeName,
-                                              pathParameters: pathParameters);
+                                            GameDetailScreen.routeName,
+                                            pathParameters: pathParameters,
+                                            queryParameters: queryParameters,
+                                          );
                                         },
                                       );
                                       context.pushNamed(DialogPage.routeName,

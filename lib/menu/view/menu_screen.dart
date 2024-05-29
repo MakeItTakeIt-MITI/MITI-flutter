@@ -90,7 +90,14 @@ class _GameComponent extends StatelessWidget {
                 InkWell(
                   onTap: () {
                     const extra = UserGameType.participation;
-                    context.pushNamed(GameHostScreen.routeName, extra: extra);
+                    final Map<String, String> queryParameters = {
+                      'bottomIdx': '3'
+                    };
+                    context.pushNamed(
+                      GameHostScreen.routeName,
+                      extra: extra,
+                      queryParameters: queryParameters,
+                    );
                   },
                   child: Text(
                     '나의 참여 경기',
@@ -101,7 +108,14 @@ class _GameComponent extends StatelessWidget {
                 InkWell(
                   onTap: () {
                     const extra = UserGameType.host;
-                    context.pushNamed(GameHostScreen.routeName, extra: extra);
+                    final Map<String, String> queryParameters = {
+                      'bottomIdx': '3'
+                    };
+                    context.pushNamed(
+                      GameHostScreen.routeName,
+                      extra: extra,
+                      queryParameters: queryParameters,
+                    );
                   },
                   child: Text(
                     '나의 호스팅 경기',
@@ -110,7 +124,15 @@ class _GameComponent extends StatelessWidget {
                 ),
                 SizedBox(height: 20.h),
                 InkWell(
-                  onTap: () => context.pushNamed(GameCreateScreen.routeName),
+                  onTap: () {
+                    final Map<String, String> queryParameters = {
+                      'bottomIdx': '3'
+                    };
+                    context.pushNamed(
+                      GameCreateScreen.routeName,
+                      queryParameters: queryParameters,
+                    );
+                  },
                   child: Text(
                     '경기 생성하기',
                     style: MITITextStyle.menuChoiceStyle,
@@ -148,7 +170,16 @@ class _CourtComponent extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 InkWell(
-                  onTap: () => context.pushNamed(CourtSearchScreen.routeName),
+                  onTap: () {
+                    final Map<String, String> queryParameters = {
+                      'bottomIdx': '3'
+                    };
+
+                    context.pushNamed(
+                      CourtSearchScreen.routeName,
+                      queryParameters: queryParameters,
+                    );
+                  },
                   child: Text(
                     '경기장 조회',
                     style: MITITextStyle.menuChoiceStyle,
@@ -207,9 +238,13 @@ class _UserInfoComponent extends StatelessWidget {
                 SizedBox(height: 20.h),
                 InkWell(
                   onTap: () {
+                    final Map<String, String> queryParameters = {
+                      'bottomIdx': '3'
+                    };
                     context.pushNamed(
                       UserWrittenReviewScreen.routeName,
                       extra: UserReviewType.written.value,
+                      queryParameters: queryParameters,
                     );
                   },
                   child: Text(
@@ -220,9 +255,13 @@ class _UserInfoComponent extends StatelessWidget {
                 SizedBox(height: 20.h),
                 InkWell(
                   onTap: () {
+                    final Map<String, String> queryParameters = {
+                      'bottomIdx': '3'
+                    };
                     context.pushNamed(
                       UserWrittenReviewScreen.routeName,
                       extra: UserReviewType.receive.value,
+                      queryParameters: queryParameters,
                     );
                   },
                   child: Text(
@@ -233,7 +272,13 @@ class _UserInfoComponent extends StatelessWidget {
                 SizedBox(height: 20.h),
                 InkWell(
                   onTap: () {
-                    context.pushNamed(UserProfileFormScreen.routeName);
+                    final Map<String, String> queryParameters = {
+                      'bottomIdx': '3'
+                    };
+                    context.pushNamed(
+                      UserProfileFormScreen.routeName,
+                      queryParameters: queryParameters,
+                    );
                   },
                   child: Text(
                     '프로필 수정',
@@ -243,8 +288,12 @@ class _UserInfoComponent extends StatelessWidget {
                 SizedBox(height: 20.h),
                 InkWell(
                   onTap: () {
+                    final Map<String, String> queryParameters = {
+                      'bottomIdx': '3'
+                    };
                     context.pushNamed(
                       SettlementListScreen.routeName,
+                      queryParameters: queryParameters,
                     );
                   },
                   child: Text(
@@ -255,8 +304,12 @@ class _UserInfoComponent extends StatelessWidget {
                 SizedBox(height: 20.h),
                 InkWell(
                   onTap: () {
+                    final Map<String, String> queryParameters = {
+                      'bottomIdx': '3'
+                    };
                     context.pushNamed(
                       BankTransferScreen.routeName,
+                      queryParameters: queryParameters,
                     );
                   },
                   child: Text(
@@ -267,8 +320,12 @@ class _UserInfoComponent extends StatelessWidget {
                 SizedBox(height: 20.h),
                 InkWell(
                   onTap: () {
+                    final Map<String, String> queryParameters = {
+                      'bottomIdx': '3'
+                    };
                     context.pushNamed(
                       FAQScreen.routeName,
+                      queryParameters: queryParameters,
                     );
                   },
                   child: Text(
@@ -279,8 +336,12 @@ class _UserInfoComponent extends StatelessWidget {
                 SizedBox(height: 20.h),
                 InkWell(
                   onTap: () {
+                    final Map<String, String> queryParameters = {
+                      'bottomIdx': '3'
+                    };
                     context.pushNamed(
                       SupportScreen.routeName,
+                      queryParameters: queryParameters,
                     );
                   },
                   child: Text(
@@ -290,18 +351,22 @@ class _UserInfoComponent extends StatelessWidget {
                 ),
                 SizedBox(height: 20.h),
                 Consumer(
-                  builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  builder:
+                      (BuildContext context, WidgetRef ref, Widget? child) {
                     final model = ref.watch(authProvider);
-                    if(model == null){
+                    if (model == null) {
                       return Container();
                     }
                     return child!;
-
                   },
                   child: InkWell(
                     onTap: () {
+                      final Map<String, String> queryParameters = {
+                        'bottomIdx': '3'
+                      };
                       context.pushNamed(
                         UserDeleteScreen.routeName,
+                        queryParameters: queryParameters,
                       );
                     },
                     child: Text(

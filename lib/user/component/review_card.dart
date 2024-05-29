@@ -19,6 +19,7 @@ class ReviewCard extends ConsumerWidget {
   final ReviewType review_type;
   final String? reviewer_nickname;
   final String? game_title;
+  final int bottomIdx;
 
   const ReviewCard({
     super.key,
@@ -29,9 +30,11 @@ class ReviewCard extends ConsumerWidget {
     required this.review_type,
     this.reviewer_nickname,
     this.game_title,
+    required this.bottomIdx,
   });
 
-  factory ReviewCard.fromWrittenModel({required WrittenReviewModel model}) {
+  factory ReviewCard.fromWrittenModel(
+      {required WrittenReviewModel model, required int bottomIdx}) {
     return ReviewCard(
       id: model.id,
       reviewee_nickname: model.reviewee_nickname,
@@ -39,10 +42,12 @@ class ReviewCard extends ConsumerWidget {
       comment: model.comment,
       review_type: model.review_type,
       reviewer_nickname: model.reviewer_nickname,
+      bottomIdx: bottomIdx,
     );
   }
 
-  factory ReviewCard.fromReceiveModel({required ReceiveReviewModel model}) {
+  factory ReviewCard.fromReceiveModel(
+      {required ReceiveReviewModel model, required int bottomIdx}) {
     return ReviewCard(
       id: model.id,
       reviewee_nickname: model.reviewee,
@@ -50,6 +55,7 @@ class ReviewCard extends ConsumerWidget {
       comment: model.comment,
       review_type: model.review_type,
       game_title: model.game_title,
+      bottomIdx: bottomIdx,
     );
   }
 
@@ -74,8 +80,15 @@ class ReviewCard extends ConsumerWidget {
         final UserReviewType extra = game_title == null
             ? UserReviewType.written
             : UserReviewType.receive;
-        context.pushNamed(ReviewDetailScreen.routeName,
-            pathParameters: pathParameters, extra: extra);
+        final Map<String, String> queryParameters = {
+          'bottomIdx': bottomIdx.toString()
+        };
+        context.pushNamed(
+          ReviewDetailScreen.routeName,
+          pathParameters: pathParameters,
+          extra: extra,
+          queryParameters: queryParameters,
+        );
       },
       child: Container(
         padding: EdgeInsets.all(12.r),

@@ -53,6 +53,12 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
   }
 
   @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return DefaultLayout(
       bottomIdx: widget.bottomIdx,
@@ -132,8 +138,14 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
     final editButton = TextButton(
       onPressed: () {
         Map<String, String> pathParameters = {'gameId': model.id.toString()};
-        context.pushNamed(GameUpdateScreen.routeName,
-            pathParameters: pathParameters);
+        final Map<String, String> queryParameters = {
+          'bottomIdx': widget.bottomIdx.toString()
+        };
+        context.pushNamed(
+          GameUpdateScreen.routeName,
+          pathParameters: pathParameters,
+          queryParameters: queryParameters,
+        );
       },
       style: TextButton.styleFrom(
         fixedSize: Size(double.infinity, 48.h),
@@ -150,8 +162,14 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
           'gameId': widget.gameId.toString(),
           'participationId': participationId!.toString(),
         };
-        context.pushNamed(GameRefundScreen.routeName,
-            pathParameters: pathParameters);
+        final Map<String, String> queryParameters = {
+          'bottomIdx': widget.bottomIdx.toString(),
+        };
+        context.pushNamed(
+          GameRefundScreen.routeName,
+          pathParameters: pathParameters,
+          queryParameters: queryParameters,
+        );
       },
       style: TextButton.styleFrom(
         fixedSize: Size(double.infinity, 48.h),
@@ -194,7 +212,9 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
       onPressed: () {
         final participationId = model.participation?.id;
         Map<String, String> pathParameters = {'gameId': model.id.toString()};
-        Map<String, String> queryParameters = {};
+        Map<String, String> queryParameters = {
+          'bottomIdx': widget.bottomIdx.toString()
+        };
         if (participationId != null) {
           queryParameters['participationId'] = participationId.toString();
         }

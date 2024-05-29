@@ -14,14 +14,20 @@ import 'game_state_label.dart';
 class GameCardByDate extends StatelessWidget {
   final String dateTime;
   final List<GameBaseModel> models;
+  final int bottomIdx;
 
   const GameCardByDate(
-      {super.key, required this.dateTime, required this.models});
+      {super.key,
+      required this.dateTime,
+      required this.models,
+      required this.bottomIdx});
 
-  factory GameCardByDate.fromModel({required GameListByDateModel model}) {
+  factory GameCardByDate.fromModel(
+      {required GameListByDateModel model, required int bottomIdx}) {
     return GameCardByDate(
       dateTime: model.startdate,
       models: model.games,
+      bottomIdx: bottomIdx,
     );
   }
 
@@ -41,7 +47,7 @@ class GameCardByDate extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (_, idx) {
-            return GameCard.fromModel(model: models[idx]);
+            return GameCard.fromModel(model: models[idx], bottomIdx: bottomIdx,);
           },
           separatorBuilder: (_, idx) {
             return SizedBox(height: 10.h);
@@ -62,6 +68,7 @@ class GameCard extends StatelessWidget {
   final String enddate;
   final String endtime;
   final CourtModel court;
+  final int bottomIdx;
 
   const GameCard({
     super.key,
@@ -72,10 +79,10 @@ class GameCard extends StatelessWidget {
     required this.enddate,
     required this.endtime,
     required this.court,
-    required this.id,
+    required this.id, required this.bottomIdx,
   });
 
-  factory GameCard.fromModel({required GameBaseModel model}) {
+  factory GameCard.fromModel({required GameBaseModel model, required int bottomIdx}) {
     return GameCard(
       game_status: model.game_status,
       title: model.title,
@@ -84,7 +91,7 @@ class GameCard extends StatelessWidget {
       enddate: model.enddate,
       endtime: model.endtime,
       court: model.court,
-      id: model.id,
+      id: model.id, bottomIdx: bottomIdx,
     );
   }
 
@@ -99,7 +106,7 @@ class GameCard extends StatelessWidget {
     return InkWell(
       onTap: () {
         Map<String, String> pathParameters = {'gameId': id.toString()};
-        Map<String, String> queryParameters = {'bottomIdx': '1'};
+        Map<String, String> queryParameters = {'bottomIdx': bottomIdx.toString()};
         context.pushNamed(GameDetailScreen.routeName,
             pathParameters: pathParameters, queryParameters: queryParameters);
       },
