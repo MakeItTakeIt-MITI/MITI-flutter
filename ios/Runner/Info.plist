@@ -2,23 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-
-<!-- Permission options for the `location` group -->
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Need location when in use</string>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Always and when in use!</string>
-    <key>NSLocationUsageDescription</key>
-    <string>Older devices need location.</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>Can I have location always?</string>
-
-    <key>UIBackgroundModes</key>
-    <array>
-       <string>fetch</string>
-       <string>remote-notification</string>
-    </array>
-
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -45,10 +28,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>miti.com</string>
+			<string></string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>appscheme</string>
+				<string>kakao6c982be35c0f15be99a90f823b7da8f5</string>
 			</array>
 		</dict>
 	</array>
@@ -60,6 +43,7 @@
 	<false/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>kakaokompassauth</string>
 		<string>supertoss</string>
 		<string>kb-acp</string>
 		<string>liivbank</string>
@@ -112,8 +96,23 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    	<string>지도 경기장 확인을 위해 위치 추적 허용을 해주세요.</string>
+    	<key>NSLocationAlwaysUsageDescription</key>
+    	<string>지도 경기장 확인을 위해 위치 추적 허용을 해주세요.</string>
+    	<key>NSLocationUsageDescription</key>
+    	<string>지도 경기장 확인을 위해 위치 추적 허용을 해주세요.</string>
+    	<key>NSLocationWhenInUseUsageDescription</key>
+    	<string>지도 경기장 확인을 위해 위치 추적 허용을 해주세요.</string>
+
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
