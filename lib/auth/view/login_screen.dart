@@ -15,6 +15,7 @@ import 'package:miti/auth/provider/login_provider.dart';
 import 'package:miti/auth/view/find_info/find_info_screen.dart';
 import 'package:miti/auth/view/phone_auth/phone_auth_screen.dart';
 import 'package:miti/auth/view/signup/signup_select_screen.dart';
+import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/provider/form_util_provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -378,7 +379,9 @@ class AppleLoginButton extends ConsumerWidget {
             AppleIDAuthorizationScopes.fullName,
           ],
         );
-
+        showDialog(context: context, builder: (_){
+          return CustomDialog(title: '애플 로그인', content: '로그인 성공!\nid: ${credential.userIdentifier}\nemail: ${credential.email}\nfamilyName: ${credential.familyName}, givenName: ${credential.givenName}\n');
+        });
         print(credential);
 
         // Now send the credential (especially `credential.authorizationCode`) to your server to create a session
