@@ -354,8 +354,9 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen> {
           Map<String, String> pathParameters = {
             'gameId': markers[key]!.first.id.toString()
           };
+          Map<String, String> queryParameters = {'bottomIdx': '0'};
           context.pushNamed(GameDetailScreen.routeName,
-              pathParameters: pathParameters);
+              pathParameters: pathParameters, queryParameters: queryParameters);
         }
 
         _draggableScrollableController.animateTo(
@@ -457,8 +458,9 @@ class CourtCard extends StatelessWidget {
     return InkWell(
       onTap: () {
         Map<String, String> pathParameters = {'gameId': id.toString()};
+        Map<String, String> queryParameters = {'bottomIdx': '0'};
         context.pushNamed(GameDetailScreen.routeName,
-            pathParameters: pathParameters);
+            pathParameters: pathParameters, queryParameters: queryParameters);
       },
       child: Container(
         decoration: BoxDecoration(

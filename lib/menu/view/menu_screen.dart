@@ -48,7 +48,7 @@ class _MenuBodyState extends State<MenuBody> {
             padding: EdgeInsets.symmetric(
               horizontal: 20.w,
             ),
-            sliver: SliverToBoxAdapter(
+            sliver: const SliverToBoxAdapter(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [

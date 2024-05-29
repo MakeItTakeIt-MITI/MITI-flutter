@@ -115,6 +115,8 @@ class _AccountComponent extends ConsumerWidget {
       return Text('에러');
     }
     final model = (result as ResponseModel<AccountDetailModel>).data!;
+    final requestTransferAmount =
+        NumberUtil.format(model.requestable_transfer_amount.toString());
     return Padding(
       padding:
           EdgeInsets.only(left: 12.r, right: 12.r, top: 12.r, bottom: 20.r),
@@ -148,7 +150,7 @@ class _AccountComponent extends ConsumerWidget {
                 ),
               ),
               Text(
-                '₩ ${model.requestable_transfer_amount}',
+                '₩ $requestTransferAmount',
                 style: MITITextStyle.feeStyle
                     .copyWith(color: const Color(0xfff45858)),
               ),

@@ -99,8 +99,9 @@ class GameCard extends StatelessWidget {
     return InkWell(
       onTap: () {
         Map<String, String> pathParameters = {'gameId': id.toString()};
+        Map<String, String> queryParameters = {'bottomIdx': '1'};
         context.pushNamed(GameDetailScreen.routeName,
-            pathParameters: pathParameters);
+            pathParameters: pathParameters, queryParameters: queryParameters);
       },
       child: Container(
         decoration: BoxDecoration(

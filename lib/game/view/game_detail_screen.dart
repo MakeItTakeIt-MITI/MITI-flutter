@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/common/component/default_appbar.dart';
+import 'package:miti/common/component/default_layout.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/game/component/game_state_label.dart';
 import 'package:miti/game/model/game_model.dart';
@@ -19,16 +20,23 @@ import 'package:miti/game/view/game_refund_screen.dart';
 import 'package:miti/theme/text_theme.dart';
 import '../../account/model/account_model.dart';
 import '../../common/model/entity_enum.dart';
+import '../../court/view/court_map_screen.dart';
+import '../../default_screen.dart';
+import '../../menu/view/menu_screen.dart';
 import '../../user/model/review_model.dart';
+import '../../user/view/user_info_screen.dart';
 import '../../util/util.dart';
 import 'game_payment_screen.dart';
+import 'game_screen.dart';
 import 'game_update_screen.dart';
 
 class GameDetailScreen extends StatefulWidget {
   static String get routeName => 'gameDetail';
   final int gameId;
+  final int bottomIdx;
 
-  const GameDetailScreen({super.key, required this.gameId});
+  const GameDetailScreen(
+      {super.key, required this.gameId, required this.bottomIdx});
 
   @override
   State<GameDetailScreen> createState() => _GameDetailScreenState();
@@ -36,68 +44,82 @@ class GameDetailScreen extends StatefulWidget {
 
 class _GameDetailScreenState extends State<GameDetailScreen> {
   int? participationId;
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return NestedScrollView(
+    return DefaultLayout(
+      bottomIdx: widget.bottomIdx,
+      scrollController: _scrollController,
+      body: NestedScrollView(
+        controller: _scrollController,
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-      return [
-        DefaultAppBar(
-          title: '경기 상세',
-          isSliver: true,
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.more_horiz),
-            )
-          ],
-        ),
-      ];
-    }, body: Consumer(
-      builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        final result = ref.watch(gameDetailProvider(gameId: widget.gameId));
-
-        if (result is LoadingModel) {
-          // todo skeleton
-          return CustomScrollView(
-            slivers: [],
-          );
-        } else if (result is ErrorModel) {
-          return Text('에러');
-        }
-        result as ResponseModel<GameDetailModel>;
-        final model = result.data!;
-        log('model is_host ${model.is_host} model.is_participated = ${model.is_participated}');
-        participationId = model.participation?.id;
-        return CustomScrollView(
-          slivers: [
-            SliverFillRemaining(
-              child: Stack(
-                children: [
-                  SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        SummaryComponent.fromDetailModel(model: model),
-                        getDivider(),
-                        ParticipationComponent.fromModel(model: model),
-                        getDivider(),
-                        HostComponent.fromModel(model: model.host),
-                        getDivider(),
-                        InfoComponent(
-                          info: model.info,
-                        ),
-                        SizedBox(height: 60.h),
-                      ],
-                    ),
-                  ),
-                  getBottomButton(model, ref, context),
-                ],
-              ),
+          return [
+            DefaultAppBar(
+              title: '경기 상세',
+              isSliver: true,
+              actions: [
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.more_horiz),
+                )
+              ],
             ),
-          ],
-        );
-      },
-    ));
+          ];
+        },
+        body: Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final result = ref.watch(gameDetailProvider(gameId: widget.gameId));
+
+            if (result is LoadingModel) {
+              // todo skeleton
+              return CustomScrollView(
+                slivers: [],
+              );
+            } else if (result is ErrorModel) {
+              return Text('에러');
+            }
+            result as ResponseModel<GameDetailModel>;
+            final model = result.data!;
+            log('model is_host ${model.is_host} model.is_participated = ${model.is_participated}');
+            participationId = model.participation?.id;
+            return CustomScrollView(
+              slivers: [
+                SliverFillRemaining(
+                  child: Stack(
+                    children: [
+                      SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            SummaryComponent.fromDetailModel(model: model),
+                            getDivider(),
+                            ParticipationComponent.fromModel(model: model),
+                            getDivider(),
+                            HostComponent.fromModel(model: model.host),
+                            getDivider(),
+                            InfoComponent(
+                              info: model.info,
+                            ),
+                            SizedBox(height: 60.h),
+                          ],
+                        ),
+                      ),
+                      getBottomButton(model, ref, context),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
   }
 
   Widget getBottomButton(
