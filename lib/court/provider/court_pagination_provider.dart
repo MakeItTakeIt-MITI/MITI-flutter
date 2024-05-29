@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miti/court/param/court_pagination_param.dart';
 import 'package:miti/court/repository/court_repository.dart';
@@ -27,12 +30,27 @@ final courtPageProvider = StateNotifierProvider.family.autoDispose<
 
 class CourtPageStateNotifier extends PaginationProvider<CourtSearchModel,
     CourtPaginationParam, CourtPaginationRepository> {
+  final searchDebounce = Debouncer(const Duration(milliseconds: 300),
+      initialValue: CourtPaginationParam(), checkEquality: false);
+
   CourtPageStateNotifier({
     required super.repository,
     required super.pageParams,
     super.param,
     super.path,
-  });
+  }) {
+    searchDebounce.values.listen((CourtPaginationParam state) {
+      log('throttle!!');
+      paginate(
+          paginationParams: const PaginationParam(page: 1),
+          forceRefetch: true,
+          param: state);
+    });
+  }
+
+  void updateDebounce({required CourtPaginationParam param}){
+    searchDebounce.setValue(param);
+  }
 }
 
 final courtGamePageProvider = StateNotifierProvider.family.autoDispose<

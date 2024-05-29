@@ -1,3 +1,4 @@
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:miti/court/param/court_pagination_param.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -7,6 +8,7 @@ part 'court_search_provider.g.dart';
 
 @riverpod
 class CourtSearch extends _$CourtSearch {
+
   @override
   CourtPaginationParam build() {
     return CourtPaginationParam();
@@ -18,7 +20,7 @@ class CourtSearch extends _$CourtSearch {
     bool isAll = false,
   }) {
     state = state.copyWith(
-      search: search ,
+      search: search,
       district: district,
       isAll: isAll,
     );

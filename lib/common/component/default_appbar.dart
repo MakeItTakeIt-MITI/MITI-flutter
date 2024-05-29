@@ -36,10 +36,12 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
         backgroundColor: backgroundColor ?? Colors.white,
         shape: const Border(bottom: BorderSide(color: Color(0xFFE8E8E8))),
         centerTitle: true,
-        leading: IconButton(
-          onPressed: () => context.pop(),
-          icon: SvgPicture.asset('assets/images/icon/chevron_left.svg'),
-        ),
+        leading: context.canPop()
+            ? IconButton(
+                onPressed: () => context.pop(),
+                icon: SvgPicture.asset('assets/images/icon/chevron_left.svg'),
+              )
+            : null,
         bottom: bottom,
         actions: actions,
       );
@@ -54,10 +56,12 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: backgroundColor ?? Colors.white,
       shape: const Border(bottom: BorderSide(color: Color(0xFFE8E8E8))),
       centerTitle: true,
-      leading: IconButton(
-        onPressed: () => context.pop(),
-        icon: SvgPicture.asset('assets/images/icon/chevron_left.svg'),
-      ),
+      leading: context.canPop()
+          ? IconButton(
+              onPressed: () => context.pop(),
+              icon: SvgPicture.asset('assets/images/icon/chevron_left.svg'),
+            )
+          : null,
       bottom: bottom,
     );
   }

@@ -197,10 +197,7 @@ class _SearchComponent extends StatelessWidget {
                       .update(search: val);
                   ref
                       .read(courtPageProvider(PaginationStateParam()).notifier)
-                      .paginate(
-                          paginationParams: const PaginationParam(page: 1),
-                          forceRefetch: true,
-                          param: form);
+                      .updateDebounce(param: form);
                 },
                 onFieldSubmitted: (val) {
                   // ref.read(courtSearchProvider.notifier).search(page: 1);
