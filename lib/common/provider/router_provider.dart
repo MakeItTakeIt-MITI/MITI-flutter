@@ -426,17 +426,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                             builder: (context, state) {
                               final int gameId =
                                   int.parse(state.pathParameters['gameId']!);
-                              int? participationId;
-                              if (state.uri.queryParameters
-                                  .containsKey('participationId')) {
-                                participationId = int.parse(state
-                                    .uri.queryParameters['participationId']!);
-                              }
                               final int bottomIdx = int.parse(
                                   state.uri.queryParameters['bottomIdx']!);
                               return GameParticipationScreen(
                                 gameId: gameId,
-                                participationId: participationId,
                                 bottomIdx: bottomIdx,
                               );
                             },

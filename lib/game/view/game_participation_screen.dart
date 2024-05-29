@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,7 +18,6 @@ import '../model/game_model.dart';
 
 class GameParticipationScreen extends StatefulWidget {
   final int gameId;
-  final int? participationId;
   final int bottomIdx;
 
   static String get routeName => 'participation';
@@ -24,7 +25,6 @@ class GameParticipationScreen extends StatefulWidget {
   const GameParticipationScreen(
       {super.key,
       required this.gameId,
-      this.participationId,
       required this.bottomIdx});
 
   @override
@@ -91,7 +91,6 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
                       _GuestReviewComponent(
                         participated_users: model.participations,
                         gameId: widget.gameId,
-                        participationId: widget.participationId,
                         bottomIdx: widget.bottomIdx,
                       ),
                     ],
@@ -126,28 +125,26 @@ class _PlayerComponent extends StatelessWidget {
   factory _PlayerComponent.fromParticipationModel(
       {required GameParticipationModel model,
       required int gameId,
-      required int bottomIdx,
-      int? participationId}) {
+      required int bottomIdx}) {
     return _PlayerComponent(
       id: model.id,
       participation_status: model.participation_status,
       user: model.user,
       gameId: gameId,
-      participationId: participationId,
+      participationId: model.id,
       bottomIdx: bottomIdx,
     );
   }
 
-  factory _PlayerComponent.fromHostModel(
-      {required GamePlayerModel model,
-      required int gameId,
-      required int bottomIdx,
-      int? participationId}) {
+  factory _PlayerComponent.fromHostModel({
+    required GamePlayerModel model,
+    required int gameId,
+    required int bottomIdx,
+  }) {
     return _PlayerComponent(
       id: model.id,
       user: model,
       gameId: gameId,
-      participationId: participationId,
       bottomIdx: bottomIdx,
     );
   }
@@ -258,14 +255,12 @@ class _PlayerComponent extends StatelessWidget {
 class _HostReviewComponent extends StatelessWidget {
   final GamePlayerModel host;
   final int gameId;
-  final int? participationId;
   final int bottomIdx;
 
   const _HostReviewComponent(
       {super.key,
       required this.host,
       required this.gameId,
-      this.participationId,
       required this.bottomIdx});
 
   @override
@@ -297,13 +292,11 @@ class _GuestReviewComponent extends StatelessWidget {
   final List<GameParticipationModel> participated_users;
   final int gameId;
   final int bottomIdx;
-  final int? participationId;
 
   const _GuestReviewComponent(
       {super.key,
       required this.participated_users,
       required this.gameId,
-      this.participationId,
       required this.bottomIdx});
 
   @override
@@ -329,7 +322,7 @@ class _GuestReviewComponent extends StatelessWidget {
                   return _PlayerComponent.fromParticipationModel(
                     model: participated_users[idx],
                     gameId: gameId,
-                    participationId: participationId,
+                    // participationId: participationId,
                     bottomIdx: bottomIdx,
                   );
                 },

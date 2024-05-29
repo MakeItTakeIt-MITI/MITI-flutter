@@ -210,14 +210,10 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
     );
     final reviewButton = TextButton(
       onPressed: () {
-        final participationId = model.participation?.id;
         Map<String, String> pathParameters = {'gameId': model.id.toString()};
         Map<String, String> queryParameters = {
           'bottomIdx': widget.bottomIdx.toString()
         };
-        if (participationId != null) {
-          queryParameters['participationId'] = participationId.toString();
-        }
         context.pushNamed(
           GameParticipationScreen.routeName,
           pathParameters: pathParameters,

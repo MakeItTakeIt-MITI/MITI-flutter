@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -71,7 +73,6 @@ class _ReviewScreenState extends State<ReviewScreen> {
       scrollController: _scrollController,
       body: NestedScrollView(
         controller: _scrollController,
-
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
             DefaultAppBar(
@@ -102,9 +103,9 @@ class _ReviewScreenState extends State<ReviewScreen> {
                     Consumer(
                       builder:
                           (BuildContext context, WidgetRef ref, Widget? child) {
-                        ref.watch(reviewFormProvider);
+                        final form = ref.watch(reviewFormProvider);
                         final valid =
-                            ref.watch(reviewFormProvider.notifier).valid();
+                            form.rating != null && form.comment.isNotEmpty;
                         return Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: 16.w,
@@ -169,10 +170,6 @@ class _ReviewScreenState extends State<ReviewScreen> {
             Map<String, String> queryParameters = {
               'bottomIdx': widget.bottomIdx.toString()
             };
-            if (widget.participationId != null) {
-              queryParameters['participationId'] =
-                  widget.participationId.toString();
-            }
 
             context.goNamed(
               GameParticipationScreen.routeName,

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -119,40 +120,41 @@ class GameCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                GameStateLabel(
-                  gameStatus: game_status,
-                ),
-                SizedBox(height: 6.h),
-                Text(
-                  title,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  style: MITITextStyle.gameTitleCardLStyle.copyWith(
-                    color: const Color(0xFF333333),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GameStateLabel(
+                    gameStatus: game_status,
                   ),
-                ),
-                SizedBox(height: 6.h),
-                Text(
-                  '${court.address} ${court.address_detail ?? ''}',
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  style: descStyle,
-                ),
-                SizedBox(height: 2.h),
-                Text(
-                  startdate == enddate
-                      ? '$startTime ~ $endTime'
-                      : '$startdate $startTime ~ $enddate $endTime',
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  style: descStyle,
-                ),
-              ],
+                  SizedBox(height: 6.h),
+                  Text(
+                    title,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: MITITextStyle.gameTitleCardLStyle.copyWith(
+                      color: const Color(0xFF333333),
+                    ),
+                  ),
+                  SizedBox(height: 6.h),
+                  Text(
+                    '${court.address} ${court.address_detail ?? ''}',
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                    style: descStyle,
+                  ),
+                  SizedBox(height: 2.h),
+                  Text(
+                    startdate == enddate
+                        ? '$startTime ~ $endTime'
+                        : '$startdate $startTime ~ $enddate $endTime',
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: descStyle,
+                  ),
+                ],
+              ),
             ),
-            const Spacer(),
             SvgPicture.asset(
               'assets/images/icon/chevron_right.svg',
               height: 14.h,
