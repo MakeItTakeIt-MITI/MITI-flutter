@@ -77,8 +77,7 @@ class LoginScreen extends StatelessWidget {
             SizedBox(height: 8.h),
             const KakaoLoginButton(),
             SizedBox(height: 4.h),
-            if(Platform.isIOS)
-            const AppleLoginButton(),
+            if (Platform.isIOS) const AppleLoginButton(),
             SizedBox(height: 16.h),
             OtherWayComponent(
               desc: '아직 회원이 아니신가요?',
@@ -238,7 +237,6 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
       final result = await ref.read(loginProvider.future);
       if (mounted) {
         if (result is ErrorModel) {
-
           AuthError.fromModel(model: result)
               .responseError(context, AuthApiType.login, ref);
         } else {
@@ -301,9 +299,12 @@ class KakaoLoginButton extends ConsumerWidget {
 
       log('isInstalled =${isInstalled}');
       OAuthToken token = isInstalled
-          ? await UserApi.instance.loginWithKakaoTalk().then((value) => value).catchError((e, _){
-            log('kakao login fail');
-      })
+          ? await UserApi.instance
+              .loginWithKakaoTalk()
+              .then((value) => value)
+              .catchError((e, _) {
+              log('kakao login fail');
+            })
           : await UserApi.instance.loginWithKakaoAccount();
       log('token ${token}');
       AccessTokenInfo tokenInfo = await UserApi.instance.accessTokenInfo();
@@ -372,21 +373,25 @@ class AppleLoginButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return InkWell(
-      onTap: () async{
+      onTap: () async {
         final credential = await SignInWithApple.getAppleIDCredential(
           scopes: [
             AppleIDAuthorizationScopes.email,
             AppleIDAuthorizationScopes.fullName,
           ],
         );
-        showDialog(context: context, builder: (_){
-          return CustomDialog(title: '애플 로그인', content: '로그인 성공!\nid: ${credential.userIdentifier}\nemail: ${credential.email}\nfamilyName: ${credential.familyName}, givenName: ${credential.givenName}\n');
-        });
+        showDialog(
+            context: context,
+            builder: (_) {
+              return CustomDialog(
+                  title: '애플 로그인',
+                  content:
+                      '로그인 성공!\nid: ${credential.userIdentifier}\nemail: ${credential.email}\nfamilyName: ${credential.familyName}, givenName: ${credential.givenName}\n authorizationCode: ${credential.authorizationCode}\nidentityToken: ${credential.identityToken}\nstate: ${credential.state}');
+            });
         print(credential);
 
         // Now send the credential (especially `credential.authorizationCode`) to your server to create a session
         // after they have been validated with Apple (see `Integration` section for more information on how to do this)
-
       },
       child: Container(
         height: 48.h,
@@ -421,7 +426,6 @@ class AppleLoginButton extends ConsumerWidget {
     );
   }
 }
-
 
 class HelpComponent extends StatelessWidget {
   const HelpComponent({super.key});
