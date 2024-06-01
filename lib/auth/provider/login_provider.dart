@@ -16,6 +16,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
+import '../../common/model/entity_enum.dart';
 import '../param/auth_param.dart';
 import '../param/login_param.dart';
 import '../param/signup_param.dart';
@@ -65,8 +66,8 @@ Future<BaseModel> login(LoginRef ref) async {
   });
 }
 
-Future<void> saveUserInfo(
-    FlutterSecureStorage storage, LoginModel model, AutoDisposeFutureProviderRef ref) async {
+Future<void> saveUserInfo(FlutterSecureStorage storage, LoginModel model,
+    AutoDisposeFutureProviderRef ref) async {
   await Future.wait([
     storage.write(key: 'id', value: model.id.toString()),
     storage.write(key: 'email', value: model.email),
@@ -78,15 +79,14 @@ Future<void> saveUserInfo(
     storage.write(key: 'tokenType', value: model.token.type),
   ]);
   ref.read(authProvider.notifier).autoLogin();
-
 }
 
 @riverpod
 Future<BaseModel> oauthLogin(OauthLoginRef ref,
-    {required OauthLoginParam param}) async {
+    {required OauthLoginParam param, required OauthType type}) async {
   return await ref
       .watch(authRepositoryProvider)
-      .oauthLogin(param: param, provider: 'kakao')
+      .oauthLogin(param: param, provider: type)
       .then<BaseModel>((value) async {
     logger.i('oauthLogin $param!');
     final model = value.data!;

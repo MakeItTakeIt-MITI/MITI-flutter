@@ -182,3 +182,8 @@ enum DistrictType {
     return DistrictType.values.firstWhere((e) => e.name == value);
   }
 }
+
+enum OauthType {
+  kakao,
+  apple;
+}

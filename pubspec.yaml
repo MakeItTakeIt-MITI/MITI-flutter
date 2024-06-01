@@ -124,6 +124,7 @@ flutter:
    - assets/images/logo/MITI.png
    - assets/images/logo/kakao_logo.png
    - assets/images/icon/
+   - assets/images/logo/
    - assets/images/btn/
    - assets/lottie/splash_lottie.json
   #   - images/a_dot_ham.jpeg

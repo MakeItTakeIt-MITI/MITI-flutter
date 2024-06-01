@@ -4,6 +4,7 @@ import 'package:miti/auth/param/find_info_param.dart';
 import 'package:retrofit/http.dart';
 
 import '../../common/model/default_model.dart';
+import '../../common/model/entity_enum.dart';
 import '../../dio/dio_interceptor.dart';
 import '../../dio/provider/dio_provider.dart';
 import '../model/auth_model.dart';
@@ -73,7 +74,7 @@ abstract class AuthRepository {
 
   @POST('/auth/oauth/{provider}/login')
   Future<ResponseModel<LoginModel>> oauthLogin(
-      {@Path() required String provider,
+      {@Path() required OauthType provider,
       @Body() required OauthLoginParam param});
 
   @Headers({'refresh': 'true'})

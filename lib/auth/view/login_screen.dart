@@ -16,6 +16,7 @@ import 'package:miti/auth/view/find_info/find_info_screen.dart';
 import 'package:miti/auth/view/phone_auth/phone_auth_screen.dart';
 import 'package:miti/auth/view/signup/signup_select_screen.dart';
 import 'package:miti/common/component/custom_dialog.dart';
+import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/common/provider/form_util_provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -76,7 +77,7 @@ class LoginScreen extends StatelessWidget {
             ),
             SizedBox(height: 8.h),
             const KakaoLoginButton(),
-            SizedBox(height: 4.h),
+            SizedBox(height: 8.h),
             if (Platform.isIOS) const AppleLoginButton(),
             SizedBox(height: 16.h),
             OtherWayComponent(
@@ -148,29 +149,31 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
             onNext: () => FocusScope.of(context).requestFocus(focusNodes[1]),
             suffixIcon: focusNodes[0].hasFocus
                 ? IconButton(
-                    onPressed: () {
-                      emailController.clear();
-                      ref
-                          .read(loginFormProvider.notifier)
-                          .updateFormField(email: '');
-                    },
-                    icon: SvgPicture.asset(
-                      'assets/images/btn/close_btn.svg',
-                    ),
-                  )
+              onPressed: () {
+                emailController.clear();
+                ref
+                    .read(loginFormProvider.notifier)
+                    .updateFormField(email: '');
+              },
+              icon: SvgPicture.asset(
+                'assets/images/btn/close_btn.svg',
+              ),
+            )
                 : null,
             onChanged: (String? val) {
               ref.read(loginFormProvider.notifier).updateFormField(email: val);
-              log(ref.read(loginFormProvider).email);
+              log(ref
+                  .read(loginFormProvider)
+                  .email);
             },
           ),
           SizedBox(height: 20.h),
           Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
               final interactionDesc =
-                  ref.watch(formDescProvider(InputFormType.login));
+              ref.watch(formDescProvider(InputFormType.login));
               final isVisible =
-                  ref.watch(passwordVisibleProvider(PasswordFormType.password));
+              ref.watch(passwordVisibleProvider(PasswordFormType.password));
               return CustomTextFormField(
                 focusNode: focusNodes[1],
                 textEditingController: passwordController,
@@ -180,23 +183,25 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
                 obscureText: !isVisible,
                 suffixIcon: focusNodes[1].hasFocus
                     ? IconButton(
-                        onPressed: () {
-                          ref
-                              .read(passwordVisibleProvider(
-                                      PasswordFormType.password)
-                                  .notifier)
-                              .update((state) => !state);
-                        },
-                        icon: Icon(isVisible
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined),
-                      )
+                  onPressed: () {
+                    ref
+                        .read(passwordVisibleProvider(
+                        PasswordFormType.password)
+                        .notifier)
+                        .update((state) => !state);
+                  },
+                  icon: Icon(isVisible
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined),
+                )
                     : null,
                 onChanged: (val) {
                   ref
                       .read(loginFormProvider.notifier)
                       .updateFormField(password: val);
-                  log(ref.read(loginFormProvider).password);
+                  log(ref
+                      .read(loginFormProvider)
+                      .password);
                 },
                 onNext: () => login(),
                 interactionDesc: interactionDesc,
@@ -300,25 +305,26 @@ class KakaoLoginButton extends ConsumerWidget {
       log('isInstalled =${isInstalled}');
       OAuthToken token = isInstalled
           ? await UserApi.instance
-              .loginWithKakaoTalk()
-              .then((value) => value)
-              .catchError((e, _) {
-              log('kakao login fail');
-            })
+          .loginWithKakaoTalk()
+          .then((value) => value)
+          .catchError((e, _) {
+        log('kakao login fail');
+      })
           : await UserApi.instance.loginWithKakaoAccount();
       log('token ${token}');
       AccessTokenInfo tokenInfo = await UserApi.instance.accessTokenInfo();
       log('token Info = ${tokenInfo}');
       log('access token ${token.accessToken}');
-      final OauthLoginParam param =
-          OauthLoginParam(access_token: token.accessToken);
-      final result = await ref.read(oauthLoginProvider(param: param).future);
-      if (result is ErrorModel) {
-        AuthError.fromModel(model: result)
-            .responseError(context, AuthApiType.oauth, ref);
-        throw Exception();
-      } else {
-        if (context.mounted) {
+      final KakaoLoginParam param =
+      KakaoLoginParam(access_token: token.accessToken);
+      final result = await ref
+          .read(oauthLoginProvider(param: param, type: OauthType.kakao).future);
+      if (context.mounted) {
+        if (result is ErrorModel) {
+          AuthError.fromModel(model: result)
+              .responseError(context, AuthApiType.oauth, ref);
+          throw Exception();
+        } else {
           context.goNamed(CourtMapScreen.routeName);
         }
       }
@@ -341,14 +347,10 @@ class KakaoLoginButton extends ConsumerWidget {
         child: Row(
           children: [
             SizedBox(width: 23.w),
-            Container(
+            SvgPicture.asset(
+              'assets/images/logo/kakao_logo.svg',
               width: 24.w,
               height: 20.h,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/logo/kakao_logo.png'),
-                ),
-              ),
             ),
             SizedBox(width: 52.w),
             Text(
@@ -374,21 +376,7 @@ class AppleLoginButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return InkWell(
       onTap: () async {
-        final credential = await SignInWithApple.getAppleIDCredential(
-          scopes: [
-            AppleIDAuthorizationScopes.email,
-            AppleIDAuthorizationScopes.fullName,
-          ],
-        );
-        showDialog(
-            context: context,
-            builder: (_) {
-              return CustomDialog(
-                  title: '애플 로그인',
-                  content:
-                      '로그인 성공!\nid: ${credential.userIdentifier}\nemail: ${credential.email}\nfamilyName: ${credential.familyName}, givenName: ${credential.givenName}\n authorizationCode: ${credential.authorizationCode}\nidentityToken: ${credential.identityToken}\nstate: ${credential.state}');
-            });
-        print(credential);
+        await appleLogin(ref, context);
 
         // Now send the credential (especially `credential.authorizationCode`) to your server to create a session
         // after they have been validated with Apple (see `Integration` section for more information on how to do this)
@@ -396,25 +384,23 @@ class AppleLoginButton extends ConsumerWidget {
       child: Container(
         height: 48.h,
         decoration: BoxDecoration(
-            color: const Color(0xFFFFFFF1),
+            color: const Color(0xFF1C1C1C),
             borderRadius: BorderRadius.circular(8.r)),
         child: Row(
           children: [
-            SizedBox(width: 23.w),
-            Container(
-              width: 24.w,
+            SizedBox(width: 27.w),
+            SvgPicture.asset(
+              'assets/images/logo/apple_logo.svg',
+              width: 16.w,
               height: 20.h,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/logo/kakao_logo.png'),
-                ),
-              ),
+              colorFilter:
+              const ColorFilter.mode(Color(0xFFFFFFFF), BlendMode.srcIn),
             ),
-            SizedBox(width: 52.w),
+            SizedBox(width: 80.w),
             Text(
-              '애플로 3초만에 시작하기',
+              'Apple로 계속하기',
               style: TextStyle(
-                color: const Color(0xFF1C1C1C),
+                color: Colors.white,
                 letterSpacing: -0.25.sp,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.bold,
@@ -424,6 +410,31 @@ class AppleLoginButton extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> appleLogin(WidgetRef ref, BuildContext context) async {
+    final credential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+    );
+
+    final param = AppleLoginParam.fromModel(credential: credential);
+    final result = await ref
+        .read(oauthLoginProvider(param: param, type: OauthType.apple).future);
+
+    if (context.mounted) {
+      if (result is ErrorModel) {
+        AuthError.fromModel(model: result)
+            .responseError(context, AuthApiType.oauth, ref);
+      } else {
+        context.goNamed(CourtMapScreen.routeName);
+      }
+    }
+
+    // Now send the credential (especially `credential.authorizationCode`) to your server to create a session
+    // after they have been validated with Apple (see `Integration` section for more information on how to do this)
   }
 }
 

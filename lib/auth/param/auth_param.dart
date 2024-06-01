@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../provider/widget/sign_up_form_provider.dart';
 
@@ -31,11 +32,44 @@ class ResetPasswordParam {
 
 @JsonSerializable()
 class OauthLoginParam {
+  OauthLoginParam();
+
+  Map<String, dynamic> toJson() => _$OauthLoginParamToJson(this);
+}
+
+@JsonSerializable()
+class KakaoLoginParam extends OauthLoginParam {
   final String access_token;
 
-  OauthLoginParam({
+  KakaoLoginParam({
     required this.access_token,
   });
 
-  Map<String, dynamic> toJson() => _$OauthLoginParamToJson(this);
+  @override
+  Map<String, dynamic> toJson() => _$KakaoLoginParamToJson(this);
+}
+
+@JsonSerializable()
+class AppleLoginParam extends OauthLoginParam {
+  final String? identity_token;
+  final String authorization_code;
+  final String? email;
+
+  AppleLoginParam({
+    required this.identity_token,
+    required this.authorization_code,
+    required this.email,
+  });
+
+  factory AppleLoginParam.fromModel(
+      {required AuthorizationCredentialAppleID credential}) {
+    return AppleLoginParam(
+      identity_token: credential.identityToken,
+      authorization_code: credential.authorizationCode,
+      email: credential.email,
+    );
+  }
+
+  @override
+  Map<String, dynamic> toJson() => _$AppleLoginParamToJson(this);
 }
