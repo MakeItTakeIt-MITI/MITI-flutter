@@ -44,14 +44,13 @@ class TokenProvider extends ChangeNotifier {
     // 만약에 로그인중이 아니라면 로그인 페이지로 이동
     if (tokens == null) {
       log("로그인으로 redirect!! ${goRouteState.path}");
-      if (goRouteState.path == '/info') {
-        return '/home/login';
+      if (goRouteState.path == '/menu') {
+        return '/menu/login';
       }
-      return loginIn ? null : '/home/login';
+      return loginIn ? null : '/menu/login';
     }
 
     if (loginIn) {
-      log("로그인 된 사용자 홀로 이동 !!");
       return '/home';
     }
     return null;

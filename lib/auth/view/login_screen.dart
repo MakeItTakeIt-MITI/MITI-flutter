@@ -117,7 +117,7 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
 
     for (var focusNode in focusNodes) {
       focusNode.addListener(() {
-        setState(() {});
+        // setState(() {});
       });
     }
   }

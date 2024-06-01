@@ -835,7 +835,7 @@ class _NextButtonState extends ConsumerState<_NextButton> {
     final progress = progressModel.progress;
     final validNext = progressModel.validNext;
     double progressWidth = (MediaQuery.of(context).size.width - 32.w) / 6;
-    log('valueNext = $validNext');
+    // log('valueNext = $validNext');
     final showDetail =
         ref.watch(signUpFormProvider.select((value) => value.showDetail));
     final show = showDetail.where((e) => e).isNotEmpty;

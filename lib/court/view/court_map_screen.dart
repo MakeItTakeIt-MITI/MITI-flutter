@@ -44,54 +44,31 @@ class CourtMapScreen extends ConsumerStatefulWidget {
 
 final positionProvider = StateProvider<Position?>((ref) => null);
 
-class _HomeScreenState extends ConsumerState<CourtMapScreen> {
+class _HomeScreenState extends ConsumerState<CourtMapScreen>
+    with AutomaticKeepAliveClientMixin {
   late final DraggableScrollableController _draggableScrollableController;
   NaverMapController? _mapController;
 
   @override
+  bool get wantKeepAlive => true; //override with True.
+  @override
   void initState() {
     super.initState();
-    _draggableScrollableController = DraggableScrollableController();
+    log('page init!!');
 
-    // _permission();
+    _draggableScrollableController = DraggableScrollableController();
     getLocation();
   }
 
-  void _permission() async {
-    var requestStatus = await Permission.location.request();
-    var status = await Permission.location.status;
-    if (requestStatus.isGranted && status.isLimited) {
-      // isLimited - 제한적 동의 (ios 14 < )
-      // 요청 동의됨
-      print("isGranted");
-      if (await Permission.locationWhenInUse.serviceStatus.isEnabled) {
-        // 요청 동의 + gps 켜짐
-        var position = await Geolocator.getCurrentPosition();
-        print("serviceStatusIsEnabled position = ${position.toString()}");
-      } else {
-        // 요청 동의 + gps 꺼짐
-        print("serviceStatusIsDisabled");
-      }
-    } else if (requestStatus.isPermanentlyDenied ||
-        status.isPermanentlyDenied) {
-      // 권한 요청 거부, 해당 권한에 대한 요청에 대해 다시 묻지 않음 선택하여 설정화면에서 변경해야함. android
-      print("isPermanentlyDenied");
-      openAppSettings();
-    } else if (status.isRestricted) {
-      // 권한 요청 거부, 해당 권한에 대한 요청을 표시하지 않도록 선택하여 설정화면에서 변경해야함. ios
-      print("isRestricted");
-      openAppSettings();
-    } else if (status.isDenied) {
-      // 권한 요청 거절
-      print("isDenied");
-    }
-    print("requestStatus ${requestStatus.name}");
-    print("status ${status.name}");
+  @override
+  void dispose() {
+    _draggableScrollableController.dispose();
+    super.dispose();
   }
 
   void getLocation() async {
     LocationPermission permission = await Geolocator.checkPermission();
-    print(permission);
+    // print(permission);
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
@@ -111,6 +88,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    log('page build!!');
     final position = ref.watch(positionProvider);
     final select = ref.watch(selectMakerProvider);
     ref.listen(selectedDayProvider, (previous, next) {
@@ -128,11 +106,11 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen> {
       }
     }
 
-    log('position = ${position}');
+    // log('position = ${position}');
     return Stack(
       children: [
         NaverMap(
-          options: NaverMapViewOptions(
+          options: const NaverMapViewOptions(
             initialCameraPosition: NCameraPosition(
               target: NLatLng(37.5666, 126.979),
               zoom: 15,
@@ -305,7 +283,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen> {
       final mapPosition = MapPosition(
           longitude: double.parse(value.court.longitude),
           latitude: double.parse(value.court.latitude));
-      log('mapPosition ${mapPosition}');
+      // log('mapPosition ${mapPosition}');
       if (markers.containsKey(mapPosition)) {
         markers[mapPosition]!.add(value);
       } else {
@@ -313,7 +291,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen> {
       }
     }
 
-    await _mapController!.clearOverlays();
+    await _mapController?.clearOverlays();
     final List<MapMarkerModel> markerList = [];
     for (MapPosition key in markers.keys) {
       final GameModel model = markers[key]!.first;
@@ -365,7 +343,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen> {
           curve: Curves.easeInOut,
         );
 
-        await _mapController!.updateCamera(NCameraUpdate.fromCameraPosition(
+        await _mapController?.updateCamera(NCameraUpdate.fromCameraPosition(
             NCameraPosition(
                 target: NLatLng(
                     overlay.position.latitude, overlay.position.longitude),
@@ -404,7 +382,10 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen> {
     futureMarkerList.map((e) async {
       return await e;
     });
-    await _mapController!.addOverlayAll(allOverlay);
+    if(_mapController!=null){
+      await _mapController?.addOverlayAll(allOverlay);
+
+    }
   }
 }
 

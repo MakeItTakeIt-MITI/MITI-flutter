@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -31,8 +33,10 @@ class MenuBody extends StatefulWidget {
 }
 
 class _MenuBodyState extends State<MenuBody> {
+
   @override
   Widget build(BuildContext context) {
+    log('나의 매치 build!!');
     return NestedScrollView(
       headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
         return [
