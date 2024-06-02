@@ -137,6 +137,161 @@ final routerProvider = Provider<GoRouter>((ref) {
                 },
                 routes: [
                   GoRoute(
+                      path: 'login',
+                      parentNavigatorKey: rootNavKey,
+                      name: LoginScreen.routeName,
+                      builder: (_, state) => const LoginScreen(),
+                      // pageBuilder: (context, state) {
+                      //   return const NoTransitionPage(child: LoginScreen());
+                      // },
+                      routes: [
+                        GoRoute(
+                          path: 'oauthError',
+                          parentNavigatorKey: rootNavKey,
+                          name: OauthErrorScreen.routeName,
+                          builder: (_, state) => const OauthErrorScreen(),
+                          // pageBuilder: (context, state) {
+                          //   return const NoTransitionPage(
+                          //       child: OauthErrorScreen());
+                          // },
+                        ),
+                        GoRoute(
+                          path: 'completeResetPassword',
+                          parentNavigatorKey: rootNavKey,
+                          name: CompleteRestPasswordScreen.routeName,
+                          builder: (_, state) =>
+                          const CompleteRestPasswordScreen(),
+                          // pageBuilder: (context, state) {
+                          //   return const NoTransitionPage(
+                          //       child: CompleteRestPasswordScreen());
+                          // },
+                        ),
+                        GoRoute(
+                          path: 'phoneSuccess',
+                          parentNavigatorKey: rootNavKey,
+                          name: PhoneAuthSuccess.routeName,
+                          builder: (_, state) => const PhoneAuthSuccess(),
+                          // pageBuilder: (context, state) {
+                          //   return const NoTransitionPage(
+                          //       child: PhoneAuthSuccess());
+                          // },
+                        ),
+                        GoRoute(
+                          path: 'phoneSend',
+                          parentNavigatorKey: rootNavKey,
+                          name: PhoneAuthSendScreen.routeName,
+                          builder: (_, state) => const PhoneAuthSendScreen(),
+                          // pageBuilder: (context, state) {
+                          //   return const NoTransitionPage(
+                          //       child: PhoneAuthSendScreen());
+                          // },
+                        ),
+                        GoRoute(
+                            path: 'findInfo',
+                            parentNavigatorKey: rootNavKey,
+                            name: FindInfoScreen.routeName,
+                            builder: (_, state) {
+                              return FindInfoScreen();
+                            },
+                            // pageBuilder: (context, state) {
+                            //   return NoTransitionPage(child: FindInfoScreen());
+                            // },
+                            routes: [
+                              GoRoute(
+                                path: 'findEmail',
+                                parentNavigatorKey: rootNavKey,
+                                name: FindEmailScreen.routeName,
+                                builder: (_, state) {
+                                  final isOauth = bool.parse(
+                                      state.uri.queryParameters['isOauth']!);
+                                  final email =
+                                  state.uri.queryParameters['email']!;
+                                  return FindEmailScreen(
+                                    findEmail: email,
+                                    isOauth: isOauth,
+                                  );
+                                },
+                                // pageBuilder: (context, state) {
+                                //   final isOauth = bool.parse(
+                                //       state.uri.queryParameters['isOauth']!);
+                                //   final email =
+                                //       state.uri.queryParameters['email']!;
+                                //   return NoTransitionPage(
+                                //       child: FindEmailScreen(
+                                //     findEmail: email,
+                                //     isOauth: isOauth,
+                                //   ));
+                                // },
+                              ),
+                              GoRoute(
+                                path: 'resetPassword',
+                                parentNavigatorKey: rootNavKey,
+                                name: ResetPasswordScreen.routeName,
+                                builder: (_, state) {
+                                  return ResetPasswordScreen();
+                                },
+                                // pageBuilder: (context, state) {
+                                //   return NoTransitionPage(
+                                //       child: ResetPasswordScreen());
+                                // },
+                              ),
+                              GoRoute(
+                                path: 'notFoundUser',
+                                parentNavigatorKey: rootNavKey,
+                                name: NotFoundUserInfoScreen.routeName,
+                                builder: (_, state) =>
+                                const NotFoundUserInfoScreen(),
+                                // pageBuilder: (context, state) {
+                                //   return const NoTransitionPage(
+                                //       child: NotFoundUserInfoScreen());
+                                // },
+                              ),
+                            ]),
+                        GoRoute(
+                            path: 'signUpSelect',
+                            parentNavigatorKey: rootNavKey,
+                            name: SignUpSelectScreen.routeName,
+                            builder: (_, state) => const SignUpSelectScreen(),
+                            // pageBuilder: (context, state) {
+                            //   return const NoTransitionPage(
+                            //       child: SignUpSelectScreen());
+                            // },
+                            routes: [
+                              GoRoute(
+                                path: 'signUp',
+                                parentNavigatorKey: rootNavKey,
+                                name: SignUpScreen.routeName,
+                                builder: (_, state) => const SignUpScreen(),
+                                // pageBuilder: (context, state) {
+                                //   return const NoTransitionPage(
+                                //       child: SignUpScreen());
+                                // },
+                              ),
+                            ]),
+                        GoRoute(
+                            path: 'phoneAuth',
+                            parentNavigatorKey: rootNavKey,
+                            name: PhoneAuthScreen.routeName,
+                            builder: (_, state) => const PhoneAuthScreen(),
+                            // pageBuilder: (context, state) {
+                            //   return const NoTransitionPage(
+                            //       child: PhoneAuthScreen());
+                            // },
+                            routes: [
+                              GoRoute(
+                                  path: 'phoneAuthInfo',
+                                  parentNavigatorKey: rootNavKey,
+                                  name: PhoneAuthInfoScreen.routeName,
+                                  builder: (_, state) =>
+                                  const PhoneAuthInfoScreen(),
+                                  // pageBuilder: (context, state) {
+                                  //   return const NoTransitionPage(
+                                  //       child: PhoneAuthInfoScreen());
+                                  // },
+                                  routes: []),
+                            ]),
+                      ]),
+                  GoRoute(
                     path: 'user/delete',
                     parentNavigatorKey: rootNavKey,
                     name: UserDeleteSuccessScreen.routeName,
@@ -696,161 +851,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                   return NoTransitionPage(child: MenuBody());
                 },
                 routes: [
-                  GoRoute(
-                      path: 'login',
-                      parentNavigatorKey: rootNavKey,
-                      name: LoginScreen.routeName,
-                      builder: (_, state) => const LoginScreen(),
-                      // pageBuilder: (context, state) {
-                      //   return const NoTransitionPage(child: LoginScreen());
-                      // },
-                      routes: [
-                        GoRoute(
-                          path: 'oauthError',
-                          parentNavigatorKey: rootNavKey,
-                          name: OauthErrorScreen.routeName,
-                          builder: (_, state) => const OauthErrorScreen(),
-                          // pageBuilder: (context, state) {
-                          //   return const NoTransitionPage(
-                          //       child: OauthErrorScreen());
-                          // },
-                        ),
-                        GoRoute(
-                          path: 'completeResetPassword',
-                          parentNavigatorKey: rootNavKey,
-                          name: CompleteRestPasswordScreen.routeName,
-                          builder: (_, state) =>
-                          const CompleteRestPasswordScreen(),
-                          // pageBuilder: (context, state) {
-                          //   return const NoTransitionPage(
-                          //       child: CompleteRestPasswordScreen());
-                          // },
-                        ),
-                        GoRoute(
-                          path: 'phoneSuccess',
-                          parentNavigatorKey: rootNavKey,
-                          name: PhoneAuthSuccess.routeName,
-                          builder: (_, state) => const PhoneAuthSuccess(),
-                          // pageBuilder: (context, state) {
-                          //   return const NoTransitionPage(
-                          //       child: PhoneAuthSuccess());
-                          // },
-                        ),
-                        GoRoute(
-                          path: 'phoneSend',
-                          parentNavigatorKey: rootNavKey,
-                          name: PhoneAuthSendScreen.routeName,
-                          builder: (_, state) => const PhoneAuthSendScreen(),
-                          // pageBuilder: (context, state) {
-                          //   return const NoTransitionPage(
-                          //       child: PhoneAuthSendScreen());
-                          // },
-                        ),
-                        GoRoute(
-                            path: 'findInfo',
-                            parentNavigatorKey: rootNavKey,
-                            name: FindInfoScreen.routeName,
-                            builder: (_, state) {
-                              return FindInfoScreen();
-                            },
-                            // pageBuilder: (context, state) {
-                            //   return NoTransitionPage(child: FindInfoScreen());
-                            // },
-                            routes: [
-                              GoRoute(
-                                path: 'findEmail',
-                                parentNavigatorKey: rootNavKey,
-                                name: FindEmailScreen.routeName,
-                                builder: (_, state) {
-                                  final isOauth = bool.parse(
-                                      state.uri.queryParameters['isOauth']!);
-                                  final email =
-                                  state.uri.queryParameters['email']!;
-                                  return FindEmailScreen(
-                                    findEmail: email,
-                                    isOauth: isOauth,
-                                  );
-                                },
-                                // pageBuilder: (context, state) {
-                                //   final isOauth = bool.parse(
-                                //       state.uri.queryParameters['isOauth']!);
-                                //   final email =
-                                //       state.uri.queryParameters['email']!;
-                                //   return NoTransitionPage(
-                                //       child: FindEmailScreen(
-                                //     findEmail: email,
-                                //     isOauth: isOauth,
-                                //   ));
-                                // },
-                              ),
-                              GoRoute(
-                                path: 'resetPassword',
-                                parentNavigatorKey: rootNavKey,
-                                name: ResetPasswordScreen.routeName,
-                                builder: (_, state) {
-                                  return ResetPasswordScreen();
-                                },
-                                // pageBuilder: (context, state) {
-                                //   return NoTransitionPage(
-                                //       child: ResetPasswordScreen());
-                                // },
-                              ),
-                              GoRoute(
-                                path: 'notFoundUser',
-                                parentNavigatorKey: rootNavKey,
-                                name: NotFoundUserInfoScreen.routeName,
-                                builder: (_, state) =>
-                                const NotFoundUserInfoScreen(),
-                                // pageBuilder: (context, state) {
-                                //   return const NoTransitionPage(
-                                //       child: NotFoundUserInfoScreen());
-                                // },
-                              ),
-                            ]),
-                        GoRoute(
-                            path: 'signUpSelect',
-                            parentNavigatorKey: rootNavKey,
-                            name: SignUpSelectScreen.routeName,
-                            builder: (_, state) => const SignUpSelectScreen(),
-                            // pageBuilder: (context, state) {
-                            //   return const NoTransitionPage(
-                            //       child: SignUpSelectScreen());
-                            // },
-                            routes: [
-                              GoRoute(
-                                path: 'signUp',
-                                parentNavigatorKey: rootNavKey,
-                                name: SignUpScreen.routeName,
-                                builder: (_, state) => const SignUpScreen(),
-                                // pageBuilder: (context, state) {
-                                //   return const NoTransitionPage(
-                                //       child: SignUpScreen());
-                                // },
-                              ),
-                            ]),
-                        GoRoute(
-                            path: 'phoneAuth',
-                            parentNavigatorKey: rootNavKey,
-                            name: PhoneAuthScreen.routeName,
-                            builder: (_, state) => const PhoneAuthScreen(),
-                            // pageBuilder: (context, state) {
-                            //   return const NoTransitionPage(
-                            //       child: PhoneAuthScreen());
-                            // },
-                            routes: [
-                              GoRoute(
-                                  path: 'phoneAuthInfo',
-                                  parentNavigatorKey: rootNavKey,
-                                  name: PhoneAuthInfoScreen.routeName,
-                                  builder: (_, state) =>
-                                  const PhoneAuthInfoScreen(),
-                                  // pageBuilder: (context, state) {
-                                  //   return const NoTransitionPage(
-                                  //       child: PhoneAuthInfoScreen());
-                                  // },
-                                  routes: []),
-                            ]),
-                      ]),
+
                   GoRoute(
                     path: 'faq',
                     parentNavigatorKey: rootNavKey,

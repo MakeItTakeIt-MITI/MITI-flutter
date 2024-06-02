@@ -42,7 +42,7 @@ class CourtMapScreen extends ConsumerStatefulWidget {
   ConsumerState<CourtMapScreen> createState() => _HomeScreenState();
 }
 
-final positionProvider = StateProvider<Position?>((ref) => null);
+final positionProvider = StateProvider.autoDispose<Position?>((ref) => null);
 
 class _HomeScreenState extends ConsumerState<CourtMapScreen>
     with AutomaticKeepAliveClientMixin {
@@ -88,7 +88,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
 
   @override
   Widget build(BuildContext context) {
-    log('page build!!');
+    // log('page build!!');
     final position = ref.watch(positionProvider);
     final select = ref.watch(selectMakerProvider);
     ref.listen(selectedDayProvider, (previous, next) {
@@ -97,14 +97,26 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
           .read(gameListProvider.notifier)
           .getList(param: GameListParam(startdate: date));
     });
-    final response = ref.watch(gameListProvider);
-    if (_mapController != null) {
-      if (response is LoadingModel) {
-      } else if (response is ErrorModel) {
-      } else {
-        refreshMarker(response);
+    // final response = ref.watch(gameListProvider);
+    ref.listen(gameListProvider, (previous, next) {
+      if (_mapController != null) {
+        if (next is LoadingModel) {
+        } else if (next is ErrorModel) {
+        } else {
+          refreshMarker(next);
+        }
       }
-    }
+    });
+
+
+    // if (_mapController != null) {
+    //   if (response is LoadingModel) {
+    //   } else if (response is ErrorModel) {
+    //   } else {
+    //
+    //     refreshMarker(response);
+    //   }
+    // }
 
     // log('position = ${position}');
     return Stack(
@@ -118,6 +130,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
             locale: Locale('ko'),
           ),
           onMapReady: (controller) async {
+            log('controller Map Loading');
             _mapController = controller;
           },
         ),
@@ -277,8 +290,10 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
   }
 
   void refreshMarker(BaseModel response) async {
+    // log('refreshMarker');
     final model = (response as ResponseListModel<GameModel>).data!;
     Map<MapPosition, List<GameModel>> markers = {};
+
     for (GameModel value in model) {
       final mapPosition = MapPosition(
           longitude: double.parse(value.court.longitude),
@@ -290,7 +305,9 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
         markers[mapPosition] = [value];
       }
     }
+    // log('_mapController = ${_mapController}');
 
+    // _mapController!.getLocationOverlay()
     await _mapController?.clearOverlays();
     final List<MapMarkerModel> markerList = [];
     for (MapPosition key in markers.keys) {
@@ -353,6 +370,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
 
           if (marker.info.id != compareMarker.info.id) {
             ///선택 해제 마커
+            // log('마커 선택 해제');
             final findMarker = customMarkerList.firstWhere(
                 (e) => e.model.id.toString() == compareMarker.info.id);
             if (mounted) {
