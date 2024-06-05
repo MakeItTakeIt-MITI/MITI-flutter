@@ -15,7 +15,6 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../common/component/default_appbar.dart';
 import '../../common/model/model_id.dart';
-import '../../common/provider/scroll_provider.dart';
 import '../../game/component/game_list_component.dart';
 import '../../game/model/game_model.dart';
 

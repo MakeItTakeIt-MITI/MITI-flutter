@@ -18,7 +18,6 @@ import 'package:miti/user/view/user_review_screen.dart';
 import '../../account/view/bank_transfer_form_screen.dart';
 import '../../account/view/bank_transfer_screen.dart';
 import '../../account/view/settlement_screen.dart';
-import '../../common/provider/scroll_provider.dart';
 import '../../support/view/faq_screen.dart';
 import '../../util/util.dart';
 import '../model/user_model.dart';
@@ -32,9 +31,7 @@ class InfoBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final controller = ref.watch(pageScrollControllerProvider);
     return NestedScrollView(
-      controller: controller[2],
       headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
         return [
           const DefaultAppBar(

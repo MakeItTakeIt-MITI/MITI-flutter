@@ -12,6 +12,7 @@ import '../../common/component/custom_dialog.dart';
 import '../../common/component/custom_text_form_field.dart';
 import '../../common/error/common_error.dart';
 import '../../common/model/default_model.dart';
+import '../../common/model/entity_enum.dart';
 import '../../common/provider/form_util_provider.dart';
 import '../model/find_info_model.dart';
 import '../view/oauth_error_screen.dart';
@@ -60,7 +61,7 @@ class AuthError extends ErrorBase {
         _signup(context, ref);
         break;
       case AuthApiType.oauth:
-        _oauth(context, ref);
+        _oauth(context, ref, object as OauthType);
         break;
       case AuthApiType.send_code:
         _sendCode(context, ref, object as FindInfoType);
@@ -94,13 +95,13 @@ class AuthError extends ErrorBase {
                 isSuccess: false,
                 desc: "일치하는 사용자 정보가 존재하지 않습니다.",
               ));
-    } else if (this.status_code == UnAuthorized && this.error_code == 140) {
+    } else if (this.status_code == Forbidden && this.error_code == 140) {
       /// 탈퇴 사용자 로그인
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return const CustomDialog(
-            title: '계정 조회 실패',
+            title: '로그인 실패',
             content: '탈퇴한 사용자입니다.\n고객센터에 문의해주세요.',
           );
         },
@@ -144,20 +145,66 @@ class AuthError extends ErrorBase {
   }
 
   /// Oauth 엑세스토큰 로그인 API
-  void _oauth(BuildContext context, WidgetRef ref) {
+  void _oauth(BuildContext context, WidgetRef ref, OauthType type) {
     if (this.status_code == BadRequest && this.error_code == 101) {
       /// 토큰 유효성 검증 실패
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '로그인 실패',
+            content: '서버가 불안정해 잠시후 다시 이용해주세요.',
+          );
+        },
+      );
     } else if (this.status_code == Forbidden && this.error_code == 360) {
       /// 타 oauth 서비스 사용자
+      String oauthProvider = type == OauthType.kakao ? '애플' : '카카오';
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CustomDialog(
+            title: '로그인 실패',
+            content: '이미 $oauthProvider에 회원가입한 기록이 있습니다.',
+          );
+        },
+      );
     } else if (this.status_code == Forbidden && this.error_code == 361) {
       /// 일반 로그인 사용자
       context.pushNamed(OauthErrorScreen.routeName);
     } else if (this.status_code == NotFound && this.error_code == 950) {
       /// 지원하지 않는 oauth 서비스
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '로그인 실패',
+            content: '해당 로그인 기능은 지원하지 않습니다.',
+          );
+        },
+      );
     } else if (this.status_code == ServerError && this.error_code == 460) {
       /// 카카오 인증 요청 실패
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '로그인 실패',
+            content: '서버가 불안정해 잠시후 다시 이용해주세요.',
+          );
+        },
+      );
     } else if (this.status_code == ServerError && this.error_code == 461) {
       /// 카카오 사용자 정보 변환 실패
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '로그인 실패',
+            content: '서버가 불안정해 잠시후 다시 이용해주세요.',
+          );
+        },
+      );
     }
   }
 

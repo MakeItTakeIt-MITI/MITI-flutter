@@ -15,13 +15,11 @@ import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
 import '../../common/provider/pagination_provider.dart';
-import '../../common/provider/scroll_provider.dart';
 import '../../common/repository/base_pagination_repository.dart';
 import '../../game/component/game_list_component.dart';
 import '../../game/model/game_model.dart';
 import '../../theme/text_theme.dart';
 import '../param/user_profile_param.dart';
-import '../repository/user_repository.dart';
 
 class GameHostScreen extends ConsumerStatefulWidget {
   static String get routeName => 'host';

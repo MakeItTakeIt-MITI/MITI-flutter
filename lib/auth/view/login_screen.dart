@@ -322,7 +322,7 @@ class KakaoLoginButton extends ConsumerWidget {
       if (context.mounted) {
         if (result is ErrorModel) {
           AuthError.fromModel(model: result)
-              .responseError(context, AuthApiType.oauth, ref);
+              .responseError(context, AuthApiType.oauth, ref, object: OauthType.kakao);
           throw Exception();
         } else {
           context.goNamed(CourtMapScreen.routeName);
@@ -427,7 +427,7 @@ class AppleLoginButton extends ConsumerWidget {
     if (context.mounted) {
       if (result is ErrorModel) {
         AuthError.fromModel(model: result)
-            .responseError(context, AuthApiType.oauth, ref);
+            .responseError(context, AuthApiType.oauth, ref,object: OauthType.kakao);
       } else {
         context.goNamed(CourtMapScreen.routeName);
       }

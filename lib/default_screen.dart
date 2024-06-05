@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:miti/common/provider/scroll_provider.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/view/user_info_screen.dart';
 import 'court/view/court_map_screen.dart';
@@ -46,7 +45,6 @@ class _DefaultShellScreenState extends ConsumerState<DefaultShellScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = ref.watch(pageScrollControllerProvider);
     final index = getIndex(context);
     return Scaffold(
         resizeToAvoidBottomInset: false,
@@ -69,9 +67,9 @@ class _DefaultShellScreenState extends ConsumerState<DefaultShellScreen> {
               if (GoRouterState.of(context)
                   .matchedLocation
                   .startsWith('/game')) {
-                controller[1].animateTo(0,
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.easeInOut);
+                // controller[1].animateTo(0,
+                //     duration: const Duration(milliseconds: 500),
+                //     curve: Curves.easeInOut);
               } else {
                 context.goNamed(GameScreen.routeName);
               }
@@ -79,9 +77,9 @@ class _DefaultShellScreenState extends ConsumerState<DefaultShellScreen> {
               if (GoRouterState.of(context)
                   .matchedLocation
                   .startsWith('/info')) {
-                controller[2].animateTo(0,
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.easeInOut);
+                // controller[2].animateTo(0,
+                //     duration: const Duration(milliseconds: 500),
+                //     curve: Curves.easeInOut);
               } else {
                 context.goNamed(InfoBody.routeName);
               }
@@ -89,9 +87,9 @@ class _DefaultShellScreenState extends ConsumerState<DefaultShellScreen> {
               if (GoRouterState.of(context)
                   .matchedLocation
                   .startsWith('/menu')) {
-                controller[3].animateTo(0,
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.easeInOut);
+                // controller[3].animateTo(0,
+                //     duration: const Duration(milliseconds: 500),
+                //     curve: Curves.easeInOut);
               } else {
                 context.goNamed(MenuBody.routeName);
               }

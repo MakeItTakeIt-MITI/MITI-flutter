@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -26,10 +28,11 @@ class SignUpSelectScreen extends StatelessWidget {
             Padding(
               padding: EdgeInsets.only(
                 top: 153.h,
-                bottom: 198.h,
+                // bottom: 198.h,
               ),
               child: const _IntroductionComponent(),
             ),
+            const Spacer(),
             const _SignUpButton(),
             SizedBox(height: 35.h),
             OtherWayComponent(
@@ -96,6 +99,9 @@ class _SignUpButton extends StatelessWidget {
         const EmailSignUpButton(),
         SizedBox(height: 8.h),
         const KakaoLoginButton(),
+        SizedBox(height: 8.h),
+        if(Platform.isIOS)
+        const AppleLoginButton(),
       ],
     );
   }

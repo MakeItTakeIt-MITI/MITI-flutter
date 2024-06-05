@@ -14,7 +14,6 @@ import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/common/model/model_id.dart';
 import 'package:miti/common/param/pagination_param.dart';
-import 'package:miti/common/provider/scroll_provider.dart';
 import 'package:miti/court/param/court_pagination_param.dart';
 import 'package:miti/court/provider/court_pagination_provider.dart';
 import 'package:miti/court/provider/court_provider.dart';

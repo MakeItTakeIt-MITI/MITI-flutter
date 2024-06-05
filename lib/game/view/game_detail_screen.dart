@@ -71,10 +71,10 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
               title: '경기 상세',
               isSliver: true,
               actions: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.more_horiz),
-                )
+                // IconButton(
+                //   onPressed: () {},
+                //   icon: const Icon(Icons.more_horiz),
+                // )
               ],
             ),
           ];

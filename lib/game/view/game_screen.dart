@@ -8,7 +8,6 @@ import 'package:miti/user/provider/user_provider.dart';
 import 'package:miti/user/view/user_host_list_screen.dart';
 
 import '../../common/component/default_appbar.dart';
-import '../../common/provider/scroll_provider.dart';
 
 class GameScreen extends ConsumerWidget {
   static String get routeName => 'game';
@@ -17,7 +16,6 @@ class GameScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final controller = ref.watch(pageScrollControllerProvider);
     final textStyle =
         MITITextStyle.menuChoiceStyle.copyWith(color: Colors.black);
     return NestedScrollView(

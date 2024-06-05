@@ -127,7 +127,7 @@ enum AccountStatus {
 }
 
 enum AccountType {
-  @JsonValue('개인')
+  @JsonValue('personal')
   personal('개인');
 
   const AccountType(this.name);
