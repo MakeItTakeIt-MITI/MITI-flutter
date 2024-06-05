@@ -427,7 +427,7 @@ class AppleLoginButton extends ConsumerWidget {
     if (context.mounted) {
       if (result is ErrorModel) {
         AuthError.fromModel(model: result)
-            .responseError(context, AuthApiType.oauth, ref,object: OauthType.kakao);
+            .responseError(context, AuthApiType.oauth, ref,object: OauthType.apple);
       } else {
         context.goNamed(CourtMapScreen.routeName);
       }
