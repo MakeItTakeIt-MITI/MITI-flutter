@@ -139,8 +139,26 @@ class AuthError extends ErrorBase {
       }
     } else if (this.status_code == BadRequest && this.error_code == 120) {
       /// 비밀번호 불일치
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '회원가입 실패',
+            content: '입력하신 비밀번호가 일치하지 않습니다.\n다시 이용해주세요.',
+          );
+        },
+      );
     } else if (this.status_code == ServerError) {
       /// 서버 오류
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '회원가입 실패',
+            content: '서버가 불안정해 잠시후 다시 이용해주세요.',
+          );
+        },
+      );
     }
   }
 
