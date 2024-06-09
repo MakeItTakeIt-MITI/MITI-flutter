@@ -48,11 +48,11 @@ class _PermissionScreenState extends ConsumerState<PermissionScreen> {
         status.isPermanentlyDenied) {
       // 권한 요청 거부, 해당 권한에 대한 요청에 대해 다시 묻지 않음 선택하여 설정화면에서 변경해야함. android
       print("isPermanentlyDenied");
-      openAppSettings();
+      await openAppSettings();
     } else if (status.isRestricted) {
       // 권한 요청 거부, 해당 권한에 대한 요청을 표시하지 않도록 선택하여 설정화면에서 변경해야함. ios
       print("isRestricted");
-      openAppSettings();
+      await openAppSettings();
     } else if (status.isDenied) {
       // 권한 요청 거절
       print("isDenied");
@@ -64,7 +64,6 @@ class _PermissionScreenState extends ConsumerState<PermissionScreen> {
     if (mounted) {
       context.goNamed(CourtMapScreen.routeName);
     }
-
   }
 
   @override
