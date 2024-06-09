@@ -114,7 +114,16 @@ class _ReviewScreenState extends State<ReviewScreen> {
                           child: TextButton(
                             onPressed: valid
                                 ? () async {
-                                    createReview(ref, context, '닉네임');
+                                    final result = ref.read(ratingProvider(
+                                        ratingId: widget.ratingId));
+                                    if (result
+                                        is ResponseModel<UserReviewModel>) {
+                                      final model = (result).data!;
+                                      createReview(
+                                          ref, context, model.nickname);
+                                    } else {
+                                      createReview(ref, context, '닉네임');
+                                    }
                                   }
                                 : () {},
                             style: TextButton.styleFrom(
@@ -162,7 +171,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
             .getPlayers(gameId: widget.gameId);
         final extra = CustomDialog(
           title: '리뷰 작성 완료',
-          content: '$nickname 님의 리뷰를 작성하였습니다.',
+          content: '$nickname님의 리뷰를 작성하였습니다.',
           onPressed: () {
             Map<String, String> pathParameters = {
               'gameId': widget.gameId.toString()
