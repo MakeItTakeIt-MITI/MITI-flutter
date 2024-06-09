@@ -334,19 +334,10 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
         FocusScope.of(context).requestFocus(FocusNode());
 
         if (type == FindInfoType.email) {
-          ref
-              .read(interactionDescProvider(InteractionType.email).notifier)
-              .update((state) => InteractionDesc(
-                    isSuccess: false,
-                    desc: "해당 정보와 일치하는 사용자가 존재하지 않습니다.",
-                  ));
+          AuthError.fromModel(model: result).responseError(context, AuthApiType.requestSMSFormFindEmail, ref);
         } else {
-          ref
-              .read(interactionDescProvider(InteractionType.password).notifier)
-              .update((state) => InteractionDesc(
-                    isSuccess: false,
-                    desc: "해당 정보와 일치하는 사용자가 존재하지 않습니다.",
-                  ));
+          AuthError.fromModel(model: result).responseError(context, AuthApiType.requestSMSForResetPassword, ref);
+
         }
       }
 

@@ -47,10 +47,6 @@ abstract class AuthRepository {
   Future<ResponseModel<RequestCodeModel>> requestCode(
       {@Body() required RequestCodeParam param});
 
-  @Headers({'refresh': 'true'})
-  @POST('/auth/refresh-token')
-  Future<ResponseModel<TokenModel>> reissueToken();
-
   @Headers({'Authorization': 'true', 'refresh': 'true'})
   @POST('/auth/logout')
   Future<CompletedModel> logout();
