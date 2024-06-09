@@ -69,6 +69,42 @@ class _UserProfileFormScreenState extends ConsumerState<UserProfileFormScreen> {
             )
           ];
         },
+        body: Padding(
+          padding: EdgeInsets.only(
+            left: 16.w,
+            right: 16.w,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 12.h),
+                child: SvgPicture.asset(
+                  'assets/images/icon/user_thum.svg',
+                  width: 75.r,
+                  height: 75.r,
+                ),
+              ),
+              // CustomTextFormField(hintText: 'hintText', label: 'label')
+              const Expanded(child: _ProfileFormComponent()),
+            ],
+          ),
+        ),
+      ),
+    );
+    return DefaultLayout(
+      bottomIdx: widget.bottomIdx,
+      scrollController: _scrollController,
+      body: NestedScrollView(
+        controller: _scrollController,
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            const DefaultAppBar(
+              title: '내 정보',
+              isSliver: true,
+            )
+          ];
+        },
         body: CustomScrollView(slivers: [
           SliverFillRemaining(
             child: Padding(
@@ -106,7 +142,10 @@ class _ProfileFormComponent extends ConsumerStatefulWidget {
 }
 
 class _ProfileFormComponentState extends ConsumerState<_ProfileFormComponent> {
+  final formKeys = [GlobalKey(), GlobalKey(), GlobalKey(), GlobalKey()];
+
   late final List<FocusNode> focusNodes = [
+    FocusNode(),
     FocusNode(),
     FocusNode(),
     FocusNode()
@@ -116,19 +155,29 @@ class _ProfileFormComponentState extends ConsumerState<_ProfileFormComponent> {
   void initState() {
     super.initState();
 
-    for (var focusNode in focusNodes) {
-      focusNode.addListener(() {
-        setState(() {});
+    for (int i = 0; i < 4; i++) {
+      focusNodes[i].addListener(() {
+        focusScrollable(i);
       });
     }
   }
 
   @override
   void dispose() {
-    for (var focusNode in focusNodes) {
-      focusNode.removeListener(() {});
+    for (int i = 0; i < 4; i++) {
+      focusNodes[i].removeListener(() {
+        focusScrollable(i);
+      });
     }
     super.dispose();
+  }
+
+  void focusScrollable(int i) {
+    Scrollable.ensureVisible(
+      formKeys[i].currentContext!,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -164,6 +213,8 @@ class _ProfileFormComponentState extends ConsumerState<_ProfileFormComponent> {
     return Column(
       children: [
         CustomTextFormField(
+          key: formKeys[0],
+          focusNode: focusNodes[0],
           hintText: '${model.nickname}(기존 닉네임)',
           label: '닉네임',
           interactionDesc: nicknameInteraction,
@@ -199,16 +250,17 @@ class _ProfileFormComponentState extends ConsumerState<_ProfileFormComponent> {
             children: [
               SizedBox(height: 30.h),
               CustomTextFormField(
+                key: formKeys[1],
                 hintText: '기존 비밀번호를 입력해주세요',
                 label: '기존 비밀번호',
                 obscureText: !passwordVisible,
                 textInputAction: TextInputAction.next,
                 interactionDesc: passwordInteraction,
-                focusNode: focusNodes[0],
+                focusNode: focusNodes[1],
                 onNext: () {
-                  FocusScope.of(context).requestFocus(focusNodes[1]);
+                  FocusScope.of(context).requestFocus(focusNodes[2]);
                 },
-                suffixIcon: focusNodes[0].hasFocus
+                suffixIcon: focusNodes[1].hasFocus
                     ? IconButton(
                         onPressed: () {
                           ref
@@ -230,16 +282,17 @@ class _ProfileFormComponentState extends ConsumerState<_ProfileFormComponent> {
               ),
               SizedBox(height: 30.h),
               CustomTextFormField(
+                key: formKeys[2],
                 hintText: '변경할 비밀번호를 입력해주세요.',
                 label: '새로운 비밀번호',
                 obscureText: !newPasswordVisible,
                 textInputAction: TextInputAction.next,
                 interactionDesc: newPasswordInteraction,
-                focusNode: focusNodes[1],
+                focusNode: focusNodes[2],
                 onNext: () {
-                  FocusScope.of(context).requestFocus(focusNodes[2]);
+                  FocusScope.of(context).requestFocus(focusNodes[3]);
                 },
-                suffixIcon: focusNodes[1].hasFocus
+                suffixIcon: focusNodes[2].hasFocus
                     ? IconButton(
                         onPressed: () {
                           ref
@@ -276,13 +329,14 @@ class _ProfileFormComponentState extends ConsumerState<_ProfileFormComponent> {
               ),
               SizedBox(height: 25.h),
               CustomTextFormField(
+                key: formKeys[3],
                 hintText: '변경할 비밀번호를 입력해주세요.',
                 label: '새로운 비밀번호 확인',
                 obscureText: !newPasswordCheckVisible,
                 textInputAction: TextInputAction.send,
-                focusNode: focusNodes[2],
+                focusNode: focusNodes[3],
                 interactionDesc: newPasswordCheckInteraction,
-                suffixIcon: focusNodes[2].hasFocus
+                suffixIcon: focusNodes[3].hasFocus
                     ? IconButton(
                         onPressed: () {
                           ref

@@ -1,15 +1,10 @@
-import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:miti/court/view/court_map_screen.dart';
 import 'package:miti/theme/text_theme.dart';
-
-import '../../game/model/game_model.dart';
 
 class CustomMarker {
   final MapMarkerModel model;
@@ -108,7 +103,7 @@ class _CustomMapMakerState extends ConsumerState<CustomMapMaker> {
               model: widget.model,
               selected: widget.selected,
             ),
-            size: Size(double.infinity, double.infinity),
+            size: Size(125.w, 60.h,),
           ),
         ),
       ),

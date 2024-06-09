@@ -59,6 +59,7 @@ class MyApp extends ConsumerWidget {
                     .copyWith(textScaler: const TextScaler.linear(1.0)),
                 child: child!);
           },
+
           theme: ThemeData(
               // colorScheme: ColorScheme(
               //     brightness: Brightness.dark,

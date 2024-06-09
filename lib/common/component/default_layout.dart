@@ -34,6 +34,7 @@ class _DefaultLayoutState extends State<DefaultLayout> {
       child: Scaffold(
         backgroundColor: Colors.white,
         body: widget.body,
+        resizeToAvoidBottomInset: false,
         bottomNavigationBar: CustomBottomNavigationBar(
           index: widget.bottomIdx,
           onTap: (int page) {
