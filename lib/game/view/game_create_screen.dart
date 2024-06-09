@@ -76,7 +76,6 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
             right: 16.w,
           ),
           child: CustomScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             slivers: <Widget>[
               getSpacer(height: 18),
               SliverToBoxAdapter(

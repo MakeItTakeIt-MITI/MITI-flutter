@@ -334,10 +334,11 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
         FocusScope.of(context).requestFocus(FocusNode());
 
         if (type == FindInfoType.email) {
-          AuthError.fromModel(model: result).responseError(context, AuthApiType.requestSMSFormFindEmail, ref);
+          AuthError.fromModel(model: result)
+              .responseError(context, AuthApiType.requestSMSFormFindEmail, ref);
         } else {
-          AuthError.fromModel(model: result).responseError(context, AuthApiType.requestSMSForResetPassword, ref);
-
+          AuthError.fromModel(model: result).responseError(
+              context, AuthApiType.requestSMSForResetPassword, ref);
         }
       }
 

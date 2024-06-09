@@ -28,29 +28,33 @@ class DefaultLayout extends StatefulWidget {
 class _DefaultLayoutState extends State<DefaultLayout> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: widget.body,
-      bottomNavigationBar: CustomBottomNavigationBar(
-        index: widget.bottomIdx,
-        onTap: (int page) {
-          log('page = $page');
-          if (page == widget.bottomIdx) {
-            widget.scrollController.animateTo(0,
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.easeInOut);
-            return;
-          }
-          if (page == 0) {
-            context.goNamed(CourtMapScreen.routeName);
-          } else if (page == 1) {
-            context.goNamed(GameScreen.routeName);
-          } else if (page == 2) {
-            context.goNamed(InfoBody.routeName);
-          } else {
-            context.goNamed(MenuBody.routeName);
-          }
-        },
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      onPanDown: (v) => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: widget.body,
+        bottomNavigationBar: CustomBottomNavigationBar(
+          index: widget.bottomIdx,
+          onTap: (int page) {
+            log('page = $page');
+            if (page == widget.bottomIdx) {
+              widget.scrollController.animateTo(0,
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.easeInOut);
+              return;
+            }
+            if (page == 0) {
+              context.goNamed(CourtMapScreen.routeName);
+            } else if (page == 1) {
+              context.goNamed(GameScreen.routeName);
+            } else if (page == 2) {
+              context.goNamed(InfoBody.routeName);
+            } else {
+              context.goNamed(MenuBody.routeName);
+            }
+          },
+        ),
       ),
     );
   }
