@@ -51,7 +51,7 @@ dependencies:
   shimmer: ^3.0.0
   debounce_throttle: ^2.0.0
   equatable: ^2.0.5
-#  uni_links: ^0.5.1
+  #  uni_links: ^0.5.1
   table_calendar: ^3.1.1
   flutter_naver_map: ^1.2.2
 
@@ -60,20 +60,20 @@ dependencies:
 
   kpostal: ^0.5.1
   envied: ^0.5.4+1
-#  flutter_native_splash: ^2.4.0
+  #  flutter_native_splash: ^2.4.0
   lottie: ^3.1.0
   webview_flutter: ^4.7.0
-#  flutter_inappwebview:  ^5.4.3+7
+  #  flutter_inappwebview:  ^5.4.3+7
   url_launcher: ^6.2.6
   share_plus: ^9.0.0
-#  android_intent_plus: ^5.0.2
-#  timezone: ^0.9.2
+  #  android_intent_plus: ^5.0.2
+  #  timezone: ^0.9.2
   sign_in_with_apple: ^6.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-#  analyzer: ^6.4.1
+  #  analyzer: ^6.4.1
   envied_generator: ^0.5.4+1
   retrofit_generator: '>=7.0.0 <8.0.0'
   build_runner: ^2.4.9
@@ -121,26 +121,24 @@ flutter:
           weight: 900
   # To add assets to your application, add an assets section, like this:
   assets:
-   - assets/images/logo/MITI.png
-   - assets/images/logo/kakao_logo.png
-   - assets/images/icon/
-   - assets/images/logo/
-   - assets/images/btn/
-   - assets/lottie/splash_lottie.json
+    - assets/images/logo/MITI.png
+    - assets/images/icon/
+    - assets/images/logo/
+    - assets/images/btn/
   #   - images/a_dot_ham.jpeg
-#  flavorDimensions:
-#    - environment
-#  flavors:
-#    dev:
-#      flavorName: dev
-#      defines:
-#        - API_URL=https://dev.makeittakeit.kr
-#        - DEBUG_MODE=true
-#    prod:
-#      flavorName: prod
-#      defines:
-#        - API_URL=https://dev.makeittakeit.kr
-#        - DEBUG_MODE=false
+  #  flavorDimensions:
+  #    - environment
+  #  flavors:
+  #    dev:
+  #      flavorName: dev
+  #      defines:
+  #        - API_URL=https://dev.makeittakeit.kr
+  #        - DEBUG_MODE=true
+  #    prod:
+  #      flavorName: prod
+  #      defines:
+  #        - API_URL=https://dev.makeittakeit.kr
+  #        - DEBUG_MODE=false
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

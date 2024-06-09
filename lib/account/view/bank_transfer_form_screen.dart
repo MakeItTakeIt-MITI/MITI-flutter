@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miti/account/error/account_error.dart';
 import 'package:miti/account/model/account_model.dart';
 import 'package:miti/account/provider/account_provider.dart';
 import 'package:miti/account/provider/widget/transfer_form_provider.dart';
@@ -64,7 +65,6 @@ class _BankTransferFormScreenState extends State<BankTransferFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return DefaultLayout(
       bottomIdx: widget.bottomIdx,
       scrollController: _scrollController,
@@ -80,20 +80,19 @@ class _BankTransferFormScreenState extends State<BankTransferFormScreen> {
         },
         body: CustomScrollView(
           slivers: [
-
             SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    _AccountComponent(
-                      accountId: widget.accountId,
-                    ),
-                    getDivider(),
-                    _AccountForm(
-                      accountId: widget.accountId,
-                    ),
-                  ],
-                ),
+              child: Column(
+                children: [
+                  _AccountComponent(
+                    accountId: widget.accountId,
+                  ),
+                  getDivider(),
+                  _AccountForm(
+                    accountId: widget.accountId,
+                  ),
+                ],
               ),
+            ),
           ],
         ),
       ),
@@ -135,6 +134,8 @@ class _AccountComponent extends ConsumerWidget {
     if (result is LoadingModel) {
       return CircularProgressIndicator();
     } else if (result is ErrorModel) {
+      AccountError.fromModel(model: result)
+          .responseError(context, AccountApiType.getAccountInfo, ref);
       return Text('에러');
     }
     final model = (result as ResponseModel<AccountDetailModel>).data!;
@@ -264,6 +265,9 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
     if (result is LoadingModel) {
       return CircularProgressIndicator();
     } else if (result is ErrorModel) {
+      AccountError.fromModel(model: result)
+          .responseError(context, AccountApiType.getAccountInfo, ref);
+
       return Text('에러');
     }
     final model = (result as ResponseModel<AccountDetailModel>).data!;
@@ -471,9 +475,11 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
 
   Future<void> requestTransfer(WidgetRef ref, BuildContext context) async {
     final result = await ref.read(requestTransferProvider.future);
-    if (result is ErrorModel) {
-    } else {
-      if (context.mounted) {
+    if (context.mounted) {
+      if (result is ErrorModel) {
+        AccountError.fromModel(model: result)
+            .responseError(context, AccountApiType.requestTransfer, ref);
+      } else {
         final extra = CustomDialog(
           title: '송금 요청 생성 완료',
           content: '송금 요청이 정상적으로 생성되었습니다.\n송금 내역에서 송금 상태를 확인하세요.',

@@ -10,6 +10,7 @@ import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/support/view/support_screen.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:miti/user/error/user_error.dart';
 import 'package:miti/user/provider/user_provider.dart';
 import 'package:miti/user/view/user_delete_screen.dart';
 import 'package:miti/user/view/user_profile_form_screen.dart';
@@ -91,6 +92,8 @@ class _UserInfoCard extends ConsumerWidget {
     if (result is LoadingModel) {
       return CircularProgressIndicator();
     } else if (result is ErrorModel) {
+      UserError.fromModel(model: result)
+          .responseError(context, UserApiType.get, ref);
       return Text('에러');
     }
     final model = (result as ResponseModel<UserModel>).data!;

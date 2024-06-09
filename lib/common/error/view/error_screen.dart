@@ -3,14 +3,26 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../theme/text_theme.dart';
 import '../../component/default_appbar.dart';
+import '../../model/entity_enum.dart';
 
 class ErrorScreen extends StatelessWidget {
+  final ErrorScreenType errorType;
+
   static String get routeName => 'error';
 
-  const ErrorScreen({super.key});
+  const ErrorScreen({super.key, required this.errorType});
 
   @override
   Widget build(BuildContext context) {
+    String content;
+    switch (errorType) {
+      case ErrorScreenType.notFound:
+        content = '해당 페이지를 찾을 수 없습니다.';
+      case ErrorScreenType.unAuthorization:
+        content = '해당 페이지의 권한이 없습니다.';
+      case ErrorScreenType.server:
+        content = '서버가 불안정해 잠시후 다시 이용해주세요.';
+    }
     return NestedScrollView(
       headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
         return [
@@ -30,7 +42,7 @@ class ErrorScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '해당 페이지를 찾을 수 없습니다.',
+                    content,
                     style: MITITextStyle.pageMainTextStyle,
                   ),
                 ],

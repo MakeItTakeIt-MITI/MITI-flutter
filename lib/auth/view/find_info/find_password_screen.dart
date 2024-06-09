@@ -49,18 +49,22 @@ class ResetPasswordScreen extends StatelessWidget {
                 final validNext = progressModel.validNext;
                 return TextButton(
                     onPressed: () async {
-                      final reissueToken = await ref.read(reissueForPasswordProvider.future);
-                      if (reissueToken is ErrorModel) {
-
-                      }else{
-                        final result =
-                        await ref.read(resetPasswordProvider.future);
-                        if (context.mounted) {
+                      final reissueToken =
+                          await ref.read(reissueForPasswordProvider.future);
+                      if (context.mounted) {
+                        if (reissueToken is ErrorModel) {
+                          AuthError.fromModel(model: reissueToken)
+                              .responseError(
+                                  context, AuthApiType.tokenForPassword, ref);
+                        } else {
+                          final result =
+                              await ref.read(resetPasswordProvider.future);
                           if (result is ErrorModel) {
-                            AuthError.fromModel(model: result)
-                                .responseError(context, AuthApiType.login, ref);
+                            AuthError.fromModel(model: result).responseError(
+                                context, AuthApiType.resetPassword, ref);
                           } else {
-                            context.goNamed(CompleteRestPasswordScreen.routeName);
+                            context
+                                .goNamed(CompleteRestPasswordScreen.routeName);
                           }
                         }
                       }

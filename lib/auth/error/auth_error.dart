@@ -71,9 +71,9 @@ class AuthError extends ErrorBase {
       case AuthApiType.request_code:
         _requestCode(context, ref);
         break;
-      case AuthApiType.findInfo:
-        _findInfo(context, ref);
-        break;
+      // case AuthApiType.findInfo:
+      //   _findInfo(context, ref);
+      //   break;
       case AuthApiType.requestSMSFormFindEmail:
         _findEmail(context, ref);
         break;
@@ -87,7 +87,7 @@ class AuthError extends ErrorBase {
         _tokenForPassword(context, ref);
         break;
       case AuthApiType.resetPassword:
-        _reissue(context, ref);
+        _resetPassword(context, ref);
         break;
       default:
         break;
@@ -537,21 +537,54 @@ class AuthError extends ErrorBase {
       );
     }
   }
+
   /// 비밀번호 재설정용 토큰 발급 API
   void _tokenForPassword(BuildContext context, WidgetRef ref) {
     if (this.status_code == BadRequest && this.error_code == 420) {
       /// 요청 유효시간 초과
-
-    }else if (this.status_code == BadRequest && this.error_code == 560) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '토큰 발급 실패',
+            content: '요청 유효 시간이 지났습니다.\n다시 시도해 주세요.',
+          );
+        },
+      );
+    } else if (this.status_code == BadRequest && this.error_code == 560) {
       /// 잘못된 인증 요청
-
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '토큰 발급 실패',
+            content: '잘못된 요청입니다.',
+          );
+        },
+      );
     } else if (this.status_code == BadRequest && this.error_code == 561) {
       /// 인증 미완료 요청
-
-    }  else if (this.status_code == NotFound && this.error_code == 460) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '토큰 발급 실패',
+            content: '인증되지 않은 사용자입니다.',
+          );
+        },
+      );
+    } else if (this.status_code == NotFound && this.error_code == 460) {
       /// SMS 인증 조회 실패
-
-    }else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '토큰 발급 실패',
+            content: '다시 시도해주세요.',
+          );
+        },
+      );
+    } else {
       /// 서버 오류
       showDialog(
         context: context,
@@ -565,26 +598,118 @@ class AuthError extends ErrorBase {
     }
   }
 
-  void _findInfo(BuildContext context, WidgetRef ref) {
-    if (this.status_code == NotFound && this.error_code == 101) {
-      /// 일치 사용자 없음
-      ref
-          .read(interactionDescProvider(InteractionType.email).notifier)
-          .update((state) => InteractionDesc(
-                isSuccess: false,
-                desc: "일치하는 사용자 정보가 존재하지 않습니다.",
-              ));
+  void _resetPassword(BuildContext context, WidgetRef ref) {
+    if (this.status_code == BadRequest && this.error_code == 420) {
+      /// 요청 유효시간 초과
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '비밀번호 변경 실패',
+            content: '요청시간이 지났습니다.\n다시 시도해주세요.',
+          );
+        },
+      );
+    } else if (this.status_code == BadRequest && this.error_code == 960) {
+      /// 토큰 타입 불일치
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '비밀번호 변경 실패',
+            content: '다시 시도해주세요.',
+          );
+        },
+      );
+    } else if (this.status_code == BadRequest && this.error_code == 961) {
+      /// 인증 미완료 토큰
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '비밀번호 변경 실패',
+            content: '인증되지 않은 사용자입니다.',
+          );
+        },
+      );
+    } else if (this.status_code == BadRequest && this.error_code == 962) {
+      /// 토큰 만료
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '비밀번호 변경 실패',
+            content: '다시 시도해주세요.',
+          );
+        },
+      );
+    } else if (this.status_code == BadRequest && this.error_code == 101) {
+      /// 비밀번호 유효성 검증 실패
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '비밀번호 변경 실패',
+            content: '유효하지 않은 비밀번호입니다.',
+          );
+        },
+      );
+    } else if (this.status_code == BadRequest && this.error_code == 120) {
+      /// 비밀번호 불일치
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '비밀번호 변경 실패',
+            content: '비밀번호가 일치하지 않습니다.',
+          );
+        },
+      );
+    } else if (this.status_code == NotFound && this.error_code == 960) {
+      /// 요청 조회 실패
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '비밀번호 변경 실패',
+            content: '사용자를 찾을 수 없습니다.',
+          );
+        },
+      );
     } else {
       /// 서버 오류
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return const CustomDialog(
-            title: '사용자 조회 실패',
+            title: '비밀번호 변경 실패',
             content: '서버가 불안정해 잠시후 다시 이용해주세요.',
           );
         },
       );
     }
   }
+
+  // void _findInfo(BuildContext context, WidgetRef ref) {
+  //   if (this.status_code == NotFound && this.error_code == 101) {
+  //     /// 일치 사용자 없음
+  //     ref
+  //         .read(interactionDescProvider(InteractionType.email).notifier)
+  //         .update((state) => InteractionDesc(
+  //               isSuccess: false,
+  //               desc: "일치하는 사용자 정보가 존재하지 않습니다.",
+  //             ));
+  //   } else {
+  //     /// 서버 오류
+  //     showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return const CustomDialog(
+  //           title: '사용자 조회 실패',
+  //           content: '서버가 불안정해 잠시후 다시 이용해주세요.',
+  //         );
+  //       },
+  //     );
+  //   }
+  // }
 }

@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/model/default_model.dart';
+import 'package:miti/support/error/support_error.dart';
 import 'package:miti/support/provider/support_provider.dart';
 import 'package:miti/support/provider/widget/support_form_provider.dart';
 import 'package:miti/support/view/support_screen.dart';
@@ -76,29 +77,35 @@ class _SupportFormScreenState extends State<SupportFormScreen> {
                       child: TextButton(
                         onPressed: valid
                             ? () async {
-                                final result =
-                                    ref.read(supportCreateProvider.future);
-                                if (result is ErrorModel) {
-                                } else {
-                                  final extra = CustomDialog(
-                                    title: '문의 작성 완료',
-                                    content: '빠른 시일내로 답변드리도록 하겠습니다.',
-                                    onPressed: () {
-                                      Navigator.of(context, rootNavigator: true)
-                                          .pop('dialog');
-                                      final Map<String, String>
-                                          queryParameters = {
-                                        'bottomIdx':
-                                            widget.bottomIdx.toString(),
-                                      };
-                                      context.goNamed(
-                                        SupportScreen.routeName,
-                                        queryParameters: queryParameters,
-                                      );
-                                    },
-                                  );
-                                  context.pushNamed(DialogPage.routeName,
-                                      extra: extra);
+                                final result = await ref
+                                    .read(supportCreateProvider.future);
+                                if (context.mounted) {
+                                  if (result is ErrorModel) {
+                                    SupportError.fromModel(model: result)
+                                        .responseError(context,
+                                            SupportApiType.create, ref);
+                                  } else {
+                                    final extra = CustomDialog(
+                                      title: '문의 작성 완료',
+                                      content: '빠른 시일내로 답변드리도록 하겠습니다.',
+                                      onPressed: () {
+                                        Navigator.of(context,
+                                                rootNavigator: true)
+                                            .pop('dialog');
+                                        final Map<String, String>
+                                            queryParameters = {
+                                          'bottomIdx':
+                                              widget.bottomIdx.toString(),
+                                        };
+                                        context.goNamed(
+                                          SupportScreen.routeName,
+                                          queryParameters: queryParameters,
+                                        );
+                                      },
+                                    );
+                                    context.pushNamed(DialogPage.routeName,
+                                        extra: extra);
+                                  }
                                 }
                               }
                             : () {},

@@ -14,6 +14,7 @@ import 'package:miti/theme/text_theme.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
 import '../../common/provider/router_provider.dart';
+import '../error/game_error.dart';
 import '../model/game_payment_model.dart';
 
 class GameRefundScreen extends StatefulWidget {
@@ -182,6 +183,8 @@ class _RefundInfoComponent extends ConsumerWidget {
     if (result is LoadingModel) {
       return CircularProgressIndicator();
     } else if (result is ErrorModel) {
+      GameError.fromModel(model: result)
+          .responseError(context, GameApiType.getRefundInfo, ref);
       return Text('에러');
     }
     final model = (result as ResponseModel<RefundModel>).data!;

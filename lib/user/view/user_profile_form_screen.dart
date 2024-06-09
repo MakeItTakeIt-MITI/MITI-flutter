@@ -356,11 +356,8 @@ class _ProfileFormComponentState extends ConsumerState<_ProfileFormComponent> {
 
     if (result is ErrorModel) {
       if (context.mounted) {
-        UserError.fromModel(model: result).responseError(
-          context,
-          UserApiType.nickname,
-          ref,
-        );
+        UserError.fromModel(model: result)
+            .responseError(context, UserApiType.updateNickname, ref);
       }
     } else {
       if (context.mounted) {
@@ -385,10 +382,11 @@ class _ProfileFormComponentState extends ConsumerState<_ProfileFormComponent> {
 
   Future<void> updatePassword(BuildContext context) async {
     final result = await ref.read(updatePasswordProvider.future);
-
-    if (result is ErrorModel) {
-    } else {
-      if (context.mounted) {
+    if (context.mounted) {
+      if (result is ErrorModel) {
+        UserError.fromModel(model: result)
+            .responseError(context, UserApiType.updatePassword, ref);
+      } else {
         final extra = CustomDialog(
             title: '프로필 수정 완료',
             content: '회원 정보가 정상적으로 저장되었습니다.',

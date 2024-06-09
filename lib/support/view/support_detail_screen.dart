@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:miti/common/model/default_model.dart';
+import 'package:miti/support/error/support_error.dart';
 import 'package:miti/support/provider/support_provider.dart';
 import 'package:miti/theme/text_theme.dart';
 
@@ -62,6 +63,8 @@ class _SupportDetailScreenState extends State<SupportDetailScreen> {
                   if (result is LoadingModel) {
                     return CircularProgressIndicator();
                   } else if (result is ErrorModel) {
+                    SupportError.fromModel(model: result)
+                        .responseError(context, SupportApiType.get, ref);
                     return Text('에러');
                   }
                   final model = (result as ResponseModel<QuestionModel>).data!;

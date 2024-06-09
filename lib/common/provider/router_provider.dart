@@ -51,6 +51,8 @@ import '../../user/view/user_host_list_screen.dart';
 import '../../user/view/user_info_screen.dart';
 import '../../user/view/user_review_screen.dart';
 import '../component/custom_dialog.dart';
+import '../error/view/error_screen.dart';
+import '../model/entity_enum.dart';
 
 final GlobalKey<NavigatorState> rootNavKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> shellNavKey = GlobalKey<NavigatorState>();
@@ -88,6 +90,18 @@ final routerProvider = Provider<GoRouter>((ref) {
           name: SplashScreen.routeName,
           builder: (context, state) {
             return SplashScreen();
+          },
+          // pageBuilder: (context, state) {
+          //   return NoTransitionPage(child: SplashScreen());
+          // },
+        ),
+        GoRoute(
+          path: '/error',
+          parentNavigatorKey: rootNavKey,
+          name: ErrorScreen.routeName,
+          builder: (context, state) {
+            ErrorScreenType extra = state.extra as ErrorScreenType;
+            return ErrorScreen(errorType: extra,);
           },
           // pageBuilder: (context, state) {
           //   return NoTransitionPage(child: SplashScreen());

@@ -16,6 +16,7 @@ import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/provider/widget/datetime_provider.dart';
 import 'package:miti/court/model/court_model.dart';
 import 'package:miti/court/provider/court_provider.dart';
+import 'package:miti/game/error/game_error.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:miti/theme/text_theme.dart';
@@ -116,6 +117,9 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
                                     await ref.read(gameCreateProvider.future);
                                 if (context.mounted) {
                                   if (result is ErrorModel) {
+                                    GameError.fromModel(model: result)
+                                        .responseError(
+                                            context, GameApiType.createGame, ref);
                                   } else {
                                     final model = result
                                         as ResponseModel<GameDetailModel>;

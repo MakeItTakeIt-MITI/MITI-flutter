@@ -7,11 +7,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
+import 'package:miti/kakaopay/error/pay_error.dart';
 import 'package:miti/kakaopay/provider/pay_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../common/model/default_model.dart';
+import '../model/pay_model.dart';
 import 'approval_screen.dart';
 
 class PaymentScreen extends ConsumerStatefulWidget {
@@ -49,12 +51,17 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               log('pgToken $pgToken');
               log('requestId $requestId');
 
-              final result = ref.read(approvalPayProvider(
+              final result = await ref.read(approvalPayProvider(
                       requestId: int.parse(requestId), pgToken: pgToken)
                   .future);
-              if (result is ErrorModel) {
-              } else {
-                context.goNamed(KakaoPayApprovalScreen.routeName);
+
+              if (mounted) {
+                if (result is ErrorModel) {
+                  PayError.fromModel(model: result)
+                      .responseError(context, PayApiType.approval, ref);
+                } else if (result is ResponseModel<PayApprovalModel>) {
+                  context.goNamed(KakaoPayApprovalScreen.routeName);
+                }
               }
 
               return NavigationDecision.prevent;

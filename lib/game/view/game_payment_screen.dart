@@ -19,6 +19,7 @@ import 'package:miti/kakaopay/provider/pay_provider.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../kakaopay/view/payment_screen.dart';
+import '../error/game_error.dart';
 import 'game_detail_screen.dart';
 
 class GamePaymentScreen extends StatelessWidget {
@@ -59,6 +60,8 @@ class GamePaymentScreen extends StatelessWidget {
                       if (result is LoadingModel) {
                         return CircularProgressIndicator();
                       } else if (result is ErrorModel) {
+                        GameError.fromModel(model: result)
+                            .responseError(context, GameApiType.getPaymentInfo, ref);
                         return Text('에러');
                       }
                       final model =

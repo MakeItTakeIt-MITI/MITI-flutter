@@ -16,6 +16,7 @@ import '../../common/model/entity_enum.dart';
 import '../../court/model/court_model.dart';
 import '../../game/model/game_model.dart';
 import '../../game/view/game_detail_screen.dart';
+import '../error/user_error.dart';
 
 class ReviewDetailScreen extends StatefulWidget {
   final UserReviewType reviewType;
@@ -84,6 +85,12 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                   if (result is LoadingModel) {
                     return CircularProgressIndicator();
                   } else if (result is ErrorModel) {
+                    final userApiType =
+                        UserReviewType.written == widget.reviewType
+                            ? UserApiType.writtenReviewDetail
+                            : UserApiType.receiveReviewDetail;
+                    UserError.fromModel(model: result)
+                        .responseError(context, userApiType, ref);
                     return Text('에러');
                   }
                   if (widget.reviewType == UserReviewType.written) {

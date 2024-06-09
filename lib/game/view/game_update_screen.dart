@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/model/default_model.dart';
+import 'package:miti/game/error/game_error.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:miti/theme/text_theme.dart';
@@ -58,7 +59,6 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return DefaultLayout(
       bottomIdx: widget.bottomIdx,
       scrollController: _scrollController,
@@ -76,13 +76,14 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
           slivers: [
             SliverFillRemaining(
               child: Consumer(
-                builder:
-                    (BuildContext context, WidgetRef ref, Widget? child) {
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   final result =
                       ref.watch(gameDetailProvider(gameId: widget.gameId));
                   if (result is LoadingModel) {
                     return CircularProgressIndicator();
                   } else if (result is ErrorModel) {
+                    GameError.fromModel(model: result)
+                        .responseError(context, GameApiType.get, ref);
                     return Text('에러');
                   }
                   result as ResponseModel<GameDetailModel>;
@@ -107,10 +108,14 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
                           onPressed: valid()
                               ? () async {
                                   final result = await ref.read(
-                                      gameUpdateProvider(
-                                              gameId: widget.gameId)
+                                      gameUpdateProvider(gameId: widget.gameId)
                                           .future);
                                   if (result is ErrorModel) {
+                                    if (context.mounted) {
+                                      GameError.fromModel(model: result)
+                                          .responseError(
+                                              context, GameApiType.update, ref);
+                                    }
                                   } else {
                                     if (context.mounted) {
                                       final extra = CustomDialog(
@@ -120,13 +125,13 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
                                           Navigator.of(context,
                                                   rootNavigator: true)
                                               .pop('dialog');
-                                          Map<String, String> pathParameters =
-                                              {
+                                          Map<String, String> pathParameters = {
                                             'gameId': widget.gameId.toString()
                                           };
                                           final Map<String, String>
                                               queryParameters = {
-                                            'bottomIdx': widget.bottomIdx.toString()
+                                            'bottomIdx':
+                                                widget.bottomIdx.toString()
                                           };
                                           context.goNamed(
                                             GameDetailScreen.routeName,

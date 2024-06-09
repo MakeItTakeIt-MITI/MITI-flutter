@@ -9,6 +9,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/court/component/court_list_component.dart';
+import 'package:miti/game/error/game_error.dart';
 import 'package:miti/game/model/game_model.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
@@ -164,6 +165,13 @@ class _ReviewScreenState extends State<ReviewScreen> {
       ).future);
     }
     if (result is ErrorModel) {
+      if (context.mounted) {
+        final gameApiType = widget.participationId != null
+            ? GameApiType.createGuestReview
+            : GameApiType.createHostReview;
+        GameError.fromModel(model: result)
+            .responseError(context, gameApiType, ref);
+      }
     } else {
       if (context.mounted) {
         await ref
@@ -206,6 +214,8 @@ class _PlayerComponent extends ConsumerWidget {
     if (result is LoadingModel) {
       return CircularProgressIndicator();
     } else if (result is ErrorModel) {
+      GameError.fromModel(model: result)
+          .responseError(context, GameApiType.getReview, ref);
       return Text('에러');
     }
     final model = (result as ResponseModel<UserReviewModel>).data!;

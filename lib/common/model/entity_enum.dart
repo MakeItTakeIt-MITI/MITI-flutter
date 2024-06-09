@@ -187,3 +187,9 @@ enum OauthType {
   kakao,
   apple;
 }
+
+enum ErrorScreenType {
+  notFound,
+  unAuthorization,
+  server;
+}

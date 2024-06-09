@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:miti/account/error/account_error.dart';
 import 'package:miti/account/model/account_model.dart';
 import 'package:miti/account/provider/account_provider.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
@@ -78,6 +79,8 @@ class _SettlementDetailScreenState
                   if (result is LoadingModel) {
                     return CircularProgressIndicator();
                   } else if (result is ErrorModel) {
+                    AccountError.fromModel(model: result).responseError(
+                        context, AccountApiType.getSettlementInfo, ref);
                     return Text('에러');
                   }
                   final model =
