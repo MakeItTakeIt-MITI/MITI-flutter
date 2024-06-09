@@ -18,7 +18,8 @@ void main() async {
   HttpOverrides.global = MyHttpOverrides();
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+      overlays: SystemUiOverlay.values);
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await initializeDateFormatting('ko');
   await NaverMapSdk.instance.initialize(clientId: Environment.naverMapClientId);
@@ -59,10 +60,22 @@ class MyApp extends ConsumerWidget {
                 child: child!);
           },
           theme: ThemeData(
-            pageTransitionsTheme: const PageTransitionsTheme(builders: {
-              TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-              TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-            }),
+              // colorScheme: ColorScheme(
+              //     brightness: Brightness.dark,
+              //     primary: Colors.black,
+              //     onPrimary: Colors.black,
+              //     secondary: Colors.white,
+              //     onSecondary: Colors.white,
+              //     error: Colors.black,
+              //     onError: Colors.black,
+              //     background: Colors.white,
+              //     onBackground: Colors.white,
+              //     surface: Colors.black,
+              //     onSurface: Colors.black),
+              pageTransitionsTheme: const PageTransitionsTheme(builders: {
+                TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+                TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+              }),
               // colorScheme: ColorScheme(background: Colors.white, brightness: null, primary: null, onPrimary: null, secondary: null, onSecondary: null, error: null, onError: null, onBackground: null, surface: null, onSurface: null,),
               fontFamily: 'Pretendard',
               inputDecorationTheme: InputDecorationTheme(
@@ -99,7 +112,6 @@ class MyApp extends ConsumerWidget {
                         ),
                       ),
                     ),
-
                     minimumSize:
                         MaterialStateProperty.all(Size(double.infinity, 48.h)),
                     maximumSize:
@@ -113,10 +125,11 @@ class MyApp extends ConsumerWidget {
   }
 }
 
-class MyHttpOverrides extends HttpOverrides{
+class MyHttpOverrides extends HttpOverrides {
   @override
-  HttpClient createHttpClient(SecurityContext? context){
+  HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

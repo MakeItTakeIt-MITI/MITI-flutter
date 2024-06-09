@@ -37,6 +37,9 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
         backgroundColor: backgroundColor ?? Colors.white,
+
+        /// 앱바 pinned 시 surface 컬러
+        surfaceTintColor: backgroundColor ?? Colors.white,
         shape: const Border(bottom: BorderSide(color: Color(0xFFE8E8E8))),
         centerTitle: true,
         leading: context.canPop()
@@ -47,6 +50,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
             : null,
         bottom: bottom,
         actions: actions,
+        pinned: true,
       );
     }
     return AppBar(

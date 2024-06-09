@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/game/model/game_player_model.dart';
 import 'package:miti/game/provider/game_provider.dart';
@@ -23,9 +24,7 @@ class GameParticipationScreen extends StatefulWidget {
   static String get routeName => 'participation';
 
   const GameParticipationScreen(
-      {super.key,
-      required this.gameId,
-      required this.bottomIdx});
+      {super.key, required this.gameId, required this.bottomIdx});
 
   @override
   State<GameParticipationScreen> createState() =>
@@ -80,9 +79,14 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
                   }
                   final model =
                       (result as ResponseModel<GamePlayerListModel>).data!;
+                  final userId = ref.read(authProvider)?.id ?? 0;
+
+                  /// 본인 리뷰 제거
+                  model.participations.removeWhere((e) => e.user.id == userId);
+
                   return Column(
                     children: [
-                      if (model.host != null)
+                      if (model.host != null && model.host?.id != userId)
                         _HostReviewComponent(
                           host: model.host!,
                           gameId: widget.gameId,

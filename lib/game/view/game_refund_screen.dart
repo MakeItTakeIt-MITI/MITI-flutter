@@ -202,7 +202,7 @@ class _RefundInfoComponent extends ConsumerWidget {
               fee: formatFee(model.payment_amount.total_amount)),
           getDivider(),
           getPayment(
-              title: '결제 수수료', fee: formatFee(model.payment_amount.vat_amount)),
+              title: '결제 수수료', fee: formatFee(model.commission_amount.payment_commission_amount)),
           SizedBox(height: 12.h),
           getPayment(
               title: '참여 취소 수수료',

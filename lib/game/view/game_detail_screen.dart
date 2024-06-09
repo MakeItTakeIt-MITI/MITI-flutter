@@ -531,6 +531,7 @@ class _GuestTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final subName = name.length > 5 ? '${name.substring(0, 5)}...' : name;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -545,7 +546,7 @@ class _GuestTile extends StatelessWidget {
         ),
         SizedBox(height: 4.h),
         Text(
-          "$name 님",
+          "$subName 님",
           style: TextStyle(
             fontFamily: "Pretendard",
             fontSize: 14.sp,
@@ -689,6 +690,8 @@ class SummaryComponent extends StatelessWidget {
             Expanded(
               child: Text(
                 address,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w500,

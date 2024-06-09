@@ -69,29 +69,31 @@ class _UserProfileFormScreenState extends ConsumerState<UserProfileFormScreen> {
             )
           ];
         },
-        body: CustomScrollView(slivers: [
-          SliverFillRemaining(
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: 16.w,
-                right: 16.w,
-              ),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12.h),
-                    child: SvgPicture.asset(
-                      'assets/images/icon/user_thum.svg',
-                      width: 75.r,
-                      height: 75.r,
-                    ),
+        body: CustomScrollView(
+
+            slivers: [
+              SliverFillRemaining(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: 16.w,
+                    right: 16.w,
                   ),
-                  const Expanded(child: _ProfileFormComponent()),
-                ],
-              ),
-            ),
-          )
-        ]),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12.h),
+                        child: SvgPicture.asset(
+                          'assets/images/icon/user_thum.svg',
+                          width: 75.r,
+                          height: 75.r,
+                        ),
+                      ),
+                      const Expanded(child: _ProfileFormComponent()),
+                    ],
+                  ),
+                ),
+              )
+            ]),
       ),
     );
   }
