@@ -94,7 +94,7 @@ class ValidRegExp {
   }
 
   static bool userName(String input) {
-    RegExp regex = RegExp(r'^[가-힣]{1,8}|[a-zA-Z]{1,14}\s[a-zA-Z]{1,14}$');
+    RegExp regex = RegExp(r'^[가-힣]{1,8}$|^[a-zA-Z]{1,14}[a-zA-Z]{1,14}$');
     return regex.hasMatch(input);
   }
 
