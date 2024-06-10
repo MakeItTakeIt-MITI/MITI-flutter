@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 // import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -27,6 +28,8 @@ void main() async {
     nativeAppKey: Environment.kakaoNativeAppKey,
     javaScriptAppKey: Environment.kakaoJavaScriptAppKey,
   );
+  await Hive.initFlutter();
+  await Hive.openBox<bool>('permission');
 
   runApp(
     ProviderScope(
@@ -59,7 +62,6 @@ class MyApp extends ConsumerWidget {
                     .copyWith(textScaler: const TextScaler.linear(1.0)),
                 child: child!);
           },
-
           theme: ThemeData(
               // colorScheme: ColorScheme(
               //     brightness: Brightness.dark,

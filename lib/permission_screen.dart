@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/provider/secure_storage_provider.dart';
 import 'package:miti/court/view/court_map_screen.dart';
@@ -23,9 +24,12 @@ class PermissionScreen extends ConsumerStatefulWidget {
 }
 
 class _PermissionScreenState extends ConsumerState<PermissionScreen> {
+  late final Box<bool> _permissionBox;
+
   @override
   void initState() {
     super.initState();
+    _permissionBox = Hive.box('permission');
   }
 
   void _permission() async {
@@ -59,8 +63,9 @@ class _PermissionScreenState extends ConsumerState<PermissionScreen> {
     }
     print("requestStatus ${requestStatus.name}");
     print("status ${status.name}");
-    final storage = ref.read(secureStorageProvider);
-    await storage.write(key: 'firstJoin', value: 'true');
+    // final storage = ref.read(secureStorageProvider);
+    // await storage.write(key: 'firstJoin', value: 'true');
+    await _permissionBox.put('permission', true);
     if (mounted) {
       context.goNamed(CourtMapScreen.routeName);
     }

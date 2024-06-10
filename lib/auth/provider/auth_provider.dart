@@ -118,7 +118,6 @@ class AuthStateNotifier extends StateNotifier<AuthModel?> {
 
   Future<void> logout() async {
     await storage.deleteAll();
-    // ref.read(memberProvider.notifier).logout();
     state = null;
   }
 }

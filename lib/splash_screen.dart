@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:lottie/lottie.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/common/provider/secure_storage_provider.dart';
@@ -19,16 +20,22 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
+  late final Box<bool> permissionBox;
+
   @override
   void initState() {
     super.initState();
-    startApp();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      startApp();
+    });
   }
 
   Future<void> startApp() async {
-    final storage = ref.read(secureStorageProvider);
-    final first = await storage.read(key: 'firstJoin');
-    if (first == null) {
+    // final storage = ref.read(secureStorageProvider);
+    // final first = await storage.read(key: 'firstJoin');
+    permissionBox = Hive.box('permission');
+    final display = permissionBox.get('permission');
+    if (display == null) {
       if (mounted) {
         context.goNamed(PermissionScreen.routeName);
       }
@@ -120,6 +127,7 @@ class _LoadingAnimationState extends State<LoadingAnimation>
           _controller.repeat();
         }
       });
+
     /// 로딩 bar
     /// 1. width 를 늘리기
     /// 2. bar를 이동 끝까지 이동
