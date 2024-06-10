@@ -1,9 +1,12 @@
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:miti/theme/text_theme.dart';
 
 class CustomMarker {
@@ -19,8 +22,8 @@ class CustomMarker {
           selected: selected,
         ),
         size: Size(
-          140.w,
-          80.h,
+          130.w,
+          60.h,
         ),
         context: context);
     return NMarker(
@@ -37,8 +40,8 @@ class CustomMarker {
           selected: selected,
         ),
         size: Size(
-          140.w,
-          80.h,
+          130.w,
+          60.h,
         ),
         context: context);
   }
@@ -90,23 +93,44 @@ class _CustomMapMakerState extends ConsumerState<CustomMapMaker> {
   @override
   Widget build(BuildContext context) {
     // final id = ref.watch(selectMakerProvider);
-
-    return Material(
-      color: Colors.transparent,
-      child: Center(
-        child: Container(
-          width: 125.w,
-          height: 60.h,
-          alignment: Alignment.center,
-          child: CustomPaint(
-            painter: _CustomMapMakerPainter(
-              model: widget.model,
-              selected: widget.selected,
-            ),
-            size: Size(125.w, 60.h,),
+    final timeTextStyle = MITITextStyle.gameTimeMarkerStyle.copyWith(
+      color: widget.selected ? Colors.white : Colors.black,
+    );
+    final costTextStyle = MITITextStyle.feeMakerStyle.copyWith(
+      color: widget.selected ? Colors.white : Colors.black,
+    );
+    late final String marker;
+    if (widget.model.moreCnt > 1) {
+      marker = widget.selected ? 'selected_more_marker' : 'unselected_more_marker';
+    } else {
+      marker = widget.selected ? 'selected_marker' : 'unselected_marker';
+    }
+    return Stack(
+      children: [
+        Positioned(
+          bottom: 0,
+          child: SvgPicture.asset(
+            'assets/images/icon/$marker.svg',
           ),
         ),
-      ),
+        Positioned(
+          left: 35.5.w,
+          bottom: 12.h,
+          child: Column(
+            children: [
+              Text(
+                widget.model.time,
+                style: timeTextStyle,
+              ),
+              // SizedBox(height: 3.h),
+              Text(
+                widget.model.cost,
+                style: costTextStyle,
+              ),
+            ],
+          ),
+        )
+      ],
     );
   }
 }
