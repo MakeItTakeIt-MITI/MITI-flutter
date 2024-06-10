@@ -36,15 +36,40 @@ class GameUpdateScreen extends ConsumerStatefulWidget {
 
 class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
   late final ScrollController _scrollController;
+  final formKeys = [GlobalKey(), GlobalKey(), GlobalKey()];
+
+  late final List<FocusNode> focusNodes = [
+    FocusNode(),
+    FocusNode(),
+    FocusNode()
+  ];
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    for (int i = 0; i < 3; i++) {
+      focusNodes[i].addListener(() {
+        focusScrollable(i);
+      });
+    }
+  }
+
+  void focusScrollable(int i) {
+    Scrollable.ensureVisible(
+      formKeys[i].currentContext!,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
   void dispose() {
+    for (int i = 0; i < 3; i++) {
+      focusNodes[i].removeListener(() {
+        focusScrollable(i);
+      });
+    }
     _scrollController.dispose();
     super.dispose();
   }
@@ -59,6 +84,9 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bottomPadding = MediaQuery.of(context).viewInsets.bottom > 80.h
+        ? MediaQuery.of(context).viewInsets.bottom - 80.h
+        : 0.0;
     return DefaultLayout(
       bottomIdx: widget.bottomIdx,
       scrollController: _scrollController,
@@ -66,106 +94,114 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
         controller: _scrollController,
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
-            DefaultAppBar(
+            const DefaultAppBar(
               title: '경기 정보 수정',
               isSliver: true,
             ),
           ];
         },
-        body: CustomScrollView(
-          slivers: [
-            SliverFillRemaining(
-              child: Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  final result =
-                      ref.watch(gameDetailProvider(gameId: widget.gameId));
-                  if (result is LoadingModel) {
-                    return CircularProgressIndicator();
-                  } else if (result is ErrorModel) {
-                    GameError.fromModel(model: result)
-                        .responseError(context, GameApiType.get, ref);
-                    return Text('에러');
-                  }
-                  result as ResponseModel<GameDetailModel>;
-                  final model = result.data!;
-                  return Column(
-                    children: [
-                      SummaryComponent.fromDetailModel(model: model),
-                      getDivider(),
-                      _GameUpdateFormComponent(
-                        initMaxValue: model.max_invitation.toString(),
-                        initMinValue: model.min_invitation.toString(),
-                      ),
-                      getDivider(),
-                      _InfoComponent(
-                        info: model.info,
-                      ),
-                      const Spacer(),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16.w, vertical: 8.h),
-                        child: TextButton(
-                          onPressed: valid()
-                              ? () async {
-                                  final result = await ref.read(
-                                      gameUpdateProvider(gameId: widget.gameId)
-                                          .future);
-                                  if (result is ErrorModel) {
-                                    if (context.mounted) {
-                                      GameError.fromModel(model: result)
-                                          .responseError(
-                                              context, GameApiType.update, ref);
-                                    }
-                                  } else {
-                                    if (context.mounted) {
-                                      final extra = CustomDialog(
-                                        title: '경기 모집 정보 수정 완료',
-                                        content: '경기 정보가 정상적으로 수정되었습니다.',
-                                        onPressed: () {
-                                          Navigator.of(context,
-                                                  rootNavigator: true)
-                                              .pop('dialog');
-                                          Map<String, String> pathParameters = {
-                                            'gameId': widget.gameId.toString()
-                                          };
-                                          final Map<String, String>
-                                              queryParameters = {
-                                            'bottomIdx':
-                                                widget.bottomIdx.toString()
-                                          };
-                                          context.goNamed(
-                                            GameDetailScreen.routeName,
-                                            pathParameters: pathParameters,
-                                            queryParameters: queryParameters,
-                                          );
-                                        },
-                                      );
-                                      context.pushNamed(DialogPage.routeName,
-                                          extra: extra);
+        body: Padding(
+          padding:  EdgeInsets.only(bottom: bottomPadding),
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Consumer(
+                  builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                    final result =
+                        ref.watch(gameDetailProvider(gameId: widget.gameId));
+                    if (result is LoadingModel) {
+                      return CircularProgressIndicator();
+                    } else if (result is ErrorModel) {
+                      GameError.fromModel(model: result)
+                          .responseError(context, GameApiType.get, ref);
+                      return Text('에러');
+                    }
+                    result as ResponseModel<GameDetailModel>;
+                    final model = result.data!;
+                    return Column(
+                      children: [
+                        SummaryComponent.fromDetailModel(model: model),
+                        getDivider(),
+                        _GameUpdateFormComponent(
+                          initMaxValue: model.max_invitation.toString(),
+                          initMinValue: model.min_invitation.toString(),
+                          focusNodes: focusNodes,
+                          formKeys: formKeys,
+                        ),
+                        getDivider(),
+                        _InfoComponent(
+                          info: model.info,
+                          focusNodes: focusNodes,
+                          formKeys: formKeys,
+                        ),
+                        SizedBox(height: 80.h),
+                        // const Spacer(),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 16.w, vertical: 8.h),
+                          child: TextButton(
+                            onPressed: valid()
+                                ? () async {
+                                    final result = await ref.read(
+                                        gameUpdateProvider(gameId: widget.gameId)
+                                            .future);
+                                    if (result is ErrorModel) {
+                                      if (context.mounted) {
+                                        GameError.fromModel(model: result)
+                                            .responseError(
+                                                context, GameApiType.update, ref);
+                                      }
+                                    } else {
+                                      if (context.mounted) {
+                                        final extra = CustomDialog(
+                                          title: '경기 모집 정보 수정 완료',
+                                          content: '경기 정보가 정상적으로 수정되었습니다.',
+                                          onPressed: () {
+                                            Navigator.of(context,
+                                                    rootNavigator: true)
+                                                .pop('dialog');
+                                            Map<String, String> pathParameters = {
+                                              'gameId': widget.gameId.toString()
+                                            };
+                                            final Map<String, String>
+                                                queryParameters = {
+                                              'bottomIdx':
+                                                  widget.bottomIdx.toString()
+                                            };
+                                            context.goNamed(
+                                              GameDetailScreen.routeName,
+                                              pathParameters: pathParameters,
+                                              queryParameters: queryParameters,
+                                            );
+                                          },
+                                        );
+                                        context.pushNamed(DialogPage.routeName,
+                                            extra: extra);
+                                      }
                                     }
                                   }
-                                }
-                              : () {},
-                          style: TextButton.styleFrom(
-                              backgroundColor: valid()
-                                  ? const Color(0xFF4065F6)
-                                  : const Color(0xFFE8E8E8)),
-                          child: Text(
-                            '저장하기',
-                            style: MITITextStyle.btnTextBStyle.copyWith(
-                              color: valid()
-                                  ? Colors.white
-                                  : const Color(0xff969696),
+                                : () {},
+                            style: TextButton.styleFrom(
+                                backgroundColor: valid()
+                                    ? const Color(0xFF4065F6)
+                                    : const Color(0xFFE8E8E8)),
+                            child: Text(
+                              '저장하기',
+                              style: MITITextStyle.btnTextBStyle.copyWith(
+                                color: valid()
+                                    ? Colors.white
+                                    : const Color(0xff969696),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  );
-                },
+                      ],
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -182,9 +218,16 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
 class _GameUpdateFormComponent extends ConsumerStatefulWidget {
   final String initMaxValue;
   final String initMinValue;
+  final List<GlobalKey> formKeys;
+  final List<FocusNode> focusNodes;
 
-  const _GameUpdateFormComponent(
-      {super.key, required this.initMaxValue, required this.initMinValue});
+  const _GameUpdateFormComponent({
+    super.key,
+    required this.initMaxValue,
+    required this.initMinValue,
+    required this.formKeys,
+    required this.focusNodes,
+  });
 
   @override
   ConsumerState<_GameUpdateFormComponent> createState() =>
@@ -229,6 +272,8 @@ class _GameUpdateFormComponentState
             child: ApplyForm(
               initMaxValue: widget.initMaxValue,
               initMinValue: widget.initMinValue,
+              formKeys: widget.formKeys,
+              focusNodes: widget.focusNodes,
             ),
           ),
         ],
@@ -239,8 +284,15 @@ class _GameUpdateFormComponentState
 
 class _InfoComponent extends ConsumerStatefulWidget {
   final String info;
+  final List<GlobalKey> formKeys;
+  final List<FocusNode> focusNodes;
 
-  const _InfoComponent({super.key, required this.info});
+  const _InfoComponent({
+    super.key,
+    required this.info,
+    required this.formKeys,
+    required this.focusNodes,
+  });
 
   @override
   ConsumerState<_InfoComponent> createState() => _InfoComponentState();
@@ -274,6 +326,8 @@ class _InfoComponentState extends ConsumerState<_InfoComponent> {
               scrollDirection: Axis.vertical,
               reverse: true,
               child: TextFormField(
+                focusNode: widget.focusNodes[2],
+                key: widget.formKeys[2],
                 initialValue: widget.info,
                 maxLines: null,
                 textAlignVertical: TextAlignVertical.top,

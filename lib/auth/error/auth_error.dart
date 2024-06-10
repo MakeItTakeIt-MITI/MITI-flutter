@@ -182,14 +182,23 @@ class AuthError extends ErrorBase {
   void _signup(BuildContext context, WidgetRef ref) {
     if (this.status_code == BadRequest && this.error_code == 101) {
       /// 유효성 검증 실패
-      log('model.data = ${(model.data['phone'])}');
-      if ((model.data['phone'] as List<dynamic>).isNotEmpty) {
+      if (model.data['phone'] != null && (model.data['phone'] as List<dynamic>).isNotEmpty) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return const CustomDialog(
+                title: '회원가입 실패',
+                content: '이미 회원가입한 전화번호입니다.',
+              );
+            },
+          );
+      } else if (model.data['name'] != null && (model.data['name'] as List<dynamic>).isNotEmpty) {
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return const CustomDialog(
               title: '회원가입 실패',
-              content: '이미 회원가입한 전화번호입니다.',
+              content: '유효하지 않는 이름입니다.',
             );
           },
         );
@@ -690,26 +699,26 @@ class AuthError extends ErrorBase {
     }
   }
 
-  // void _findInfo(BuildContext context, WidgetRef ref) {
-  //   if (this.status_code == NotFound && this.error_code == 101) {
-  //     /// 일치 사용자 없음
-  //     ref
-  //         .read(interactionDescProvider(InteractionType.email).notifier)
-  //         .update((state) => InteractionDesc(
-  //               isSuccess: false,
-  //               desc: "일치하는 사용자 정보가 존재하지 않습니다.",
-  //             ));
-  //   } else {
-  //     /// 서버 오류
-  //     showDialog(
-  //       context: context,
-  //       builder: (BuildContext context) {
-  //         return const CustomDialog(
-  //           title: '사용자 조회 실패',
-  //           content: '서버가 불안정해 잠시후 다시 이용해주세요.',
-  //         );
-  //       },
-  //     );
-  //   }
-  // }
+// void _findInfo(BuildContext context, WidgetRef ref) {
+//   if (this.status_code == NotFound && this.error_code == 101) {
+//     /// 일치 사용자 없음
+//     ref
+//         .read(interactionDescProvider(InteractionType.email).notifier)
+//         .update((state) => InteractionDesc(
+//               isSuccess: false,
+//               desc: "일치하는 사용자 정보가 존재하지 않습니다.",
+//             ));
+//   } else {
+//     /// 서버 오류
+//     showDialog(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return const CustomDialog(
+//           title: '사용자 조회 실패',
+//           content: '서버가 불안정해 잠시후 다시 이용해주세요.',
+//         );
+//       },
+//     );
+//   }
+// }
 }

@@ -82,11 +82,11 @@ class _ReviewScreenState extends State<ReviewScreen> {
             )
           ];
         },
-        body: CustomScrollView(
-          slivers: [
-            SliverPadding(
-              padding: EdgeInsets.only(bottom: bottomPadding),
-              sliver: SliverToBoxAdapter(
+        body: Padding(
+          padding: EdgeInsets.only(bottom: bottomPadding),
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
                 child: Column(
                   children: [
                     _PlayerComponent(
@@ -145,8 +145,8 @@ class _ReviewScreenState extends State<ReviewScreen> {
                   ],
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

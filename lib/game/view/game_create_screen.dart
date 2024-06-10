@@ -43,6 +43,12 @@ class GameCreateScreen extends ConsumerStatefulWidget {
 
 class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
   late final ScrollController _scrollController;
+  final formKeys = [GlobalKey(), GlobalKey()];
+
+  late final List<FocusNode> focusNodes = [
+    FocusNode(),
+    FocusNode(),
+  ];
 
   @override
   void initState() {
@@ -58,6 +64,9 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bottomPadding = MediaQuery.of(context).viewInsets.bottom > 80.h
+        ? MediaQuery.of(context).viewInsets.bottom - 80.h
+        : 0.0;
     return DefaultLayout(
       bottomIdx: widget.bottomIdx,
       scrollController: _scrollController,
@@ -75,6 +84,7 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
           padding: EdgeInsets.only(
             left: 16.w,
             right: 16.w,
+            bottom: bottomPadding,
           ),
           child: CustomScrollView(
             slivers: <Widget>[
@@ -98,7 +108,11 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
               getSpacer(),
               const _AddressForm(),
               getSpacer(),
-              const SliverToBoxAdapter(child: ApplyForm()),
+              SliverToBoxAdapter(
+                  child: ApplyForm(
+                formKeys: formKeys,
+                focusNodes: focusNodes,
+              )),
               getSpacer(),
               const _FeeForm(),
               getSpacer(),
@@ -118,8 +132,8 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
                                 if (context.mounted) {
                                   if (result is ErrorModel) {
                                     GameError.fromModel(model: result)
-                                        .responseError(
-                                            context, GameApiType.createGame, ref);
+                                        .responseError(context,
+                                            GameApiType.createGame, ref);
                                   } else {
                                     final model = result
                                         as ResponseModel<GameDetailModel>;
@@ -448,11 +462,15 @@ class _AddressFormState extends ConsumerState<_AddressForm> {
 class ApplyForm extends ConsumerWidget {
   final String? initMaxValue;
   final String? initMinValue;
+  final List<GlobalKey> formKeys;
+  final List<FocusNode> focusNodes;
 
   const ApplyForm({
     super.key,
     this.initMaxValue,
     this.initMinValue,
+    required this.formKeys,
+    required this.focusNodes,
   });
 
   @override
@@ -471,6 +489,8 @@ class ApplyForm extends ConsumerWidget {
             children: [
               Flexible(
                 child: CustomTextFormField(
+                  focusNode: focusNodes[0],
+                  key: formKeys[0],
                   initialValue: initMaxValue,
                   hintText: '0',
                   label: '총 모집 인원',
@@ -494,6 +514,8 @@ class ApplyForm extends ConsumerWidget {
               SizedBox(width: 17.w),
               Flexible(
                 child: CustomTextFormField(
+                  focusNode: focusNodes[1],
+                  key: formKeys[1],
                   initialValue: initMinValue,
                   hintText: '0',
                   label: '최소 모집 인원',
