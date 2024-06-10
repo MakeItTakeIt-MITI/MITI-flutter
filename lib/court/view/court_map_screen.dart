@@ -108,16 +108,6 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
       }
     });
 
-
-    // if (_mapController != null) {
-    //   if (response is LoadingModel) {
-    //   } else if (response is ErrorModel) {
-    //   } else {
-    //
-    //     refreshMarker(response);
-    //   }
-    // }
-
     // log('position = ${position}');
     return Stack(
       children: [
@@ -131,6 +121,23 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
           ),
           onMapReady: (controller) async {
             log('controller Map Loading');
+
+            /// marker를 이미지로 생성할 시 준비과정 중 사용할 이미지들을 캐싱 필요
+            /// 하지 않을 경우 사용하지 않은 이미지를 사용할 때 캐싱되지 않아 display 되지 않음
+            final Set<NAddableOverlay> cacheImageMarker = {};
+            for (int i = 0; i < 4; i++) {
+              final marker = await CustomMarker(
+                      model: MapMarkerModel(
+                          id: i,
+                          time: '',
+                          cost: '',
+                          moreCnt: i % 2 == 0 ? 2 : 1,
+                          latitude: 120,
+                          longitude: 35))
+                  .getMarker(context, selected: i > 1 );
+              cacheImageMarker.add(marker);
+            }
+            await controller.addOverlayAll(cacheImageMarker);
             _mapController = controller;
           },
         ),
@@ -400,9 +407,8 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     futureMarkerList.map((e) async {
       return await e;
     });
-    if(_mapController!=null){
+    if (_mapController != null) {
       await _mapController?.addOverlayAll(allOverlay);
-
     }
   }
 }
