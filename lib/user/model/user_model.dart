@@ -51,10 +51,10 @@ class UserInfoModel extends LoginModel {
 class UserModel extends IModelWithId {
   final String email;
   final String nickname;
-  final String name;
+  final String? name;
   final String? birthday;
-  final String phone;
-  final String? oauth;
+  final String? phone;
+  final OauthType? oauth;
   final AccountModel account;
   final RatingModel rating;
 
@@ -80,7 +80,7 @@ class UserModel extends IModelWithId {
     String? name,
     String? birthday,
     String? phone,
-    String? oauth,
+    OauthType? oauth,
     AccountModel? account,
     RatingModel? rating,
   }) {

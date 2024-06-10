@@ -23,33 +23,35 @@ class ErrorScreen extends StatelessWidget {
       case ErrorScreenType.server:
         content = '서버가 불안정해 잠시후 다시 이용해주세요.';
     }
-    return NestedScrollView(
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return [
-          const DefaultAppBar(
-            isSliver: true,
-            title: '오류',
-          )
-        ];
-      },
-      body: CustomScrollView(
-        slivers: [
-          SliverFillRemaining(
-            child: Padding(
-              padding: EdgeInsets.all(12.r),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    content,
-                    style: MITITextStyle.pageMainTextStyle,
-                  ),
-                ],
+    return Scaffold(
+      body: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            const DefaultAppBar(
+              isSliver: true,
+              title: '오류',
+            )
+          ];
+        },
+        body: CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              child: Padding(
+                padding: EdgeInsets.all(12.r),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      content,
+                      style: MITITextStyle.pageMainTextStyle,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
