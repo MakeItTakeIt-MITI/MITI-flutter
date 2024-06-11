@@ -57,9 +57,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
   void initState() {
     super.initState();
     log('page init!!');
-
     _draggableScrollableController = DraggableScrollableController();
-    getLocation();
   }
 
   @override
@@ -70,44 +68,37 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
 
   Future<void> getLocation() async {
     LocationPermission permission = await Geolocator.checkPermission();
-    // final permission = await _permission();
     log('permission = $permission');
     if (permission == LocationPermission.whileInUse ||
         permission == LocationPermission.always) {
-      try {
-        Position position = await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.high);
-        ref.read(positionProvider.notifier).update((state) => position);
-        _mapController?.updateCamera(NCameraUpdate.scrollAndZoomTo(
-            target: NLatLng(
-          position.latitude,
-          position.longitude,
-        )));
-      } catch (e) {
-        print(e);
-      }
+      await transitionMap();
     } else if (permission == LocationPermission.unableToDetermine) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.whileInUse ||
           permission == LocationPermission.always) {
-        try {
-          Position position = await Geolocator.getCurrentPosition(
-              desiredAccuracy: LocationAccuracy.high);
-          ref.read(positionProvider.notifier).update((state) => position);
-          _mapController?.updateCamera(NCameraUpdate.scrollAndZoomTo(
-              target: NLatLng(
-            position.latitude,
-            position.longitude,
-          )));
-        } catch (e) {
-          print(e);
-        }
+        await transitionMap();
       }
     } else {
       if (mounted) {
         ref.read(positionProvider.notifier).update((state) => null);
-        // context.goNamed(PermissionScreen.routeName);
       }
+    }
+  }
+
+  Future<void> transitionMap() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      ref.read(positionProvider.notifier).update((state) => position);
+      await _mapController!
+          .setLocationTrackingMode(NLocationTrackingMode.follow);
+      await _mapController?.updateCamera(NCameraUpdate.scrollAndZoomTo(
+          target: NLatLng(
+        position.latitude,
+        position.longitude,
+      )));
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -127,10 +118,6 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
             },
           );
         });
-  }
-
-  Future<void> requestGPS() async {
-
   }
 
   Future<bool> _permission() async {
@@ -155,23 +142,10 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
       print("isDenied");
       _showPermissionDialog();
       return false;
-    }
-    print("requestStatus ${requestStatus.name}");
-    print("status ${status.name}");
-    // final storage = ref.read(secureStorageProvider);
-    // await storage.write(key: 'firstJoin', value: 'true');
-
-    try {
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-      ref.read(positionProvider.notifier).update((state) => position);
-      _mapController?.updateCamera(NCameraUpdate.scrollAndZoomTo(
-          target: NLatLng(
-        position.latitude,
-        position.longitude,
-      )));
-    } catch (e) {
-      print(e);
+    } else {
+      print("requestStatus ${requestStatus.name}");
+      print("status ${status.name}");
+      await transitionMap();
     }
     return true;
   }
@@ -201,44 +175,36 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     // log('position = ${position}');
     return Stack(
       children: [
-        // if (position != null)
-        Column(
-          children: [
-            Expanded(
-              child: NaverMap(
-                options: const NaverMapViewOptions(
-                  locationButtonEnable: true,
-                  initialCameraPosition: NCameraPosition(
-                    target: NLatLng(37.5666, 126.979),
-                    zoom: 15,
-                  ),
-                  locale: Locale('ko'),
-                ),
-                onMapReady: (controller) async {
-                  log('controller Map Loading');
-              
-                  /// marker를 이미지로 생성할 시 준비과정 중 사용할 이미지들을 캐싱 필요
-                  /// 하지 않을 경우 사용하지 않은 이미지를 사용할 때 캐싱되지 않아 display 되지 않음
-                  final Set<NAddableOverlay> cacheImageMarker = {};
-                  for (int i = 0; i < 4; i++) {
-                    final marker = await CustomMarker(
-                            model: MapMarkerModel(
-                                id: i,
-                                time: '',
-                                cost: '',
-                                moreCnt: i % 2 == 0 ? 2 : 1,
-                                latitude: 120,
-                                longitude: 35))
-                        .getMarker(context, selected: i > 1);
-                    cacheImageMarker.add(marker);
-                  }
-                  await controller.addOverlayAll(cacheImageMarker);
-                  _mapController = controller;
-                },
-              ),
+        NaverMap(
+          options: const NaverMapViewOptions(
+            initialCameraPosition: NCameraPosition(
+              target: NLatLng(37.5666, 126.979),
+              zoom: 15,
             ),
-            SizedBox(height: MediaQuery.of(context).size.height * 0.12,)
-          ],
+            locale: Locale('ko'),
+          ),
+          onMapReady: (controller) async {
+            log('controller Map Loading');
+
+            /// marker를 이미지로 생성할 시 준비과정 중 사용할 이미지들을 캐싱 필요
+            /// 하지 않을 경우 사용하지 않은 이미지를 사용할 때 캐싱되지 않아 display 되지 않음
+            final Set<NAddableOverlay> cacheImageMarker = {};
+            for (int i = 0; i < 4; i++) {
+              final marker = await CustomMarker(
+                      model: MapMarkerModel(
+                          id: i,
+                          time: '',
+                          cost: '',
+                          moreCnt: i % 2 == 0 ? 2 : 1,
+                          latitude: 120,
+                          longitude: 35))
+                  .getMarker(context, selected: i > 1);
+              cacheImageMarker.add(marker);
+            }
+            await controller.addOverlayAll(cacheImageMarker);
+            _mapController = controller;
+            getLocation();
+          },
         ),
         Positioned(
           left: 10.w,
@@ -250,14 +216,13 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
                   color: Colors.grey,
                 )),
             child: IconButton(
-              onPressed: () {
-                if (position == null){
+              onPressed: () async {
+                if (position == null) {
                   _permission();
-                  _mapController!.setLocationTrackingMode(NLocationTrackingMode.follow);
-
-                }else{
+                } else {
                   ref.read(positionProvider.notifier).update((state) => null);
-                  _mapController!.setLocationTrackingMode(NLocationTrackingMode.none);
+                  await _mapController!
+                      .setLocationTrackingMode(NLocationTrackingMode.none);
                 }
               },
               icon: Icon(
