@@ -109,25 +109,27 @@ class _CustomMapMakerState extends ConsumerState<CustomMapMaker> {
       children: [
         Positioned(
           bottom: 0,
+          left: 0,
           child: SvgPicture.asset(
             'assets/images/icon/$marker.svg',
+            height: 52.h,
+            width: 119.w,
+          ),
+        ),
+        Positioned(
+          left: 35.5.w,
+          bottom: 29.h,
+          child: Text(
+            widget.model.time,
+            style: timeTextStyle,
           ),
         ),
         Positioned(
           left: 35.5.w,
           bottom: 12.h,
-          child: Column(
-            children: [
-              Text(
-                widget.model.time,
-                style: timeTextStyle,
-              ),
-              // SizedBox(height: 3.h),
-              Text(
-                widget.model.cost,
-                style: costTextStyle,
-              ),
-            ],
+          child: Text(
+            widget.model.cost,
+            style: costTextStyle,
           ),
         )
       ],

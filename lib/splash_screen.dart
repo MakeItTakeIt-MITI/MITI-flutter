@@ -9,6 +9,7 @@ import 'package:lottie/lottie.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/common/provider/secure_storage_provider.dart';
 import 'package:miti/permission_screen.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   static String get routeName => 'splash';
@@ -31,11 +32,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> startApp() async {
-    // final storage = ref.read(secureStorageProvider);
-    // final first = await storage.read(key: 'firstJoin');
     permissionBox = Hive.box('permission');
     final display = permissionBox.get('permission');
-    if (display == null) {
+    // final display = await _permission();
+    if (display == null || !display) {
       if (mounted) {
         context.goNamed(PermissionScreen.routeName);
       }
@@ -45,6 +45,33 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       });
     }
   }
+
+  Future<bool> _permission() async {
+    var requestStatus = await Permission.location.request();
+    var status = await Permission.location.status;
+    log('requestStatus = $requestStatus, status = $status');
+
+    if (requestStatus.isPermanentlyDenied ||
+        status.isPermanentlyDenied) {
+      // 권한 요청 거부, 해당 권한에 대한 요청에 대해 다시 묻지 않음 선택하여 설정화면에서 변경해야함. android
+      print("isPermanentlyDenied");
+      return false;
+    } else if (status.isRestricted) {
+      // 권한 요청 거부, 해당 권한에 대한 요청을 표시하지 않도록 선택하여 설정화면에서 변경해야함. ios
+      print("isRestricted");
+      return false;
+    } else if (status.isDenied) {
+      // 권한 요청 거절
+      print("isDenied");
+      return false;
+    }
+    print("requestStatus ${requestStatus.name}");
+    print("status ${status.name}");
+    // final storage = ref.read(secureStorageProvider);
+    // await storage.write(key: 'firstJoin', value: 'true');
+    return true;
+  }
+
 
   @override
   void dispose() {

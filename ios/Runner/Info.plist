@@ -96,16 +96,14 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
-
-		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    	<string>지도 경기장 확인을 위해 위치 추적 허용을 해주세요.</string>
-    	<key>NSLocationAlwaysUsageDescription</key>
-    	<string>지도 경기장 확인을 위해 위치 추적 허용을 해주세요.</string>
-    	<key>NSLocationUsageDescription</key>
-    	<string>지도 경기장 확인을 위해 위치 추적 허용을 해주세요.</string>
-    	<key>NSLocationWhenInUseUsageDescription</key>
-    	<string>지도 경기장 확인을 위해 위치 추적 허용을 해주세요.</string>
-
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>지도 경기장 확인을 위해 위치 추적 허용을 해주세요.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>지도 경기장 확인을 위해 위치 추적 허용을 해주세요.</string>
+	<key>NSLocationUsageDescription</key>
+	<string>지도 경기장 확인을 위해 위치 추적 허용을 해주세요.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>지도 경기장 확인을 위해 위치 추적 허용을 해주세요.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>

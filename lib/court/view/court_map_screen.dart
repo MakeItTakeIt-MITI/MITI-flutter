@@ -23,6 +23,7 @@ import 'package:collection/collection.dart';
 import '../../common/model/entity_enum.dart';
 import '../../game/model/game_model.dart';
 import '../../game/view/game_detail_screen.dart';
+import '../../permission_screen.dart';
 import '../model/court_model.dart';
 
 final selectGameListProvider =
@@ -67,10 +68,16 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
   }
 
   void getLocation() async {
-    LocationPermission permission = await Geolocator.checkPermission();
-    // print(permission);
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
+    // LocationPermission permission = await Geolocator.checkPermission();
+    final permission = await _permission();
+    log('permission = $permission');
+    if (!permission) {
+      if (mounted) {
+        ref.read(positionProvider.notifier).update((state) => null);
+        context.goNamed(PermissionScreen.routeName);
+      }
+
+      // permission = await Geolocator.requestPermission();
     }
     try {
       Position position = await Geolocator.getCurrentPosition(
@@ -84,6 +91,31 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     } catch (e) {
       print(e);
     }
+  }
+
+  Future<bool> _permission() async {
+    var requestStatus = await Permission.location.request();
+    var status = await Permission.location.status;
+    log('requestStatus = $requestStatus, status = $status');
+
+    if (requestStatus.isPermanentlyDenied || status.isPermanentlyDenied) {
+      // 권한 요청 거부, 해당 권한에 대한 요청에 대해 다시 묻지 않음 선택하여 설정화면에서 변경해야함. android
+      print("isPermanentlyDenied");
+      return false;
+    } else if (status.isRestricted) {
+      // 권한 요청 거부, 해당 권한에 대한 요청을 표시하지 않도록 선택하여 설정화면에서 변경해야함. ios
+      print("isRestricted");
+      return false;
+    } else if (status.isDenied) {
+      // 권한 요청 거절
+      print("isDenied");
+      return false;
+    }
+    print("requestStatus ${requestStatus.name}");
+    print("status ${status.name}");
+    // final storage = ref.read(secureStorageProvider);
+    // await storage.write(key: 'firstJoin', value: 'true');
+    return true;
   }
 
   @override
@@ -111,6 +143,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     // log('position = ${position}');
     return Stack(
       children: [
+        if (position != null)
         NaverMap(
           options: const NaverMapViewOptions(
             initialCameraPosition: NCameraPosition(
@@ -134,7 +167,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
                           moreCnt: i % 2 == 0 ? 2 : 1,
                           latitude: 120,
                           longitude: 35))
-                  .getMarker(context, selected: i > 1 );
+                  .getMarker(context, selected: i > 1);
               cacheImageMarker.add(marker);
             }
             await controller.addOverlayAll(cacheImageMarker);
