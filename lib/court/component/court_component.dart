@@ -22,8 +22,8 @@ class CustomMarker {
           selected: selected,
         ),
         size: Size(
-          130.w,
-          60.h,
+          130.r,
+          60.r,
         ),
         context: context);
     return NMarker(
@@ -40,8 +40,8 @@ class CustomMarker {
           selected: selected,
         ),
         size: Size(
-          130.w,
-          60.h,
+          130.r,
+          60.r,
         ),
         context: context);
   }
@@ -94,39 +94,43 @@ class _CustomMapMakerState extends ConsumerState<CustomMapMaker> {
   Widget build(BuildContext context) {
     // final id = ref.watch(selectMakerProvider);
     final timeTextStyle = MITITextStyle.gameTimeMarkerStyle.copyWith(
+      fontSize: 10.r,
+
       color: widget.selected ? Colors.white : Colors.black,
     );
     final costTextStyle = MITITextStyle.feeMakerStyle.copyWith(
+      fontSize: 12.r,
       color: widget.selected ? Colors.white : Colors.black,
     );
     late final String marker;
     if (widget.model.moreCnt > 1) {
-      marker = widget.selected ? 'selected_more_marker' : 'unselected_more_marker';
+      marker =
+          widget.selected ? 'selected_more_marker' : 'unselected_more_marker';
     } else {
       marker = widget.selected ? 'selected_marker' : 'unselected_marker';
     }
+
     return Stack(
       children: [
         Positioned(
           bottom: 0,
-          left: 0,
           child: SvgPicture.asset(
             'assets/images/icon/$marker.svg',
-            height: 52.h,
-            width: 119.w,
+            height: widget.model.moreCnt > 1 ? 52.r : 45.r,
+            width: widget.model.moreCnt > 1 ? 119.r : 111.r,
           ),
         ),
         Positioned(
-          left: 35.5.w,
-          bottom: 29.h,
+          left: 35.5.r,
+          bottom: 29.r,
           child: Text(
             widget.model.time,
             style: timeTextStyle,
           ),
         ),
         Positioned(
-          left: 35.5.w,
-          bottom: 12.h,
+          left: 35.5.r,
+          bottom: 12.r,
           child: Text(
             widget.model.cost,
             style: costTextStyle,
