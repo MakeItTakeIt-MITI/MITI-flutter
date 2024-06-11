@@ -202,35 +202,43 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     return Stack(
       children: [
         // if (position != null)
-        NaverMap(
-          options: const NaverMapViewOptions(
-            initialCameraPosition: NCameraPosition(
-              target: NLatLng(37.5666, 126.979),
-              zoom: 15,
+        Column(
+          children: [
+            Expanded(
+              child: NaverMap(
+                options: const NaverMapViewOptions(
+                  locationButtonEnable: true,
+                  initialCameraPosition: NCameraPosition(
+                    target: NLatLng(37.5666, 126.979),
+                    zoom: 15,
+                  ),
+                  locale: Locale('ko'),
+                ),
+                onMapReady: (controller) async {
+                  log('controller Map Loading');
+              
+                  /// marker를 이미지로 생성할 시 준비과정 중 사용할 이미지들을 캐싱 필요
+                  /// 하지 않을 경우 사용하지 않은 이미지를 사용할 때 캐싱되지 않아 display 되지 않음
+                  final Set<NAddableOverlay> cacheImageMarker = {};
+                  for (int i = 0; i < 4; i++) {
+                    final marker = await CustomMarker(
+                            model: MapMarkerModel(
+                                id: i,
+                                time: '',
+                                cost: '',
+                                moreCnt: i % 2 == 0 ? 2 : 1,
+                                latitude: 120,
+                                longitude: 35))
+                        .getMarker(context, selected: i > 1);
+                    cacheImageMarker.add(marker);
+                  }
+                  await controller.addOverlayAll(cacheImageMarker);
+                  _mapController = controller;
+                },
+              ),
             ),
-            locale: Locale('ko'),
-          ),
-          onMapReady: (controller) async {
-            log('controller Map Loading');
-
-            /// marker를 이미지로 생성할 시 준비과정 중 사용할 이미지들을 캐싱 필요
-            /// 하지 않을 경우 사용하지 않은 이미지를 사용할 때 캐싱되지 않아 display 되지 않음
-            final Set<NAddableOverlay> cacheImageMarker = {};
-            for (int i = 0; i < 4; i++) {
-              final marker = await CustomMarker(
-                      model: MapMarkerModel(
-                          id: i,
-                          time: '',
-                          cost: '',
-                          moreCnt: i % 2 == 0 ? 2 : 1,
-                          latitude: 120,
-                          longitude: 35))
-                  .getMarker(context, selected: i > 1);
-              cacheImageMarker.add(marker);
-            }
-            await controller.addOverlayAll(cacheImageMarker);
-            _mapController = controller;
-          },
+            SizedBox(height: MediaQuery.of(context).size.height * 0.12,)
+          ],
         ),
         Positioned(
           left: 10.w,
@@ -245,8 +253,11 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
               onPressed: () {
                 if (position == null){
                   _permission();
+                  _mapController!.setLocationTrackingMode(NLocationTrackingMode.follow);
+
                 }else{
                   ref.read(positionProvider.notifier).update((state) => null);
+                  _mapController!.setLocationTrackingMode(NLocationTrackingMode.none);
                 }
               },
               icon: Icon(
