@@ -11,6 +11,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/court/component/court_component.dart';
 import 'package:miti/game/component/game_state_label.dart';
@@ -67,7 +68,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     super.dispose();
   }
 
-  void getLocation() async {
+  Future<void> getLocation() async {
     LocationPermission permission = await Geolocator.checkPermission();
     // final permission = await _permission();
     log('permission = $permission');
@@ -79,14 +80,12 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
         ref.read(positionProvider.notifier).update((state) => position);
         _mapController?.updateCamera(NCameraUpdate.scrollAndZoomTo(
             target: NLatLng(
-              position.latitude,
-              position.longitude,
-            )));
+          position.latitude,
+          position.longitude,
+        )));
       } catch (e) {
         print(e);
       }
-
-
     } else if (permission == LocationPermission.unableToDetermine) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.whileInUse ||
@@ -97,19 +96,41 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
           ref.read(positionProvider.notifier).update((state) => position);
           _mapController?.updateCamera(NCameraUpdate.scrollAndZoomTo(
               target: NLatLng(
-                position.latitude,
-                position.longitude,
-              )));
+            position.latitude,
+            position.longitude,
+          )));
         } catch (e) {
           print(e);
         }
       }
-    }else{
+    } else {
       if (mounted) {
         ref.read(positionProvider.notifier).update((state) => null);
         // context.goNamed(PermissionScreen.routeName);
       }
     }
+  }
+
+  void _showPermissionDialog() {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return CustomDialog(
+            title: '위치 허용',
+            content: '위치 서비스를 이용할 수 없습니다.\n위치 서비스를 켜주세요.',
+            onPressed: () async {
+              await openAppSettings();
+              await getLocation();
+              if (mounted) {
+                context.pop();
+              }
+            },
+          );
+        });
+  }
+
+  Future<void> requestGPS() async {
+
   }
 
   Future<bool> _permission() async {
@@ -120,20 +141,38 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     if (requestStatus.isPermanentlyDenied || status.isPermanentlyDenied) {
       // 권한 요청 거부, 해당 권한에 대한 요청에 대해 다시 묻지 않음 선택하여 설정화면에서 변경해야함. android
       print("isPermanentlyDenied");
+      _showPermissionDialog();
+
       return false;
     } else if (status.isRestricted) {
       // 권한 요청 거부, 해당 권한에 대한 요청을 표시하지 않도록 선택하여 설정화면에서 변경해야함. ios
       print("isRestricted");
+      _showPermissionDialog();
+
       return false;
     } else if (status.isDenied) {
       // 권한 요청 거절
       print("isDenied");
+      _showPermissionDialog();
       return false;
     }
     print("requestStatus ${requestStatus.name}");
     print("status ${status.name}");
     // final storage = ref.read(secureStorageProvider);
     // await storage.write(key: 'firstJoin', value: 'true');
+
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      ref.read(positionProvider.notifier).update((state) => position);
+      _mapController?.updateCamera(NCameraUpdate.scrollAndZoomTo(
+          target: NLatLng(
+        position.latitude,
+        position.longitude,
+      )));
+    } catch (e) {
+      print(e);
+    }
     return true;
   }
 
@@ -163,36 +202,61 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     return Stack(
       children: [
         // if (position != null)
-          NaverMap(
-            options: const NaverMapViewOptions(
-              initialCameraPosition: NCameraPosition(
-                target: NLatLng(37.5666, 126.979),
-                zoom: 15,
-              ),
-              locale: Locale('ko'),
+        NaverMap(
+          options: const NaverMapViewOptions(
+            initialCameraPosition: NCameraPosition(
+              target: NLatLng(37.5666, 126.979),
+              zoom: 15,
             ),
-            onMapReady: (controller) async {
-              log('controller Map Loading');
-
-              /// marker를 이미지로 생성할 시 준비과정 중 사용할 이미지들을 캐싱 필요
-              /// 하지 않을 경우 사용하지 않은 이미지를 사용할 때 캐싱되지 않아 display 되지 않음
-              final Set<NAddableOverlay> cacheImageMarker = {};
-              for (int i = 0; i < 4; i++) {
-                final marker = await CustomMarker(
-                        model: MapMarkerModel(
-                            id: i,
-                            time: '',
-                            cost: '',
-                            moreCnt: i % 2 == 0 ? 2 : 1,
-                            latitude: 120,
-                            longitude: 35))
-                    .getMarker(context, selected: i > 1);
-                cacheImageMarker.add(marker);
-              }
-              await controller.addOverlayAll(cacheImageMarker);
-              _mapController = controller;
-            },
+            locale: Locale('ko'),
           ),
+          onMapReady: (controller) async {
+            log('controller Map Loading');
+
+            /// marker를 이미지로 생성할 시 준비과정 중 사용할 이미지들을 캐싱 필요
+            /// 하지 않을 경우 사용하지 않은 이미지를 사용할 때 캐싱되지 않아 display 되지 않음
+            final Set<NAddableOverlay> cacheImageMarker = {};
+            for (int i = 0; i < 4; i++) {
+              final marker = await CustomMarker(
+                      model: MapMarkerModel(
+                          id: i,
+                          time: '',
+                          cost: '',
+                          moreCnt: i % 2 == 0 ? 2 : 1,
+                          latitude: 120,
+                          longitude: 35))
+                  .getMarker(context, selected: i > 1);
+              cacheImageMarker.add(marker);
+            }
+            await controller.addOverlayAll(cacheImageMarker);
+            _mapController = controller;
+          },
+        ),
+        Positioned(
+          left: 10.w,
+          bottom: MediaQuery.of(context).size.height * 0.14,
+          child: Container(
+            decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: Colors.grey,
+                )),
+            child: IconButton(
+              onPressed: () {
+                if (position == null){
+                  _permission();
+                }else{
+                  ref.read(positionProvider.notifier).update((state) => null);
+                }
+              },
+              icon: Icon(
+                Icons.gps_fixed,
+                color:
+                    position != null ? const Color(0xFF4065F6) : Colors.black54,
+              ),
+            ),
+          ),
+        ),
         DraggableScrollableSheet(
           initialChildSize: 0.12,
           maxChildSize: 0.9,

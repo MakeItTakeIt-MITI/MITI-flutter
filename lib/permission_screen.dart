@@ -60,25 +60,23 @@ class _PermissionScreenState extends ConsumerState<PermissionScreen> {
 
         print("serviceStatusIsEnabled position = ${position.toString()}");
 
-        if (mounted) {
-          context.goNamed(CourtMapScreen.routeName);
-        }
+
       } else {
         // 요청 동의 + gps 꺼짐
         await _permissionBox.put('permission', true);
 
-        if (mounted) {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return const CustomDialog(
-                title: 'gps',
-                content: '현재 gps가 꺼져 있습니다.\n경기장 지도 조회를 위해 gps를 켜주세요.',
-              );
-            },
-          );
-          context.goNamed(CourtMapScreen.routeName);
-        }
+        // if (mounted) {
+        //   showDialog(
+        //     context: context,
+        //     builder: (BuildContext context) {
+        //       return const CustomDialog(
+        //         title: 'gps',
+        //         content: '현재 gps가 꺼져 있습니다.\n경기장 지도 조회를 위해 gps를 켜주세요.',
+        //       );
+        //     },
+        //   );
+        //   context.goNamed(CourtMapScreen.routeName);
+        // }
 
         print("serviceStatusIsDisabled");
       }
@@ -88,13 +86,13 @@ class _PermissionScreenState extends ConsumerState<PermissionScreen> {
       print("isPermanentlyDenied");
       await _permissionBox.put('permission', false);
 
-      await openAppSettings();
+      // await openAppSettings();
     } else if (status.isRestricted) {
       // 권한 요청 거부, 해당 권한에 대한 요청을 표시하지 않도록 선택하여 설정화면에서 변경해야함. ios
       print("isRestricted");
       await _permissionBox.put('permission', false);
 
-      await openAppSettings();
+      // await openAppSettings();
     } else if (status.isDenied) {
       // 권한 요청 거절
       await _permissionBox.put('permission', false);
@@ -105,6 +103,10 @@ class _PermissionScreenState extends ConsumerState<PermissionScreen> {
     print("status ${status.name}");
     // final storage = ref.read(secureStorageProvider);
     // await storage.write(key: 'firstJoin', value: 'true');
+
+    if (mounted) {
+      context.goNamed(CourtMapScreen.routeName);
+    }
   }
 
   @override
@@ -151,7 +153,7 @@ class _PermissionScreenState extends ConsumerState<PermissionScreen> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            '위치(필수)',
+                            '위치(선택)',
                             style: MITITextStyle.pageSubTextStyle.copyWith(
                               color: const Color(0xff1c1c1c),
                             ),
