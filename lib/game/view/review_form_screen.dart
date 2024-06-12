@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -245,20 +246,41 @@ class _RatingForm extends StatelessWidget {
             ),
           ),
           SizedBox(height: 12.r),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              getStarForm(1),
-              SizedBox(width: 10.w),
-              getStarForm(2),
-              SizedBox(width: 10.w),
-              getStarForm(3),
-              SizedBox(width: 10.w),
-              getStarForm(4),
-              SizedBox(width: 10.w),
-              getStarForm(5),
-            ],
+          Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              return Center(
+                child: RatingBar(
+                  ratingWidget: RatingWidget(
+                    full: SvgPicture.asset(
+                      'assets/images/icon/fill_star2.svg',
+                      height: 40.r,
+                      width: 40.r,
+                    ),
+                    half: SvgPicture.asset(
+                      'assets/images/icon/fill_star2.svg',
+                      height: 40.r,
+                      width: 40.r,
+                    ),
+                    empty: SvgPicture.asset(
+                      'assets/images/icon/unfill_star2.svg',
+                      height: 40.r,
+                      width: 40.r,
+                    ),
+                  ),
+                  itemSize: 42.r,
+                  glowColor: const Color(0xffffadd0c),
+                  itemPadding: EdgeInsets.symmetric(horizontal: 5.w),
+                  onRatingUpdate: (v) {
+                    ref
+                        .read(reviewFormProvider.notifier)
+                        .updateRating((v.toInt()));
+                  },
+
+                ),
+              );
+            },
           ),
+
         ],
       ),
     );
