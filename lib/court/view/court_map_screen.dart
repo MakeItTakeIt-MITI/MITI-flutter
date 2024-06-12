@@ -49,7 +49,9 @@ final positionProvider = StateProvider.autoDispose<Position?>((ref) => null);
 class _HomeScreenState extends ConsumerState<CourtMapScreen>
     with AutomaticKeepAliveClientMixin {
   late final DraggableScrollableController _draggableScrollableController;
+  late final ScrollController _dayScrollController;
   NaverMapController? _mapController;
+  final List<GlobalKey> dayKeys = [];
 
   @override
   bool get wantKeepAlive => true; //override with True.
@@ -58,6 +60,10 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     super.initState();
     log('page init!!');
     _draggableScrollableController = DraggableScrollableController();
+    for (int i = 0; i < 14; i++) {
+      dayKeys.add(GlobalKey());
+    }
+    _dayScrollController = ScrollController();
   }
 
   @override
@@ -270,6 +276,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
                         ),
                         SizedBox(height: 12.h),
                         SingleChildScrollView(
+                          controller: _dayScrollController,
                           scrollDirection: Axis.horizontal,
                           child: Container(
                             padding: EdgeInsets.symmetric(horizontal: 12.w),
@@ -281,6 +288,10 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
                                       DateBox(
                                         day: DateTime.parse(day[idx][0]),
                                         dayOfWeek: day[idx][1],
+                                        gKey: dayKeys[idx],
+                                        onTap: () {
+                                          selectDay(day, idx);
+                                        },
                                       ),
                                       if (idx != day.length - 1)
                                         SizedBox(width: 16.w),
@@ -291,23 +302,6 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
                             ),
                           ),
                         ),
-                        // SizedBox(
-                        //   height: 60.h,
-                        //   child: ListView.separated(
-                        //       padding: EdgeInsets.symmetric(horizontal: 12.w),
-                        //       scrollDirection: Axis.horizontal,
-                        //       shrinkWrap: true,
-                        //       itemBuilder: (_, idx) {
-                        //         return DateBox(
-                        //           day: DateTime.parse(day[idx][0]),
-                        //           dayOfWeek: day[idx][1],
-                        //         );
-                        //       },
-                        //       separatorBuilder: (_, idx) {
-                        //         return SizedBox(width: 16.w);
-                        //       },
-                        //       itemCount: day.length),
-                        // ),
                       ],
                     ),
                   ),
@@ -318,14 +312,6 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
                     builder:
                         (BuildContext context, WidgetRef ref, Widget? child) {
                       final modelList = ref.watch(selectGameListProvider);
-                      // ref.listen(gameListProvider, (previous, next) {
-                      //   if (next is ResponseListModel<GameModel>) {
-                      //     ref
-                      //         .read(selectGameListProvider.notifier)
-                      //         .update((state) => next.data!);
-                      //   }
-                      // });
-
                       return SliverPadding(
                         padding: EdgeInsets.symmetric(horizontal: 21.w),
                         sliver: SliverMainAxisGroup(slivers: [
@@ -348,6 +334,37 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
           },
         )
       ],
+    );
+  }
+
+  void selectDay(List<List<String>> day, int idx) {
+    ref
+        .read(selectedDayProvider.notifier)
+        .update((state) => DateTime.parse(day[idx][0]));
+
+    final RenderBox box =
+        dayKeys[idx].currentContext!.findRenderObject() as RenderBox;
+    final pos = box.localToGlobal(Offset.zero, ancestor: null);
+    final scrollPosition = _dayScrollController.position;
+    // log('idx = ${idx}, pos.dx = ${pos.dx}');
+    // log('scrollPosition.pixels = ${scrollPosition.pixels}');
+    // log('scrollPosition.viewportDimension = ${scrollPosition.viewportDimension}');
+    // log('box.size.width = ${box.size.width}');
+
+    /// 현재 화면의 위젯 x좌표 + 스크롤의 현재 위치 x좌표 - (화면 크기 / 2 - 위젯 크기 / 2)
+    double offset = pos.dx +
+        scrollPosition.pixels -
+        (scrollPosition.viewportDimension / 2 - box.size.width / 2);
+    if (idx == 0) {
+      offset = 0;
+    } else if (idx == 13) {
+      offset = scrollPosition.maxScrollExtent;
+    }
+
+    _dayScrollController.animateTo(
+      offset,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOut,
     );
   }
 
@@ -641,8 +658,16 @@ final selectedDayProvider = StateProvider.autoDispose<DateTime>((ref) {
 class DateBox extends ConsumerWidget {
   final DateTime day;
   final String dayOfWeek;
+  final GlobalKey gKey;
+  final VoidCallback onTap;
 
-  const DateBox({super.key, required this.day, required this.dayOfWeek});
+  const DateBox({
+    super.key,
+    required this.day,
+    required this.dayOfWeek,
+    required this.gKey,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -652,9 +677,8 @@ class DateBox extends ConsumerWidget {
       color: selectedDay == day ? Colors.white : const Color(0xFF707070),
     );
     return InkWell(
-      onTap: () {
-        ref.read(selectedDayProvider.notifier).update((state) => day);
-      },
+      key: gKey,
+      onTap: onTap,
       child: Container(
         width: 60.w,
         // height: 52.h,
