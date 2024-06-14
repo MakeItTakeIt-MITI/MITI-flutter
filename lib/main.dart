@@ -1,19 +1,70 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:disable_battery_optimization/disable_battery_optimization.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 // import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/env/environment.dart';
+import 'package:miti/notification_provider.dart';
 import 'common/provider/provider_observer.dart';
 import 'common/provider/router_provider.dart';
+import 'firebase_options.dart';
+
+//
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  await Firebase.initializeApp();
+  print("Handling a background message: ${message.messageId}");
+}
+
+void _foregroundRouting(NotificationResponse details) {
+  rootNavKey.currentState?.context.goNamed(LoginScreen.routeName);
+  log('_foregroundRouting = $details');
+}
+
+void _backgroundRouting(NotificationResponse details) {
+  log('_backgroundRouting = $details');
+}
+
+Future<FlutterLocalNotificationsPlugin> _initLocalNotification() async {
+  final FlutterLocalNotificationsPlugin localNotification =
+      FlutterLocalNotificationsPlugin();
+
+  /// Android 세팅
+  const AndroidInitializationSettings initSettingsAndroid =
+      AndroidInitializationSettings('drawable/icon');
+
+  /// IOS 세팅
+  const initSettingsIOS = DarwinInitializationSettings();
+
+  const InitializationSettings initSettings = InitializationSettings(
+    android: initSettingsAndroid,
+    iOS: initSettingsIOS,
+  );
+
+  await localNotification.initialize(
+    initSettings,
+    onDidReceiveBackgroundNotificationResponse: _backgroundRouting,
+    onDidReceiveNotificationResponse: _foregroundRouting,
+  );
+
+  return localNotification;
+}
 
 void main() async {
   HttpOverrides.global = MyHttpOverrides();
@@ -30,7 +81,12 @@ void main() async {
   );
   await Hive.initFlutter();
   await Hive.openBox<bool>('permission');
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
+  final fcmToken = await FirebaseMessaging.instance.getToken();
+  log('fcmToken = $fcmToken');
   runApp(
     ProviderScope(
       observers: [
@@ -41,12 +97,107 @@ void main() async {
   );
 }
 
-class MyApp extends ConsumerWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    _notificationSetting();
+    disableBattaryOptimization();
+  }
+
+  void _notificationSetting() {
+    _localNotificationSetting();
+
+    _fcmSetting();
+  }
+
+  void disableBattaryOptimization() async {
+    final response =
+        await DisableBatteryOptimization.showDisableAllOptimizationsSettings(
+            "Enable Auto Start",
+            "Follow the steps and enable the auto start of this app",
+            "Your device has additional battery optimization",
+            "Follow the steps and disable the optimizations to allow smooth functioning of this app");
+    if (response != null && response) {
+      bool? isAutoStartEnabled =
+          await DisableBatteryOptimization.isAutoStartEnabled;
+    }
+  }
+
+  void _fcmSetting() async {
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+    FirebaseMessaging.onMessageOpenedApp.listen((event) {});
+
+    FirebaseMessaging.onMessage.listen((event) {});
+
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      RemoteNotification? notification = message.notification;
+
+      if (notification != null) {
+        final flutterLocalNotificationsPlugin =
+            ref.read(notificationProvider.notifier).getNotification;
+        flutterLocalNotificationsPlugin?.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            const NotificationDetails(
+              android: AndroidNotificationDetails(
+                'high_importance_channel',
+                'high_importance_notification',
+                importance: Importance.max,
+              ),
+              iOS: DarwinNotificationDetails(),
+            ),
+            payload: message.data['test_paremeter1']);
+
+        print("수신자 측 메시지 수신");
+      }
+    });
+
+    RemoteMessage? message =
+        await FirebaseMessaging.instance.getInitialMessage();
+
+    log('remoteMessage = $message');
+    if (message != null) {
+      // 액션 부분 -> 파라미터는 message.data['test_parameter1'] 이런 방식으로...
+      _handleMessage(message);
+    }
+  }
+
+  void _handleMessage(RemoteMessage message) {
+    rootNavKey.currentState?.context.goNamed(LoginScreen.routeName);
+  }
+
+  void _localNotificationSetting() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      final notification = await _initLocalNotification();
+      ref
+          .read(notificationProvider.notifier)
+          .setNotificationPlugin(notification);
+    });
+  }
+
+  @override
+  Widget build(
+    BuildContext context,
+  ) {
     final router = ref.read(routerProvider);
+    ref.read(notificationProvider);
 
     return ScreenUtilInit(
       designSize: const Size(375, 812),

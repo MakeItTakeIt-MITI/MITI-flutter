@@ -1,15 +1,23 @@
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:lottie/lottie.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
+import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/common/provider/secure_storage_provider.dart';
+import 'package:miti/court/view/court_map_screen.dart';
+import 'package:miti/court/view/court_search_screen.dart';
+import 'package:miti/notification_provider.dart';
 import 'package:miti/permission_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import 'common/provider/router_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   static String get routeName => 'splash';
@@ -35,7 +43,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     permissionBox = Hive.box('permission');
     final display = permissionBox.get('permission');
     // final display = await _permission();
-    if (display == null || !display) {
+    await _initLocalNotification();
+    if (display == null) {
       if (mounted) {
         context.goNamed(PermissionScreen.routeName);
       }
@@ -46,32 +55,140 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     }
   }
 
-  Future<bool> _permission() async {
-    var requestStatus = await Permission.location.request();
-    var status = await Permission.location.status;
-    log('requestStatus = $requestStatus, status = $status');
-
-    if (requestStatus.isPermanentlyDenied ||
-        status.isPermanentlyDenied) {
-      // 권한 요청 거부, 해당 권한에 대한 요청에 대해 다시 묻지 않음 선택하여 설정화면에서 변경해야함. android
-      print("isPermanentlyDenied");
-      return false;
-    } else if (status.isRestricted) {
-      // 권한 요청 거부, 해당 권한에 대한 요청을 표시하지 않도록 선택하여 설정화면에서 변경해야함. ios
-      print("isRestricted");
-      return false;
-    } else if (status.isDenied) {
-      // 권한 요청 거절
-      print("isDenied");
-      return false;
-    }
-    print("requestStatus ${requestStatus.name}");
-    print("status ${status.name}");
-    // final storage = ref.read(secureStorageProvider);
-    // await storage.write(key: 'firstJoin', value: 'true');
-    return true;
+  void onDidReceiveLocalNotification(
+      int id, String? title, String? body, String? payload) async {
+    // display a dialog with the notification details, tap ok to go to another page
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => CupertinoAlertDialog(
+        title: Text(title ?? ''),
+        content: Text(body ?? ''),
+        actions: [
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            child: Text('Ok'),
+            onPressed: () async {
+              Navigator.of(context, rootNavigator: true).pop();
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => (CourtSearchScreen(
+                    bottomIdx: 3,
+                  )),
+                ),
+              );
+            },
+          )
+        ],
+      ),
+    );
   }
 
+  void onDidReceiveNotificationResponse(
+      NotificationResponse notificationResponse) async {
+    final String? payload = notificationResponse.payload;
+    if (notificationResponse.payload != null) {
+      debugPrint('notification payload: $payload');
+    }
+    log('알람 클릭');
+    final Map<String, String> queryParameters = {'bottomIdx': '3'};
+
+    shellNavKey.currentState!.context.goNamed(
+      CourtSearchScreen.routeName,
+      queryParameters: queryParameters,
+    );
+
+    // context.goNamed(LoginScreen.routeName);
+  }
+
+  Future<void> _initLocalNotification() async {
+    // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    //     FlutterLocalNotificationsPlugin();
+    //
+    // const AndroidInitializationSettings initializationSettingsAndroid =
+    //     AndroidInitializationSettings('drawable/icon');
+    //
+    // final DarwinInitializationSettings initializationSettingsDarwin =
+    //     DarwinInitializationSettings(
+    //         onDidReceiveLocalNotification: onDidReceiveLocalNotification);
+    //
+    // final InitializationSettings initializationSettings =
+    //     InitializationSettings(
+    //         android: initializationSettingsAndroid,
+    //         iOS: initializationSettingsDarwin);
+    //
+    // await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+    //     onDidReceiveNotificationResponse: onDidReceiveNotificationResponse);
+
+
+
+    const AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails('your channel id', 'your channel name',
+            channelDescription: 'your channel description',
+            importance: Importance.none,
+            priority: Priority.high,
+            color: Color.fromARGB(255, 255, 0, 0),
+            ticker: 'ticker');
+
+    const NotificationDetails notificationDetails =
+        NotificationDetails(android: androidNotificationDetails);
+
+    final flutterLocalNotificationsPlugin = ref.read(notificationProvider.notifier).getNotification;
+
+    await flutterLocalNotificationsPlugin?.show(
+        0, 'plain title', 'plain body', notificationDetails,
+        payload: 'item x');
+
+    // FlutterLocalNotificationsPlugin _localNotification =
+    // FlutterLocalNotificationsPlugin();
+    //
+    // await _localNotification.resolvePlatformSpecificImplementation<
+    //     AndroidFlutterLocalNotificationsPlugin>()?.requestNotificationsPermission();
+    //
+    // AndroidInitializationSettings initSettingsAndroid =
+    // const AndroidInitializationSettings('@mipmap/ic_launcher');
+    // DarwinInitializationSettings initSettingsIOS =
+    // const DarwinInitializationSettings(
+    //   // requestSoundPermission: false,
+    //   // requestBadgePermission: false,
+    //   // requestAlertPermission: false,
+    // );
+    //
+    // InitializationSettings initSettings = InitializationSettings(
+    //   android: initSettingsAndroid,
+    //   iOS: initSettingsIOS,
+    // );
+    // await _localNotification.initialize(
+    //   initSettings,
+    // );
+  }
+
+  //
+  // Future<bool> _permission() async {
+  //   var requestStatus = await Permission.location.request();
+  //   var status = await Permission.location.status;
+  //   log('requestStatus = $requestStatus, status = $status');
+  //
+  //   if (requestStatus.isPermanentlyDenied ||
+  //       status.isPermanentlyDenied) {
+  //     // 권한 요청 거부, 해당 권한에 대한 요청에 대해 다시 묻지 않음 선택하여 설정화면에서 변경해야함. android
+  //     print("isPermanentlyDenied");
+  //     return false;
+  //   } else if (status.isRestricted) {
+  //     // 권한 요청 거부, 해당 권한에 대한 요청을 표시하지 않도록 선택하여 설정화면에서 변경해야함. ios
+  //     print("isRestricted");
+  //     return false;
+  //   } else if (status.isDenied) {
+  //     // 권한 요청 거절
+  //     print("isDenied");
+  //     return false;
+  //   }
+  //   print("requestStatus ${requestStatus.name}");
+  //   print("status ${status.name}");
+  //   // final storage = ref.read(secureStorageProvider);
+  //   // await storage.write(key: 'firstJoin', value: 'true');
+  //   return true;
+  // }
 
   @override
   void dispose() {

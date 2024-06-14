@@ -24,7 +24,6 @@ import 'package:collection/collection.dart';
 import '../../common/model/entity_enum.dart';
 import '../../game/model/game_model.dart';
 import '../../game/view/game_detail_screen.dart';
-import '../../permission_screen.dart';
 import '../model/court_model.dart';
 
 final selectGameListProvider =
@@ -209,7 +208,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
             }
             await controller.addOverlayAll(cacheImageMarker);
             _mapController = controller;
-            getLocation();
+            await getLocation();
           },
         ),
         Positioned(
