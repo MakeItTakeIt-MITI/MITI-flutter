@@ -1,7 +1,7 @@
 import UIKit
 import Flutter
 import flutter_local_notifications
-
+import Firebase // Add Line.
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
 
@@ -9,6 +9,7 @@ import flutter_local_notifications
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+  FirebaseApp.configure() // Add Line.
     // This is required to make any communication available in the action isolate.
     FlutterLocalNotificationsPlugin.setPluginRegistrantCallback { (registry) in
         GeneratedPluginRegistrant.register(with: registry)

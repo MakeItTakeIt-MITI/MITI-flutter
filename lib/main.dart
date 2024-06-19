@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:disable_battery_optimization/disable_battery_optimization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -47,10 +48,14 @@ Future<FlutterLocalNotificationsPlugin> _initLocalNotification() async {
 
   /// Android 세팅
   const AndroidInitializationSettings initSettingsAndroid =
-      AndroidInitializationSettings('drawable/icon');
+      AndroidInitializationSettings('@mipmap/ic_launcher');
 
   /// IOS 세팅
-  const initSettingsIOS = DarwinInitializationSettings();
+  const initSettingsIOS = DarwinInitializationSettings(
+    requestSoundPermission: false,
+    requestBadgePermission: false,
+    requestAlertPermission: false,
+  );
 
   const InitializationSettings initSettings = InitializationSettings(
     android: initSettingsAndroid,
@@ -64,6 +69,20 @@ Future<FlutterLocalNotificationsPlugin> _initLocalNotification() async {
   );
 
   return localNotification;
+}
+
+Future<void> getFcmToken() async {
+  String? token;
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  // 플랫폼 별 토큰 가져오기
+  if (defaultTargetPlatform == TargetPlatform.iOS) {
+    token = await messaging.getAPNSToken();
+  } else {
+    token = await messaging.getToken();
+  }
+
+  log('FCM Token: $token');
 }
 
 void main() async {
@@ -85,8 +104,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  final fcmToken = await FirebaseMessaging.instance.getToken();
-  log('fcmToken = $fcmToken');
+  await getFcmToken();
   runApp(
     ProviderScope(
       observers: [
@@ -109,7 +127,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   void initState() {
     super.initState();
     _notificationSetting();
-    disableBattaryOptimization();
+    // disableBattaryOptimization();
   }
 
   void _notificationSetting() {

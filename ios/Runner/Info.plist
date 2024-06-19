@@ -2,6 +2,9 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>FLTEnableImpeller</key>
+    <false />
+
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -28,10 +31,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string></string>
+			<string>miti.miti.com</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>kakao6c982be35c0f15be99a90f823b7da8f5</string>
+				<string>your-scheme</string>
 			</array>
 		</dict>
 	</array>

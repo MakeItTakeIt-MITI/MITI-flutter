@@ -23,7 +23,14 @@ class Notification extends _$Notification {
 
   @override
   void build() async {
-
+    FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
+      // TODO: If necessary send token to application server.
+    log('refresh fcm token ${fcmToken}');
+      // Note: This callback is fired at each app startup and whenever a new
+      // token is generated.
+    }).onError((err) {
+      // Error getting token.
+    });
     // await FirebaseMessaging.instance
     //     .setForegroundNotificationPresentationOptions(
     //   alert: true,
