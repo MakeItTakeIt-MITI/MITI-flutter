@@ -1,3 +1,4 @@
+import 'package:lottie/lottie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -9,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/model/default_model.dart';
+import 'package:miti/notification/provider/notification_provider.dart';
 import 'package:miti/notification_provider.dart';
 import 'package:miti/support/view/support_screen.dart';
 import 'package:miti/theme/text_theme.dart';
@@ -74,30 +76,37 @@ class InfoBody extends ConsumerWidget {
                 // await _localNotification?.show(
                 //     0, '로컬 푸시 알림', '로컬 푸시 알림 테스트', _details,
                 //     payload: 'deepLink');
+                //
+                // const AndroidNotificationDetails androidNotificationDetails =
+                //     AndroidNotificationDetails(
+                //         'your channel id', 'your channel name',
+                //         icon: 'ic_launcher',
+                //         channelDescription: 'your channel description',
+                //         importance: Importance.none,
+                //         priority: Priority.min,
+                //         color: Color.fromARGB(255, 255, 0, 0),
+                //         ticker: 'ticker');
+                //
+                // const NotificationDetails notificationDetails =
+                //     NotificationDetails(
+                //         android: androidNotificationDetails,
+                //         iOS: DarwinNotificationDetails());
+                //
+                // final flutterLocalNotificationsPlugin =
+                //     ref.read(notificationProvider.notifier).getNotification;
+                //
+                // await flutterLocalNotificationsPlugin?.show(
+                //     0, 'plain title', 'plain body', notificationDetails,
+                //     payload: 'item x');
 
-                const AndroidNotificationDetails androidNotificationDetails =
-                    AndroidNotificationDetails(
-                        'your channel id', 'your channel name',
-                        icon: 'ic_launcher',
-                        channelDescription: 'your channel description',
-                        importance: Importance.none,
-                        priority: Priority.min,
-                        color: Color.fromARGB(255, 255, 0, 0),
-                        ticker: 'ticker');
-
-                const NotificationDetails notificationDetails =
-                    NotificationDetails(
-                        android: androidNotificationDetails,
-                        iOS: DarwinNotificationDetails());
-
-                final flutterLocalNotificationsPlugin =
-                    ref.read(notificationProvider.notifier).getNotification;
-
-                await flutterLocalNotificationsPlugin?.show(
-                    0, 'plain title', 'plain body', notificationDetails,
-                    payload: 'item x');
+                ref.read(testNotificationProvider.future);
               },
               child: Text('노티'),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Lottie.asset(
+              'assets/lottie/fail_animation.json',
             ),
           )
         ],

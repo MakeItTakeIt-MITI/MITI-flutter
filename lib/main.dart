@@ -71,7 +71,7 @@ Future<FlutterLocalNotificationsPlugin> _initLocalNotification() async {
   return localNotification;
 }
 
-Future<void> getFcmToken() async {
+Future<void> getFcmToken(WidgetRef ref) async {
   String? token;
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
@@ -81,6 +81,7 @@ Future<void> getFcmToken() async {
   } else {
     token = await messaging.getToken();
   }
+  ref.read(fcmTokenProvider.notifier).update((state) => token);
 
   log('FCM Token: $token');
 }
@@ -104,7 +105,6 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  await getFcmToken();
   runApp(
     ProviderScope(
       observers: [
@@ -127,6 +127,9 @@ class _MyAppState extends ConsumerState<MyApp> {
   void initState() {
     super.initState();
     _notificationSetting();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      getFcmToken(ref);
+    });
     // disableBattaryOptimization();
   }
 
@@ -169,7 +172,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       if (notification != null) {
         final flutterLocalNotificationsPlugin =
             ref.read(notificationProvider.notifier).getNotification;
-        flutterLocalNotificationsPlugin?.show(
+        await flutterLocalNotificationsPlugin?.show(
             notification.hashCode,
             notification.title,
             notification.body,
@@ -183,7 +186,9 @@ class _MyAppState extends ConsumerState<MyApp> {
             ),
             payload: message.data['test_paremeter1']);
 
-        print("수신자 측 메시지 수신");
+        log('notification.title = ${notification.title}');
+        log('notification.body = ${notification.body}');
+        // log("수신자 측 메시지 수신");
       }
     });
 

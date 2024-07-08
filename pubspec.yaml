@@ -133,6 +133,7 @@ flutter:
     - assets/images/icon/
     - assets/images/logo/
     - assets/images/btn/
+    - assets/lottie/
   #   - images/a_dot_ham.jpeg
   #  flavorDimensions:
   #    - environment
