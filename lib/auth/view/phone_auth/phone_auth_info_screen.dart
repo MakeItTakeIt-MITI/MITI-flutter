@@ -60,7 +60,7 @@ class _PhoneAuthInfoScreenState extends ConsumerState<PhoneAuthInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(phoneAuthProvider);
+    // ref.watch(phoneAuthProvider);
     final interactionDesc =
         ref.watch(interactionDescProvider(InteractionType.normal));
     return Scaffold(
@@ -170,16 +170,16 @@ class _PhoneAuthInfoScreenState extends ConsumerState<PhoneAuthInfoScreen> {
 
   Future<void> requestSMS(BuildContext context) async {
     FocusScope.of(context).requestFocus(FocusNode());
-    final result =
-        await ref.read(requestSMSProvider(type: PhoneAuthType.login).future);
-    if (result is ResponseModel<RequestCodeModel> && context.mounted) {
-      context.pushNamed(PhoneAuthSendScreen.routeName);
-    } else {
-      result as ErrorModel;
-      if (context.mounted) {
-        AuthError.fromModel(model: result)
-            .responseError(context, AuthApiType.request_code, ref);
-      }
+    // final result =
+    //     await ref.read(requestSMSProvider(type: PhoneAuthType.login).future);
+    // if (result is ResponseModel<RequestCodeModel> && context.mounted) {
+    //   context.pushNamed(PhoneAuthSendScreen.routeName);
+    // } else {
+    //   result as ErrorModel;
+    //   if (context.mounted) {
+    //     AuthError.fromModel(model: result)
+    //         .responseError(context, AuthApiType.request_code, ref);
+    //   }
       // if (result.status_code == BadRequest) {
       //   // todo 인증 완료 사용자
       // } else if (result.status_code == UnAuthorized) {
@@ -191,6 +191,6 @@ class _PhoneAuthInfoScreenState extends ConsumerState<PhoneAuthInfoScreen> {
       //   });
       //   // todo 사용자 정보 불일치
       // }
-    }
+    // }
   }
 }

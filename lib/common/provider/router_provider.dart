@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/auth/view/find_info/find_password_screen.dart';
 import 'package:miti/auth/view/login_screen.dart';
@@ -17,6 +20,8 @@ import 'package:miti/game/view/game_update_screen.dart';
 import 'package:miti/game/view/review_form_screen.dart';
 import 'package:miti/support/view/faq_screen.dart';
 import 'package:miti/support/view/support_form_screen.dart';
+import 'package:miti/theme/color_theme.dart';
+import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/view/user_delete_screen.dart';
 import 'package:miti/user/view/user_profile_form_screen.dart';
 import 'package:miti/user/view/user_review_detail_screen.dart';
@@ -56,6 +61,7 @@ import '../model/entity_enum.dart';
 
 final GlobalKey<NavigatorState> rootNavKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> shellNavKey = GlobalKey<NavigatorState>();
+final signUpPopProvider = StateProvider.autoDispose<bool>((ref) => false);
 
 class DialogPage<T> extends Page<T> {
   static String get routeName => 'test';
@@ -88,6 +94,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           path: '/splash',
           parentNavigatorKey: rootNavKey,
           name: SplashScreen.routeName,
+
           builder: (context, state) {
             return SplashScreen();
           },
@@ -101,7 +108,9 @@ final routerProvider = Provider<GoRouter>((ref) {
           name: ErrorScreen.routeName,
           builder: (context, state) {
             ErrorScreenType extra = state.extra as ErrorScreenType;
-            return ErrorScreen(errorType: extra,);
+            return ErrorScreen(
+              errorType: extra,
+            );
           },
           // pageBuilder: (context, state) {
           //   return NoTransitionPage(child: SplashScreen());
@@ -132,7 +141,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           //   return NoTransitionPage(child: PermissionScreen());
           // },
         ),
-
         ShellRoute(
             navigatorKey: shellNavKey,
             builder: (context, state, child) {
@@ -174,7 +182,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                           parentNavigatorKey: rootNavKey,
                           name: CompleteRestPasswordScreen.routeName,
                           builder: (_, state) =>
-                          const CompleteRestPasswordScreen(),
+                              const CompleteRestPasswordScreen(),
                           // pageBuilder: (context, state) {
                           //   return const NoTransitionPage(
                           //       child: CompleteRestPasswordScreen());
@@ -216,13 +224,19 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 parentNavigatorKey: rootNavKey,
                                 name: FindEmailScreen.routeName,
                                 builder: (_, state) {
-                                  final isOauth = bool.parse(
-                                      state.uri.queryParameters['isOauth']!);
                                   final email =
-                                  state.uri.queryParameters['email']!;
+                                      state.uri.queryParameters['email']!;
+                                  if (state.extra != null) {
+                                    final AuthType authType =
+                                        state.extra as AuthType;
+                                    return FindEmailScreen(
+                                      findEmail: email,
+                                      authType: authType,
+                                    );
+                                  }
+
                                   return FindEmailScreen(
                                     findEmail: email,
-                                    isOauth: isOauth,
                                   );
                                 },
                                 // pageBuilder: (context, state) {
@@ -242,24 +256,24 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 parentNavigatorKey: rootNavKey,
                                 name: ResetPasswordScreen.routeName,
                                 builder: (_, state) {
-                                  return ResetPasswordScreen();
+                                  final String password_update_token =
+                                      state.uri.queryParameters[
+                                          'password_update_token']!;
+
+                                  final int userId = int.parse(
+                                      state.uri.queryParameters['userId']!);
+                                  return ResetPasswordScreen(
+                                    password_update_token:
+                                        password_update_token,
+                                    userId: userId,
+                                  );
                                 },
                                 // pageBuilder: (context, state) {
                                 //   return NoTransitionPage(
                                 //       child: ResetPasswordScreen());
                                 // },
                               ),
-                              GoRoute(
-                                path: 'notFoundUser',
-                                parentNavigatorKey: rootNavKey,
-                                name: NotFoundUserInfoScreen.routeName,
-                                builder: (_, state) =>
-                                const NotFoundUserInfoScreen(),
-                                // pageBuilder: (context, state) {
-                                //   return const NoTransitionPage(
-                                //       child: NotFoundUserInfoScreen());
-                                // },
-                              ),
+
                             ]),
                         GoRoute(
                             path: 'signUpSelect',
@@ -275,7 +289,79 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 path: 'signUp',
                                 parentNavigatorKey: rootNavKey,
                                 name: SignUpScreen.routeName,
-                                builder: (_, state) => const SignUpScreen(),
+
+                                onExit: (context) {
+                                  if (ref.read(signUpPopProvider)) {
+                                    return true;
+                                  }
+
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      final button = Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Expanded(
+                                            child: TextButton(
+                                              onPressed: () {
+                                                context.pop();
+                                                context.pop();
+                                                ref
+                                                    .read(signUpPopProvider
+                                                        .notifier)
+                                                    .update((state) => true);
+                                              },
+                                              style: ButtonStyle(
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all(
+                                                          MITIColor.gray600)),
+                                              child: Text(
+                                                '취소하기',
+                                                style: MITITextStyle.mdBold
+                                                    .copyWith(
+                                                  color: MITIColor.primary,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: 6.w),
+                                          Expanded(
+                                            child: TextButton(
+                                              onPressed: () {
+                                                context.pop();
+                                              },
+                                              child: Text(
+                                                '가입 계속하기',
+                                                style: MITITextStyle.mdBold
+                                                    .copyWith(
+                                                  color: MITIColor.gray800,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                      return Material(
+                                        color: Colors.transparent,
+                                        child: CustomDialog(
+                                          title: '회원가입 취소',
+                                          content:
+                                              '회원가입 취소 시 입력하신 정보가 모두 삭제됩니다.\n회원가입을 취소하시겠습니까?',
+                                          button: button,
+                                        ),
+                                      );
+                                    },
+                                  );
+                                  return false;
+                                },
+                                builder: (_, state) {
+                                  AuthType extra = state.extra as AuthType;
+
+                                  return SignUpScreen(
+                                    type: extra,
+                                  );
+                                },
                                 // pageBuilder: (context, state) {
                                 //   return const NoTransitionPage(
                                 //       child: SignUpScreen());
@@ -297,7 +383,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                                   parentNavigatorKey: rootNavKey,
                                   name: PhoneAuthInfoScreen.routeName,
                                   builder: (_, state) =>
-                                  const PhoneAuthInfoScreen(),
+                                      const PhoneAuthInfoScreen(),
                                   // pageBuilder: (context, state) {
                                   //   return const NoTransitionPage(
                                   //       child: PhoneAuthInfoScreen());
@@ -321,7 +407,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                     //   return NoTransitionPage(child: UserDeleteSuccessScreen());
                     // },
                   ),
-
                 ],
               ),
               GoRoute(
@@ -397,7 +482,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                               final int bottomIdx = int.parse(
                                   state.uri.queryParameters['bottomIdx']!);
                               return GameCreateCompleteScreen(
-                                gameId: gameId, bottomIdx: bottomIdx,
+                                gameId: gameId,
+                                bottomIdx: bottomIdx,
                               );
                             },
                             // pageBuilder: (context, state) {
@@ -487,7 +573,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                               return ReviewScreen(
                                 gameId: gameId,
                                 participationId: participationId,
-                                ratingId: ratingId, bottomIdx: bottomIdx,
+                                ratingId: ratingId,
+                                bottomIdx: bottomIdx,
                               );
                             },
                             // pageBuilder: (context, state) {
@@ -524,7 +611,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                                   state.uri.queryParameters['bottomIdx']!);
                               return GameRefundScreen(
                                 gameId: gameId,
-                                participationId: participationId, bottomIdx: bottomIdx,
+                                participationId: participationId,
+                                bottomIdx: bottomIdx,
                               );
                             },
                             // pageBuilder: (context, state) {
@@ -865,7 +953,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                   return NoTransitionPage(child: MenuBody());
                 },
                 routes: [
-
                   GoRoute(
                     path: 'faq',
                     parentNavigatorKey: rootNavKey,

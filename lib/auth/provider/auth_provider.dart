@@ -99,7 +99,7 @@ class AuthStateNotifier extends StateNotifier<AuthModel?> {
     final id = await storage.read(key: 'id');
     final email = await storage.read(key: 'email');
     final nickname = await storage.read(key: 'nickname');
-    final is_authenticated = await storage.read(key: 'is_authenticated');
+    // final is_authenticated = await storage.read(key: 'is_authenticated');
     if (accessToken != null) {
       state = AuthModel(
         token: TokenModel(
@@ -107,7 +107,7 @@ class AuthStateNotifier extends StateNotifier<AuthModel?> {
         id: int.parse(id ?? '0'),
         email: email,
         nickname: nickname,
-        is_authenticated: bool.parse(is_authenticated!),
+        // is_authenticated: bool.parse(is_authenticated!),
       );
     }
 

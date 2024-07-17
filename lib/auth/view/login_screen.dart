@@ -18,14 +18,18 @@ import 'package:miti/auth/view/signup/signup_select_screen.dart';
 import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/common/provider/form_util_provider.dart';
+import 'package:miti/theme/text_theme.dart';
+import 'package:miti/util/util.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../common/component/custom_text_form_field.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/model/default_model.dart';
+import '../../common/provider/widget/form_provider.dart';
 import '../../default_screen.dart';
 import '../../dio/response_code.dart';
 import '../../court/view/court_map_screen.dart';
+import '../../theme/color_theme.dart';
 import '../param/auth_param.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -36,53 +40,39 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: MITIColor.black,
       resizeToAvoidBottomInset: false,
-      appBar: const DefaultAppBar(),
+      appBar: const DefaultAppBar(
+        backgroundColor: MITIColor.black,
+      ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        padding: EdgeInsets.symmetric(horizontal: 21.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: 24.h),
-            Container(
-              width: 88.w,
-              height: 28.h,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/logo/MITI.png'),
-                ),
-              ),
+            SizedBox(height: 34.h),
+            SvgPicture.asset(
+              AssetUtil.getAssetPath(type: AssetType.logo, name: 'MITI'),
+              width: 80.w,
+              height: 42.h,
             ),
-            SizedBox(height: 8.h),
-            Text(
-              'Make it, Take it!',
-              style: TextStyle(
-                  fontSize: 14.sp,
-                  letterSpacing: -0.25.sp,
-                  fontWeight: FontWeight.w400),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 36.h),
+            SizedBox(height: 44.h),
             const LoginComponent(),
             Text(
               '또는',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 12.sp,
-                letterSpacing: -0.25.sp,
-                color: const Color(0xFF8C8C8C),
+              style: MITITextStyle.xxsm.copyWith(
+                color: const Color(0xFFEAEAEA),
               ),
             ),
-            SizedBox(height: 8.h),
+            SizedBox(height: 12.h),
             const KakaoLoginButton(),
             SizedBox(height: 8.h),
             if (Platform.isIOS) const AppleLoginButton(),
             SizedBox(height: 16.h),
             OtherWayComponent(
-              desc: '아직 회원이 아니신가요?',
-              way: '회원가입하기',
+              // desc: '아직 회원이 아니신가요?',
+              way: '회원가입 하러 가기',
               onTap: () => context.pushNamed(SignUpSelectScreen.routeName),
             ),
             const Spacer(),
@@ -120,6 +110,14 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
         // setState(() {});
       });
     }
+
+    /// 폼 에러 메시지 미리 설정
+    /// SizedBox로 공백 높이를 설정하려고 하니 부정확함
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      ref
+          .read(formInfoProvider(InputFormType.password).notifier)
+          .update(interactionDesc: InteractionDesc(isSuccess: false, desc: ''));
+    });
   }
 
   @override
@@ -140,97 +138,98 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
       key: formKey,
       child: Column(
         children: [
-          CustomTextFormField(
-            focusNode: focusNodes[0],
-            textEditingController: emailController,
-            hintText: '이메일을 입력해주세요.',
-            textInputAction: TextInputAction.next,
-            label: '이메일',
-            onNext: () => FocusScope.of(context).requestFocus(focusNodes[1]),
-            suffixIcon: focusNodes[0].hasFocus
-                ? IconButton(
-              onPressed: () {
-                emailController.clear();
-                ref
-                    .read(loginFormProvider.notifier)
-                    .updateFormField(email: '');
-              },
-              icon: SvgPicture.asset(
-                'assets/images/btn/close_btn.svg',
-              ),
-            )
-                : null,
-            onChanged: (String? val) {
-              ref.read(loginFormProvider.notifier).updateFormField(email: val);
-              log(ref
-                  .read(loginFormProvider)
-                  .email);
+          Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              final formInfo = ref.watch(formInfoProvider(InputFormType.email));
+
+              return CustomTextFormField(
+                focusNode: focusNodes[0],
+                textEditingController: emailController,
+                hintText: '이메일을 입력해주세요.',
+                textInputAction: TextInputAction.next,
+                label: '이메일',
+                borderColor: formInfo.borderColor,
+                onNext: () =>
+                    FocusScope.of(context).requestFocus(focusNodes[1]),
+                onChanged: (String? val) {
+                  ref
+                      .read(loginFormProvider.notifier)
+                      .updateFormField(email: val);
+                  log(ref.read(loginFormProvider).email);
+                },
+              );
             },
           ),
           SizedBox(height: 20.h),
           Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              final interactionDesc =
-              ref.watch(formDescProvider(InputFormType.login));
+              final formInfo =
+                  ref.watch(formInfoProvider(InputFormType.password));
               final isVisible =
-              ref.watch(passwordVisibleProvider(PasswordFormType.password));
-              return CustomTextFormField(
-                focusNode: focusNodes[1],
-                textEditingController: passwordController,
-                hintText: '8자리 이상의 PW를 입력해주세요.',
-                textInputAction: TextInputAction.send,
-                label: '비밀번호',
-                obscureText: !isVisible,
-                suffixIcon: focusNodes[1].hasFocus
-                    ? IconButton(
-                  onPressed: () {
-                    ref
-                        .read(passwordVisibleProvider(
-                        PasswordFormType.password)
-                        .notifier)
-                        .update((state) => !state);
-                  },
-                  icon: Icon(isVisible
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined),
-                )
-                    : null,
-                onChanged: (val) {
-                  ref
-                      .read(loginFormProvider.notifier)
-                      .updateFormField(password: val);
-                  log(ref
-                      .read(loginFormProvider)
-                      .password);
-                },
-                onNext: () => login(),
-                interactionDesc: interactionDesc,
+                  ref.watch(passwordVisibleProvider(PasswordFormType.password));
+              return Column(
+                children: [
+                  CustomTextFormField(
+                    focusNode: focusNodes[1],
+                    textEditingController: passwordController,
+                    hintText: '패스워드를 입력해 주세요.',
+                    textInputAction: TextInputAction.send,
+                    label: '비밀번호',
+                    obscureText: !isVisible,
+                    borderColor: formInfo.borderColor,
+                    suffixIcon: focusNodes[1].hasFocus
+                        ? GestureDetector(
+                            onTap: () {
+                              ref
+                                  .read(passwordVisibleProvider(
+                                          PasswordFormType.password)
+                                      .notifier)
+                                  .update((state) => !state);
+                            },
+                            child: SvgPicture.asset(
+                              AssetUtil.getAssetPath(
+                                  type: AssetType.icon,
+                                  name: isVisible ? 'visible' : 'invisible'),
+                              width: 24.r,
+                              height: 24.r,
+                            ),
+                          )
+                        : null,
+                    onChanged: (val) {
+                      ref
+                          .read(loginFormProvider.notifier)
+                          .updateFormField(password: val);
+                      log(ref.read(loginFormProvider).password);
+                    },
+                    onNext: () => login(),
+                    interactionDesc: formInfo.interactionDesc,
+                  ),
+                  // if(formInfo.interactionDesc == null)
+                  // SizedBox(height: 28.h),
+                ],
               );
             },
           ),
-          SizedBox(height: 20.h),
+          SizedBox(height: 32.h),
           TextButton(
             onPressed: () => login(),
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all(
                 ref.watch(loginFormProvider.notifier).isValid()
-                    ? const Color(0xFF4065F6)
-                    : const Color(0xFFE8E8E8),
+                    ? MITIColor.primary
+                    : MITIColor.gray500,
               ),
             ),
             child: Text(
               '로그인 하기',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14.sp,
-                letterSpacing: -0.25.sp,
+              style: MITITextStyle.smBold.copyWith(
                 color: ref.watch(loginFormProvider.notifier).isValid()
-                    ? Colors.white
-                    : const Color(0xFF969696),
+                    ? MITIColor.gray800
+                    : MITIColor.gray100,
               ),
             ),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 12.h),
         ],
       ),
     );
@@ -239,7 +238,11 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
   void login() async {
     FocusScope.of(context).requestFocus(FocusNode());
     if (ref.read(loginFormProvider.notifier).isValid()) {
-      final result = await ref.read(loginProvider.future);
+      final param = ref.read(loginFormProvider);
+      final result = await ref.read(loginProvider(
+        param: param,
+        type: AuthType.email,
+      ).future);
       if (mounted) {
         if (result is ErrorModel) {
           AuthError.fromModel(model: result)
@@ -253,26 +256,24 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
 }
 
 class OtherWayComponent extends StatelessWidget {
-  final String desc;
+  final String? desc;
   final String way;
   final VoidCallback onTap;
 
   const OtherWayComponent(
-      {super.key, required this.desc, required this.way, required this.onTap});
+      {super.key, this.desc, required this.way, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        if(desc != null)
         Text(
-          desc,
-          style: TextStyle(
-              fontWeight: FontWeight.w400,
-              fontSize: 14.sp,
-              letterSpacing: -0.25.sp,
-              color: const Color(0xFF585757)),
+          desc!,
+          style: MITITextStyle.sm.copyWith(color: const Color(0xFFEAEAEA)),
         ),
+        if(desc != null)
         SizedBox(width: 18.w),
         InkWell(
           onTap: onTap,
@@ -280,13 +281,16 @@ class OtherWayComponent extends StatelessWidget {
             children: [
               Text(
                 way,
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14.sp,
-                  color: const Color(0xFF4065F6),
+                style: MITITextStyle.sm.copyWith(
+                  color: MITIColor.primary,
                 ),
               ),
-              const Icon(Icons.chevron_right, color: Color(0xFF4065F6)),
+              SvgPicture.asset(
+                AssetUtil.getAssetPath(type: AssetType.icon, name: 'right_arrow'),
+                width: 24.r,
+                height: 24.r,
+              )
+              // const Icon(Icons.chevron_right, color: MITIColor.primary),
             ],
           ),
         )
@@ -305,24 +309,28 @@ class KakaoLoginButton extends ConsumerWidget {
       log('isInstalled =${isInstalled}');
       OAuthToken token = isInstalled
           ? await UserApi.instance
-          .loginWithKakaoTalk()
-          .then((value) => value)
-          .catchError((e, _) {
-        log('kakao login fail');
-      })
+              .loginWithKakaoTalk()
+              .then((value) => value)
+              .catchError((e, _) {
+              log('kakao login fail');
+            })
           : await UserApi.instance.loginWithKakaoAccount();
       log('token ${token}');
       AccessTokenInfo tokenInfo = await UserApi.instance.accessTokenInfo();
       log('token Info = ${tokenInfo}');
       log('access token ${token.accessToken}');
       final KakaoLoginParam param =
-      KakaoLoginParam(access_token: token.accessToken);
+          KakaoLoginParam(access_token: token.accessToken);
+
       final result = await ref
-          .read(oauthLoginProvider(param: param, type: OauthType.kakao).future);
+          .read(loginProvider(param: param, type: AuthType.kakao).future);
+      // final result = await ref
+      //     .read(oauthLoginProvider(param: param, type: AuthType.kakao).future);
       if (context.mounted) {
         if (result is ErrorModel) {
-          AuthError.fromModel(model: result)
-              .responseError(context, AuthApiType.oauth, ref, object: OauthType.kakao);
+          AuthError.fromModel(model: result).responseError(
+              context, AuthApiType.oauth, ref,
+              object: AuthType.kakao);
           throw Exception();
         } else {
           context.goNamed(CourtMapScreen.routeName);
@@ -346,22 +354,20 @@ class KakaoLoginButton extends ConsumerWidget {
             borderRadius: BorderRadius.circular(8.r)),
         child: Row(
           children: [
-            SizedBox(width: 23.w),
+            SizedBox(width: 20.w),
             SvgPicture.asset(
               'assets/images/logo/kakao_logo.svg',
               width: 24.w,
               height: 20.h,
             ),
-            SizedBox(width: 52.w),
+            const Spacer(),
             Text(
               '카카오로 3초만에 시작하기',
-              style: TextStyle(
-                color: const Color(0xFF1C1C1C),
-                letterSpacing: -0.25.sp,
-                fontSize: 14.sp,
-                fontWeight: FontWeight.bold,
+              style: MITITextStyle.smBold.copyWith(
+                color: MITIColor.gray800,
               ),
             ),
+            SizedBox(width: 72.5.w),
           ],
         ),
       ),
@@ -384,28 +390,25 @@ class AppleLoginButton extends ConsumerWidget {
       child: Container(
         height: 48.h,
         decoration: BoxDecoration(
-            color: const Color(0xFF1C1C1C),
-            borderRadius: BorderRadius.circular(8.r)),
+            color: MITIColor.white, borderRadius: BorderRadius.circular(8.r)),
         child: Row(
           children: [
             SizedBox(width: 27.w),
             SvgPicture.asset(
               'assets/images/logo/apple_logo.svg',
-              width: 16.w,
+              width: 24.w,
               height: 20.h,
               colorFilter:
-              const ColorFilter.mode(Color(0xFFFFFFFF), BlendMode.srcIn),
+                  const ColorFilter.mode(Color(0xFF000000), BlendMode.srcIn),
             ),
-            SizedBox(width: 80.w),
+            const Spacer(),
             Text(
-              'Apple로 계속하기',
-              style: TextStyle(
-                color: Colors.white,
-                letterSpacing: -0.25.sp,
-                fontSize: 14.sp,
-                fontWeight: FontWeight.bold,
+              'Apple ID로 시작하기',
+              style: MITITextStyle.smBold.copyWith(
+                color: MITIColor.gray800,
               ),
             ),
+            SizedBox(width: 88.5.w),
           ],
         ),
       ),
@@ -422,12 +425,13 @@ class AppleLoginButton extends ConsumerWidget {
 
     final param = AppleLoginParam.fromModel(credential: credential);
     final result = await ref
-        .read(oauthLoginProvider(param: param, type: OauthType.apple).future);
+        .read(loginProvider(param: param, type: AuthType.apple).future);
 
     if (context.mounted) {
       if (result is ErrorModel) {
-        AuthError.fromModel(model: result)
-            .responseError(context, AuthApiType.oauth, ref,object: OauthType.apple);
+        AuthError.fromModel(model: result).responseError(
+            context, AuthApiType.oauth, ref,
+            object: AuthType.apple);
       } else {
         context.goNamed(CourtMapScreen.routeName);
       }
@@ -443,12 +447,6 @@ class HelpComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = TextStyle(
-      fontSize: 14.sp,
-      letterSpacing: -0.25.sp,
-      fontWeight: FontWeight.w400,
-      color: const Color(0xFF8C8C8C),
-    );
     return Column(
       children: [
         Row(
@@ -458,13 +456,19 @@ class HelpComponent extends StatelessWidget {
               onTap: () {},
               child: Text(
                 '고객센터',
-                style: textStyle,
+                style: MITITextStyle.xxsm.copyWith(
+                  color: const Color(0xFF8C8C8C),
+                ),
               ),
             ),
+            SizedBox(width: 16.w),
             Text(
               ' | ',
-              style: textStyle,
+              style: MITITextStyle.xxsm.copyWith(
+                color: const Color(0xFF8C8C8C),
+              ),
             ),
+            SizedBox(width: 16.w),
             InkWell(
               onTap: () {
                 context.pushNamed(
@@ -473,12 +477,14 @@ class HelpComponent extends StatelessWidget {
               },
               child: Text(
                 'ID / PW를 잊으셨나요?',
-                style: textStyle,
+                style: MITITextStyle.xxsm.copyWith(
+                  color: const Color(0xFF8C8C8C),
+                ),
               ),
             ),
           ],
         ),
-        SizedBox(height: 32.h),
+        SizedBox(height: 40.h),
       ],
     );
   }

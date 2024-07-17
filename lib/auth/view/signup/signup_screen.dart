@@ -11,56 +11,177 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:miti/auth/param/signup_param.dart';
-import 'package:miti/auth/provider/login_provider.dart';
 import 'package:miti/auth/provider/signup_provider.dart';
 import 'package:miti/auth/provider/widget/phone_auth_provider.dart';
 import 'package:miti/auth/provider/widget/sign_up_form_provider.dart';
 import 'package:miti/auth/view/phone_auth/phone_auth_send_screen.dart';
 import 'package:miti/common/component/default_appbar.dart';
+import 'package:miti/common/provider/widget/form_provider.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../../common/component/custom_text_form_field.dart';
+import '../../../common/component/form/phoen_form.dart';
 import '../../../common/model/default_model.dart';
+import '../../../common/model/entity_enum.dart';
+import '../../../common/provider/form_util_provider.dart';
+import '../../../common/provider/router_provider.dart';
 import '../../../common/provider/widget/datetime_provider.dart';
 import '../../../util/util.dart';
 import '../../error/auth_error.dart';
 import '../../model/signup_model.dart';
 
 class SignUpScreen extends ConsumerWidget {
+  final AuthType type;
+
   static String get routeName => 'signUp';
 
-  const SignUpScreen({super.key});
+  const SignUpScreen({
+    super.key,
+    required this.type,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.watch(phoneAuthProvider);
-    return Scaffold(
-      backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: false,
-      appBar: const DefaultAppBar(title: '회원가입'),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(height: 24.h),
-            const DescComponent(),
-            SizedBox(
-                height:
-                    ref.watch(progressProvider).progress != 5 ? 24.h : 12.h),
-            if (ref.watch(progressProvider).progress == 1) const NicknameForm(),
-            if (ref.watch(progressProvider).progress == 2) const EmailForm(),
-            if (ref.watch(progressProvider).progress == 3) const PasswordForm(),
-            if (ref.watch(progressProvider).progress == 4)
-              const PersonalInfoForm(),
-            if (ref.watch(progressProvider).progress == 5) const CheckBoxForm(),
-            const Spacer(),
-            const _NextButton(),
-          ],
+    // ref.watch(phoneAuthProvider);
+
+    ref.watch(signUpPopProvider);
+    final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
+    return PopScope(
+      // canPop: false,
+      onPopInvoked: (didPop) {
+        log("didPop = $didPop");
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: const DefaultAppBar(
+          title: '회원가입',
+        ),
+        body: Padding(
+          padding: EdgeInsets.only(
+            left: 21.w,
+            right: 21.w,
+            // bottom: bottomPadding,
+          ),
+          child: CustomScrollView(
+            slivers: [
+              SliverFillRemaining(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  // mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(height: 20.h),
+                    _ProgressComponent(
+                      type: type,
+                    ),
+                    SizedBox(height: 40.h),
+                    const DescComponent(),
+                    // // SizedBox(
+                    // //     height:
+                    // //         ref.watch(progressProvider).progress != 5 ? 24.h : 12.h),
+                    if (ref.watch(progressProvider).progress == 1)
+                      const NicknameForm(),
+                    if (ref.watch(progressProvider).progress == 2)
+                      const EmailForm(),
+                    if (ref.watch(progressProvider).progress == 3)
+                      const PasswordForm(),
+                    if (ref.watch(progressProvider).progress == 4)
+                      const PersonalInfoForm(),
+                    if (ref.watch(progressProvider).progress == 5)
+                      const CheckBoxForm(),
+                    const Spacer(),
+                    const _NextButton(),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+}
+
+class _ProgressComponent extends ConsumerWidget {
+  final AuthType type;
+
+  const _ProgressComponent({super.key, required this.type});
+
+  Widget progress(int progress, int currentIdx) {
+    if (progress < currentIdx) {
+      return SvgPicture.asset(
+        AssetUtil.getAssetPath(type: AssetType.icon, name: 'circle_check'),
+        width: 24.r,
+        height: 24.r,
+      );
+    }
+
+    return Container(
+      height: 24.r,
+      width: 24.r,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: progress == currentIdx ? MITIColor.primary : MITIColor.gray700,
+      ),
+      child: Center(
+        child: Text(
+          progress.toString(),
+          style: TextStyle(
+            fontFamily: 'Pretendard',
+            fontSize: 14.sp,
+            fontWeight:
+                progress == currentIdx ? FontWeight.w800 : FontWeight.w500,
+            color: progress == currentIdx
+                ? const Color(0xFF262626)
+                : MITIColor.gray300,
+            letterSpacing: -14.sp * 0.02,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget divideChip(int progress, int currentIdx) {
+    return Row(
+      children: [
+        SizedBox(width: 8.w),
+        dot(progress, currentIdx),
+        SizedBox(width: 4.w),
+        dot(progress, currentIdx),
+        SizedBox(width: 4.w),
+        dot(progress, currentIdx),
+        SizedBox(width: 8.w),
+      ],
+    );
+  }
+
+  Widget dot(int progress, int currentIdx) {
+    return Container(
+      width: 2.r,
+      height: 2.r,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: progress < currentIdx ? MITIColor.primary : MITIColor.gray500,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final length = AuthType.email == type ? 5 : 3;
+    final currentIdx = ref.watch(progressProvider).progress;
+    return Row(
+      children: [
+        ...List.generate(length, (index) {
+          return Row(
+            children: [
+              progress(index + 1, currentIdx),
+              if (length != index + 1) divideChip(index + 1, currentIdx),
+            ],
+          );
+        }),
+      ],
     );
   }
 }
@@ -347,65 +468,89 @@ class _PasswordFormState extends ConsumerState<PasswordForm> {
         ref.watch(signUpFormProvider.select((form) => form.password));
     final checkPassword =
         ref.watch(signUpFormProvider.select((form) => form.checkPassword));
+
+    final pwInfo = ref.watch(formInfoProvider(InputFormType.signUpPassword));
+    final pwCheckInfo =
+        ref.watch(formInfoProvider(InputFormType.passwordCheck));
+    final pwVisible =
+        ref.watch(passwordVisibleProvider(PasswordFormType.password));
+    final pwCheckVisible =
+        ref.watch(passwordVisibleProvider(PasswordFormType.passwordCheck));
     return Column(
       children: [
+        SizedBox(height: 12.h),
         Container(
-          height: 66.h,
+          height: 74.h,
           width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8.r),
-              color: const Color(0xFFF7F7F7)),
-          alignment: Alignment.center,
+              color: MITIColor.gray700),
           child: Text(
-            '비밀번호는 특수문자(!@#\$%^&), 숫자, 영어 대소문자를\n반드시 포함해야 합니다.',
-            style: TextStyle(
-              fontSize: 13.sp,
-              fontWeight: FontWeight.w400,
-              color: const Color(0xFF040000),
+            '비밀번호는 특수문자(!@#\$%^&), 숫자, 영어 대소문자를 반드시 포함해야 합니다.',
+            style: MITITextStyle.sm150.copyWith(
+              color: MITIColor.gray100,
             ),
-            textAlign: TextAlign.center,
           ),
         ),
-        SizedBox(height: 55.h),
+        SizedBox(height: 32.h),
         CustomTextFormField(
           hintText: '비밀번호를 입력해주세요.',
-          label: '',
           textEditingController: passwordController,
           focusNode: focusNodes[0],
           textInputAction: TextInputAction.next,
+          borderColor: pwInfo.borderColor,
+          interactionDesc: pwInfo.interactionDesc,
           onNext: () => FocusScope.of(context).requestFocus(focusNodes[1]),
-          interactionDesc: interactionDescPassword,
+          obscureText: !pwVisible,
           onChanged: (val) {
             ref.read(signUpFormProvider.notifier).updateForm(password: val);
-            samePasswordCheck(context);
+            // samePasswordCheck(context);
             final validPassword = ref
                 .read(signUpFormProvider.notifier)
                 .validPassword(isPassword: true);
 
-            interactionDescPassword = InteractionDesc(
-              isSuccess: validPassword,
-              desc: validPassword ? "안전한 비밀번호에요!" : "올바른 비밀번호 양식이 아니에요.",
-            );
+            ref
+                .read(formInfoProvider(InputFormType.signUpPassword).notifier)
+                .update(
+                    borderColor:
+                        validPassword ? MITIColor.correct : MITIColor.error,
+                    interactionDesc: InteractionDesc(
+                      isSuccess: validPassword,
+                      desc:
+                          validPassword ? "안전한 비밀번호에요!" : "올바른 비밀번호 양식이 아니에요.",
+                    ));
+            final hasCheckPassword =
+                ref.read(signUpFormProvider).checkPassword.isNotEmpty;
+            if (hasCheckPassword) {
+              samePasswordCheck(context);
+            }
           },
           suffixIcon: focusNodes[0].hasFocus
-              ? IconButton(
-                  onPressed: () {
-                    passwordController.clear();
+              ? GestureDetector(
+                  onTap: () {
                     ref
-                        .read(signUpFormProvider.notifier)
-                        .updateForm(password: '');
+                        .read(passwordVisibleProvider(PasswordFormType.password)
+                            .notifier)
+                        .update((state) => !state);
                   },
-                  icon: SvgPicture.asset(
-                    'assets/images/btn/close_btn.svg',
+                  child: SvgPicture.asset(
+                    AssetUtil.getAssetPath(
+                        type: AssetType.icon,
+                        name: pwVisible ? 'visible' : 'invisible'),
+                    width: 24.r,
+                    height: 24.r,
                   ),
                 )
               : null,
         ),
-        SizedBox(height: 28.h),
+        SizedBox(height: 12.h),
         CustomTextFormField(
           textEditingController: checkPasswordController,
           textInputAction: TextInputAction.send,
-          interactionDesc: interactionDescCheckPassword,
+          borderColor: pwCheckInfo.borderColor,
+          interactionDesc: pwCheckInfo.interactionDesc,
+          obscureText: !pwCheckVisible,
           onChanged: (val) {
             ref
                 .read(signUpFormProvider.notifier)
@@ -413,19 +558,23 @@ class _PasswordFormState extends ConsumerState<PasswordForm> {
             samePasswordCheck(context);
           },
           onNext: () => FocusScope.of(context).requestFocus(FocusNode()),
-          hintText: '비밀번호를 한번 더 입력해주세요.',
-          label: '',
+          hintText: '비밀번호를 다시 한 번 입력해 주세요.',
           focusNode: focusNodes[1],
           suffixIcon: focusNodes[1].hasFocus
-              ? IconButton(
-                  onPressed: () {
-                    checkPasswordController.clear();
+              ? GestureDetector(
+                  onTap: () {
                     ref
-                        .read(signUpFormProvider.notifier)
-                        .updateForm(checkPassword: '');
+                        .read(passwordVisibleProvider(
+                                PasswordFormType.passwordCheck)
+                            .notifier)
+                        .update((state) => !state);
                   },
-                  icon: SvgPicture.asset(
-                    'assets/images/btn/close_btn.svg',
+                  child: SvgPicture.asset(
+                    AssetUtil.getAssetPath(
+                        type: AssetType.icon,
+                        name: pwCheckVisible ? 'visible' : 'invisible'),
+                    width: 24.r,
+                    height: 24.r,
                   ),
                 )
               : null,
@@ -437,11 +586,17 @@ class _PasswordFormState extends ConsumerState<PasswordForm> {
   void samePasswordCheck(BuildContext context) {
     final valid = ref.read(signUpFormProvider.notifier).isSamePassword();
     ref.read(progressProvider.notifier).updateValidNext(validNext: valid);
+    ref.read(formInfoProvider(InputFormType.passwordCheck).notifier).update(
+        borderColor: valid ? MITIColor.correct : MITIColor.error,
+        interactionDesc: InteractionDesc(
+          isSuccess: valid,
+          desc: valid ? "비밀번호가 일치해요!" : "비밀번호가 일치하지 않아요.",
+        ));
 
-    interactionDescCheckPassword = InteractionDesc(
-      isSuccess: valid,
-      desc: valid ? "안전한 비밀번호에요!" : "비밀번호가 일치하지 않아요.",
-    );
+    // interactionDescCheckPassword = InteractionDesc(
+    //   isSuccess: valid,
+    //   desc: valid ? "안전한 비밀번호에요!" : "비밀번호가 일치하지 않아요.",
+    // );
     if (valid) {
       FocusScope.of(context).requestFocus(FocusNode());
     }
@@ -474,53 +629,62 @@ class _EmailFormState extends ConsumerState<EmailForm> {
   @override
   Widget build(BuildContext context) {
     ref.watch(signUpFormProvider.select((form) => form.email));
-    return CustomTextFormField(
-      hintText: '이메일을 입력해주세요.',
-      label: '',
-      onNext: () async {
-        if (ref.read(signUpFormProvider.notifier).validEmail()) {
-          await onSubmit(context);
-        }
-      },
-      onChanged: (val) {
-        ref
-            .read(signUpFormProvider.notifier)
-            .updateForm(email: val, showAutoComplete: true);
-      },
-      interactionDesc: interactionDesc,
-      textEditingController: controller,
-      showAutoComplete: true,
-      suffixIcon: Padding(
-        padding: EdgeInsets.only(right: 8.w),
-        child: SizedBox(
-          width: 81.w,
-          height: 36.h,
-          child: TextButton(
-            onPressed: () async {
-              if (ref.read(signUpFormProvider.notifier).validEmail()) {
-                onSubmit(context);
-              }
-            },
-            style: TextButton.styleFrom(
-              backgroundColor:
-                  ref.watch(signUpFormProvider.notifier).validEmail()
-                      ? const Color(0xFF4065F6)
-                      : const Color(0xFFE8E8E8),
-              padding: EdgeInsets.symmetric(vertical: 8.h),
-            ),
-            child: Text(
-              '중복확인',
-              style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 12.sp,
-                color: ref.watch(signUpFormProvider.notifier).validEmail()
-                    ? Colors.white
-                    : const Color(0xFF969696),
+    final formInfo = ref.watch(formInfoProvider(InputFormType.signUpEmail));
+
+    return Column(
+      children: [
+        SizedBox(height: 32.h),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: CustomTextFormField(
+                hintText: '이메일을 입력해주세요.',
+                borderColor: formInfo.borderColor,
+                interactionDesc: formInfo.interactionDesc,
+                onNext: () async {
+                  if (ref.read(signUpFormProvider.notifier).validEmail()) {
+                    await onSubmit(context);
+                  }
+                },
+                onChanged: (val) {
+                  ref
+                      .read(signUpFormProvider.notifier)
+                      .updateForm(email: val, showAutoComplete: true);
+                },
+                textEditingController: controller,
               ),
             ),
-          ),
+            SizedBox(width: 13.w),
+            SizedBox(
+              width: 98.w,
+              height: 48.h,
+              child: TextButton(
+                onPressed: () async {
+                  if (ref.read(signUpFormProvider.notifier).validEmail()) {
+                    onSubmit(context);
+                  }
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor:
+                      ref.watch(signUpFormProvider.notifier).validEmail()
+                          ? MITIColor.primary
+                          : MITIColor.gray500,
+                  padding: EdgeInsets.symmetric(vertical: 8.h),
+                ),
+                child: Text(
+                  '중복확인',
+                  style: MITITextStyle.md.copyWith(
+                    color: ref.watch(signUpFormProvider.notifier).validEmail()
+                        ? MITIColor.gray800
+                        : MITIColor.gray50,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-      ),
+      ],
     );
   }
 
@@ -528,17 +692,22 @@ class _EmailFormState extends ConsumerState<EmailForm> {
     FocusScope.of(context).requestFocus(FocusNode());
     final email = ref.read(signUpFormProvider).email;
     final param = EmailCheckParam(email: email);
-    final result = await ref.read(signUpCheckProvider(param: param).future);
+    final result = await ref.read(emailCheckProvider(param: param).future);
     if (result is ResponseModel<SignUpCheckModel>) {
       log('code ${result.status_code}');
-      if (!result.data!.email!.is_duplicated) {
+      if (!result.data!.email.is_duplicated) {
         ref.read(progressProvider.notifier).updateValidNext(validNext: true);
       }
       setState(() {
-        final duplicate = result.data!.email!.is_duplicated;
-        interactionDesc = InteractionDesc(
-            isSuccess: !duplicate,
-            desc: duplicate ? '해당 이메일은 이미 회원으로 등록된 이메일입니다.' : '사용 가능한 이메일이에요!');
+        final duplicate = result.data!.email.is_duplicated;
+        ref
+            .read(progressProvider.notifier)
+            .updateValidNext(validNext: !duplicate);
+        ref.read(formInfoProvider(InputFormType.signUpEmail).notifier).update(
+            borderColor: duplicate ? MITIColor.error : MITIColor.correct,
+            interactionDesc: InteractionDesc(
+                isSuccess: !duplicate,
+                desc: duplicate ? '이미 회원으로 등록된 이메일이에요.' : '사용 가능한 이메일이에요!'));
       });
     }
   }
@@ -555,10 +724,10 @@ class DescComponent extends ConsumerWidget {
       // title = 'MITI 회원 이용약관';
       // desc = '약관에 동의하시면 회원가입이 완료됩니다.';
       title = '닉네임을 입력해주세요.';
-      desc = '입력하신 닉네임은 MITI 프로필에서 표시되는 이름이에요.\n개인정보 보호를 위해 되도록 실명은 삼가해주세요.';
+      desc = '닉네임은  MITI 프로필에서 표시되는 이름이에요.\n개인정보 보호를 위해 되도록 실명은 삼가해주세요.';
     } else if (ref.watch(progressProvider).progress == 2) {
       title = '이메일을 입력해주세요.';
-      desc = '입력하신 이메일이 MITI의 아이디로 사용됩니다.';
+      desc = '이메일은 사용자의 아이디로 사용됩니다.\n입력하신 이메일로 MITI의 공지사항이 전달돼요.';
     } else if (ref.watch(progressProvider).progress == 3) {
       title = '비밀번호를 입력해주세요.';
     } else if (ref.watch(progressProvider).progress == 4) {
@@ -578,20 +747,17 @@ class DescComponent extends ConsumerWidget {
       children: [
         Text(
           title,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 24.sp,
-            color: Colors.black,
+          style: MITITextStyle.xxl140.copyWith(
+            color: MITIColor.white,
           ),
         ),
-        if (desc.isNotEmpty && show) SizedBox(height: 8.h),
+        if (desc.isNotEmpty && show) SizedBox(height: 12.h),
         if (desc.isNotEmpty && show)
           Text(
             desc,
-            style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 14.sp,
-                color: const Color(0xFF1C1C1C)),
+            style: MITITextStyle.sm150.copyWith(
+              color: MITIColor.gray300,
+            ),
           ),
       ],
     );
@@ -606,7 +772,7 @@ class NicknameForm extends ConsumerStatefulWidget {
 }
 
 class _NicknameFormState extends ConsumerState<NicknameForm> {
-  InteractionDesc? interactionDesc;
+  // InteractionDesc? interactionDesc;
 
   @override
   void initState() {
@@ -618,48 +784,22 @@ class _NicknameFormState extends ConsumerState<NicknameForm> {
     ref.watch(signUpFormProvider.select((form) => form.nickname));
     return Column(
       children: [
+        SizedBox(height: 32.h),
         CustomTextFormField(
-          hintText: '닉네임을 입력해주세요',
-          label: '',
-          interactionDesc: interactionDesc,
+          hintText: '닉네임을 입력해주세요.',
+          // interactionDesc: formInfo.interactionDesc,
+          // borderColor: formInfo.borderColor,
           onChanged: (val) {
             ref.read(signUpFormProvider.notifier).updateForm(nickname: val);
+            ref
+                .read(progressProvider.notifier)
+                .updateValidNext(validNext: ValidRegExp.userNickname(val));
           },
           onNext: () async {
             if (ref.read(signUpFormProvider.notifier).validNickname()) {
               await onSubmit(context);
             }
           },
-          suffixIcon: Padding(
-            padding: EdgeInsets.only(right: 8.w),
-            child: SizedBox(
-              width: 81.w,
-              height: 36.h,
-              child: TextButton(
-                onPressed: () async {
-                  if (ref.read(signUpFormProvider.notifier).validNickname()) {
-                    await onSubmit(context);
-                  }
-                },
-                style: TextButton.styleFrom(
-                    backgroundColor:
-                        ref.watch(signUpFormProvider.notifier).validNickname()
-                            ? const Color(0xFF4065F6)
-                            : const Color(0xFFE8E8E8),
-                    padding: EdgeInsets.zero,
-                    alignment: Alignment.center),
-                child: Text(
-                  '중복확인',
-                  style: MITITextStyle.btnRStyle.copyWith(
-                    color:
-                        ref.watch(signUpFormProvider.notifier).validNickname()
-                            ? Colors.white
-                            : const Color(0xFF969696),
-                  ),
-                ),
-              ),
-            ),
-          ),
         ),
       ],
     );
@@ -667,20 +807,22 @@ class _NicknameFormState extends ConsumerState<NicknameForm> {
 
   Future<void> onSubmit(BuildContext context) async {
     FocusScope.of(context).requestFocus(FocusNode());
-    final nickname = ref.read(signUpFormProvider).nickname;
-    final param = NicknameCheckParam(nickname: nickname);
-    final result = await ref.read(signUpCheckProvider(param: param).future);
-    if (result is ResponseModel<SignUpCheckModel>) {
-      if (!result.data!.nickname!.is_duplicated) {
-        ref.read(progressProvider.notifier).updateValidNext(validNext: true);
-      }
-      setState(() {
-        final duplicate = result.data!.nickname!.is_duplicated;
-        interactionDesc = InteractionDesc(
-            isSuccess: !duplicate,
-            desc: duplicate ? '다른 회원님이 사용하고 계시는 닉네임이에요.' : '멋진 닉네임이에요!');
-      });
-    }
+    // final nickname = ref.read(signUpFormProvider).nickname;
+    // final param = NicknameCheckParam(nickname: nickname);
+    // final result = await ref.read(signUpCheckProvider(param: param).future);
+    // if (result is ResponseModel<SignUpCheckModel>) {
+    //   if (!result.data!.nickname!.is_duplicated) {
+    //     ref.read(progressProvider.notifier).updateValidNext(validNext: true);
+    //   }
+    //   setState(() {
+    //     final duplicate = result.data!.email!.is_duplicated;
+    //     ref.read(formInfoProvider(InputFormType.email).notifier).update(
+    //         borderColor: duplicate ? MITIColor.error : MITIColor.correct,
+    //         interactionDesc: InteractionDesc(
+    //             isSuccess: !duplicate,
+    //             desc: duplicate ? '이미 회원으로 등록된 이메일이에요.' : '사용 가능한 이메일이에요!'));
+    //   });
+    // }
   }
 }
 
@@ -734,9 +876,11 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        SizedBox(height: 32.h),
+
         CustomTextFormField(
           label: '이름',
-          hintText: '이름을 입력해주세요.',
+          hintText: '성함을 입력해주세요.',
           textInputAction: TextInputAction.next,
           onChanged: (val) {
             ref.read(signUpFormProvider.notifier).updateForm(name: val);
@@ -746,44 +890,183 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
             FocusScope.of(context).requestFocus(focusNodes[1]);
           },
         ),
-        SizedBox(height: 24.h),
-        DateInputForm(
-          focusNode: focusNodes[0],
-          label: '생년월일',
-          enabled: false,
-          hintText: 'YYYY / MM / DD',
-          textEditingController: dateController,
-          // textInputAction: TextInputAction.next,
-          // keyboardType: TextInputType.number,
-          onNext: () {
-            FocusScope.of(context).requestFocus(focusNodes[1]);
-          },
-          onChanged: (val) {
-            ref.read(signUpFormProvider.notifier).updateForm(birthDate: val);
-            if (ref.read(signUpFormProvider.notifier).validBirth()) {
-              FocusScope.of(context).requestFocus(focusNodes[1]);
-            }
-            checkValid();
-          },
+        SizedBox(height: 40.h),
+        const _BirthForm(),
+        SizedBox(height: 40.h),
+        const PhoneForm(
+          type: PhoneAuthType.signup,
         ),
-        SizedBox(height: 24.h),
-        CustomTextFormField(
-          focusNode: focusNodes[1],
-          label: '휴대폰 번호',
-          hintText: '휴대폰 번호를 입력해주세요.',
-          onChanged: (val) {
-            ref.read(signUpFormProvider.notifier).updateForm(phoneNumber: val);
-            if (ref.read(signUpFormProvider.notifier).validPhoneNumber()) {
-              FocusScope.of(context).requestFocus(FocusNode());
-            }
-            checkValid();
-          },
-          onNext: () {
-            FocusScope.of(context).requestFocus(FocusNode());
-          },
-          keyboardType: TextInputType.number,
-          inputFormatters: <TextInputFormatter>[PhoneNumberFormatter()],
+        // CustomTextFormField(
+        //   focusNode: focusNodes[1],
+        //   label: '휴대폰 번호',
+        //   hintText: '휴대폰 번호를 입력해주세요.',
+        //   onChanged: (val) {
+        //     ref.read(signUpFormProvider.notifier).updateForm(phoneNumber: val);
+        //     if (ref.read(signUpFormProvider.notifier).validPhoneNumber()) {
+        //       FocusScope.of(context).requestFocus(FocusNode());
+        //     }
+        //     checkValid();
+        //   },
+        //   onNext: () {
+        //     FocusScope.of(context).requestFocus(FocusNode());
+        //   },
+        //   keyboardType: TextInputType.number,
+        //   inputFormatters: <TextInputFormatter>[PhoneNumberFormatter()],
+        // ),
+      ],
+    );
+  }
+}
+
+class _BirthForm extends ConsumerStatefulWidget {
+  const _BirthForm({super.key});
+
+  @override
+  ConsumerState<_BirthForm> createState() => _BirthFormState();
+}
+
+class _BirthFormState extends ConsumerState<_BirthForm> {
+  String? year;
+  String? month;
+  String? day;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          '생년월일',
+          style: MITITextStyle.sm.copyWith(
+            color: MITIColor.gray300,
+          ),
         ),
+        SizedBox(height: 8.h),
+        GestureDetector(
+          onTap: () {
+            showCupertinoDialog(
+                barrierDismissible: true,
+                context: context,
+                builder: (_) {
+                  return Center(
+                    child: Container(
+                      height: 332.h,
+                      width: 333.w,
+                      padding: EdgeInsets.all(20.r),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20.r),
+                        color: MITIColor.gray700,
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            InkWell(
+                              onTap: () => context.pop(),
+                              child: Icon(Icons.close, size: 24.r),
+                            ),
+                            Expanded(
+                              child: CupertinoDatePicker(
+                                mode: CupertinoDatePickerMode.date,
+                                minimumYear: 1900,
+                                maximumYear: 2999,
+                                dateOrder: DatePickerDateOrder.ymd,
+                                onDateTimeChanged: (DateTime value) {
+                                  setState(() {
+                                    year = value.year.toString();
+                                    month = value.month < 10
+                                        ? '0${value.month.toString()}'
+                                        : value.month.toString();
+                                    day = value.day < 10
+                                        ? '0${value.day.toString()}'
+                                        : value.day.toString();
+                                    ref
+                                        .read(signUpFormProvider.notifier)
+                                        .updateForm(
+                                            birthDate: "$year / $month / $day");
+                                    if(ref.read(signUpFormProvider.notifier).validPersonalInfo()){
+                                      ref.read(progressProvider.notifier).updateValidNext(validNext: true);
+                                    }
+
+                                  });
+                                },
+                              ),
+                            ),
+                            TextButton(
+                                onPressed: () => context.pop(),
+                                child: Text(
+                                  '생년월일 선택 완료',
+                                  style: MITITextStyle.mdBold.copyWith(
+                                    color: MITIColor.gray800,
+                                  ),
+                                ))
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                });
+
+            // showDatePicker(
+            //     context: context,
+            //     firstDate: DateTime(1900),
+            //     lastDate: DateTime(2999));
+          },
+          child: Container(
+            height: 48.h,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8.r),
+              color: MITIColor.gray700,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                    child: Text(
+                  year ?? 'YYYY',
+                  textAlign: TextAlign.center,
+                  style: MITITextStyle.md.copyWith(
+                    color: year == null ? MITIColor.gray500 : MITIColor.gray100,
+                  ),
+                )),
+                Text(
+                  '/',
+                  style: MITITextStyle.md.copyWith(
+                    color: MITIColor.gray300,
+                  ),
+                ),
+                Expanded(
+                    child: Text(
+                  month ?? 'MM',
+                  textAlign: TextAlign.center,
+                  style: MITITextStyle.md.copyWith(
+                    color:
+                        month == null ? MITIColor.gray500 : MITIColor.gray100,
+                  ),
+                )),
+                Text(
+                  '/',
+                  style: MITITextStyle.md.copyWith(
+                    color: MITIColor.gray300,
+                  ),
+                ),
+                Expanded(
+                    child: Text(
+                  day ?? 'DD',
+                  textAlign: TextAlign.center,
+                  style: MITITextStyle.md.copyWith(
+                    color: day == null ? MITIColor.gray500 : MITIColor.gray100,
+                  ),
+                )),
+              ],
+            ),
+          ),
+        )
       ],
     );
   }
@@ -828,7 +1111,7 @@ class _NextButton extends ConsumerStatefulWidget {
 class _NextButtonState extends ConsumerState<_NextButton> {
   @override
   Widget build(BuildContext context) {
-    ref.watch(phoneAuthProvider);
+    // ref.watch(phoneAuthProvider);
     ref.watch(signUpFormProvider.select((value) => value.showDetail));
 
     final progressModel = ref.watch(progressProvider);
@@ -851,25 +1134,25 @@ class _NextButtonState extends ConsumerState<_NextButton> {
 
     return Column(
       children: [
-        if (!show)
-          Container(
-            width: double.infinity,
-            height: 8.h,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(2.r),
-              color: const Color(0xFFE8E8E8),
-            ),
-            alignment: Alignment.centerLeft,
-            child: AnimatedContainer(
-              width: progressWidth * progress,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(2.r),
-                color: const Color(0xFF4065F6),
-              ),
-              duration: const Duration(milliseconds: 500),
-            ),
-          ),
-        if (!show) SizedBox(height: 16.h),
+        // if (!show)
+        //   Container(
+        //     width: double.infinity,
+        //     height: 8.h,
+        //     decoration: BoxDecoration(
+        //       borderRadius: BorderRadius.circular(2.r),
+        //       color: const Color(0xFFE8E8E8),
+        //     ),
+        //     alignment: Alignment.centerLeft,
+        //     child: AnimatedContainer(
+        //       width: progressWidth * progress,
+        //       decoration: BoxDecoration(
+        //         borderRadius: BorderRadius.circular(2.r),
+        //         color: const Color(0xFF4065F6),
+        //       ),
+        //       duration: const Duration(milliseconds: 500),
+        //     ),
+        //   ),
+        // if (!show) SizedBox(height: 16.h),
         SizedBox(
           height: 48.h,
           child: TextButton(
@@ -878,22 +1161,24 @@ class _NextButtonState extends ConsumerState<_NextButton> {
                   if (!show && progress == 5) {
                     final model = ref.read(signUpFormProvider);
                     final param = SignUpParam.fromForm(model: model);
-                    final result =
-                        await ref.read(signUpProvider(param: param).future);
-                    if (result is ErrorModel) {
-                      log('error');
-                      if (context.mounted) {
-                        AuthError.fromModel(model: result)
-                            .responseError(context, AuthApiType.signup, ref);
-                      }
-                    } else {
-                      ref.read(requestSMSProvider(type: PhoneAuthType.signup)
-                          .future);
-                      log('회원가입!');
-                      if (context.mounted) {
-                        context.goNamed(PhoneAuthSendScreen.routeName);
-                      }
-                    }
+
+                    // final result =
+                    //     await ref.read(signUpProvider(param: param).future);
+                    //
+                    // if (result is ErrorModel) {
+                    //   log('error');
+                    //   if (context.mounted) {
+                    //     AuthError.fromModel(model: result)
+                    //         .responseError(context, AuthApiType.signup, ref);
+                    //   }
+                    // } else {
+                    //   // ref.read(requestSMSProvider(type: PhoneAuthType.signup)
+                    //   //     .future);
+                    //   log('회원가입!');
+                    //   if (context.mounted) {
+                    //     context.goNamed(PhoneAuthSendScreen.routeName);
+                    //   }
+                    // }
                   } else if (show) {
                     ref.read(progressProvider.notifier).hideDetail();
                   } else {
@@ -902,18 +1187,16 @@ class _NextButtonState extends ConsumerState<_NextButton> {
                 }
               },
               style: TextButton.styleFrom(
-                  backgroundColor: validNext
-                      ? const Color(0xFF4065F6)
-                      : const Color(0xFFE8E8E8)),
+                  backgroundColor:
+                      validNext ? MITIColor.primary : MITIColor.gray500),
               child: Text(
                 buttonText,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14.sp,
-                    color: validNext ? Colors.white : const Color(0xFF969696)),
+                style: MITITextStyle.mdBold.copyWith(
+                  color: validNext ? MITIColor.gray800 : MITIColor.gray50,
+                ),
               )),
         ),
-        SizedBox(height: 48.h),
+        SizedBox(height: 41.h),
       ],
     );
   }

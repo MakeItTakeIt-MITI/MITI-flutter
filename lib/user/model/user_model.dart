@@ -17,8 +17,8 @@ class UserInfoModel extends LoginModel {
     required super.id,
     required super.email,
     required super.nickname,
-    required super.is_authenticated,
     required super.token,
+    required super.signup_method,
     required this.birthday,
     required this.name,
     required this.phone,
@@ -28,7 +28,7 @@ class UserInfoModel extends LoginModel {
     int? id,
     String? email,
     String? nickname,
-    bool? is_authenticated,
+    AuthType? signup_method,
     TokenModel? token,
     String? birthday,
     String? name,
@@ -38,11 +38,11 @@ class UserInfoModel extends LoginModel {
       id: id ?? this.id,
       email: email ?? this.email,
       nickname: nickname ?? this.nickname,
-      is_authenticated: is_authenticated ?? this.is_authenticated,
       token: token ?? this.token,
       birthday: birthday ?? this.birthday,
       name: name ?? this.name,
       phone: phone ?? this.phone,
+      signup_method: signup_method ?? this.signup_method,
     );
   }
 }
@@ -54,7 +54,7 @@ class UserModel extends IModelWithId {
   final String? name;
   final String? birthday;
   final String? phone;
-  final OauthType? oauth;
+  final AuthType? oauth;
   final AccountModel account;
   final RatingModel rating;
 
@@ -80,7 +80,7 @@ class UserModel extends IModelWithId {
     String? name,
     String? birthday,
     String? phone,
-    OauthType? oauth,
+    AuthType? oauth,
     AccountModel? account,
     RatingModel? rating,
   }) {
@@ -99,13 +99,12 @@ class UserModel extends IModelWithId {
 }
 
 @JsonSerializable()
-class UserNicknameModel {
+class UserNicknameModel extends IModelWithId {
   final String email;
-  final String nickname;
 
   UserNicknameModel({
     required this.email,
-    required this.nickname,
+    required super.id,
   });
 
   factory UserNicknameModel.fromJson(Map<String, dynamic> json) =>

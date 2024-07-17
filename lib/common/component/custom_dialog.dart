@@ -2,47 +2,57 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
 class CustomDialog extends StatelessWidget {
   final String title;
   final String content;
+  final String btnDesc;
   final VoidCallback? onPressed;
+  final Widget? button;
 
   const CustomDialog(
-      {super.key, required this.title, this.onPressed, required this.content});
+      {super.key,
+      required this.title,
+      this.onPressed,
+      required this.content,
+      this.btnDesc = '확인', this.button});
 
   @override
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.center,
       child: Container(
-        width: 348.w,
+        width: 333.w,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.r),
-          color: Colors.white,
+          borderRadius: BorderRadius.circular(20.r),
+          color: MITIColor.gray700,
         ),
-        padding: EdgeInsets.all(16.r),
+        padding:
+            EdgeInsets.only(left: 20.w, right: 20.w, top: 30.h, bottom: 20.h),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               title,
-              style: MITITextStyle.popupTitleStyle.copyWith(
-                color: const Color(0xFF1A1E27),
+              style: MITITextStyle.mdBold.copyWith(
+                color: MITIColor.gray100,
               ),
             ),
             SizedBox(height: 16.h),
             Text(
               content,
-              style: MITITextStyle.popupTextStyle.copyWith(
-                color: const Color(0xFF1A1E27),
+              textAlign: TextAlign.center,
+              style: MITITextStyle.xxsmLight150.copyWith(
+                color: MITIColor.gray300,
               ),
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 30.h),
+            if(button == null)
             ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 34.h),
+              constraints: BoxConstraints(maxHeight: 48.h, minHeight: 48.h),
               child: TextButton(
                 onPressed: onPressed ??
                     () => Navigator.of(context, rootNavigator: true)
@@ -50,15 +60,17 @@ class CustomDialog extends StatelessWidget {
                 style: TextButton.styleFrom(
                     padding: EdgeInsets.zero,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4.r))),
+                        borderRadius: BorderRadius.circular(8.r))),
                 child: Text(
-                  '확인',
-                  style: MITITextStyle.btnTextBStyle.copyWith(
-                    color: Colors.white,
+                  btnDesc,
+                  style: MITITextStyle.mdBold.copyWith(
+                    color: MITIColor.gray800,
                   ),
                 ),
               ),
-            )
+            ),
+            if(button!=null)
+              button!
           ],
         ),
       ),

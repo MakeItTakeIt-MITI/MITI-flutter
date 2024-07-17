@@ -207,6 +207,10 @@ class SignUpForm extends _$SignUpForm {
     newShowDetail[idx] = !newShowDetail[idx];
     state = state.copyWith(showDetail: newShowDetail);
   }
+
+  bool validPersonalInfo() {
+    return validName() && validBirth() && validPhoneNumber();
+  }
 }
 
 class ProgressModel {

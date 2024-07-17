@@ -1,15 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:miti/common/model/entity_enum.dart';
 
 import '../../auth/model/find_info_model.dart';
 import '../component/custom_text_form_field.dart';
 
-enum InputFormType { login, passwordCode, nickname }
-
-enum PasswordFormType { password, newPassword, newPasswordCheck }
 
 final codeDescProvider = StateProvider.family
-    .autoDispose<InteractionDesc?, FindInfoType>(
-        (ref, FindInfoType type) => null);
+    .autoDispose<InteractionDesc?, PhoneAuthType>(
+        (ref, PhoneAuthType type) => null);
 
 
 final formDescProvider = StateProvider.family

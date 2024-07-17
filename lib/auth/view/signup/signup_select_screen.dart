@@ -3,11 +3,16 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/auth/view/signup/signup_screen.dart';
+import 'package:miti/theme/color_theme.dart';
+import 'package:miti/theme/text_theme.dart';
 
 import '../../../common/component/default_appbar.dart';
+import '../../../common/model/entity_enum.dart';
+import '../../../util/util.dart';
 
 class SignUpSelectScreen extends StatelessWidget {
   static String get routeName => 'signUpSelect';
@@ -17,29 +22,31 @@ class SignUpSelectScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: MITIColor.black,
       resizeToAvoidBottomInset: false,
-      appBar: const DefaultAppBar(),
+      appBar: const DefaultAppBar(
+        backgroundColor: MITIColor.black,
+      ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 36.w),
+        padding: EdgeInsets.symmetric(horizontal: 41.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
               padding: EdgeInsets.only(
-                top: 153.h,
+                top: 129.5.h,
                 // bottom: 198.h,
               ),
               child: const _IntroductionComponent(),
             ),
             const Spacer(),
             const _SignUpButton(),
-            SizedBox(height: 35.h),
+            SizedBox(height: 32.h),
             OtherWayComponent(
                 desc: '이미 가입하셨나요?',
                 way: '로그인하기',
                 onTap: () => context.goNamed(LoginScreen.routeName)),
-            const Spacer(),
+            SizedBox(height: 100.h),
             const HelpComponent(),
           ],
         ),
@@ -55,34 +62,20 @@ class _IntroductionComponent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          width: 88.w,
-          height: 28.h,
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/images/logo/MITI.png'),
-            ),
-          ),
+        SvgPicture.asset(
+          AssetUtil.getAssetPath(type: AssetType.logo, name: 'MITI'),
+          width: 110.w,
+          height: 54.h,
         ),
-        SizedBox(height: 8.h),
+        SizedBox(height: 25.5.h),
         Text(
           '만나서 반가워요!',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            letterSpacing: -0.25.sp,
-            fontSize: 24.sp,
-            color: Colors.black,
-          ),
+          style: MITITextStyle.xxl.copyWith(color: MITIColor.white),
         ),
-        SizedBox(height: 8.h),
+        SizedBox(height: 12.h),
         Text(
           '어떤 방식으로 MITI에 가입하시겠어요?',
-          style: TextStyle(
-            fontWeight: FontWeight.w400,
-            letterSpacing: -0.25.sp,
-            fontSize: 14.sp,
-            color: const Color(0xFF1C1C1C),
-          ),
+          style: MITITextStyle.sm.copyWith(color: MITIColor.white),
         )
       ],
     );
@@ -97,11 +90,10 @@ class _SignUpButton extends StatelessWidget {
     return Column(
       children: <Widget>[
         const EmailSignUpButton(),
-        SizedBox(height: 8.h),
+        SizedBox(height: 12.h),
         const KakaoLoginButton(),
-        SizedBox(height: 8.h),
-        if(Platform.isIOS)
-        const AppleLoginButton(),
+        if (Platform.isIOS) SizedBox(height: 12.h),
+        if (Platform.isIOS) const AppleLoginButton(),
       ],
     );
   }
@@ -113,33 +105,37 @@ class EmailSignUpButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => context.pushNamed(SignUpScreen.routeName),
+      onTap: () {
+        const extra = AuthType.email;
+        context.goNamed(SignUpScreen.routeName, extra: extra);
+      },
       child: Container(
         height: 48.h,
         decoration: BoxDecoration(
-            color: const Color(0xFF4065F6),
-            borderRadius: BorderRadius.circular(8.r)),
+            color: MITIColor.primary, borderRadius: BorderRadius.circular(8.r)),
         child: Row(
           children: [
-            SizedBox(width: 23.w),
-            SizedBox(
-              width: 24.r,
+            SizedBox(width: 20.w),
+            Container(
               height: 24.r,
-              child: const Icon(
-                Icons.email_outlined,
-                color: Colors.white,
+              width: 24.r,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(
+                    AssetUtil.getAssetPath(
+                        type: AssetType.icon, name: 'Mail', extension: 'png'),
+                  ),
+                ),
               ),
             ),
-            SizedBox(width: 61.w),
+            const Spacer(),
             Text(
               '이메일로 시작하기',
-              style: TextStyle(
-                color: Colors.white,
-                letterSpacing: -0.25.sp,
-                fontSize: 14.sp,
-                fontWeight: FontWeight.bold,
+              style: MITITextStyle.smBold.copyWith(
+                color: MITIColor.gray800,
               ),
             ),
+            SizedBox(width: 97.5.w),
           ],
         ),
       ),

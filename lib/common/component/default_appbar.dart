@@ -5,7 +5,9 @@ import 'package:flutter/src/foundation/diagnostics.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:miti/util/util.dart';
 
 class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
@@ -29,23 +31,23 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
       return SliverAppBar(
         title: Text(
           title ?? '',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w700,
-            letterSpacing: -0.25.sp,
-          ),
+          style: MITITextStyle.mdBold,
         ),
-        backgroundColor: backgroundColor ?? Colors.white,
+        backgroundColor: backgroundColor ?? MITIColor.gray800,
 
         /// 앱바 pinned 시 surface 컬러
-        surfaceTintColor: backgroundColor ?? Colors.white,
-        shape: const Border(bottom: BorderSide(color: Color(0xFFE8E8E8))),
+        surfaceTintColor: backgroundColor ?? MITIColor.gray800,
+        // shape: const Border(
+        //   bottom: BorderSide(color: Color(0xFFE8E8E8)),
+        // ),
         centerTitle: true,
         leading: context.canPop()
             ? IconButton(
                 onPressed: () => context.pop(),
-                icon: SvgPicture.asset('assets/images/icon/chevron_left.svg'),
+                icon: SvgPicture.asset(
+                  AssetUtil.getAssetPath(
+                      type: AssetType.icon, name: 'back_arrow'),
+                ),
               )
             : null,
         bottom: bottom,
@@ -56,18 +58,22 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: Text(
         title ?? '',
-        style: MITITextStyle.pageNameStyle.copyWith(
-          color: Colors.black,
+        style: MITITextStyle.mdBold.copyWith(
+          color: MITIColor.white,
         ),
       ),
-      surfaceTintColor: Colors.white,
-      backgroundColor: backgroundColor ?? Colors.white,
-      shape: const Border(bottom: BorderSide(color: Color(0xFFE8E8E8))),
+      backgroundColor: backgroundColor ?? MITIColor.gray800,
+
+      /// 앱바 pinned 시 surface 컬러
+      surfaceTintColor: backgroundColor ?? MITIColor.gray800,
       centerTitle: true,
       leading: context.canPop()
           ? IconButton(
               onPressed: () => context.pop(),
-              icon: SvgPicture.asset('assets/images/icon/chevron_left.svg'),
+              icon: SvgPicture.asset(
+                AssetUtil.getAssetPath(
+                    type: AssetType.icon, name: 'back_arrow'),
+              ),
             )
           : null,
       bottom: bottom,
@@ -76,7 +82,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize {
-    final bottomHeight = bottom != null ? bottom!.preferredSize.height : 0;
-    return Size.fromHeight(48.h + bottomHeight);
+    final bottomHeight = bottom != null ? 44.h : 0;
+    return Size.fromHeight(44.h +bottomHeight);
   }
 }

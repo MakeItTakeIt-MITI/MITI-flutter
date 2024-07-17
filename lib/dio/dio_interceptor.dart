@@ -68,8 +68,9 @@ class CustomDioInterceptor extends Interceptor {
     List<String> errorLog = [];
     final noneAuthUrl = [
       '/auth/send-sms',
-      '/auth/login',
+      '/auth/login/email',
       '/auth/send-sms/authentication'
+      'auth/verify-code',
     ];
 
 

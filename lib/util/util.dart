@@ -3,6 +3,23 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 // import 'package:timezone/browser.dart';
 
+const String assetPathIcon = 'assets/images/v2/';
+
+enum AssetType {
+  logo,
+  icon;
+
+}
+
+class AssetUtil {
+  static String getAssetPath(
+      {required AssetType type,
+      required String name,
+      String extension = 'svg'}) {
+    return '$assetPathIcon${type.name}/$name.$extension';
+  }
+}
+
 class DateTimeUtil {
   // // 기본 타임존을 Asia/Seoul로 지정
   // static String timezone = 'Asia/Seoul';

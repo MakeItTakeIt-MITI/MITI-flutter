@@ -24,6 +24,7 @@ import 'package:miti/user/view/user_info_screen.dart';
 import '../../common/component/custom_drop_down_button.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
+import '../../common/model/entity_enum.dart';
 import '../../common/provider/form_util_provider.dart';
 import '../../common/provider/router_provider.dart';
 import '../../util/util.dart';

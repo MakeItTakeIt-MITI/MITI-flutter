@@ -11,6 +11,7 @@ import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../game/model/game_model.dart';
 import '../model/user_model.dart';
+import '../param/user_profile_param.dart';
 
 part 'user_provider.g.dart';
 
@@ -133,15 +134,16 @@ Future<BaseModel> updateNickname(UpdateNicknameRef ref) async {
 }
 
 @riverpod
-Future<BaseModel> updatePassword(UpdatePasswordRef ref) async {
-  final userId = ref.watch(authProvider)!.id!;
-  final param = ref.watch(userPasswordFormProvider);
+Future<BaseModel> updatePassword(
+    UpdatePasswordRef ref, int userId, UserPasswordParam param) async {
+  // final userId = ref.watch(authProvider)!.id!;
+  // final param = ref.watch(userPasswordFormProvider);
   return await ref
       .watch(userRepositoryProvider)
       .updatePassword(userId: userId, param: param)
       .then<BaseModel>((value) {
     logger.i(value);
-    ref.read(userInfoProvider.notifier).getUserInfo();
+    // ref.read(userInfoProvider.notifier).getUserInfo();
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);

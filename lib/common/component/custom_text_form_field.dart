@@ -11,6 +11,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:miti/auth/provider/widget/sign_up_form_provider.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../auth/view/signup/signup_screen.dart';
@@ -34,7 +35,7 @@ class InteractionDesc {
 
 class CustomTextFormField extends StatelessWidget {
   final String? initialValue;
-  final String label;
+  final String? label;
   final String hintText;
   final TextInputAction? textInputAction;
   final Widget? suffixIcon;
@@ -53,12 +54,13 @@ class CustomTextFormField extends StatelessWidget {
   final TextStyle? hintTextStyle;
   final TextStyle? textStyle;
   final TextStyle? labelTextStyle;
+  final Color? borderColor;
 
   const CustomTextFormField({
     super.key,
     required this.hintText,
     this.textInputAction,
-    required this.label,
+    this.label,
     this.suffixIcon,
     this.obscureText = false,
     this.validator,
@@ -76,6 +78,7 @@ class CustomTextFormField extends StatelessWidget {
     this.hintTextStyle,
     this.textStyle,
     this.labelTextStyle,
+    this.borderColor,
   });
 
   @override
@@ -83,14 +86,15 @@ class CustomTextFormField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (label.isNotEmpty)
+        if (label != null)
           Text(
-            label,
+            label!,
             style: labelTextStyle ??
-                MITITextStyle.inputLabelIStyle
-                    .copyWith(color: const Color(0xFF999999)),
+                MITITextStyle.sm.copyWith(
+                  color: MITIColor.gray300,
+                ),
           ),
-        if (label.isNotEmpty) SizedBox(height: 12.h),
+        if (label != null) SizedBox(height: 8.h),
         TextFormField(
           initialValue: initialValue,
           focusNode: focusNode,
@@ -103,31 +107,50 @@ class CustomTextFormField extends StatelessWidget {
           textAlign: textAlign,
           enabled: enabled,
           style: textStyle ??
-              TextStyle(
-                fontWeight: FontWeight.w500,
-                color: const Color(0xFF1C1C1C),
-                fontSize: 16.sp,
-                letterSpacing: -0.25.sp,
+              MITITextStyle.md.copyWith(
+                color: MITIColor.gray100,
               ),
           decoration: InputDecoration(
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-            constraints: BoxConstraints(maxHeight: 58.h, minHeight: 50.h),
+            contentPadding: EdgeInsets.symmetric(horizontal: 20.w),
+            constraints: BoxConstraints(maxHeight: 48.h, minHeight: 48.h),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: showAutoComplete
+                  ? BorderRadius.vertical(top: Radius.circular(8.r))
+                  : BorderRadius.circular(8.r),
+              borderSide: borderColor == null
+                  ? BorderSide.none
+                  : BorderSide(color: borderColor!),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: showAutoComplete
+                  ? BorderRadius.vertical(top: Radius.circular(8.r))
+                  : BorderRadius.circular(8.r),
+              borderSide: borderColor == null
+                  ? BorderSide.none
+                  : BorderSide(color: borderColor!),
+            ),
             border: OutlineInputBorder(
               borderRadius: showAutoComplete
                   ? BorderRadius.vertical(top: Radius.circular(8.r))
                   : BorderRadius.circular(8.r),
-              borderSide: BorderSide.none,
+              borderSide: borderColor == null
+                  ? BorderSide.none
+                  : BorderSide(color: borderColor!),
             ),
             hintText: hintText,
             hintStyle: hintTextStyle ??
-                MITITextStyle.placeHolderMStyle
-                    .copyWith(color: const Color(0xFF969696)),
-            fillColor: const Color(0xFFF7F7F7),
+                MITITextStyle.md.copyWith(
+                  color: MITIColor.gray500,
+                ),
+            fillColor: MITIColor.gray700,
             filled: true,
-            suffixIcon: suffixIcon,
-            suffixIconConstraints:
-                BoxConstraints.loose(Size(double.infinity, 36.h)),
+            suffixIcon: Padding(
+              padding: EdgeInsets.only(right: suffixIcon == null ? 0 : 20.w),
+              child: suffixIcon,
+            ),
+            suffixIconConstraints: BoxConstraints.loose(
+              Size(double.infinity, 36.h),
+            ),
           ),
           validator: validator,
           onChanged: onChanged,
@@ -137,33 +160,31 @@ class CustomTextFormField extends StatelessWidget {
           AutoCompleteComponent(
             controller: textEditingController!,
           ),
-        if (interactionDesc != null) SizedBox(height: 8.h),
+        if (interactionDesc != null) SizedBox(height: 16.h),
         if (interactionDesc != null)
-          Row(
-            children: [
-              SizedBox(
-                height: 14.r,
-                width: 14.r,
-                child: SvgPicture.asset(interactionDesc!.isSuccess
-                    ? 'assets/images/icon/system_success.svg'
-                    : 'assets/images/icon/system_alert.svg'),
-              ),
-              SizedBox(
-                width: 4.w,
-              ),
-              Text(
-                interactionDesc!.desc,
-                style: TextStyle(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w400,
-                  letterSpacing: -0.25.sp,
-                  color: interactionDesc!.isSuccess
-                      ? const Color(0xFF00BA34)
-                      : const Color(0xFFE92C2C),
-                ),
-              ),
-            ],
+          Text(
+            interactionDesc!.desc,
+            style: MITITextStyle.xxsm.copyWith(
+              color: interactionDesc!.isSuccess
+                  ? MITIColor.correct
+                  : MITIColor.error,
+            ),
           ),
+        // Row(
+        //   children: [
+        //     SizedBox(
+        //       height: 14.r,
+        //       width: 14.r,
+        //       child: SvgPicture.asset(interactionDesc!.isSuccess
+        //           ? 'assets/images/icon/system_success.svg'
+        //           : 'assets/images/icon/system_alert.svg'),
+        //     ),
+        //     SizedBox(
+        //       width: 4.w,
+        //     ),
+        //
+        //   ],
+        // ),
       ],
     );
   }

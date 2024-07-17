@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:miti/common/model/entity_enum.dart';
 
 part 'auth_model.g.dart';
 
@@ -6,14 +7,14 @@ class AuthModel {
   final int? id;
   final String? email;
   final String? nickname;
-  final bool? is_authenticated;
+  // final bool? is_authenticated;
   final TokenModel? token;
 
   AuthModel({
     required this.id,
     required this.email,
     required this.nickname,
-    required this.is_authenticated,
+    // required this.is_authenticated,
     required this.token,
   });
 
@@ -21,7 +22,7 @@ class AuthModel {
     int? id,
     String? email,
     String? nickname,
-    bool? is_authenticated,
+    // bool? is_authenticated,
     TokenModel? token,
   }) {
     return AuthModel(
@@ -29,7 +30,7 @@ class AuthModel {
       id: id ?? this.id,
       email: email ?? this.email,
       nickname: nickname ?? this.nickname,
-      is_authenticated: is_authenticated ?? this.is_authenticated,
+      // is_authenticated: is_authenticated ?? this.is_authenticated,
     );
   }
 }
@@ -39,14 +40,15 @@ class LoginModel {
   final int id;
   final String email;
   final String nickname;
-  final bool is_authenticated;
+  final AuthType signup_method;
+
   final TokenModel token;
 
   LoginModel({
     required this.id,
     required this.email,
     required this.nickname,
-    required this.is_authenticated,
+    required this.signup_method,
     required this.token,
   });
 

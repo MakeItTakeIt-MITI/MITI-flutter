@@ -1,8 +1,85 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MITITextStyle {
+  static final TextStyle xxl140 = TextStyle(
+    fontSize: 24.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w700,
+    height: 1.4,
+    letterSpacing: -24.sp * 0.02,
+  );
+
+  static final TextStyle xxl = TextStyle(
+    fontSize: 24.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w700,
+    letterSpacing: -24.sp * 0.02,
+  );
+
+  static final TextStyle xl = TextStyle(
+    fontSize: 20.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w700,
+    letterSpacing: -20.sp * 0.02,
+  );
+
+  static final TextStyle lg = TextStyle(
+    fontSize: 18.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w500,
+  );
+
+  static final TextStyle mdBold = TextStyle(
+    fontSize: 16.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w700,
+  );
+
+  static final TextStyle md = TextStyle(
+    fontSize: 16.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w500,
+    letterSpacing: -16.sp * 0.02,
+  );
+
+  static final TextStyle sm150 = TextStyle(
+    fontSize: 14.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+    letterSpacing: -14.sp * 0.02,
+  );
+
+  static final TextStyle sm = TextStyle(
+    fontSize: 14.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w400,
+    letterSpacing: -14.sp * 0.02,
+  );
+
+  static final TextStyle smBold = TextStyle(
+    fontSize: 14.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.bold,
+    letterSpacing: -14.sp * 0.02,
+  );
+
+  static final TextStyle xxsm = TextStyle(
+    fontSize: 12.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w500,
+    height: 1,
+  );
+
+  static final TextStyle xxsmLight150 = TextStyle(
+    fontSize: 12.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w300,
+    height: 1.5,
+    letterSpacing: -12.sp * 0.02,
+  );
+
   static final TextStyle gameTitleMainStyle = TextStyle(
     fontSize: 16.sp,
     fontFamily: 'Pretendard',
@@ -66,7 +143,7 @@ class MITITextStyle {
     height: 18 / 16,
     letterSpacing: -0.25.sp,
   );
-  static final TextStyle  feeMakerStyle = TextStyle(
+  static final TextStyle feeMakerStyle = TextStyle(
     fontSize: 12.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w700,

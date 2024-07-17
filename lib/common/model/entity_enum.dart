@@ -183,7 +183,8 @@ enum DistrictType {
   }
 }
 
-enum OauthType {
+enum AuthType {
+  email,
   kakao,
   apple;
 }
@@ -193,3 +194,31 @@ enum ErrorScreenType {
   unAuthorization,
   server;
 }
+
+enum PhoneAuthType {
+  signup,
+  find_email,
+  password_update;
+}
+
+enum FormType {
+  email,
+  password;
+}
+
+enum InputFormType {
+  login,
+  passwordCode,
+  nickname,
+  email,
+  password,
+  passwordCheck,
+  signUpEmail,
+  signUpPassword,
+  phone,
+  signup,
+  find_email,
+  password_update,
+}
+
+enum PasswordFormType { password, passwordCheck, newPassword, newPasswordCheck }

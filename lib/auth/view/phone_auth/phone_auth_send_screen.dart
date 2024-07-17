@@ -4,10 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/auth/error/auth_error.dart';
-import 'package:miti/auth/provider/login_provider.dart';
+import 'package:miti/auth/provider/login_provider.dart' hide PhoneAuthType;
 import 'package:miti/auth/provider/widget/phone_auth_provider.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/common/model/default_model.dart';
+import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
 
 import '../../../common/component/custom_text_form_field.dart';
@@ -28,10 +29,11 @@ class PhoneAuthSendScreen extends ConsumerStatefulWidget {
 class _PhoneAuthSendScreenState extends ConsumerState<PhoneAuthSendScreen> {
   @override
   Widget build(BuildContext context) {
-    final code = ref.watch(phoneAuthProvider).code;
+    // final code = ref.watch(phoneAuthProvider).code;
 
-    final valid = code.length == 6;
-    final interactionDesc = ref.watch(codeDescProvider(FindInfoType.email));
+    final valid =true;// code.length == 6;
+    final interactionDesc =
+        ref.watch(codeDescProvider(PhoneAuthType.find_email));
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
@@ -73,12 +75,12 @@ class _PhoneAuthSendScreenState extends ConsumerState<PhoneAuthSendScreen> {
                   },
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
-                  onChanged: (val) {
-                    ref.read(phoneAuthProvider.notifier).update(code: val);
-                    if (val.length == 6) {
-                      sendSMS(context);
-                    }
-                  },
+                  // onChanged: (val) {
+                  //   ref.read(phoneAuthProvider.notifier).update(code: val);
+                  //   if (val.length == 6) {
+                  //     sendSMS(context);
+                  //   }
+                  // },
                   interactionDesc: interactionDesc,
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,

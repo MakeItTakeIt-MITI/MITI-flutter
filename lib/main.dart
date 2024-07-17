@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 // import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +21,8 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/env/environment.dart';
 import 'package:miti/notification_provider.dart';
+import 'package:miti/theme/color_theme.dart';
+import 'package:miti/theme/text_theme.dart';
 import 'common/provider/provider_observer.dart';
 import 'common/provider/router_provider.dart';
 import 'firebase_options.dart';
@@ -229,6 +232,11 @@ class _MyAppState extends ConsumerState<MyApp> {
       builder: (_, child) {
         return MaterialApp.router(
           debugShowCheckedModeBanner: false,
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const <Locale>[Locale('ko', ''),],
           title: 'MITI',
           builder: (context, child) {
             return MediaQuery(
@@ -237,18 +245,19 @@ class _MyAppState extends ConsumerState<MyApp> {
                 child: child!);
           },
           theme: ThemeData(
-              // colorScheme: ColorScheme(
-              //     brightness: Brightness.dark,
-              //     primary: Colors.black,
-              //     onPrimary: Colors.black,
-              //     secondary: Colors.white,
-              //     onSecondary: Colors.white,
-              //     error: Colors.black,
-              //     onError: Colors.black,
-              //     background: Colors.white,
-              //     onBackground: Colors.white,
-              //     surface: Colors.black,
-              //     onSurface: Colors.black),
+              colorScheme: const ColorScheme(
+                brightness: Brightness.dark,
+                primary: MITIColor.primary,
+                onPrimary: MITIColor.primary,
+                secondary: Colors.white,
+                onSecondary: Colors.white,
+                error: MITIColor.error,
+                onError: MITIColor.error,
+                background: MITIColor.gray800,
+                onBackground: MITIColor.gray800,
+                surface: MITIColor.gray800,
+                onSurface: MITIColor.gray800,
+              ),
               pageTransitionsTheme: const PageTransitionsTheme(builders: {
                 TargetPlatform.android: CupertinoPageTransitionsBuilder(),
                 TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
@@ -271,17 +280,15 @@ class _MyAppState extends ConsumerState<MyApp> {
               ),
               textButtonTheme: TextButtonThemeData(
                 style: ButtonStyle(
-                    textStyle: MaterialStateProperty.all(TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFFFFFFFF),
-                      letterSpacing: -0.25.sp,
-                      // height: 22 / 14,
-                    )),
+                    textStyle: MaterialStateProperty.all(
+                      MITITextStyle.mdBold.copyWith(
+                        color: MITIColor.gray800,
+                      ),
+                    ),
                     foregroundColor:
-                        MaterialStateProperty.all(const Color(0xFFFFFFFF)),
+                        MaterialStateProperty.all(MITIColor.gray800),
                     backgroundColor:
-                        MaterialStateProperty.all(const Color(0xFF4065F6)),
+                        MaterialStateProperty.all(MITIColor.primary),
                     shape: MaterialStateProperty.all(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(

@@ -46,31 +46,28 @@ class UserPasswordForm extends _$UserPasswordForm {
   @override
   UserPasswordParam build() {
     return UserPasswordParam(
-      password: null,
-      new_password: null,
       new_password_check: null,
+      new_password: null,
+      password_update_token: null,
     );
   }
 
   void update({
     String? password,
     String? new_password,
-    String? new_password_check,
+    String? password_update_token,
   }) {
     state = state.copyWith(
-      password: password,
+      new_password_check: password,
       new_password: new_password,
-      new_password_check: new_password_check,
+      password_update_token: password_update_token,
     );
   }
 
   bool validForm() {
-    if (state.password != null &&
-        state.new_password != null &&
-        state.new_password_check != null) {
-      return ValidRegExp.userPassword(state.password!) &&
+    if (state.new_password_check != null && state.new_password != null) {
+      return ValidRegExp.userPassword(state.new_password_check!) &&
           ValidRegExp.userPassword(state.new_password!) &&
-          ValidRegExp.userPassword(state.new_password_check!) &&
           state.new_password! == state.new_password_check!;
     }
     return false;

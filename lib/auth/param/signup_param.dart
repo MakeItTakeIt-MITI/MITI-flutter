@@ -5,6 +5,78 @@ import '../provider/widget/sign_up_form_provider.dart';
 part 'signup_param.g.dart';
 
 @JsonSerializable()
+class SignUpBaseParam {
+  final String nickname;
+  final String name;
+  final String birthday;
+
+  SignUpBaseParam({
+    required this.nickname,
+    required this.name,
+    required this.birthday,
+  });
+
+  Map<String, dynamic> toJson() => _$SignUpBaseParamToJson(this);
+}
+
+@JsonSerializable()
+class SignUpEmailParam extends SignUpBaseParam {
+  final String email;
+  final String phone;
+  final String password;
+  final String password_check;
+  final String signup_token;
+
+  SignUpEmailParam({
+    required this.email,
+    required this.phone,
+    required super.nickname,
+    required super.name,
+    required super.birthday,
+    required this.password,
+    required this.password_check,
+    required this.signup_token,
+  });
+
+  @override
+  Map<String, dynamic> toJson() => _$SignUpEmailParamToJson(this);
+}
+
+@JsonSerializable()
+class SignUpAppleParam extends SignUpBaseParam {
+  final String phone;
+  final String signup_token;
+  final String userinfo_token;
+
+  SignUpAppleParam({
+    required this.phone,
+    required super.nickname,
+    required super.name,
+    required super.birthday,
+    required this.signup_token,
+    required this.userinfo_token,
+  });
+
+  @override
+  Map<String, dynamic> toJson() => _$SignUpAppleParamToJson(this);
+}
+
+@JsonSerializable()
+class SignUpKakaoParam extends SignUpBaseParam {
+  final String userinfo_token;
+
+  SignUpKakaoParam({
+    required super.nickname,
+    required super.name,
+    required super.birthday,
+    required this.userinfo_token,
+  });
+
+  @override
+  Map<String, dynamic> toJson() => _$SignUpKakaoParamToJson(this);
+}
+
+@JsonSerializable()
 class SignUpParam {
   final String email;
   final String nickname;
@@ -27,7 +99,6 @@ class SignUpParam {
   Map<String, dynamic> toJson() => _$SignUpParamToJson(this);
 
   factory SignUpParam.fromForm({required SignFormModel model}) {
-
     return SignUpParam(
       email: model.email,
       nickname: model.nickname,
@@ -47,10 +118,10 @@ class BaseParam {
 
 @JsonSerializable()
 class EmailCheckParam extends BaseParam {
-  final String? email;
+  final String email;
 
   EmailCheckParam({
-    this.email,
+    required this.email,
   });
 
   @override

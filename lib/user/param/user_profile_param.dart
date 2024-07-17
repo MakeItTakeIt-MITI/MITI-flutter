@@ -27,25 +27,25 @@ class UserNicknameParam {
 
 @JsonSerializable()
 class UserPasswordParam {
-  final String? password;
-  final String? new_password;
   final String? new_password_check;
+  final String? new_password;
+  final String? password_update_token;
 
   UserPasswordParam({
-    required this.password,
-    required this.new_password,
     required this.new_password_check,
+    required this.new_password,
+    required this.password_update_token,
   });
 
   UserPasswordParam copyWith({
-    String? password,
-    String? new_password,
     String? new_password_check,
+    String? new_password,
+    String? password_update_token,
   }) {
     return UserPasswordParam(
-      password: password ?? this.password,
-      new_password: new_password ?? this.new_password,
       new_password_check: new_password_check ?? this.new_password_check,
+      new_password: new_password ?? this.new_password,
+      password_update_token: password_update_token ?? this.password_update_token,
     );
   }
 

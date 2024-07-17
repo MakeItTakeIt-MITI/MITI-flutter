@@ -22,6 +22,7 @@ import 'package:miti/util/util.dart';
 
 import '../../common/component/default_appbar.dart';
 import '../../common/model/default_model.dart';
+import '../../common/model/entity_enum.dart';
 import '../../common/provider/form_util_provider.dart';
 import '../model/user_model.dart';
 
@@ -351,9 +352,9 @@ class _ProfileFormComponentState extends ConsumerState<_ProfileFormComponent> {
                       )
                     : null,
                 onChanged: (val) {
-                  ref
-                      .read(userPasswordFormProvider.notifier)
-                      .update(new_password_check: val);
+                  // ref
+                  //     .read(userPasswordFormProvider.notifier)
+                  //     .update(new_password_check: val);
                   if (ValidRegExp.userPassword(val)) {
                     if (passwordForm.new_password == val) {
                       ref
@@ -387,7 +388,7 @@ class _ProfileFormComponentState extends ConsumerState<_ProfileFormComponent> {
           TextButton(
               onPressed: valid
                   ? () async {
-                      await updatePassword(context);
+                      // await updatePassword(context);
                     }
                   : () {},
               style: TextButton.styleFrom(
@@ -434,22 +435,22 @@ class _ProfileFormComponentState extends ConsumerState<_ProfileFormComponent> {
     }
   }
 
-  Future<void> updatePassword(BuildContext context) async {
-    final result = await ref.read(updatePasswordProvider.future);
-    if (context.mounted) {
-      if (result is ErrorModel) {
-        UserError.fromModel(model: result)
-            .responseError(context, UserApiType.updatePassword, ref);
-      } else {
-        final extra = CustomDialog(
-            title: '프로필 수정 완료',
-            content: '회원 정보가 정상적으로 저장되었습니다.',
-            onPressed: () {
-              context.pop();
-              // context.goNamed(InfoBody.routeName);
-            });
-        context.pushNamed(DialogPage.routeName, extra: extra);
-      }
-    }
-  }
+// Future<void> updatePassword(BuildContext context) async {
+//   final result = await ref.read(updatePasswordProvider.future);
+//   if (context.mounted) {
+//     if (result is ErrorModel) {
+//       UserError.fromModel(model: result)
+//           .responseError(context, UserApiType.updatePassword, ref);
+//     } else {
+//       final extra = CustomDialog(
+//           title: '프로필 수정 완료',
+//           content: '회원 정보가 정상적으로 저장되었습니다.',
+//           onPressed: () {
+//             context.pop();
+//             // context.goNamed(InfoBody.routeName);
+//           });
+//       context.pushNamed(DialogPage.routeName, extra: extra);
+//     }
+//   }
+// }
 }
