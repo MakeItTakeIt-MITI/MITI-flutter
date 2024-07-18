@@ -156,10 +156,10 @@ class CustomTextFormField extends StatelessWidget {
           onChanged: onChanged,
           onEditingComplete: onNext,
         ),
-        if (showAutoComplete)
-          AutoCompleteComponent(
-            controller: textEditingController!,
-          ),
+        // if (showAutoComplete)
+        //   AutoCompleteComponent(
+        //     controller: textEditingController!,
+        //   ),
         if (interactionDesc != null) SizedBox(height: 16.h),
         if (interactionDesc != null)
           Text(
@@ -432,10 +432,10 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
                 )),
           ],
         ),
-        if (widget.showAutoComplete)
-          AutoCompleteComponent(
-            controller: widget.textEditingController!,
-          ),
+        // if (widget.showAutoComplete)
+        //   AutoCompleteComponent(
+        //     controller: widget.textEditingController!,
+        //   ),
         if (widget.interactionDesc != null) SizedBox(height: 8.h),
         if (widget.interactionDesc != null)
           Row(
@@ -468,107 +468,107 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
   }
 }
 
-class AutoCompleteComponent extends ConsumerStatefulWidget {
-  final TextEditingController controller;
-
-  const AutoCompleteComponent({
-    super.key,
-    required this.controller,
-  });
-
-  @override
-  ConsumerState<AutoCompleteComponent> createState() =>
-      _AutoCompleteComponentState();
-}
-
-class _AutoCompleteComponentState extends ConsumerState<AutoCompleteComponent> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    List<String> emailSuffixes = [
-      'naver.com',
-      'gmail.com',
-      'hanmail.net',
-      'daum.net',
-      'nate.com'
-    ];
-    final showAutoComplete =
-        ref.watch(signUpFormProvider.select((form) => form.showAutoComplete));
-    final email = ref.watch(signUpFormProvider).email;
-    final cnt = '@'.allMatches(email).length;
-    if (email.contains('@') && cnt == 1 && showAutoComplete) {
-      final prefixEmail = email.substring(0, email.indexOf('@') + 1);
-      final suffixEmail = email.substring(
-        email.indexOf('@') + 1,
-      );
-      if (suffixEmail.isNotEmpty) {
-        emailSuffixes = emailSuffixes
-            .where((suffix) {
-              return suffix.startsWith(suffixEmail);
-            })
-            .map((e) => e)
-            .toList();
-      }
-
-      return Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-            color: const Color(0xFFF7F7F7),
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(8.r))),
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(color: const Color(0xFFE8E8E8), width: 1.h),
-            ),
-          ),
-          child: Column(
-            children: [
-              SizedBox(height: 10.h),
-              ListView.separated(
-                shrinkWrap: true,
-                itemBuilder: (BuildContext context, int index) {
-                  return InkWell(
-                    onTap: () {
-                      ref
-                          .read(signUpFormProvider.notifier)
-                          .updateForm(showAutoComplete: false);
-                      widget.controller.text =
-                          prefixEmail + emailSuffixes[index];
-                      ref.read(signUpFormProvider.notifier).updateForm(
-                          email: prefixEmail + emailSuffixes[index]);
-                      FocusScope.of(context).requestFocus(FocusNode());
-                    },
-                    child: Text(
-                      prefixEmail + emailSuffixes[index],
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        letterSpacing: -0.25.sp,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFF000000),
-                      ),
-                    ),
-                  );
-                },
-                separatorBuilder: (BuildContext context, int index) {
-                  return SizedBox(height: 14.h);
-                },
-                itemCount: emailSuffixes.length,
-              ),
-              SizedBox(height: 16.h),
-            ],
-          ),
-        ),
-      );
-    } else {
-      return Container();
-    }
-  }
-}
+// class AutoCompleteComponent extends ConsumerStatefulWidget {
+//   final TextEditingController controller;
+//
+//   const AutoCompleteComponent({
+//     super.key,
+//     required this.controller,
+//   });
+//
+//   @override
+//   ConsumerState<AutoCompleteComponent> createState() =>
+//       _AutoCompleteComponentState();
+// }
+//
+// class _AutoCompleteComponentState extends ConsumerState<AutoCompleteComponent> {
+//   @override
+//   void initState() {
+//     super.initState();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     List<String> emailSuffixes = [
+//       'naver.com',
+//       'gmail.com',
+//       'hanmail.net',
+//       'daum.net',
+//       'nate.com'
+//     ];
+//     final showAutoComplete =
+//         ref.watch(signUpFormProvider.select((form) => form.showAutoComplete));
+//     final email = ref.watch(signUpFormProvider).email;
+//     final cnt = '@'.allMatches(email).length;
+//     if (email.contains('@') && cnt == 1 && showAutoComplete) {
+//       final prefixEmail = email.substring(0, email.indexOf('@') + 1);
+//       final suffixEmail = email.substring(
+//         email.indexOf('@') + 1,
+//       );
+//       if (suffixEmail.isNotEmpty) {
+//         emailSuffixes = emailSuffixes
+//             .where((suffix) {
+//               return suffix.startsWith(suffixEmail);
+//             })
+//             .map((e) => e)
+//             .toList();
+//       }
+//
+//       return Container(
+//         width: double.infinity,
+//         decoration: BoxDecoration(
+//             color: const Color(0xFFF7F7F7),
+//             borderRadius: BorderRadius.vertical(bottom: Radius.circular(8.r))),
+//         padding: EdgeInsets.symmetric(horizontal: 16.w),
+//         child: Container(
+//           decoration: BoxDecoration(
+//             border: Border(
+//               top: BorderSide(color: const Color(0xFFE8E8E8), width: 1.h),
+//             ),
+//           ),
+//           child: Column(
+//             children: [
+//               SizedBox(height: 10.h),
+//               ListView.separated(
+//                 shrinkWrap: true,
+//                 itemBuilder: (BuildContext context, int index) {
+//                   return InkWell(
+//                     onTap: () {
+//                       ref
+//                           .read(signUpFormProvider.notifier)
+//                           .updateForm(showAutoComplete: false);
+//                       widget.controller.text =
+//                           prefixEmail + emailSuffixes[index];
+//                       ref.read(signUpFormProvider.notifier).updateForm(
+//                           email: prefixEmail + emailSuffixes[index]);
+//                       FocusScope.of(context).requestFocus(FocusNode());
+//                     },
+//                     child: Text(
+//                       prefixEmail + emailSuffixes[index],
+//                       style: TextStyle(
+//                         fontSize: 16.sp,
+//                         letterSpacing: -0.25.sp,
+//                         fontWeight: FontWeight.w500,
+//                         color: const Color(0xFF000000),
+//                       ),
+//                     ),
+//                   );
+//                 },
+//                 separatorBuilder: (BuildContext context, int index) {
+//                   return SizedBox(height: 14.h);
+//                 },
+//                 itemCount: emailSuffixes.length,
+//               ),
+//               SizedBox(height: 16.h),
+//             ],
+//           ),
+//         ),
+//       );
+//     } else {
+//       return Container();
+//     }
+//   }
+// }
 
 class PhoneNumberFormatter extends TextInputFormatter {
   @override

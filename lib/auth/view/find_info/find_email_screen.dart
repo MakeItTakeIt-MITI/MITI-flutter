@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +13,7 @@ import 'package:miti/theme/text_theme.dart';
 
 import '../../../common/model/entity_enum.dart';
 import '../../../util/util.dart';
+import '../../provider/widget/find_info_provider.dart';
 import 'find_password_screen.dart';
 
 class FindEmailScreen extends StatelessWidget {
@@ -173,18 +175,33 @@ class _EmailComponent extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: TextButton(
-                  style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(
-                    MITIColor.gray700,
-                  )),
-                  onPressed: () {},
-                  child: Text(
-                    '비밀번호 찾기',
-                    style: MITITextStyle.mdBold.copyWith(
-                      color: MITIColor.primary,
-                    ),
-                  )),
+              child: Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  final model = ref.read(findEmailProvider);
+
+                  return TextButton(
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                        MITIColor.gray700,
+                      )),
+                      onPressed: () {
+                        Map<String, String> queryParameters = {
+                          "password_update_token":
+                              model!.password_update_token ?? '',
+                          "userId": model.id.toString(),
+                        };
+
+                        context.goNamed(ResetPasswordScreen.routeName,
+                            queryParameters: queryParameters);
+                      },
+                      child: Text(
+                        '비밀번호 재설정',
+                        style: MITITextStyle.mdBold.copyWith(
+                          color: MITIColor.primary,
+                        ),
+                      ));
+                },
+              ),
             ),
             SizedBox(width: 7.w),
             Expanded(

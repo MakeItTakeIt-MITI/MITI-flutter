@@ -124,6 +124,11 @@ Future<BaseModel> verifyPhone(VerifyPhoneRef ref,
           .verifySignPhone(param: param)
           .then<BaseModel>((value) {
         logger.i('verifyPhone!!');
+        final model = value.data!;
+        ref
+            .read(signUpFormProvider.notifier)
+            .updateForm(signup_token: model.signup_token);
+        // 김정현
         return value;
       }).catchError((e) {
         final error = ErrorModel.respToError(e);
@@ -185,7 +190,8 @@ Future<BaseModel> reissueForPassword(ReissueForPasswordRef ref) async {
 }
 
 @riverpod
-Future<BaseModel> resetPassword(ResetPasswordRef ref, {required String password_update_token}) async {
+Future<BaseModel> resetPassword(ResetPasswordRef ref,
+    {required String password_update_token}) async {
   final user_info_token =
       ''; //ref.read(phoneAuthProvider).authentication_token;
   final model = ref.read(signUpFormProvider);

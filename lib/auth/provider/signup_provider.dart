@@ -1,3 +1,6 @@
+import 'package:miti/auth/model/auth_model.dart';
+import 'package:miti/auth/provider/auth_provider.dart';
+import 'package:miti/auth/provider/login_provider.dart';
 import 'package:miti/auth/provider/widget/phone_auth_provider.dart';
 import 'package:miti/auth/repository/auth_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -5,6 +8,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
+import '../../common/provider/secure_storage_provider.dart';
 import '../model/signup_model.dart';
 import '../param/signup_param.dart';
 
@@ -37,9 +41,14 @@ Future<BaseModel> signUp(SignUpRef ref,
       .then<BaseModel>((value) {
     logger.i('signUp $param!');
     final model = value.data!;
-    // ref
-    //     .read(phoneAuthProvider.notifier)
-    //     .update(user_info_token: model.authentication_token);
+    final storage = ref.read(secureStorageProvider);
+    final loginModel = LoginModel(
+        id: model.id,
+        email: model.email,
+        nickname: model.nickname,
+        signup_method: model.signup_method,
+        token: model.token);
+    saveUserInfo(storage, loginModel, ref);
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);

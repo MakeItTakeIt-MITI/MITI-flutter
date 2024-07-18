@@ -56,7 +56,9 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
   }
 
   void timerReset() {
+    log("타이머 리셋");
     if (timer != null && timer!.isActive) {
+      showTime = false;
       timer!.cancel();
     }
   }
@@ -75,6 +77,7 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
   }
 
   void requestValidCode(String phone, PhoneAuthType type) async {
+    FocusScope.of(context).requestFocus(FocusNode());
     timerReset();
     final result = await ref.read(sendCodeProvider(authType: type).future);
     setState(() {

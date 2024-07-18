@@ -38,6 +38,19 @@ class SignUpEmailParam extends SignUpBaseParam {
     required this.signup_token,
   });
 
+  factory SignUpEmailParam.fromForm({required SignFormModel model}) {
+    return SignUpEmailParam(
+      email: model.email!,
+      nickname: model.nickname,
+      name: model.name,
+      phone: model.phoneNumber!.replaceAll('-', ''),
+      password: model.password!,
+      password_check: model.checkPassword!,
+      birthday: model.birthDate.replaceAll(' / ', '-'),
+      signup_token: model.signup_token!,
+    );
+  }
+
   @override
   Map<String, dynamic> toJson() => _$SignUpEmailParamToJson(this);
 }
@@ -57,6 +70,17 @@ class SignUpAppleParam extends SignUpBaseParam {
     required this.userinfo_token,
   });
 
+  factory SignUpAppleParam.fromForm({required SignFormModel model}) {
+    return SignUpAppleParam(
+      nickname: model.nickname,
+      name: model.name,
+      phone: model.phoneNumber!.replaceAll('-', ''),
+      birthday: model.birthDate.replaceAll(' / ', '-'),
+      signup_token: model.signup_token!,
+      userinfo_token: model.userinfo_token!,
+    );
+  }
+
   @override
   Map<String, dynamic> toJson() => _$SignUpAppleParamToJson(this);
 }
@@ -71,6 +95,15 @@ class SignUpKakaoParam extends SignUpBaseParam {
     required super.birthday,
     required this.userinfo_token,
   });
+
+  factory SignUpKakaoParam.fromForm({required SignFormModel model}) {
+    return SignUpKakaoParam(
+      nickname: model.nickname,
+      name: model.name,
+      birthday: model.birthDate.replaceAll(' / ', '-'),
+      userinfo_token: model.userinfo_token!,
+    );
+  }
 
   @override
   Map<String, dynamic> toJson() => _$SignUpKakaoParamToJson(this);
@@ -100,12 +133,12 @@ class SignUpParam {
 
   factory SignUpParam.fromForm({required SignFormModel model}) {
     return SignUpParam(
-      email: model.email,
+      email: model.email!,
       nickname: model.nickname,
       name: model.name,
-      phone: model.phoneNumber.replaceAll('-', ''),
-      password: model.password,
-      password_check: model.checkPassword,
+      phone: model.phoneNumber!.replaceAll('-', ''),
+      password: model.password!,
+      password_check: model.checkPassword!,
       birthday: model.birthDate.replaceAll(' / ', '-'),
     );
   }

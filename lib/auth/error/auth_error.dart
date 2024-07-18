@@ -102,12 +102,16 @@ class AuthError extends ErrorBase {
   void _login(BuildContext context, WidgetRef ref) {
     if (this.status_code == BadRequest && this.error_code == 101) {
       /// 로그인 데이터 유효성 검증 실패
-      ref
-          .read(formDescProvider(InputFormType.login).notifier)
-          .update((state) => InteractionDesc(
-                isSuccess: false,
-                desc: "올바른 양식이 아닙니다.",
-              ));
+      ref.read(formInfoProvider(InputFormType.email).notifier).update(
+        borderColor: MITIColor.error,
+      );
+      ref.read(formInfoProvider(InputFormType.password).notifier).update(
+        borderColor: MITIColor.error,
+        interactionDesc: InteractionDesc(
+          isSuccess: false,
+          desc: "이메일이나 비밀번호가 일치하지 않습니다.",
+        ),
+      );
     } else if (this.status_code == UnAuthorized && this.error_code == 140) {
       /// 로그인 정보 일치 사용자 없음
       ref.read(formInfoProvider(InputFormType.email).notifier).update(

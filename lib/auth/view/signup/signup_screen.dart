@@ -17,6 +17,7 @@ import 'package:miti/auth/provider/widget/sign_up_form_provider.dart';
 import 'package:miti/auth/view/phone_auth/phone_auth_send_screen.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/provider/widget/form_provider.dart';
+import 'package:miti/court/view/court_map_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
@@ -30,6 +31,7 @@ import '../../../common/provider/widget/datetime_provider.dart';
 import '../../../util/util.dart';
 import '../../error/auth_error.dart';
 import '../../model/signup_model.dart';
+import '../../provider/auth_provider.dart';
 
 class SignUpScreen extends ConsumerWidget {
   final AuthType type;
@@ -44,6 +46,7 @@ class SignUpScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // ref.watch(phoneAuthProvider);
+    ref.watch(progressProvider);
 
     ref.watch(signUpPopProvider);
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
@@ -72,14 +75,8 @@ class SignUpScreen extends ConsumerWidget {
                   // mainAxisSize: MainAxisSize.min,
                   children: [
                     SizedBox(height: 20.h),
-                    _ProgressComponent(
-                      type: type,
-                    ),
-                    SizedBox(height: 40.h),
+                    progressComponent(),
                     const DescComponent(),
-                    // // SizedBox(
-                    // //     height:
-                    // //         ref.watch(progressProvider).progress != 5 ? 24.h : 12.h),
                     if (ref.watch(progressProvider).progress == 1)
                       const NicknameForm(),
                     if (ref.watch(progressProvider).progress == 2)
@@ -91,13 +88,38 @@ class SignUpScreen extends ConsumerWidget {
                     if (ref.watch(progressProvider).progress == 5)
                       const CheckBoxForm(),
                     const Spacer(),
-                    const _NextButton(),
+                    _NextButton(
+                      type: type,
+                    ),
                   ],
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Consumer progressComponent() {
+    return Consumer(
+      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        final showDetail =
+            ref.watch(signUpFormProvider.select((value) => value.showDetail));
+        final show = showDetail.where((e) => e).isNotEmpty;
+        final progressValue = ref.watch(progressProvider).progress;
+        if (show && progressValue == 5) {
+          return Container();
+        }
+        return child!;
+      },
+      child: Column(
+        children: [
+          _ProgressComponent(
+            type: type,
+          ),
+          SizedBox(height: 40.h),
+        ],
       ),
     );
   }
@@ -169,6 +191,8 @@ class _ProgressComponent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // return Container()
+
     final length = AuthType.email == type ? 5 : 3;
     final currentIdx = ref.watch(progressProvider).progress;
     return Row(
@@ -210,6 +234,14 @@ class _CheckBoxFormState extends ConsumerState<CheckBoxForm> {
     super.dispose();
   }
 
+  final List<String> checkDesc = [
+    '[필수] 만 14세 이상입니다.',
+    '[필수] MITI 회원 이용 약관',
+    '[필수] 개인정보 수집 / 이용 동의',
+    '[필수] MITI 서비스 이용약관',
+    '[선택] 마케팅 목적 개인정보 수집 및 허용 동의',
+  ];
+
   @override
   Widget build(BuildContext context) {
     final checkBoxes =
@@ -219,120 +251,148 @@ class _CheckBoxFormState extends ConsumerState<CheckBoxForm> {
     final showDetailIdx = showDetail.indexOf(true);
 
     final allCheck = checkBoxes.where((e) => e).length == 5;
-    final subCheckBoxTextStyle = TextStyle(
-      fontSize: 14.sp,
-      fontWeight: FontWeight.w400,
-      letterSpacing: -0.25.sp,
-      color: const Color(0xFF585757),
-    );
+    final subCheckBoxTextStyle =
+        MITITextStyle.sm.copyWith(color: MITIColor.gray200);
     final show = showDetail.where((e) => e).isNotEmpty;
+
     return Stack(
       children: [
         if (!show)
           Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              CustomCheckBox(
-                title: '약관 전체 동의하기',
-                textStyle: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: -0.25.sp,
-                  color: const Color(0xFF1C1C1C),
+              SizedBox(height: 40.h),
+              Flexible(
+                child: CustomCheckBox(
+                  title: '약관 전체 동의하기',
+                  textStyle:
+                      MITITextStyle.md.copyWith(color: MITIColor.gray100),
+                  check: allCheck,
+                  isCheckBox: true,
+                  onTap: () {
+                    List<bool> checkBoxes;
+                    if (allCheck) {
+                      checkBoxes = [false, false, false, false, false];
+                    } else {
+                      checkBoxes = [true, true, true, true, true];
+                    }
+                    ref
+                        .read(signUpFormProvider.notifier)
+                        .updateForm(checkBoxes: checkBoxes);
+                    validCheckBox();
+                  },
                 ),
-                check: allCheck,
-                onTap: () {
-                  List<bool> checkBoxes;
-                  if (allCheck) {
-                    checkBoxes = [false, false, false, false, false];
-                  } else {
-                    checkBoxes = [true, true, true, true, true];
-                  }
-                  ref
-                      .read(signUpFormProvider.notifier)
-                      .updateForm(checkBoxes: checkBoxes);
-                  validCheckBox();
-                },
               ),
               Divider(
                 thickness: 1.h,
-                color: const Color(0xFFE8E8E8),
-                height: 6.h,
+                color: MITIColor.gray600,
+                height: 40.h,
               ),
-              CustomCheckBox(
-                title: '[필수] 만 14세 이상입니다.',
-                textStyle: subCheckBoxTextStyle,
-                check: checkBoxes[0],
-                onTap: () {
-                  agreeCondition(checkBoxes, 0);
-                },
-              ),
-              CustomCheckBox(
-                title: '[필수] MITI 회원 이용 약관',
-                textStyle: subCheckBoxTextStyle,
-                hasDetail: true,
-                check: checkBoxes[1],
-                onTap: () {
-                  agreeCondition(checkBoxes, 1);
-                },
-                showDetail: () {
-                  showDetails(0);
-                },
-              ),
-              CustomCheckBox(
-                title: '[필수] 개인정보 수집 / 이용 동의',
-                textStyle: subCheckBoxTextStyle,
-                hasDetail: true,
-                check: checkBoxes[2],
-                onTap: () {
-                  agreeCondition(checkBoxes, 2);
-                },
-                showDetail: () {
-                  showDetails(1);
-                },
-              ),
-              CustomCheckBox(
-                title: '[필수] MITI 서비스 이용약관',
-                textStyle: subCheckBoxTextStyle,
-                hasDetail: true,
-                check: checkBoxes[3],
-                onTap: () {
-                  agreeCondition(checkBoxes, 3);
-                },
-                showDetail: () {
-                  showDetails(2);
-                },
-              ),
-              CustomCheckBox(
-                title: '[선택] 마케팅 목적 개인정보 수집 및\n허용 동의',
-                textStyle: subCheckBoxTextStyle,
-                hasDetail: true,
-                check: checkBoxes[4],
-                onTap: () {
-                  agreeCondition(checkBoxes, 4);
-                },
-                showDetail: () {
-                  showDetails(3);
-                },
-              ),
+              ListView.separated(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return CustomCheckBox(
+                      title: checkDesc[index],
+                      textStyle: subCheckBoxTextStyle,
+                      check: checkBoxes[index],
+                      onTap: () {
+                        agreeCondition(checkBoxes, index);
+                      },
+                      hasDetail: index != 0,
+                      showDetail: index != 0
+                          ? () {
+                              showDetails(index - 1);
+                            }
+                          : null,
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return SizedBox(height: 16.h);
+                  },
+                  itemCount: checkDesc.length),
+              // CustomCheckBox(
+              //   title: '[필수] 만 14세 이상입니다.',
+              //   textStyle: subCheckBoxTextStyle,
+              //   check: checkBoxes[0],
+              //   onTap: () {
+              //     agreeCondition(checkBoxes, 0);
+              //   },
+              // ),
+              // CustomCheckBox(
+              //   title: '[필수] MITI 회원 이용 약관',
+              //   textStyle: subCheckBoxTextStyle,
+              //   hasDetail: true,
+              //   check: checkBoxes[1],
+              //   onTap: () {
+              //     agreeCondition(checkBoxes, 1);
+              //   },
+              //   showDetail: () {
+              //     showDetails(0);
+              //   },
+              // ),
+              // CustomCheckBox(
+              //   title: '[필수] 개인정보 수집 / 이용 동의',
+              //   textStyle: subCheckBoxTextStyle,
+              //   hasDetail: true,
+              //   check: checkBoxes[2],
+              //   onTap: () {
+              //     agreeCondition(checkBoxes, 2);
+              //   },
+              //   showDetail: () {
+              //     showDetails(1);
+              //   },
+              // ),
+              // CustomCheckBox(
+              //   title: '[필수] MITI 서비스 이용약관',
+              //   textStyle: subCheckBoxTextStyle,
+              //   hasDetail: true,
+              //   check: checkBoxes[3],
+              //   onTap: () {
+              //     agreeCondition(checkBoxes, 3);
+              //   },
+              //   showDetail: () {
+              //     showDetails(2);
+              //   },
+              // ),
+              // CustomCheckBox(
+              //   title: '[선택] 마케팅 목적 개인정보 수집 및\n허용 동의',
+              //   textStyle: subCheckBoxTextStyle,
+              //   hasDetail: true,
+              //   check: checkBoxes[4],
+              //   onTap: () {
+              //     agreeCondition(checkBoxes, 4);
+              //   },
+              //   showDetail: () {
+              //     showDetails(3);
+              //   },
+              // ),
             ],
           ),
         if (show)
-          Scrollbar(
-            controller: controller,
-            child: SizedBox(
-              height: 540.h,
-              child: SingleChildScrollView(
+          Column(
+            children: [
+              SizedBox(height: 12.h),
+              Scrollbar(
                 controller: controller,
-                child: Text(
-                  ref.watch(signUpFormProvider).detailDesc[showDetailIdx],
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w400,
-                    color: const Color(0xFF1C1C1C),
+                child: SizedBox(
+                  height: 504.h,
+                  child: SingleChildScrollView(
+                    controller: controller,
+                    child: Text(
+                      ref.watch(signUpFormProvider).detailDesc[showDetailIdx],
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w300,
+                        letterSpacing: -0.24.sp,
+                        color: MITIColor.gray200,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+              // SizedBox(height: 65.h,),
+            ],
           )
       ],
     );
@@ -369,6 +429,7 @@ class CustomCheckBox extends StatefulWidget {
   final bool hasDetail;
   final VoidCallback onTap;
   final VoidCallback? showDetail;
+  final bool isCheckBox;
 
   const CustomCheckBox(
       {super.key,
@@ -377,7 +438,8 @@ class CustomCheckBox extends StatefulWidget {
       this.hasDetail = false,
       required this.check,
       required this.onTap,
-      this.showDetail});
+      this.showDetail,
+      this.isCheckBox = false});
 
   @override
   State<CustomCheckBox> createState() => _CustomCheckBoxState();
@@ -386,21 +448,33 @@ class CustomCheckBox extends StatefulWidget {
 class _CustomCheckBoxState extends State<CustomCheckBox> {
   @override
   Widget build(BuildContext context) {
+    final active = widget.isCheckBox ? "active_checkBox" : "active_check";
+    final disable = widget.isCheckBox ? "disabled_checkBox" : "disabled_check";
+
     return InkWell(
       onTap: widget.onTap,
       child: SizedBox(
-        height: 48.h,
+        height: 24.h,
         child: Row(
           children: [
             SizedBox(
               height: 24.r,
               width: 24.r,
-              child: Icon(
-                Icons.check_box,
-                color: Color(widget.check ? 0xFF4065F6 : 0xFFE8E8E8),
+              child: SvgPicture.asset(
+                AssetUtil.getAssetPath(
+                  type: AssetType.icon,
+                  name: widget.check ? active : disable,
+                ),
+                width: 24.r,
+                height: 24.r,
               ),
+
+              // Icon(
+              //   Icons.check_box,
+              //   color: Color(widget.check ? 0xFF4065F6 : 0xFFE8E8E8),
+              // ),
             ),
-            SizedBox(width: 8.w),
+            SizedBox(width: 16.w),
             Text(
               widget.title,
               style: widget.textStyle,
@@ -412,9 +486,11 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
                 child: Text(
                   '확인',
                   style: TextStyle(
-                    fontSize: 16.sp,
-                    color: const Color(0xFF585757),
+                    fontSize: 14.sp,
+                    // fontFamily: 'Pretendard',
+                    color: MITIColor.white,
                     fontWeight: FontWeight.w400,
+                    letterSpacing: -0.28.sp,
                     decoration: TextDecoration.underline,
                   ),
                 ),
@@ -521,7 +597,7 @@ class _PasswordFormState extends ConsumerState<PasswordForm> {
                           validPassword ? "안전한 비밀번호에요!" : "올바른 비밀번호 양식이 아니에요.",
                     ));
             final hasCheckPassword =
-                ref.read(signUpFormProvider).checkPassword.isNotEmpty;
+                ref.read(signUpFormProvider).checkPassword!.isNotEmpty;
             if (hasCheckPassword) {
               samePasswordCheck(context);
             }
@@ -649,6 +725,13 @@ class _EmailFormState extends ConsumerState<EmailForm> {
                 },
                 onChanged: (val) {
                   ref
+                      .read(
+                          formInfoProvider(InputFormType.signUpEmail).notifier)
+                      .reset();
+                  ref
+                      .read(progressProvider.notifier)
+                      .updateValidNext(validNext: false);
+                  ref
                       .read(signUpFormProvider.notifier)
                       .updateForm(email: val, showAutoComplete: true);
                 },
@@ -691,7 +774,7 @@ class _EmailFormState extends ConsumerState<EmailForm> {
   Future<void> onSubmit(BuildContext context) async {
     FocusScope.of(context).requestFocus(FocusNode());
     final email = ref.read(signUpFormProvider).email;
-    final param = EmailCheckParam(email: email);
+    final param = EmailCheckParam(email: email!);
     final result = await ref.read(emailCheckProvider(param: param).future);
     if (result is ResponseModel<SignUpCheckModel>) {
       log('code ${result.status_code}');
@@ -949,10 +1032,27 @@ class _BirthFormState extends ConsumerState<_BirthForm> {
         SizedBox(height: 8.h),
         GestureDetector(
           onTap: () {
+            FocusScope.of(context).requestFocus(FocusNode());
             showCupertinoDialog(
                 barrierDismissible: true,
                 context: context,
                 builder: (_) {
+                  final now = DateTime.now();
+
+                  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                    setState(() {
+                      String birthDate = "${now.year}-${now.month}-${now.day}";
+                      log("birthDate $birthDate");
+                      year = now.year.toString();
+                      month = now.month.toString();
+                      day = now.day.toString();
+                      birthdayFormat(now);
+                      ref
+                          .read(signUpFormProvider.notifier)
+                          .updateForm(birthDate: "$year / $month / $day");
+                    });
+                  });
+
                   return Center(
                     child: Container(
                       height: 332.h,
@@ -979,21 +1079,18 @@ class _BirthFormState extends ConsumerState<_BirthForm> {
                                 dateOrder: DatePickerDateOrder.ymd,
                                 onDateTimeChanged: (DateTime value) {
                                   setState(() {
-                                    year = value.year.toString();
-                                    month = value.month < 10
-                                        ? '0${value.month.toString()}'
-                                        : value.month.toString();
-                                    day = value.day < 10
-                                        ? '0${value.day.toString()}'
-                                        : value.day.toString();
+                                    birthdayFormat(value);
                                     ref
                                         .read(signUpFormProvider.notifier)
                                         .updateForm(
                                             birthDate: "$year / $month / $day");
-                                    if(ref.read(signUpFormProvider.notifier).validPersonalInfo()){
-                                      ref.read(progressProvider.notifier).updateValidNext(validNext: true);
+                                    if (ref
+                                        .read(signUpFormProvider.notifier)
+                                        .validPersonalInfo()) {
+                                      ref
+                                          .read(progressProvider.notifier)
+                                          .updateValidNext(validNext: true);
                                     }
-
                                   });
                                 },
                               ),
@@ -1070,6 +1167,14 @@ class _BirthFormState extends ConsumerState<_BirthForm> {
       ],
     );
   }
+
+  void birthdayFormat(DateTime value) {
+    year = value.year.toString();
+    month = value.month < 10
+        ? '0${value.month.toString()}'
+        : value.month.toString();
+    day = value.day < 10 ? '0${value.day.toString()}' : value.day.toString();
+  }
 }
 
 class _TextFormFormatter extends TextInputFormatter {
@@ -1102,7 +1207,12 @@ class _TextFormFormatter extends TextInputFormatter {
 }
 
 class _NextButton extends ConsumerStatefulWidget {
-  const _NextButton({super.key});
+  final AuthType type;
+
+  const _NextButton({
+    super.key,
+    required this.type,
+  });
 
   @override
   ConsumerState<_NextButton> createState() => _NextButtonState();
@@ -1111,22 +1221,20 @@ class _NextButton extends ConsumerStatefulWidget {
 class _NextButtonState extends ConsumerState<_NextButton> {
   @override
   Widget build(BuildContext context) {
-    // ref.watch(phoneAuthProvider);
     ref.watch(signUpFormProvider.select((value) => value.showDetail));
 
     final progressModel = ref.watch(progressProvider);
     final progress = progressModel.progress;
     final validNext = progressModel.validNext;
-    double progressWidth = (MediaQuery.of(context).size.width - 32.w) / 6;
-    // log('valueNext = $validNext');
+
     final showDetail =
         ref.watch(signUpFormProvider.select((value) => value.showDetail));
     final show = showDetail.where((e) => e).isNotEmpty;
     String buttonText = '';
     if (progress == 5) {
-      buttonText = '동의하고 가입하기';
+      buttonText = '가입하기';
       if (show) {
-        buttonText = '이용약관에 동의합니다.';
+        buttonText = '확인';
       }
     } else {
       buttonText = '다음으로';
@@ -1134,25 +1242,6 @@ class _NextButtonState extends ConsumerState<_NextButton> {
 
     return Column(
       children: [
-        // if (!show)
-        //   Container(
-        //     width: double.infinity,
-        //     height: 8.h,
-        //     decoration: BoxDecoration(
-        //       borderRadius: BorderRadius.circular(2.r),
-        //       color: const Color(0xFFE8E8E8),
-        //     ),
-        //     alignment: Alignment.centerLeft,
-        //     child: AnimatedContainer(
-        //       width: progressWidth * progress,
-        //       decoration: BoxDecoration(
-        //         borderRadius: BorderRadius.circular(2.r),
-        //         color: const Color(0xFF4065F6),
-        //       ),
-        //       duration: const Duration(milliseconds: 500),
-        //     ),
-        //   ),
-        // if (!show) SizedBox(height: 16.h),
         SizedBox(
           height: 48.h,
           child: TextButton(
@@ -1160,25 +1249,35 @@ class _NextButtonState extends ConsumerState<_NextButton> {
                 if (validNext) {
                   if (!show && progress == 5) {
                     final model = ref.read(signUpFormProvider);
-                    final param = SignUpParam.fromForm(model: model);
+                    late SignUpBaseParam param;
+                    switch (widget.type) {
+                      case AuthType.email:
+                        param = SignUpEmailParam.fromForm(model: model);
+                        break;
+                      case AuthType.apple:
+                        param = SignUpAppleParam.fromForm(model: model);
+                        break;
+                      case AuthType.kakao:
+                        param = SignUpKakaoParam.fromForm(model: model);
+                        break;
+                    }
+                    final result = await ref.read(
+                        signUpProvider(type: widget.type, param: param).future);
 
-                    // final result =
-                    //     await ref.read(signUpProvider(param: param).future);
-                    //
-                    // if (result is ErrorModel) {
-                    //   log('error');
-                    //   if (context.mounted) {
-                    //     AuthError.fromModel(model: result)
-                    //         .responseError(context, AuthApiType.signup, ref);
-                    //   }
-                    // } else {
-                    //   // ref.read(requestSMSProvider(type: PhoneAuthType.signup)
-                    //   //     .future);
-                    //   log('회원가입!');
-                    //   if (context.mounted) {
-                    //     context.goNamed(PhoneAuthSendScreen.routeName);
-                    //   }
-                    // }
+                    if (result is ErrorModel) {
+                      log('error');
+                      if (context.mounted) {
+                        AuthError.fromModel(model: result)
+                            .responseError(context, AuthApiType.signup, ref);
+                      }
+                    } else {
+                      log('회원가입!');
+                      // if (context.mounted) {
+                      //   ref
+                      //       .read(authProvider.notifier)
+                      //       .autoLogin(context: context);
+                      // }
+                    }
                   } else if (show) {
                     ref.read(progressProvider.notifier).hideDetail();
                   } else {

@@ -187,6 +187,10 @@ enum AuthType {
   email,
   kakao,
   apple;
+
+  static AuthType stringToEnum({required String value}) {
+    return AuthType.values.firstWhere((e) => e.name == value);
+  }
 }
 
 enum ErrorScreenType {

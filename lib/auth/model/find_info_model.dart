@@ -35,7 +35,7 @@ class VerifyBaseModel {
 
 @JsonSerializable()
 class SignUpVerifyModel extends VerifyBaseModel {
-  final String is_authenticated;
+  final bool is_authenticated;
   final String signup_token;
 
   SignUpVerifyModel({

@@ -24,7 +24,7 @@ class ResetPasswordParam {
 
   factory ResetPasswordParam.fromModel({required SignFormModel model}) {
     return ResetPasswordParam(
-        new_password: model.password, new_password_check: model.checkPassword);
+        new_password: model.password!, new_password_check: model.checkPassword!);
   }
 
   Map<String, dynamic> toJson() => _$ResetPasswordParamToJson(this);

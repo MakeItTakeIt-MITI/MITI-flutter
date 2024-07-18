@@ -43,8 +43,8 @@ class RequestCodeParam extends LoginParam {
 
   factory RequestCodeParam.fromSignForm({required SignFormModel model}) {
     return RequestCodeParam(
-      email: model.email,
-      password: model.password,
+      email: model.email!,
+      password: model.password!,
     );
   }
 }

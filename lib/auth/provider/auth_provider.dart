@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
+import '../../common/model/entity_enum.dart';
 import '../../common/provider/secure_storage_provider.dart';
 import '../../court/view/court_map_screen.dart';
 import '../model/auth_model.dart';
@@ -99,7 +100,13 @@ class AuthStateNotifier extends StateNotifier<AuthModel?> {
     final id = await storage.read(key: 'id');
     final email = await storage.read(key: 'email');
     final nickname = await storage.read(key: 'nickname');
-    // final is_authenticated = await storage.read(key: 'is_authenticated');
+    final signUpTypeString = await storage.read(key: 'signUpType');
+    if (signUpTypeString != null) {}
+
+    ///todo 수정 필요
+    final signUpType =
+        AuthType.stringToEnum(value: signUpTypeString ?? 'email');
+
     if (accessToken != null) {
       state = AuthModel(
         token: TokenModel(
@@ -107,7 +114,7 @@ class AuthStateNotifier extends StateNotifier<AuthModel?> {
         id: int.parse(id ?? '0'),
         email: email,
         nickname: nickname,
-        // is_authenticated: bool.parse(is_authenticated!),
+        signUpType: signUpType,
       );
     }
 

@@ -7,14 +7,14 @@ class AuthModel {
   final int? id;
   final String? email;
   final String? nickname;
-  // final bool? is_authenticated;
+  final AuthType? signUpType;
   final TokenModel? token;
 
   AuthModel({
     required this.id,
     required this.email,
     required this.nickname,
-    // required this.is_authenticated,
+    required this.signUpType,
     required this.token,
   });
 
@@ -22,7 +22,7 @@ class AuthModel {
     int? id,
     String? email,
     String? nickname,
-    // bool? is_authenticated,
+    AuthType? signUpType,
     TokenModel? token,
   }) {
     return AuthModel(
@@ -30,7 +30,7 @@ class AuthModel {
       id: id ?? this.id,
       email: email ?? this.email,
       nickname: nickname ?? this.nickname,
-      // is_authenticated: is_authenticated ?? this.is_authenticated,
+      signUpType: signUpType ?? this.signUpType,
     );
   }
 }

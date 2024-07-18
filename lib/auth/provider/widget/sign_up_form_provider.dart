@@ -42,31 +42,35 @@ class TimerForm extends _$TimerForm {
 
 class SignFormModel {
   final String nickname;
-  final String email;
-  final String password;
-  final String checkPassword;
+  final String? email;
+  final String? password;
+  final String? checkPassword;
   final String name;
   final String birthDate;
-  final String phoneNumber;
+  final String? phoneNumber;
   final int? validCode;
   final bool showAutoComplete;
   final List<bool> checkBoxes;
   final List<bool> showDetail;
   final List<String> detailDesc;
+  final String? signup_token;
+  final String? userinfo_token;
 
   SignFormModel({
     required this.nickname,
-    required this.email,
+    this.email,
     required this.name,
-    required this.password,
-    required this.checkPassword,
+    this.password,
+    this.checkPassword,
     required this.birthDate,
-    required this.phoneNumber,
+    this.phoneNumber,
     required this.validCode,
     required this.showAutoComplete,
     required this.checkBoxes,
     required this.showDetail,
     required this.detailDesc,
+    this.signup_token,
+    this.userinfo_token,
   });
 
   SignFormModel copyWith({
@@ -82,6 +86,8 @@ class SignFormModel {
     List<bool>? checkBoxes,
     List<bool>? showDetail,
     List<String>? detailDesc,
+    String? signup_token,
+    String? userinfo_token,
   }) {
     return SignFormModel(
       nickname: nickname ?? this.nickname,
@@ -96,6 +102,8 @@ class SignFormModel {
       checkBoxes: checkBoxes ?? this.checkBoxes,
       showDetail: showDetail ?? this.showDetail,
       detailDesc: detailDesc ?? this.detailDesc,
+      signup_token: signup_token ?? this.signup_token,
+      userinfo_token: userinfo_token ?? this.userinfo_token,
     );
   }
 }
@@ -137,6 +145,7 @@ class SignUpForm extends _$SignUpForm {
     bool? showAutoComplete,
     List<bool>? checkBoxes,
     List<bool>? showDetail,
+    String? signup_token,
   }) {
     state = state.copyWith(
       nickname: nickname,
@@ -150,12 +159,14 @@ class SignUpForm extends _$SignUpForm {
       showAutoComplete: showAutoComplete,
       checkBoxes: checkBoxes,
       showDetail: showDetail,
+      signup_token: signup_token,
     );
   }
 
+  /// todo nullable 값들에서 valid 강제 ! 수정 필요
   bool isRequestValidCode() {
     return RegExp(r'^01(?:0|1|[6-9])(?:\d{3}|\d{4})\d{4}$')
-        .hasMatch(state.phoneNumber);
+        .hasMatch(state.phoneNumber!);
   }
 
   bool validNickname() {
@@ -165,19 +176,19 @@ class SignUpForm extends _$SignUpForm {
   bool validEmail() {
     return RegExp(
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-        .hasMatch(state.email);
+        .hasMatch(state.email!);
   }
 
   bool validPassword({required isPassword}) {
     return ValidRegExp.userPassword(
-        isPassword ? state.password : state.checkPassword);
+        isPassword! ? state.password! : state.checkPassword!);
     // return RegExp(
     //         r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$%^&]).{8,}$")
     //     .hasMatch(isPassword ? state.password : state.checkPassword);
   }
 
   bool isSamePassword() {
-    final valid = ValidRegExp.userPassword(state.password);
+    final valid = ValidRegExp.userPassword(state.password!);
     if (state.password == state.checkPassword && valid) {
       return true;
     }
@@ -189,7 +200,7 @@ class SignUpForm extends _$SignUpForm {
   }
 
   bool validPhoneNumber() {
-    return RegExp(r"^\d{3}-\d{4}-\d{4}$").hasMatch(state.phoneNumber);
+    return RegExp(r"^\d{3}-\d{4}-\d{4}$").hasMatch(state.phoneNumber!);
   }
 
   bool validBirth() {

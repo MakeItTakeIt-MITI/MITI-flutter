@@ -208,7 +208,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
             }
             await controller.addOverlayAll(cacheImageMarker);
             _mapController = controller;
-            await getLocation();
+            // await getLocation();
           },
         ),
         Positioned(
