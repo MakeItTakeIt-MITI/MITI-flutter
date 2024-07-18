@@ -226,30 +226,31 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 builder: (_, state) {
                                   final email =
                                       state.uri.queryParameters['email']!;
-                                  if (state.extra != null) {
-                                    final AuthType authType =
-                                        state.extra as AuthType;
-                                    return FindEmailScreen(
-                                      findEmail: email,
-                                      authType: authType,
-                                    );
-                                  }
 
                                   return FindEmailScreen(
                                     findEmail: email,
                                   );
                                 },
-                                // pageBuilder: (context, state) {
-                                //   final isOauth = bool.parse(
-                                //       state.uri.queryParameters['isOauth']!);
-                                //   final email =
-                                //       state.uri.queryParameters['email']!;
-                                //   return NoTransitionPage(
-                                //       child: FindEmailScreen(
-                                //     findEmail: email,
-                                //     isOauth: isOauth,
-                                //   ));
-                                // },
+                              ),
+                              GoRoute(
+                                path: 'otherAccount',
+                                parentNavigatorKey: rootNavKey,
+                                name: OtherAccountScreen.routeName,
+                                builder: (_, state) {
+                                  final AuthType authType =
+                                      state.extra as AuthType;
+                                  return OtherAccountScreen(
+                                    authType: authType,
+                                  );
+                                },
+                              ),
+                              GoRoute(
+                                path: 'notFoundAccount',
+                                parentNavigatorKey: rootNavKey,
+                                name: NotFoundAccountScreen.routeName,
+                                builder: (_, state) {
+                                  return const NotFoundAccountScreen();
+                                },
                               ),
                               GoRoute(
                                 path: 'resetPassword',
@@ -273,7 +274,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 //       child: ResetPasswordScreen());
                                 // },
                               ),
-
                             ]),
                         GoRoute(
                             path: 'signUpSelect',

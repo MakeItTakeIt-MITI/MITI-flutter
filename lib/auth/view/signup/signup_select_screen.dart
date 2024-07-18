@@ -91,9 +91,14 @@ class _SignUpButton extends StatelessWidget {
       children: <Widget>[
         const EmailSignUpButton(),
         SizedBox(height: 12.h),
-        const KakaoLoginButton(),
+        const KakaoLoginButton(
+          isLogin: false,
+        ),
         if (Platform.isIOS) SizedBox(height: 12.h),
-        if (Platform.isIOS) const AppleLoginButton(),
+        if (Platform.isIOS)
+          const AppleLoginButton(
+            isLogin: false,
+          ),
       ],
     );
   }

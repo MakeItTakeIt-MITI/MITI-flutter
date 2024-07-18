@@ -45,7 +45,6 @@ class SignUpScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // ref.watch(phoneAuthProvider);
     ref.watch(progressProvider);
 
     ref.watch(signUpPopProvider);
@@ -64,11 +63,12 @@ class SignUpScreen extends ConsumerWidget {
           padding: EdgeInsets.only(
             left: 21.w,
             right: 21.w,
-            // bottom: bottomPadding,
+            bottom: bottomPadding,
           ),
           child: CustomScrollView(
             slivers: [
               SliverFillRemaining(
+                fillOverscroll: true,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -191,8 +191,6 @@ class _ProgressComponent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // return Container()
-
     final length = AuthType.email == type ? 5 : 3;
     final currentIdx = ref.watch(progressProvider).progress;
     return Row(
@@ -1038,20 +1036,21 @@ class _BirthFormState extends ConsumerState<_BirthForm> {
                 context: context,
                 builder: (_) {
                   final now = DateTime.now();
-
-                  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                    setState(() {
-                      String birthDate = "${now.year}-${now.month}-${now.day}";
-                      log("birthDate $birthDate");
-                      year = now.year.toString();
-                      month = now.month.toString();
-                      day = now.day.toString();
-                      birthdayFormat(now);
-                      ref
-                          .read(signUpFormProvider.notifier)
-                          .updateForm(birthDate: "$year / $month / $day");
-                    });
-                  });
+                  final maximumDate =
+                      DateTime.now().subtract(const Duration(days: 1));
+                  // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                  //   setState(() {
+                  //     String birthDate = "${now.year}-${now.month}-${now.day}";
+                  //     log("birthDate $birthDate");
+                  //     year = maximumDate.year.toString();
+                  //     month = maximumDate.month.toString();
+                  //     day = maximumDate.day.toString();
+                  //     birthdayFormat(maximumDate);
+                  //     ref
+                  //         .read(signUpFormProvider.notifier)
+                  //         .updateForm(birthDate: "$year / $month / $day");
+                  //   });
+                  // });
 
                   return Center(
                     child: Container(
@@ -1075,7 +1074,8 @@ class _BirthFormState extends ConsumerState<_BirthForm> {
                               child: CupertinoDatePicker(
                                 mode: CupertinoDatePickerMode.date,
                                 minimumYear: 1900,
-                                maximumYear: 2999,
+                                initialDateTime: maximumDate,
+                                maximumDate: maximumDate,
                                 dateOrder: DatePickerDateOrder.ymd,
                                 onDateTimeChanged: (DateTime value) {
                                   setState(() {
@@ -1096,7 +1096,14 @@ class _BirthFormState extends ConsumerState<_BirthForm> {
                               ),
                             ),
                             TextButton(
-                                onPressed: () => context.pop(),
+                                onPressed: () {
+                                  // birthdayFormat(maximumDate);
+                                  ref
+                                      .read(signUpFormProvider.notifier)
+                                      .updateForm(
+                                          birthDate: "$year / $month / $day");
+                                  context.pop();
+                                },
                                 child: Text(
                                   '생년월일 선택 완료',
                                   style: MITITextStyle.mdBold.copyWith(
@@ -1272,11 +1279,10 @@ class _NextButtonState extends ConsumerState<_NextButton> {
                       }
                     } else {
                       log('회원가입!');
-                      // if (context.mounted) {
-                      //   ref
-                      //       .read(authProvider.notifier)
-                      //       .autoLogin(context: context);
-                      // }
+
+                      if (context.mounted) {
+                        context.goNamed(SignUpCompleteScreen.routeName);
+                      }
                     }
                   } else if (show) {
                     ref.read(progressProvider.notifier).hideDetail();
@@ -1297,6 +1303,149 @@ class _NextButtonState extends ConsumerState<_NextButton> {
         ),
         SizedBox(height: 41.h),
       ],
+    );
+  }
+}
+
+class SignUpCompleteScreen extends StatelessWidget {
+  static String get routeName => 'signUpComplete';
+
+  SignUpCompleteScreen({super.key});
+
+  final List<List<String>> appDesc = [
+    [
+      "경기 생성하고 게스트 모집하기",
+      "직접 경기를 생성해서 플레이어를 모집해보세요.\n경기 관리 및 게스트 관리는 MITI 가 할테니 경기만 즐기세요.",
+    ],
+    [
+      "주변 경기 검색하고 경기에 참가하기",
+      "지금 주변에서 모집중인 경기를 검색하고, 간편하게 경기에 참여해보세요. 경기 검색부터 결제, 참여까지 클릭으로 간편하게!"
+    ],
+    [
+      "매치 완료 후, 리뷰 남기기",
+      "경기 후에는 함께한 플레이어에게 리뷰를 남겨 피드백을 주고 받으세요. 리뷰를 통해 실력을 키울 수 있습니다!"
+    ]
+  ];
+
+  Widget appDescComponent(int idx) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            getProgress(idx + 1),
+            SizedBox(width: 16.w),
+            Text(
+              appDesc[idx][0],
+              style: MITITextStyle.md.copyWith(
+                color: MITIColor.gray100,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 16.w),
+        Text(
+          appDesc[idx][1],
+          style: MITITextStyle.xxsmLight150.copyWith(
+            color: MITIColor.gray300,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget getProgress(int idx) {
+    return Container(
+      height: 24.r,
+      width: 24.r,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        color: MITIColor.primary,
+      ),
+      child: Center(
+        child: Text(
+          idx.toString(),
+          style: TextStyle(
+            fontFamily: 'Pretendard',
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w800,
+            color: const Color(0xFF262626),
+            letterSpacing: -14.sp * 0.02,
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 21.w),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: 60.h),
+              Text(
+                "회원가입 완료!",
+                style: MITITextStyle.xxl140.copyWith(
+                  color: MITIColor.white,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 12.h),
+              Text(
+                "로그인 하여 MITI를 즐겨보세요!",
+                style: MITITextStyle.sm150.copyWith(
+                  color: MITIColor.gray300,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 60.h),
+              Text(
+                "MITI에 가입하신 걸 환영합니다!",
+                style: MITITextStyle.md.copyWith(
+                  color: MITIColor.gray100,
+                ),
+              ),
+              SizedBox(height: 12.h),
+              Text(
+                "MITI의 다양한 기능을 통해 농구 경기에 참여해보세요.",
+                style: MITITextStyle.sm150.copyWith(
+                  color: MITIColor.gray300,
+                ),
+              ),
+              SizedBox(height: 25.h),
+              Container(
+                padding: EdgeInsets.all(20.r),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.r),
+                  color: MITIColor.gray700,
+                ),
+                child: ListView.separated(
+                    shrinkWrap: true,
+                    itemBuilder: (_, idx) {
+                      return appDescComponent(idx);
+                    },
+                    separatorBuilder: (_, idx) => SizedBox(height: 32.h),
+                    itemCount: 3),
+              ),
+              const Spacer(),
+              Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  return TextButton(
+                      onPressed: () {
+                        ref.read(authProvider.notifier).autoLogin();
+                      },
+                      child: const Text("홈으로 가기"));
+                },
+              ),
+              SizedBox(height: 41.h),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

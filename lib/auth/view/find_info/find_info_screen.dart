@@ -48,6 +48,7 @@ class _FindEmailScreenState extends ConsumerState<FindInfoScreen>
   }
 
   void removeFocus() {
+    ref.read(formInfoProvider(InputFormType.phone).notifier).reset();
     FocusScope.of(context).requestFocus(FocusNode());
   }
 
@@ -177,10 +178,23 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
               return TextButton(
                 onPressed: model != null
                     ? () {
+                        if (model!.purpose == null) {
+                          context.goNamed(NotFoundAccountScreen.routeName);
+                          return;
+                        }
+
                         if (widget.type == PhoneAuthType.find_email) {
                           model as EmailVerifyModel;
+                          if (model.authType != null) {
+                            context.pushNamed(
+                              OtherAccountScreen.routeName,
+                              extra: model.authType,
+                            );
+                            return;
+                          }
+
                           Map<String, String> queryParameters = {
-                            'email': model.email ?? '',
+                            'email': model.email!,
                           };
 
                           context.pushNamed(
@@ -190,7 +204,13 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
                           );
                         } else {
                           model as PasswordVerifyModel;
-
+                          if (model.authType != null) {
+                            context.pushNamed(
+                              OtherAccountScreen.routeName,
+                              extra: model.authType,
+                            );
+                            return;
+                          }
                           Map<String, String> queryParameters = {
                             "password_update_token":
                                 model.password_update_token ?? '',

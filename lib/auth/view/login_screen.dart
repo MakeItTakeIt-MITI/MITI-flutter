@@ -66,9 +66,9 @@ class LoginScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 12.h),
-            const KakaoLoginButton(),
+            const KakaoLoginButton(isLogin: true,),
             SizedBox(height: 8.h),
-            if (Platform.isIOS) const AppleLoginButton(),
+            if (Platform.isIOS) const AppleLoginButton(isLogin: true,),
             SizedBox(height: 16.h),
             OtherWayComponent(
               // desc: '아직 회원이 아니신가요?',
@@ -268,13 +268,12 @@ class OtherWayComponent extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        if(desc != null)
-        Text(
-          desc!,
-          style: MITITextStyle.sm.copyWith(color: const Color(0xFFEAEAEA)),
-        ),
-        if(desc != null)
-        SizedBox(width: 18.w),
+        if (desc != null)
+          Text(
+            desc!,
+            style: MITITextStyle.sm.copyWith(color: const Color(0xFFEAEAEA)),
+          ),
+        if (desc != null) SizedBox(width: 18.w),
         InkWell(
           onTap: onTap,
           child: Row(
@@ -286,7 +285,8 @@ class OtherWayComponent extends StatelessWidget {
                 ),
               ),
               SvgPicture.asset(
-                AssetUtil.getAssetPath(type: AssetType.icon, name: 'right_arrow'),
+                AssetUtil.getAssetPath(
+                    type: AssetType.icon, name: 'right_arrow'),
                 width: 24.r,
                 height: 24.r,
               )
@@ -300,7 +300,12 @@ class OtherWayComponent extends StatelessWidget {
 }
 
 class KakaoLoginButton extends ConsumerWidget {
-  const KakaoLoginButton({super.key});
+  final bool isLogin;
+
+  const KakaoLoginButton({
+    super.key,
+    required this.isLogin,
+  });
 
   void signInWithKakao(WidgetRef ref, BuildContext context) async {
     try {
@@ -376,7 +381,8 @@ class KakaoLoginButton extends ConsumerWidget {
 }
 
 class AppleLoginButton extends ConsumerWidget {
-  const AppleLoginButton({super.key});
+  final bool isLogin;
+  const AppleLoginButton( {super.key, required this.isLogin,});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

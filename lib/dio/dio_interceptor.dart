@@ -67,12 +67,11 @@ class CustomDioInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     List<String> errorLog = [];
     final noneAuthUrl = [
-      '/auth/send-sms',
+      'auth/login/kakao',
+      'auth/login/apple',
       '/auth/login/email',
-      '/auth/send-sms/authentication'
       'auth/verify-code',
     ];
-
 
     log('err.message ${err.message} , err.error = ${err.error}, err.type = ${err.type}');
     final noneAUth = noneAuthUrl.contains(err.requestOptions.uri.path);
@@ -90,7 +89,8 @@ class CustomDioInterceptor extends Interceptor {
         !noneAUth) {
       try {
         Dio dio = Dio();
-        final newAccessToken =  await ref.read(authProvider.notifier).reIssueToken();
+        final newAccessToken =
+            await ref.read(authProvider.notifier).reIssueToken();
         // = ref.read(authProvider)?.token?.access;
         err.requestOptions.headers['Authorization'] = 'Bearer $newAccessToken';
         log("[RE-REQUEST] [${err.requestOptions.method}] ${err.requestOptions.baseUrl}${err.requestOptions.path}");

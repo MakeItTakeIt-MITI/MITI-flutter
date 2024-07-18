@@ -17,23 +17,11 @@ import '../../provider/widget/find_info_provider.dart';
 import 'find_password_screen.dart';
 
 class FindEmailScreen extends StatelessWidget {
-  final AuthType? authType;
-  final String? findEmail;
+  final String findEmail;
 
   static String get routeName => 'findEmail';
 
-  const FindEmailScreen({super.key, this.findEmail, this.authType});
-
-  Widget getEmailComponent() {
-    if (findEmail != null) {
-      return _EmailComponent(email: findEmail!);
-    } else if (authType != null) {
-      return _OauthComponent(
-        authType: authType!,
-      );
-    }
-    return const NotFoundInfoComponent();
-  }
+  const FindEmailScreen({super.key, required this.findEmail});
 
   @override
   Widget build(BuildContext context) {
@@ -43,42 +31,75 @@ class FindEmailScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 21.w),
-        child: getEmailComponent(),
+        child: _EmailComponent(email: findEmail),
       ),
     );
   }
 }
 
-class NotFoundInfoComponent extends StatelessWidget {
-  const NotFoundInfoComponent({super.key});
+class OtherAccountScreen extends StatelessWidget {
+  static String get routeName => 'otherAccount';
+  final AuthType authType;
+
+  const OtherAccountScreen({super.key, required this.authType});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Spacer(),
-        Text(
-          "유저 정보 없음",
-          style: MITITextStyle.xxl140.copyWith(
-            color: MITIColor.white,
-          ),
+    return Scaffold(
+      appBar: const DefaultAppBar(
+        title: '회원 정보 찾기',
+      ),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 21.w),
+        child: _OauthComponent(
+          authType: authType,
         ),
-        SizedBox(height: 40.h),
-        Text(
-          "일치하는 사용자 정보가 존재하지 않습니다.\n회원가입시 입력한 전화번호를 확인해주세요.",
-          style: MITITextStyle.sm150.copyWith(
-            color: MITIColor.gray300,
-          ),
+      ),
+    );
+  }
+}
+
+class NotFoundAccountScreen extends StatelessWidget {
+  static String get routeName => 'notFoundAccount';
+
+  const NotFoundAccountScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: const DefaultAppBar(
+        title: '회원 정보 찾기',
+      ),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 21.w),
+        child: Column(
+          children: [
+            const Spacer(),
+            Text(
+              "유저 정보 없음",
+              style: MITITextStyle.xxl140.copyWith(
+                color: MITIColor.white,
+              ),
+            ),
+            SizedBox(height: 40.h),
+            Text(
+              "일치하는 사용자 정보가 존재하지 않습니다.\n회원가입시 입력한 전화번호를 확인해주세요.",
+              style: MITITextStyle.sm150.copyWith(
+                color: MITIColor.gray300,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const Spacer(),
+            TextButton(
+              onPressed: () {
+                context.goNamed(SignUpSelectScreen.routeName);
+              },
+              child: const Text("회원가입 하기"),
+            ),
+            SizedBox(height: 41.h),
+          ],
         ),
-        const Spacer(),
-        TextButton(
-          onPressed: () {
-            context.goNamed(SignUpSelectScreen.routeName);
-          },
-          child: const Text("회원가입 하기"),
-        ),
-        SizedBox(height: 41.h),
-      ],
+      ),
     );
   }
 }

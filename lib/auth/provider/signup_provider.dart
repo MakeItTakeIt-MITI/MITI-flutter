@@ -38,17 +38,19 @@ Future<BaseModel> signUp(SignUpRef ref,
   final repository = ref.watch(authRepositoryProvider);
   return await repository
       .signUp(param: param, provider: type)
-      .then<BaseModel>((value) {
+      .then<BaseModel>((value) async {
     logger.i('signUp $param!');
     final model = value.data!;
     final storage = ref.read(secureStorageProvider);
-    final loginModel = LoginModel(
-        id: model.id,
-        email: model.email,
-        nickname: model.nickname,
-        signup_method: model.signup_method,
-        token: model.token);
-    saveUserInfo(storage, loginModel, ref);
+    await Future.wait([
+      storage.write(key: 'id', value: model.id.toString()),
+      storage.write(key: 'email', value: model.email),
+      storage.write(key: 'nickname', value: model.nickname),
+      storage.write(key: 'signUpType', value: model.signup_method.name),
+      storage.write(key: 'accessToken', value: model.token.access),
+      storage.write(key: 'refreshToken', value: model.token.refresh),
+      storage.write(key: 'tokenType', value: model.token.type),
+    ]);
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);

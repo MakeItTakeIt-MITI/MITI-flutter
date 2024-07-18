@@ -103,15 +103,15 @@ class AuthError extends ErrorBase {
     if (this.status_code == BadRequest && this.error_code == 101) {
       /// 로그인 데이터 유효성 검증 실패
       ref.read(formInfoProvider(InputFormType.email).notifier).update(
-        borderColor: MITIColor.error,
-      );
+            borderColor: MITIColor.error,
+          );
       ref.read(formInfoProvider(InputFormType.password).notifier).update(
-        borderColor: MITIColor.error,
-        interactionDesc: InteractionDesc(
-          isSuccess: false,
-          desc: "이메일이나 비밀번호가 일치하지 않습니다.",
-        ),
-      );
+            borderColor: MITIColor.error,
+            interactionDesc: InteractionDesc(
+              isSuccess: false,
+              desc: "이메일이나 비밀번호가 일치하지 않습니다.",
+            ),
+          );
     } else if (this.status_code == UnAuthorized && this.error_code == 140) {
       /// 로그인 정보 일치 사용자 없음
       ref.read(formInfoProvider(InputFormType.email).notifier).update(
@@ -504,6 +504,11 @@ class AuthError extends ErrorBase {
           );
     } else if (status_code == NotFound && error_code == 440) {
       /// 일치 사용자 없음
+      if (type == PhoneAuthType.find_email) {
+        ref.read(findEmailProvider.notifier).update(EmailVerifyModel());
+      } else {
+        ref.read(findPasswordProvider.notifier).update(PasswordVerifyModel());
+      }
     } else if (status_code == NotFound && error_code == 460) {
       /// 인증 요청 조회 실패
       showDialog(
