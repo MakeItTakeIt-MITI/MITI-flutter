@@ -159,6 +159,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                 },
                 routes: [
                   GoRoute(
+                      path: 'signUpComplete',
+                      parentNavigatorKey: rootNavKey,
+                      name: SignUpCompleteScreen.routeName,
+                      builder: (_, state) => SignUpCompleteScreen(),
+
+                      routes: []),
+                  GoRoute(
                       path: 'login',
                       parentNavigatorKey: rootNavKey,
                       name: LoginScreen.routeName,
@@ -362,6 +369,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                                     type: extra,
                                   );
                                 },
+                                routes: [],
                                 // pageBuilder: (context, state) {
                                 //   return const NoTransitionPage(
                                 //       child: SignUpScreen());

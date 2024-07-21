@@ -15,14 +15,17 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isSliver;
   final List<Widget>? actions;
   final Color? backgroundColor;
+  final String leadingIcon;
 
-  const DefaultAppBar(
-      {super.key,
-      this.title,
-      this.bottom,
-      this.isSliver = false,
-      this.actions,
-      this.backgroundColor});
+  const DefaultAppBar({
+    super.key,
+    this.title,
+    this.bottom,
+    this.isSliver = false,
+    this.actions,
+    this.backgroundColor,
+    this.leadingIcon = "back_arrow",
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +34,9 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
       return SliverAppBar(
         title: Text(
           title ?? '',
-          style: MITITextStyle.mdBold,
+          style: MITITextStyle.mdBold.copyWith(
+            color: MITIColor.white,
+          ),
         ),
         backgroundColor: backgroundColor ?? MITIColor.gray800,
 
@@ -46,7 +51,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
                 onPressed: () => context.pop(),
                 icon: SvgPicture.asset(
                   AssetUtil.getAssetPath(
-                      type: AssetType.icon, name: 'back_arrow'),
+                      type: AssetType.icon, name: leadingIcon),
                 ),
               )
             : null,
@@ -71,8 +76,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
           ? IconButton(
               onPressed: () => context.pop(),
               icon: SvgPicture.asset(
-                AssetUtil.getAssetPath(
-                    type: AssetType.icon, name: 'back_arrow'),
+                AssetUtil.getAssetPath(type: AssetType.icon, name: leadingIcon),
               ),
             )
           : null,
@@ -83,6 +87,6 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize {
     final bottomHeight = bottom != null ? 44.h : 0;
-    return Size.fromHeight(44.h +bottomHeight);
+    return Size.fromHeight(44.h + bottomHeight);
   }
 }

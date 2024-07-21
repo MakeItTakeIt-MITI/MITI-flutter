@@ -49,6 +49,7 @@ class SignUpScreen extends ConsumerWidget {
 
     ref.watch(signUpPopProvider);
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
+
     return PopScope(
       // canPop: false,
       onPopInvoked: (didPop) {
@@ -56,45 +57,79 @@ class SignUpScreen extends ConsumerWidget {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: const DefaultAppBar(
-          title: '회원가입',
-        ),
-        body: Padding(
-          padding: EdgeInsets.only(
-            left: 21.w,
-            right: 21.w,
-            bottom: bottomPadding,
-          ),
-          child: CustomScrollView(
-            slivers: [
-              SliverFillRemaining(
-                fillOverscroll: true,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  // mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(height: 20.h),
-                    progressComponent(),
-                    const DescComponent(),
-                    if (ref.watch(progressProvider).progress == 1)
-                      const NicknameForm(),
-                    if (ref.watch(progressProvider).progress == 2)
-                      const EmailForm(),
-                    if (ref.watch(progressProvider).progress == 3)
-                      const PasswordForm(),
-                    if (ref.watch(progressProvider).progress == 4)
-                      const PersonalInfoForm(),
-                    if (ref.watch(progressProvider).progress == 5)
-                      const CheckBoxForm(),
-                    const Spacer(),
-                    _NextButton(
-                      type: type,
+        body: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            final appbar = Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                final showDetail = ref.watch(
+                    signUpFormProvider.select((value) => value.showDetail));
+                final show = showDetail.where((e) => e).isNotEmpty;
+                final progressValue = ref.watch(progressProvider).progress;
+                if (show && progressValue == 5) {
+                  return SliverAppBar(
+                    backgroundColor: MITIColor.gray800,
+                    /// 앱바 pinned 시 surface 컬러
+                    surfaceTintColor: MITIColor.gray800,
+                    centerTitle: true,
+                    leading: IconButton(
+                      onPressed: () {
+                        ref.read(progressProvider.notifier).hideDetail();
+
+                      },
+                      icon: SvgPicture.asset(
+                        AssetUtil.getAssetPath(
+                            type: AssetType.icon, name: "delete"),
+                      ),
                     ),
-                  ],
+                    pinned: true,
+                  );
+                }
+                return const DefaultAppBar(
+                  title: '회원가입',
+                  isSliver: true,
+                );
+              },
+            );
+            return [appbar];
+          },
+          body: Padding(
+            padding: EdgeInsets.only(
+              left: 21.w,
+              right: 21.w,
+
+              bottom: bottomPadding,
+            ),
+            child: CustomScrollView(
+              keyboardDismissBehavior:ScrollViewKeyboardDismissBehavior.onDrag ,
+              slivers: [
+                SliverFillRemaining(
+                  fillOverscroll: true,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 20.h),
+                      progressComponent(),
+                      const DescComponent(),
+                      if (ref.watch(progressProvider).progress == 1)
+                        const NicknameForm(),
+                      if (ref.watch(progressProvider).progress == 2)
+                        const EmailForm(),
+                      if (ref.watch(progressProvider).progress == 3)
+                        const PasswordForm(),
+                      if (ref.watch(progressProvider).progress == 4)
+                        const PersonalInfoForm(),
+                      if (ref.watch(progressProvider).progress == 5)
+                        const CheckBoxForm(),
+                      const Spacer(),
+                      _NextButton(
+                        type: type,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -287,6 +322,7 @@ class _CheckBoxFormState extends ConsumerState<CheckBoxForm> {
                 height: 40.h,
               ),
               ListView.separated(
+                  padding: EdgeInsets.zero,
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
@@ -1248,7 +1284,10 @@ class _NextButtonState extends ConsumerState<_NextButton> {
     }
 
     return Column(
+
+
       children: [
+        // SizedBox(height: 195.h,),
         SizedBox(
           height: 48.h,
           child: TextButton(
@@ -1436,7 +1475,7 @@ class SignUpCompleteScreen extends StatelessWidget {
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   return TextButton(
                       onPressed: () {
-                        ref.read(authProvider.notifier).autoLogin();
+                        ref.read(authProvider.notifier).autoLogin(context: context);
                       },
                       child: const Text("홈으로 가기"));
                 },

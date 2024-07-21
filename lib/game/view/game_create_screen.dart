@@ -19,6 +19,7 @@ import 'package:miti/court/provider/court_provider.dart';
 import 'package:miti/game/error/game_error.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../common/provider/router_provider.dart';
@@ -67,6 +68,99 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom > 80.h
         ? MediaQuery.of(context).viewInsets.bottom - 80.h
         : 0.0;
+    return Scaffold(
+      body: NestedScrollView(
+        controller: _scrollController,
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            const DefaultAppBar(
+              isSliver: true,
+              title: '경기 생성하기',
+            )
+          ];
+        },
+        body: Padding(
+          padding: EdgeInsets.only(
+            left: 21.w,
+            right: 21.w,
+            bottom: bottomPadding,
+          ),
+          child: CustomScrollView(
+            slivers: <Widget>[
+              getSpacer(height: 20),
+              const _TitleForm(),
+              getSpacer(),
+              V2DateForm(),
+              // const _DateForm(),
+              getSpacer(),
+              const _AddressForm(),
+              getSpacer(),
+              SliverToBoxAdapter(
+                  child: ApplyForm(
+                formKeys: formKeys,
+                focusNodes: focusNodes,
+              )),
+              getSpacer(),
+              const _FeeForm(),
+              getSpacer(),
+              const _AdditionalInfoForm(),
+              getSpacer(height: 19),
+              SliverToBoxAdapter(child: Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  final valid =
+                      ref.watch(gameFormProvider.notifier).formValid();
+                  return SizedBox(
+                    height: 48.h,
+                    child: TextButton(
+                        onPressed: valid
+                            ? () async {
+                                final result =
+                                    await ref.read(gameCreateProvider.future);
+                                if (context.mounted) {
+                                  if (result is ErrorModel) {
+                                    GameError.fromModel(model: result)
+                                        .responseError(context,
+                                            GameApiType.createGame, ref);
+                                  } else {
+                                    final model = result
+                                        as ResponseModel<GameDetailModel>;
+                                    Map<String, String> pathParameters = {
+                                      'gameId': model.data!.id.toString()
+                                    };
+                                    final Map<String, String> queryParameters =
+                                        {
+                                      'bottomIdx': widget.bottomIdx.toString()
+                                    };
+                                    context.pushNamed(
+                                      GameCreateCompleteScreen.routeName,
+                                      pathParameters: pathParameters,
+                                      queryParameters: queryParameters,
+                                    );
+                                  }
+                                }
+                              }
+                            : () {},
+                        style: TextButton.styleFrom(
+                            backgroundColor: valid
+                                ? const Color(0xFF4065F6)
+                                : const Color(0xFFE8E8E8),
+                            fixedSize: Size(double.infinity, 48.h)),
+                        child: Text(
+                          '경기 생성하기',
+                          style: TextStyle(
+                            color:
+                                valid ? Colors.white : const Color(0xFF969696),
+                          ),
+                        )),
+                  );
+                },
+              )),
+              getSpacer(height: 8),
+            ],
+          ),
+        ),
+      ),
+    );
     return DefaultLayout(
       bottomIdx: widget.bottomIdx,
       scrollController: _scrollController,
@@ -176,7 +270,7 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
     );
   }
 
-  SliverToBoxAdapter getSpacer({double height = 25}) => SliverToBoxAdapter(
+  SliverToBoxAdapter getSpacer({double height = 32}) => SliverToBoxAdapter(
         child: SizedBox(height: height.h),
       );
 }
@@ -194,14 +288,301 @@ class _TitleForm extends StatelessWidget {
             child: CustomTextFormField(
           hintText: '경기 제목을 입력해주세요.',
           label: '경기 제목',
-          labelTextStyle: TextStyleUtil.getLabelTextStyle(),
-          hintTextStyle: TextStyleUtil.getHintTextStyle(),
-          textStyle: TextStyleUtil.getTextStyle(),
           onChanged: (val) {
             ref.read(gameFormProvider.notifier).update(title: val);
           },
         ));
       },
+    );
+  }
+}
+
+class V2DateForm extends StatefulWidget {
+  const V2DateForm({super.key});
+
+  @override
+  State<V2DateForm> createState() => _V2DateFormState();
+}
+
+class DatePickerSpinner extends StatefulWidget {
+  final double? height;
+  final double? width;
+  final int? interval;
+  final DateTime date;
+  final Function(String) onChanged;
+
+  const DatePickerSpinner({
+    super.key,
+    this.height,
+    this.width,
+    this.interval,
+    required this.date,
+    required this.onChanged,
+  });
+
+  @override
+  State<DatePickerSpinner> createState() => _DatePickerSpinnerState();
+}
+
+class _DatePickerSpinnerState extends State<DatePickerSpinner> {
+  late FixedExtentScrollController _yearController;
+  late FixedExtentScrollController _monthController;
+  late FixedExtentScrollController _dayController;
+  List<String> _year = [];
+  final List<String> _month = List.generate(
+      12, (index) => index < 9 ? "0${index + 1}" : "${index + 1}");
+  List<String> _day = [];
+  late double _width;
+  late double _height;
+  late Size _itemSize;
+  late ValueNotifier<String> currentDate;
+
+  @override
+  void initState() {
+    currentDate = ValueNotifier(
+        widget.date.toString().replaceAll("-", "").substring(0, 8));
+    _width = 400;
+    _height = 760;
+    _itemSize = Size(_width / 3, _height);
+    int _currentYear = DateTime.now().year;
+    _year = List.generate(
+        widget.interval == null || widget.interval == 0
+            ? 100
+            : widget.interval!,
+        (index) => widget.interval == null || widget.interval! < 1
+            ? "${index + (_currentYear - 50)}"
+            : "${index + (_currentYear - (widget.interval == 1 ? 0 : widget.interval! ~/ 2))}");
+    _daySetting(true);
+    int _initialYear = _year.indexOf(currentDate.value.substring(0, 4));
+    int _initialMonth = _month.indexOf(currentDate.value.substring(4, 6));
+    int _initialDay = _day.indexOf(currentDate.value.substring(6, 8));
+    _yearController = FixedExtentScrollController(initialItem: _initialYear);
+    _monthController = FixedExtentScrollController(initialItem: _initialMonth);
+    _dayController = FixedExtentScrollController(initialItem: _initialDay);
+    super.initState();
+  }
+
+  void _changedDate(int dateType, int index) {
+    String _currentYear = currentDate.value.substring(0, 4);
+    String _currentMonth = currentDate.value.substring(4, 6);
+    String _currentDay = currentDate.value.substring(6, 8);
+
+    switch (dateType) {
+      case 0:
+        currentDate.value = _year[index] + _currentMonth + _currentDay;
+        if (_currentMonth == "02") {
+          _leapYearChecked();
+        }
+        break;
+      case 1:
+        currentDate.value = _currentYear + _month[index] + _currentDay;
+        _daySetting(false);
+        break;
+      case 2:
+        currentDate.value = _currentYear + _currentMonth + _day[index];
+        break;
+      default:
+    }
+  }
+
+  void _daySetting(bool initial) {
+    int _month = int.parse(currentDate.value.substring(4, 6));
+    List _thiryFirst = [1, 3, 5, 7, 8, 10, 12];
+    int _selectedDayItem = !initial ? _dayController.selectedItem : 0;
+    if (_thiryFirst.contains(_month)) {
+      _day = List.generate(
+          31, (index) => index < 9 ? "0${index + 1}" : "${index + 1}");
+    } else if (_month == 2) {
+      _leapYearChecked();
+      if (_day.length <= _selectedDayItem) {
+        _dayController.jumpToItem(_day.length - 1);
+      }
+    } else {
+      _day = List.generate(
+          30, (index) => index < 9 ? "0${index + 1}" : "${index + 1}");
+      if (_selectedDayItem == 30) {
+        _dayController.jumpToItem(29);
+      }
+    }
+  }
+
+  void _leapYearChecked() {
+    int _dayLength = 0;
+    int _year = int.parse(currentDate.value.substring(0, 4));
+    if (((_year % 4 == 0) && (_year % 100 != 0)) || (_year % 400 == 0)) {
+      _dayLength = 29;
+    } else {
+      _dayLength = 28;
+    }
+    _day = List.generate(
+        _dayLength, (index) => index < 9 ? "0${index + 1}" : "${index + 1}");
+  }
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<String>(
+        valueListenable: currentDate,
+        builder: (context, value, child) {
+          return Container(
+            height: 96.h,
+            width: _width,
+            color: MITIColor.gray700,
+            padding: EdgeInsets.all(20.r),
+            child: Row(
+              children: [
+                _pickerForm(
+                    controller: _yearController,
+                    date: _year,
+                    dateIndex: 0,
+                    current: value.substring(0, 4)),
+                _pickerForm(
+                    controller: _monthController,
+                    date: _month,
+                    dateIndex: 1,
+                    current: value.substring(4, 6)),
+                _pickerForm(
+                    controller: _dayController,
+                    date: _day,
+                    dateIndex: 2,
+                    current: value.substring(6, 8)),
+              ],
+            ),
+          );
+        });
+  }
+
+  SizedBox _pickerForm({
+    required List<String> date,
+    required int dateIndex,
+    required String current,
+    required FixedExtentScrollController controller,
+  }) {
+    return SizedBox(
+      height: 96.h,
+      width: 100,
+      child: Stack(
+        children: [
+          Positioned(
+            top: 96.h / 3,
+            child: Row(
+              children: [
+                Container(
+                  width: 100.w,
+                  height: 32.h,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.r),
+                    color: MITIColor.gray600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ListWheelScrollView.useDelegate(
+            controller: controller,
+            onSelectedItemChanged: (int i) {
+              HapticFeedback.lightImpact();
+              _changedDate(dateIndex, i);
+              widget.onChanged(currentDate.value);
+            },
+            squeeze: 0.5,
+            perspective: 0.01,
+            physics: const FixedExtentScrollPhysics(),
+            // magnification: 0.1,
+            diameterRatio: 10,
+            // useMagnifier:true,
+            itemExtent: 20,
+            childDelegate: ListWheelChildLoopingListDelegate(children: [
+              ...List.generate(
+                date.length,
+                (index) => Text(
+                  date[index],
+                  style: MITITextStyle.md.copyWith(
+                    fontSize: 16,
+                    color: date[index] == current
+                        ? MITIColor.primary
+                        : MITIColor.gray300,
+                  ),
+                ),
+              ),
+            ]),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _V2DateFormState extends State<V2DateForm> {
+  @override
+  Widget build(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            "경기 시간",
+            style: MITITextStyle.sm.copyWith(
+              color: MITIColor.gray300,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Row(
+            children: [
+              Container(
+                height: 48.r,
+                width: 273.w,
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                alignment: Alignment.centerLeft,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(
+                    8.r,
+                  ),
+                  color: MITIColor.gray700,
+                ),
+                child: Text(
+                  "경기 날짜와 시간을 선택해 주세요.",
+                  style: MITITextStyle.md.copyWith(
+                    color: MITIColor.gray500,
+                  ),
+                ),
+              ),
+              const Spacer(),
+              InkWell(
+                onTap: () {
+                  showDialog(
+                      context: context,
+                      builder: (_) {
+                        return DatePickerSpinner(
+                            date: DateTime.now(), onChanged: (onChanged) {});
+                      });
+                },
+                child: Container(
+                  height: 48.r,
+                  width: 48.r,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.r),
+                    color: MITIColor.primary,
+                  ),
+                  alignment: Alignment.center,
+                  child: SvgPicture.asset(
+                    height: 24.r,
+                    width: 24.r,
+                    colorFilter: const ColorFilter.mode(
+                        MITIColor.gray900, BlendMode.srcIn),
+                    AssetUtil.getAssetPath(
+                      type: AssetType.icon,
+                      name: "clock",
+                    ),
+                  ),
+                ),
+              )
+            ],
+          )
+        ],
+      ),
     );
   }
 }

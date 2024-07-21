@@ -95,66 +95,72 @@ class CustomTextFormField extends StatelessWidget {
                 ),
           ),
         if (label != null) SizedBox(height: 8.h),
-        TextFormField(
-          initialValue: initialValue,
-          focusNode: focusNode,
-          controller: textEditingController,
-          textInputAction: textInputAction,
-          obscuringCharacter: '●',
-          obscureText: obscureText,
-          keyboardType: keyboardType,
-          inputFormatters: inputFormatters,
-          textAlign: textAlign,
-          enabled: enabled,
-          style: textStyle ??
-              MITITextStyle.md.copyWith(
-                color: MITIColor.gray100,
-              ),
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(horizontal: 20.w),
-            constraints: BoxConstraints(maxHeight: 48.h, minHeight: 48.h),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: showAutoComplete
-                  ? BorderRadius.vertical(top: Radius.circular(8.r))
-                  : BorderRadius.circular(8.r),
-              borderSide: borderColor == null
-                  ? BorderSide.none
-                  : BorderSide(color: borderColor!),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: showAutoComplete
-                  ? BorderRadius.vertical(top: Radius.circular(8.r))
-                  : BorderRadius.circular(8.r),
-              borderSide: borderColor == null
-                  ? BorderSide.none
-                  : BorderSide(color: borderColor!),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: showAutoComplete
-                  ? BorderRadius.vertical(top: Radius.circular(8.r))
-                  : BorderRadius.circular(8.r),
-              borderSide: borderColor == null
-                  ? BorderSide.none
-                  : BorderSide(color: borderColor!),
-            ),
-            hintText: hintText,
-            hintStyle: hintTextStyle ??
+        SizedBox(
+
+          child: TextFormField(
+            initialValue: initialValue,
+            focusNode: focusNode,
+            controller: textEditingController,
+            textInputAction: textInputAction,
+            obscuringCharacter: '●',
+            obscureText: obscureText,
+            keyboardType: keyboardType,
+            inputFormatters: inputFormatters,
+            textAlign: textAlign,
+            enabled: enabled,
+            style: textStyle ??
                 MITITextStyle.md.copyWith(
-                  color: MITIColor.gray500,
+                  color: MITIColor.gray100,
                 ),
-            fillColor: MITIColor.gray700,
-            filled: true,
-            suffixIcon: Padding(
-              padding: EdgeInsets.only(right: suffixIcon == null ? 0 : 20.w),
-              child: suffixIcon,
+            decoration: InputDecoration(
+              // contentPadding: EdgeInsets.symmetric(horizontal: 20.w),
+              // isDense: false,
+              // isCollapsed:true,
+
+              constraints: BoxConstraints(maxHeight: 48.h, minHeight: 48.h),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: showAutoComplete
+                    ? BorderRadius.vertical(top: Radius.circular(8.r))
+                    : BorderRadius.circular(8.r),
+                borderSide: borderColor == null
+                    ? BorderSide.none
+                    : BorderSide(color: borderColor!),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: showAutoComplete
+                    ? BorderRadius.vertical(top: Radius.circular(8.r))
+                    : BorderRadius.circular(8.r),
+                borderSide: borderColor == null
+                    ? BorderSide.none
+                    : BorderSide(color: borderColor!),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: showAutoComplete
+                    ? BorderRadius.vertical(top: Radius.circular(8.r))
+                    : BorderRadius.circular(8.r),
+                borderSide: borderColor == null
+                    ? BorderSide.none
+                    : BorderSide(color: borderColor!),
+              ),
+              hintText: hintText,
+              hintStyle: hintTextStyle ??
+                  MITITextStyle.md.copyWith(
+                    color: MITIColor.gray500,
+                  ),
+              fillColor: MITIColor.gray700,
+              filled: true,
+              suffixIcon: Padding(
+                padding: EdgeInsets.only(right: suffixIcon == null ? 0 : 20.w),
+                child: suffixIcon,
+              ),
+              suffixIconConstraints: BoxConstraints.loose(
+                Size(double.infinity, 36.h),
+              ),
             ),
-            suffixIconConstraints: BoxConstraints.loose(
-              Size(double.infinity, 36.h),
-            ),
+            validator: validator,
+            onChanged: onChanged,
+            onEditingComplete: onNext,
           ),
-          validator: validator,
-          onChanged: onChanged,
-          onEditingComplete: onNext,
         ),
         // if (showAutoComplete)
         //   AutoCompleteComponent(
@@ -170,6 +176,7 @@ class CustomTextFormField extends StatelessWidget {
                   : MITIColor.error,
             ),
           ),
+
         // Row(
         //   children: [
         //     SizedBox(
