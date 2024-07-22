@@ -65,9 +65,7 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bottomPadding = MediaQuery.of(context).viewInsets.bottom > 80.h
-        ? MediaQuery.of(context).viewInsets.bottom - 80.h
-        : 0.0;
+    final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
     return Scaffold(
       body: NestedScrollView(
         controller: _scrollController,
@@ -83,7 +81,6 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
           padding: EdgeInsets.only(
             left: 21.w,
             right: 21.w,
-            bottom: bottomPadding,
           ),
           child: CustomScrollView(
             slivers: <Widget>[
@@ -141,15 +138,13 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
                               }
                             : () {},
                         style: TextButton.styleFrom(
-                            backgroundColor: valid
-                                ? const Color(0xFF4065F6)
-                                : const Color(0xFFE8E8E8),
+                            backgroundColor:
+                                valid ? MITIColor.primary : MITIColor.gray500,
                             fixedSize: Size(double.infinity, 48.h)),
                         child: Text(
                           '경기 생성하기',
                           style: TextStyle(
-                            color:
-                                valid ? Colors.white : const Color(0xFF969696),
+                            color: valid ? MITIColor.gray800 : MITIColor.gray50,
                           ),
                         )),
                   );
@@ -418,8 +413,6 @@ class _DatePickerSpinnerState extends State<DatePickerSpinner> {
         _dayLength, (index) => index < 9 ? "0${index + 1}" : "${index + 1}");
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<String>(
@@ -664,102 +657,99 @@ class AddressComponent extends StatelessWidget {
       children: [
         Text(
           '경기 주소',
-          style: MITITextStyle.inputLabelIStyle
-              .copyWith(color: const Color(0xFF999999)),
-        ),
-        SizedBox(height: 10.h),
-        Container(
-          height: 51.h,
-          decoration: ShapeDecoration(
-            color: const Color(0xFFF7F7F7),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.r)),
+          style: MITITextStyle.sm.copyWith(
+            color: MITIColor.gray300,
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Flexible(
-                child: Padding(
-                  padding: EdgeInsets.only(left: 16.w),
-                  child: Text(
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    address.isEmpty ? '주소를 검색해주세요.' : address,
-                    style: address.isEmpty
-                        ? TextStyleUtil.getHintTextStyle()
-                        : TextStyleUtil.getTextStyle(),
-                  ),
-                ),
+        ),
+        SizedBox(height: 8.h),
+        Row(
+          children: [
+            Container(
+              height: 48.h,
+              width: 222.w,
+              decoration: ShapeDecoration(
+                color: MITIColor.gray700,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.r)),
               ),
-              Padding(
-                padding: EdgeInsets.only(right: 8.w),
-                child: SizedBox(
-                  height: 36.h,
-                  width: 81.w,
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Consumer(
-                      builder:
-                          (BuildContext context, WidgetRef ref, Widget? child) {
-                        return TextButton(
-                          onPressed: () async {
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => KpostalView(
-                                  callback: (Kpostal kpostal) async {
-                                    log('result  =${kpostal}');
-                                    final newCourt = court.copyWith(
-                                        address: kpostal.address);
-                                    ref
-                                        .read(gameFormProvider.notifier)
-                                        .update(court: newCourt);
-                                    final result = await ref
-                                        .read(courtListProvider.future);
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 16.w),
+                      child: Text(
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        address.isEmpty ? '주소를 검색해주세요.' : address,
+                        style: address.isEmpty
+                            ? MITITextStyle.md
+                                .copyWith(color: MITIColor.gray500)
+                            : MITITextStyle.md
+                                .copyWith(color: MITIColor.gray100),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Spacer(),
+            SizedBox(
+              height: 48.h,
+              width: 98.w,
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Consumer(
+                  builder:
+                      (BuildContext context, WidgetRef ref, Widget? child) {
+                    return TextButton(
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => KpostalView(
+                              callback: (Kpostal kpostal) async {
+                                log('result  =${kpostal}');
+                                final newCourt =
+                                    court.copyWith(address: kpostal.address);
+                                ref
+                                    .read(gameFormProvider.notifier)
+                                    .update(court: newCourt);
+                                final result =
+                                    await ref.read(courtListProvider.future);
 
-                                    if (result is ErrorModel) {
-                                    } else {
-                                      result as ResponseModel<
-                                          PaginationModel<CourtSearchModel>>;
-                                      if (context.mounted) {
-                                        if (result
-                                            .data!.page_content.isNotEmpty) {
-                                          final extra = CourtListComponent(
-                                            model: result,
-                                          );
-                                          context.pushNamed(
-                                              DialogPage.routeName,
-                                              extra: extra);
-                                        }
-                                      }
+                                if (result is ErrorModel) {
+                                } else {
+                                  result as ResponseModel<
+                                      PaginationModel<CourtSearchModel>>;
+                                  if (context.mounted) {
+                                    if (result.data!.page_content.isNotEmpty) {
+                                      final extra = CourtListComponent(
+                                        model: result,
+                                      );
+                                      context.pushNamed(DialogPage.routeName,
+                                          extra: extra);
                                     }
-                                  },
-                                ),
-                              ),
-                            );
-                            // context.pushNamed(AddressScreen.routeName);
-                          },
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.symmetric(horizontal: 8.w),
-                            backgroundColor: const Color(0xFF4065F6),
-                          ),
-                          child: Text(
-                            '주소검색',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                letterSpacing: -0.25.sp,
-                                fontSize: 12.sp,
-                                color: Colors.white),
+                                  }
+                                }
+                              },
+                            ),
                           ),
                         );
                       },
-                    ),
-                  ),
+                      child: Text(
+                        '주소검색',
+                        style: MITITextStyle.md.copyWith(
+                          color: MITIColor.gray800,
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ],
     );
@@ -806,13 +796,10 @@ class _AddressFormState extends ConsumerState<_AddressForm> {
           AddressComponent(
             court: court,
           ),
-          SizedBox(height: 12.h),
+          SizedBox(height: 32.h),
           CustomTextFormField(
             hintText: '상세 주소를 입력해주세요.',
             label: '경기 상세 주소',
-            labelTextStyle: TextStyleUtil.getLabelTextStyle(),
-            hintTextStyle: TextStyleUtil.getHintTextStyle(),
-            textStyle: TextStyleUtil.getTextStyle(),
             textEditingController: addressDetailController,
             textInputAction: TextInputAction.next,
             onChanged: (val) {
@@ -820,14 +807,11 @@ class _AddressFormState extends ConsumerState<_AddressForm> {
               ref.read(gameFormProvider.notifier).update(court: newCourt);
             },
           ),
-          SizedBox(height: 12.h),
+          SizedBox(height: 32.h),
           CustomTextFormField(
             textEditingController: nameController,
             hintText: '경기장 이름을 입력해주세요.',
             label: '경기장 이름',
-            labelTextStyle: TextStyleUtil.getLabelTextStyle(),
-            hintTextStyle: TextStyleUtil.getHintTextStyle(),
-            textStyle: TextStyleUtil.getTextStyle(),
             textInputAction: TextInputAction.next,
             onChanged: (val) {
               final newCourt = court.copyWith(name: val);
@@ -870,40 +854,12 @@ class ApplyForm extends ConsumerWidget {
             children: [
               Flexible(
                 child: CustomTextFormField(
-                  focusNode: focusNodes[0],
-                  key: formKeys[0],
-                  initialValue: initMaxValue,
-                  hintText: '0',
-                  label: '총 모집 인원',
-                  labelTextStyle: TextStyleUtil.getLabelTextStyle(),
-                  hintTextStyle: TextStyleUtil.getHintTextStyle(),
-                  textStyle: TextStyleUtil.getTextStyle(),
-                  textAlign: TextAlign.center,
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    NumberFormatter(),
-                  ],
-                  onChanged: (val) {
-                    ref
-                        .read(gameFormProvider.notifier)
-                        .update(max_invitation: val);
-                  },
-                ),
-              ),
-              SizedBox(width: 17.w),
-              Flexible(
-                child: CustomTextFormField(
                   focusNode: focusNodes[1],
                   key: formKeys[1],
                   initialValue: initMinValue,
-                  hintText: '0',
-                  label: '최소 모집 인원',
-                  labelTextStyle: TextStyleUtil.getLabelTextStyle(),
-                  hintTextStyle: TextStyleUtil.getHintTextStyle(),
-                  textStyle: TextStyleUtil.getTextStyle(),
-                  textAlign: TextAlign.center,
+                  hintText: '00',
+                  label: '총 모집 인원',
+                  textAlign: TextAlign.right,
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
                   inputFormatters: [
@@ -915,6 +871,58 @@ class ApplyForm extends ConsumerWidget {
                         .read(gameFormProvider.notifier)
                         .update(min_invitation: val);
                   },
+                  prefix: Text(
+                    "최소",
+                    style: MITITextStyle.sm.copyWith(
+                      color: MITIColor.gray100,
+                    ),
+                  ),
+                  suffixIcon: Padding(
+                    padding: EdgeInsets.only(left: 12.w),
+                    child: Text(
+                      "명",
+                      style: MITITextStyle.sm.copyWith(
+                        color: MITIColor.gray100,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 12.w),
+              Flexible(
+                child: CustomTextFormField(
+                  focusNode: focusNodes[0],
+                  key: formKeys[0],
+                  initialValue: initMaxValue,
+                  hintText: '00',
+                  label: '',
+                  textAlign: TextAlign.right,
+                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    NumberFormatter(),
+                  ],
+                  onChanged: (val) {
+                    ref
+                        .read(gameFormProvider.notifier)
+                        .update(max_invitation: val);
+                  },
+                  prefix: Text(
+                    "최대",
+                    style: MITITextStyle.sm.copyWith(
+                      color: MITIColor.gray100,
+                    ),
+                  ),
+                  suffixIcon: Padding(
+                    padding: EdgeInsets.only(left: 12.w),
+                    child: Text(
+                      "명",
+                      style: MITITextStyle.sm.copyWith(
+                        color: MITIColor.gray100,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -957,9 +965,6 @@ class _FeeForm extends ConsumerWidget {
         child: CustomTextFormField(
       hintText: '경기 참가비를 입력해주세요.',
       label: '경기 참가비',
-      labelTextStyle: TextStyleUtil.getLabelTextStyle(),
-      hintTextStyle: TextStyleUtil.getHintTextStyle(),
-      textStyle: TextStyleUtil.getTextStyle(),
       keyboardType: TextInputType.number,
       textInputAction: TextInputAction.next,
       inputFormatters: [
@@ -969,18 +974,11 @@ class _FeeForm extends ConsumerWidget {
       onChanged: (val) {
         ref.read(gameFormProvider.notifier).update(fee: val);
       },
-      suffixIcon: Padding(
-        padding: EdgeInsets.only(right: 16.w),
-        child: Text(
-          '₩',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: const Color(0xFF969696),
-            fontSize: 14.sp,
-            fontFamily: 'Pretendard',
-            fontWeight: FontWeight.w500,
-            letterSpacing: -0.25.sp,
-          ),
+      suffixIcon: Text(
+        '원',
+        textAlign: TextAlign.center,
+        style: MITITextStyle.sm.copyWith(
+          color: MITIColor.gray100,
         ),
       ),
     ));

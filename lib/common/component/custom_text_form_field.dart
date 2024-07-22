@@ -38,6 +38,7 @@ class CustomTextFormField extends StatelessWidget {
   final String? label;
   final String hintText;
   final TextInputAction? textInputAction;
+  final Widget? prefix;
   final Widget? suffixIcon;
   final bool obscureText;
   final FormFieldValidator<String>? validator;
@@ -79,6 +80,7 @@ class CustomTextFormField extends StatelessWidget {
     this.textStyle,
     this.labelTextStyle,
     this.borderColor,
+    this.prefix,
   });
 
   @override
@@ -96,7 +98,6 @@ class CustomTextFormField extends StatelessWidget {
           ),
         if (label != null) SizedBox(height: 8.h),
         SizedBox(
-
           child: TextFormField(
             initialValue: initialValue,
             focusNode: focusNode,
@@ -149,6 +150,15 @@ class CustomTextFormField extends StatelessWidget {
                   ),
               fillColor: MITIColor.gray700,
               filled: true,
+              prefixIcon: prefix == null
+                  ? null
+                  : Padding(
+                      padding: EdgeInsets.only(left: prefix == null ? 0 : 20.w),
+                      child: prefix,
+                    ),
+              prefixIconConstraints: BoxConstraints.loose(
+                Size(double.infinity, 36.h),
+              ),
               suffixIcon: Padding(
                 padding: EdgeInsets.only(right: suffixIcon == null ? 0 : 20.w),
                 child: suffixIcon,
