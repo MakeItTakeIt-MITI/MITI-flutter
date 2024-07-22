@@ -18,6 +18,7 @@ import 'package:miti/auth/view/signup/signup_select_screen.dart';
 import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/common/provider/form_util_provider.dart';
+import 'package:miti/common/provider/secure_storage_provider.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/util/util.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -31,6 +32,7 @@ import '../../dio/response_code.dart';
 import '../../court/view/court_map_screen.dart';
 import '../../theme/color_theme.dart';
 import '../param/auth_param.dart';
+import '../provider/widget/sign_up_form_provider.dart';
 
 class LoginScreen extends StatelessWidget {
   static String get routeName => 'login';
@@ -66,9 +68,14 @@ class LoginScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 12.h),
-            const KakaoLoginButton(isLogin: true,),
+            const KakaoLoginButton(
+              isLogin: true,
+            ),
             SizedBox(height: 8.h),
-            if (Platform.isIOS) const AppleLoginButton(isLogin: true,),
+            if (Platform.isIOS)
+              const AppleLoginButton(
+                isLogin: true,
+              ),
             SizedBox(height: 16.h),
             OtherWayComponent(
               // desc: '아직 회원이 아니신가요?',
@@ -333,9 +340,15 @@ class KakaoLoginButton extends ConsumerWidget {
       //     .read(oauthLoginProvider(param: param, type: AuthType.kakao).future);
       if (context.mounted) {
         if (result is ErrorModel) {
-          AuthError.fromModel(model: result).responseError(
-              context, AuthApiType.oauth, ref,
-              object: AuthType.kakao);
+          final String userInfoToken = result.data['userinfo_token'];
+          log("userInfoToken = $userInfoToken");
+          final storage = ref.read(secureStorageProvider);
+          await storage.write(key: "userInfoToken", value: userInfoToken);
+          if (context.mounted) {
+            AuthError.fromModel(model: result).responseError(
+                context, AuthApiType.oauth, ref,
+                object: AuthType.kakao);
+          }
           throw Exception();
         } else {
           context.goNamed(CourtMapScreen.routeName);
@@ -382,7 +395,11 @@ class KakaoLoginButton extends ConsumerWidget {
 
 class AppleLoginButton extends ConsumerWidget {
   final bool isLogin;
-  const AppleLoginButton( {super.key, required this.isLogin,});
+
+  const AppleLoginButton({
+    super.key,
+    required this.isLogin,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -435,9 +452,15 @@ class AppleLoginButton extends ConsumerWidget {
 
     if (context.mounted) {
       if (result is ErrorModel) {
-        AuthError.fromModel(model: result).responseError(
-            context, AuthApiType.oauth, ref,
-            object: AuthType.apple);
+        final String userInfoToken = result.data['userinfo_token'];
+        log("userInfoToken = $userInfoToken");
+        final storage = ref.read(secureStorageProvider);
+        await storage.write(key: "userInfoToken", value: userInfoToken);
+        if (context.mounted) {
+          AuthError.fromModel(model: result).responseError(
+              context, AuthApiType.oauth, ref,
+              object: AuthType.apple);
+        }
       } else {
         context.goNamed(CourtMapScreen.routeName);
       }

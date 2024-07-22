@@ -22,10 +22,12 @@ import '../custom_text_form_field.dart';
 
 class PhoneForm extends ConsumerStatefulWidget {
   final PhoneAuthType type;
+  final bool hasLabel;
 
   const PhoneForm({
     super.key,
     required this.type,
+    this.hasLabel = false,
   });
 
   @override
@@ -167,7 +169,9 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
           ref
               .read(signUpFormProvider.notifier)
               .updateForm(phoneNumber: phoneNumber);
-          if (ref.read(signUpFormProvider.notifier).validPersonalInfo()) {
+          if (ref
+              .read(signUpFormProvider.notifier)
+              .validPersonalInfo(AuthType.email)) {
             ref
                 .read(progressProvider.notifier)
                 .updateValidNext(validNext: true);
@@ -182,7 +186,16 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
     final phone = ref.watch(phoneNumberProvider(widget.type));
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (widget.hasLabel)
+          Text(
+            '휴대폰 번호',
+            style: MITITextStyle.sm.copyWith(
+              color: MITIColor.gray300,
+            ),
+          ),
+        if (widget.hasLabel) SizedBox(height: 8.h),
         Row(
           children: [
             Expanded(

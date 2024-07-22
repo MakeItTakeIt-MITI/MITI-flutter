@@ -97,6 +97,7 @@ class SignUpKakaoParam extends SignUpBaseParam {
   });
 
   factory SignUpKakaoParam.fromForm({required SignFormModel model}) {
+
     return SignUpKakaoParam(
       nickname: model.nickname,
       name: model.name,

@@ -16,6 +16,7 @@ import 'package:miti/auth/provider/widget/phone_auth_provider.dart';
 import 'package:miti/auth/provider/widget/sign_up_form_provider.dart';
 import 'package:miti/auth/view/phone_auth/phone_auth_send_screen.dart';
 import 'package:miti/common/component/default_appbar.dart';
+import 'package:miti/common/provider/secure_storage_provider.dart';
 import 'package:miti/common/provider/widget/form_provider.dart';
 import 'package:miti/court/view/court_map_screen.dart';
 import 'package:miti/theme/color_theme.dart';
@@ -68,13 +69,13 @@ class SignUpScreen extends ConsumerWidget {
                 if (show && progressValue == 5) {
                   return SliverAppBar(
                     backgroundColor: MITIColor.gray800,
+
                     /// 앱바 pinned 시 surface 컬러
                     surfaceTintColor: MITIColor.gray800,
                     centerTitle: true,
                     leading: IconButton(
                       onPressed: () {
                         ref.read(progressProvider.notifier).hideDetail();
-
                       },
                       icon: SvgPicture.asset(
                         AssetUtil.getAssetPath(
@@ -96,11 +97,10 @@ class SignUpScreen extends ConsumerWidget {
             padding: EdgeInsets.only(
               left: 21.w,
               right: 21.w,
-
-              bottom: bottomPadding,
+              // bottom: bottomPadding,
             ),
             child: CustomScrollView(
-              keyboardDismissBehavior:ScrollViewKeyboardDismissBehavior.onDrag ,
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               slivers: [
                 SliverFillRemaining(
                   fillOverscroll: true,
@@ -110,17 +110,20 @@ class SignUpScreen extends ConsumerWidget {
                     children: [
                       SizedBox(height: 20.h),
                       progressComponent(),
-                      const DescComponent(),
-                      if (ref.watch(progressProvider).progress == 1)
-                        const NicknameForm(),
-                      if (ref.watch(progressProvider).progress == 2)
-                        const EmailForm(),
-                      if (ref.watch(progressProvider).progress == 3)
-                        const PasswordForm(),
-                      if (ref.watch(progressProvider).progress == 4)
-                        const PersonalInfoForm(),
-                      if (ref.watch(progressProvider).progress == 5)
-                        const CheckBoxForm(),
+                      DescComponent(
+                        type: type,
+                      ),
+                      signUpComponent(ref),
+                      // if (ref.watch(progressProvider).progress == 1)
+                      //   const NicknameForm(),
+                      // if (ref.watch(progressProvider).progress == 2)
+                      //   const EmailForm(),
+                      // if (ref.watch(progressProvider).progress == 3)
+                      //   const PasswordForm(),
+                      // if (ref.watch(progressProvider).progress == 4)
+                      //   const PersonalInfoForm(),
+                      // if (ref.watch(progressProvider).progress == 5)
+                      //   const CheckBoxForm(),
                       const Spacer(),
                       _NextButton(
                         type: type,
@@ -157,6 +160,27 @@ class SignUpScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Widget signUpComponent(WidgetRef ref) {
+    if (ref.watch(progressProvider).progress == 1) {
+      return const NicknameForm();
+    } else if (ref.watch(progressProvider).progress == 2) {
+      if (type == AuthType.email) {
+        return const EmailForm();
+      }
+      return PersonalInfoForm(type: type);
+    } else if (ref.watch(progressProvider).progress == 3) {
+      if (type == AuthType.email) {
+        return const PasswordForm();
+      }
+      return const CheckBoxForm();
+    } else if (ref.watch(progressProvider).progress == 4) {
+      return PersonalInfoForm(type: type);
+    } else {
+      return const CheckBoxForm();
+    }
+    (ref.watch(progressProvider).progress == 5);
   }
 }
 
@@ -831,22 +855,35 @@ class _EmailFormState extends ConsumerState<EmailForm> {
 }
 
 class DescComponent extends ConsumerWidget {
-  const DescComponent({super.key});
+  final AuthType type;
+
+  const DescComponent({
+    super.key,
+    required this.type,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     String title = '';
     String desc = '';
     if (ref.watch(progressProvider).progress == 1) {
-      // title = 'MITI 회원 이용약관';
-      // desc = '약관에 동의하시면 회원가입이 완료됩니다.';
       title = '닉네임을 입력해주세요.';
       desc = '닉네임은  MITI 프로필에서 표시되는 이름이에요.\n개인정보 보호를 위해 되도록 실명은 삼가해주세요.';
     } else if (ref.watch(progressProvider).progress == 2) {
-      title = '이메일을 입력해주세요.';
-      desc = '이메일은 사용자의 아이디로 사용됩니다.\n입력하신 이메일로 MITI의 공지사항이 전달돼요.';
+      if (type == AuthType.email) {
+        title = '이메일을 입력해주세요.';
+        desc = '이메일은 사용자의 아이디로 사용됩니다.\n입력하신 이메일로 MITI의 공지사항이 전달돼요.';
+      } else {
+        title = '본인확인을 위한\n정보를 입력해주세요.';
+        desc = '입력하신 정보는 안전하게 보관되며 공개되지 않아요.';
+      }
     } else if (ref.watch(progressProvider).progress == 3) {
-      title = '비밀번호를 입력해주세요.';
+      if (type == AuthType.email) {
+        title = '비밀번호를 입력해주세요.';
+      } else {
+        title = 'MITI 회원 이용약관';
+        desc = '약관에 동의하시면 회원가입이 완료됩니다.';
+      }
     } else if (ref.watch(progressProvider).progress == 4) {
       title = '본인확인을 위한\n정보를 입력해주세요.';
       desc = '입력하신 정보는 안전하게 보관되며 공개되지 않아요.';
@@ -944,7 +981,12 @@ class _NicknameFormState extends ConsumerState<NicknameForm> {
 }
 
 class PersonalInfoForm extends ConsumerStatefulWidget {
-  const PersonalInfoForm({super.key});
+  final AuthType type;
+
+  const PersonalInfoForm({
+    super.key,
+    required this.type,
+  });
 
   @override
   ConsumerState<PersonalInfoForm> createState() => _PersonalInfoFormState();
@@ -994,7 +1036,6 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SizedBox(height: 32.h),
-
         CustomTextFormField(
           label: '이름',
           hintText: '성함을 입력해주세요.',
@@ -1008,35 +1049,27 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
           },
         ),
         SizedBox(height: 40.h),
-        const _BirthForm(),
-        SizedBox(height: 40.h),
-        const PhoneForm(
-          type: PhoneAuthType.signup,
+        _BirthForm(
+          type: widget.type,
         ),
-        // CustomTextFormField(
-        //   focusNode: focusNodes[1],
-        //   label: '휴대폰 번호',
-        //   hintText: '휴대폰 번호를 입력해주세요.',
-        //   onChanged: (val) {
-        //     ref.read(signUpFormProvider.notifier).updateForm(phoneNumber: val);
-        //     if (ref.read(signUpFormProvider.notifier).validPhoneNumber()) {
-        //       FocusScope.of(context).requestFocus(FocusNode());
-        //     }
-        //     checkValid();
-        //   },
-        //   onNext: () {
-        //     FocusScope.of(context).requestFocus(FocusNode());
-        //   },
-        //   keyboardType: TextInputType.number,
-        //   inputFormatters: <TextInputFormatter>[PhoneNumberFormatter()],
-        // ),
+        SizedBox(height: 40.h),
+        if (widget.type != AuthType.kakao)
+          const PhoneForm(
+            type: PhoneAuthType.signup,
+            hasLabel: true,
+          ),
       ],
     );
   }
 }
 
 class _BirthForm extends ConsumerStatefulWidget {
-  const _BirthForm({super.key});
+  final AuthType type;
+
+  const _BirthForm({
+    super.key,
+    required this.type,
+  });
 
   @override
   ConsumerState<_BirthForm> createState() => _BirthFormState();
@@ -1071,22 +1104,8 @@ class _BirthFormState extends ConsumerState<_BirthForm> {
                 barrierDismissible: true,
                 context: context,
                 builder: (_) {
-                  final now = DateTime.now();
                   final maximumDate =
                       DateTime.now().subtract(const Duration(days: 1));
-                  // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                  //   setState(() {
-                  //     String birthDate = "${now.year}-${now.month}-${now.day}";
-                  //     log("birthDate $birthDate");
-                  //     year = maximumDate.year.toString();
-                  //     month = maximumDate.month.toString();
-                  //     day = maximumDate.day.toString();
-                  //     birthdayFormat(maximumDate);
-                  //     ref
-                  //         .read(signUpFormProvider.notifier)
-                  //         .updateForm(birthDate: "$year / $month / $day");
-                  //   });
-                  // });
 
                   return Center(
                     child: Container(
@@ -1122,7 +1141,7 @@ class _BirthFormState extends ConsumerState<_BirthForm> {
                                             birthDate: "$year / $month / $day");
                                     if (ref
                                         .read(signUpFormProvider.notifier)
-                                        .validPersonalInfo()) {
+                                        .validPersonalInfo(widget.type)) {
                                       ref
                                           .read(progressProvider.notifier)
                                           .updateValidNext(validNext: true);
@@ -1274,7 +1293,7 @@ class _NextButtonState extends ConsumerState<_NextButton> {
         ref.watch(signUpFormProvider.select((value) => value.showDetail));
     final show = showDetail.where((e) => e).isNotEmpty;
     String buttonText = '';
-    if (progress == 5) {
+    if (progress == 5 || (progress == 3 && AuthType.email != widget.type)) {
       buttonText = '가입하기';
       if (show) {
         buttonText = '확인';
@@ -1284,8 +1303,6 @@ class _NextButtonState extends ConsumerState<_NextButton> {
     }
 
     return Column(
-
-
       children: [
         // SizedBox(height: 195.h,),
         SizedBox(
@@ -1293,7 +1310,19 @@ class _NextButtonState extends ConsumerState<_NextButton> {
           child: TextButton(
               onPressed: () async {
                 if (validNext) {
-                  if (!show && progress == 5) {
+                  if (!show &&
+                      (progress == 5 ||
+                          (progress == 3 && AuthType.email != widget.type))) {
+                    if (AuthType.email != widget.type) {
+                      final storage = ref.read(secureStorageProvider);
+                      final userInfoToken =
+                          await storage.read(key: "userInfoToken");
+                      ref
+                          .read(signUpFormProvider.notifier)
+                          .updateForm(userinfo_token: userInfoToken);
+                      await storage.delete(key: "userInfoToken");
+                    }
+
                     final model = ref.read(signUpFormProvider);
                     late SignUpBaseParam param;
                     switch (widget.type) {
@@ -1435,7 +1464,7 @@ class SignUpCompleteScreen extends StatelessWidget {
               ),
               SizedBox(height: 12.h),
               Text(
-                "로그인 하여 MITI를 즐겨보세요!",
+                "우리 동네 농구 경기에 참여해보세요",
                 style: MITITextStyle.sm150.copyWith(
                   color: MITIColor.gray300,
                 ),
@@ -1475,7 +1504,9 @@ class SignUpCompleteScreen extends StatelessWidget {
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   return TextButton(
                       onPressed: () {
-                        ref.read(authProvider.notifier).autoLogin(context: context);
+                        ref
+                            .read(authProvider.notifier)
+                            .autoLogin(context: context);
                       },
                       child: const Text("홈으로 가기"));
                 },

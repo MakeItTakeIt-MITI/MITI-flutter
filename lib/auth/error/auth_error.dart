@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/auth/provider/widget/find_info_provider.dart';
+import 'package:miti/auth/provider/widget/sign_up_form_provider.dart';
 import 'package:miti/auth/view/login_screen.dart';
+import 'package:miti/auth/view/signup/signup_screen.dart';
 import 'package:miti/common/provider/router_provider.dart';
 import 'package:miti/common/provider/widget/form_provider.dart';
 import 'package:miti/dio/response_code.dart';
@@ -252,17 +254,10 @@ class AuthError extends ErrorBase {
           );
         },
       );
-    } else if (this.status_code == UnAuthorized) {
+    } else if (this.status_code == Forbidden && this.error_code == 540) {
       /// 비회원 Oauth 사용자 ?
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '로그인 실패',
-            content: '서버가 불안정해 잠시후 다시 이용해주세요.',
-          );
-        },
-      );
+      final extra = type;
+      context.goNamed(SignUpScreen.routeName, extra: extra);
     } else if (this.status_code == Forbidden && this.error_code == 140) {
       /// 로그인 불가 사용자
       String oauthProvider = type == AuthType.kakao ? '애플' : '카카오';
@@ -284,7 +279,10 @@ class AuthError extends ErrorBase {
               title: '이메일 가입 사용자',
               content: '이메일 가입 이력이 존재합니다.\n일반 로그인을 통해 로그인 해주시기 바랍니다.',
               btnDesc: '이메일 로그인 하러 가기',
-              onPressed: () => context.goNamed(LoginScreen.routeName),
+              onPressed: () {
+                context.pop();
+                context.goNamed(LoginScreen.routeName);
+              },
             );
           });
     } else if (this.status_code == Forbidden && this.error_code == 341) {
@@ -294,21 +292,29 @@ class AuthError extends ErrorBase {
         showDialog(
             context: context,
             builder: (_) {
-              return const CustomDialog(
+              return CustomDialog(
                 title: 'Apple ID 가입 사용자',
                 content:
                     '해당 번호로 Apple ID 가입 이력이 존재합니다.\nApple ID 로그인을 통해 로그인 해주시기 바랍니다.',
                 btnDesc: 'Apple ID 로그인 하러 가기',
+                onPressed: () {
+                  context.pop();
+                  context.goNamed(LoginScreen.routeName);
+                },
               );
             });
       } else {
         showDialog(
             context: context,
             builder: (_) {
-              return const CustomDialog(
+              return CustomDialog(
                 title: '카카오 가입 사용자',
                 content: '해당 번호로 카카오 가입 이력이 존재합니다.\n카카오 로그인을 통해 로그인 해주시기 바랍니다.',
                 btnDesc: '카카오 로그인 하러 가기',
+                onPressed: () {
+                  context.pop();
+                  context.goNamed(LoginScreen.routeName);
+                },
               );
             });
       }
@@ -413,9 +419,10 @@ class AuthError extends ErrorBase {
           );
     } else if (status_code == BadRequest && error_code == 340) {
       /// 회원가입 -  이메일 가입 사용자
-      showDialog(
+
+      showModalBottomSheet(
           context: context,
-          builder: (_) {
+          builder: (context) {
             return CustomDialog(
               title: '이메일 가입 사용자',
               content: '해당 번호로 이메일 가입 이력이 존재합니다.\n일반 로그인을 통해 로그인 해주시기 바랍니다.',
@@ -428,9 +435,10 @@ class AuthError extends ErrorBase {
           });
     } else if (status_code == BadRequest && error_code == 341) {
       /// 회원가입 - 애플 가입 사용자
-      showDialog(
+
+      showModalBottomSheet(
           context: context,
-          builder: (_) {
+          builder: (context) {
             return const CustomDialog(
               title: 'Apple ID 가입 사용자',
               content:
@@ -440,9 +448,9 @@ class AuthError extends ErrorBase {
           });
     } else if (status_code == BadRequest && error_code == 342) {
       /// 회원가입 - 카카오 가입 사용자
-      showDialog(
+      showModalBottomSheet(
           context: context,
-          builder: (_) {
+          builder: (context) {
             return const CustomDialog(
               title: '카카오 가입 사용자',
               content: '해당 번호로 카카오 가입 이력이 존재합니다.\n카카오 로그인을 통해 로그인 해주시기 바랍니다.',

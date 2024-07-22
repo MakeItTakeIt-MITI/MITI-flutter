@@ -175,13 +175,11 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
                 model = ref.watch(findPasswordProvider);
               }
 
+
               return TextButton(
                 onPressed: model != null
                     ? () {
-                        if (model!.purpose == null) {
-                          context.goNamed(NotFoundAccountScreen.routeName);
-                          return;
-                        }
+
 
                         if (widget.type == PhoneAuthType.find_email) {
                           model as EmailVerifyModel;
@@ -193,6 +191,10 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
                             return;
                           }
 
+                          if (model.purpose == null) {
+                            context.goNamed(NotFoundAccountScreen.routeName);
+                            return;
+                          }
                           Map<String, String> queryParameters = {
                             'email': model.email!,
                           };
@@ -211,6 +213,11 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
                             );
                             return;
                           }
+                          if (model.purpose == null) {
+                            context.goNamed(NotFoundAccountScreen.routeName);
+                            return;
+                          }
+
                           Map<String, String> queryParameters = {
                             "password_update_token":
                                 model.password_update_token ?? '',

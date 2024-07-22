@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../common/model/entity_enum.dart';
 import '../../../util/util.dart';
 
 part 'sign_up_form_provider.g.dart';
@@ -146,6 +147,7 @@ class SignUpForm extends _$SignUpForm {
     List<bool>? checkBoxes,
     List<bool>? showDetail,
     String? signup_token,
+    String? userinfo_token,
   }) {
     state = state.copyWith(
       nickname: nickname,
@@ -160,6 +162,7 @@ class SignUpForm extends _$SignUpForm {
       checkBoxes: checkBoxes,
       showDetail: showDetail,
       signup_token: signup_token,
+      userinfo_token: userinfo_token,
     );
   }
 
@@ -219,8 +222,11 @@ class SignUpForm extends _$SignUpForm {
     state = state.copyWith(showDetail: newShowDetail);
   }
 
-  bool validPersonalInfo() {
-    return validName() && validBirth() && validPhoneNumber();
+  bool validPersonalInfo(AuthType type) {
+    if (type != AuthType.kakao) {
+      return validName() && validBirth() && validPhoneNumber();
+    }
+    return validName() && validBirth();
   }
 }
 

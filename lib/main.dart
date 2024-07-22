@@ -25,6 +25,7 @@ import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'common/provider/provider_observer.dart';
 import 'common/provider/router_provider.dart';
+import 'common/provider/secure_storage_provider.dart';
 import 'firebase_options.dart';
 
 //
@@ -85,7 +86,6 @@ Future<void> getFcmToken(WidgetRef ref) async {
     token = await messaging.getToken();
   }
   ref.read(fcmTokenProvider.notifier).update((state) => token);
-
   log('FCM Token: $token');
 }
 
@@ -142,18 +142,18 @@ class _MyAppState extends ConsumerState<MyApp> {
     _fcmSetting();
   }
 
-  void disableBattaryOptimization() async {
-    final response =
-        await DisableBatteryOptimization.showDisableAllOptimizationsSettings(
-            "Enable Auto Start",
-            "Follow the steps and enable the auto start of this app",
-            "Your device has additional battery optimization",
-            "Follow the steps and disable the optimizations to allow smooth functioning of this app");
-    if (response != null && response) {
-      bool? isAutoStartEnabled =
-          await DisableBatteryOptimization.isAutoStartEnabled;
-    }
-  }
+  // void disableBattaryOptimization() async {
+  //   final response =
+  //       await DisableBatteryOptimization.showDisableAllOptimizationsSettings(
+  //           "Enable Auto Start",
+  //           "Follow the steps and enable the auto start of this app",
+  //           "Your device has additional battery optimization",
+  //           "Follow the steps and disable the optimizations to allow smooth functioning of this app");
+  //   if (response != null && response) {
+  //     bool? isAutoStartEnabled =
+  //         await DisableBatteryOptimization.isAutoStartEnabled;
+  //   }
+  // }
 
   void _fcmSetting() async {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -223,7 +223,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     BuildContext context,
   ) {
     final router = ref.read(routerProvider);
-    ref.read(notificationProvider);
+    // ref.read(notificationProvider);
 
     return ScreenUtilInit(
       designSize: const Size(375, 812),
@@ -236,7 +236,9 @@ class _MyAppState extends ConsumerState<MyApp> {
             GlobalMaterialLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const <Locale>[Locale('ko', ''),],
+          supportedLocales: const <Locale>[
+            Locale('ko', ''),
+          ],
           title: 'MITI',
           builder: (context, child) {
             return MediaQuery(
@@ -268,14 +270,8 @@ class _MyAppState extends ConsumerState<MyApp> {
                 contentPadding:
                     EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                 // constraints: BoxConstraints.loose(Size(double.infinity, 58.h)),
-                hintStyle: TextStyle(
-                  color: const Color(0xFF969696),
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: -0.25.sp,
-                  height: 24 / 16,
-                ),
-                fillColor: const Color(0xFFF7F7F7),
+                hintStyle: MITITextStyle.md.copyWith(color: MITIColor.gray500),
+                fillColor: MITIColor.gray700,
                 filled: true,
               ),
               textButtonTheme: TextButtonThemeData(

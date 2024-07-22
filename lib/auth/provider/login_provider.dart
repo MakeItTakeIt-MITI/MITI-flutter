@@ -11,6 +11,7 @@ import 'package:miti/auth/provider/widget/phone_auth_provider.dart';
 import 'package:miti/auth/provider/widget/sign_up_form_provider.dart';
 import 'package:miti/auth/repository/auth_repository.dart';
 import 'package:miti/common/provider/secure_storage_provider.dart';
+import 'package:miti/notification_provider.dart';
 import 'package:miti/user/provider/user_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -36,7 +37,7 @@ class LoginForm extends _$LoginForm {
 
   bool isValid() {
     final validEmail = RegExp(
-            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
         .hasMatch(state.email);
     if (validEmail && state.password.length > 7) {
       return true;
@@ -48,12 +49,15 @@ class LoginForm extends _$LoginForm {
 @riverpod
 Future<BaseModel> login(LoginRef ref,
     {required LoginBaseParam param, required AuthType type}) async {
+  final fcmToken = ref.read(fcmTokenProvider)!;
+
   return await ref
       .watch(authRepositoryProvider)
       .login(
-        param: param,
-        provider: type,
-      )
+    param: param,
+    provider: type,
+    fcmToken: fcmToken,
+  )
       .then<BaseModel>((value) async {
     logger.i('login $param!');
     final model = value.data!;
@@ -64,7 +68,8 @@ Future<BaseModel> login(LoginRef ref,
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
     logger.e(
-        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+        'status_code = ${error.status_code}\nerror.error_code = ${error
+            .error_code}\nmessage = ${error.message}\ndata = ${error.data}');
     return error;
   });
 }
@@ -102,7 +107,8 @@ Future<BaseModel> oauthLogin(OauthLoginRef ref,
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
     logger.e(
-        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+        'status_code = ${error.status_code}\nerror.error_code = ${error
+            .error_code}\nmessage = ${error.message}\ndata = ${error.data}');
     return error;
   });
 }

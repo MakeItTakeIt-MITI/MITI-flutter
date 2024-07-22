@@ -75,10 +75,12 @@ abstract class AuthRepository {
   Future<ResponseModel<PasswordVerifyModel>> verifyPasswordPhone(
       {@Body() required PhoneVerifyParam param});
 
+  // @Header("")
   @POST('/auth/login/{provider}')
   Future<ResponseModel<LoginModel>> login({
     @Path() required AuthType provider,
     @Body() required LoginBaseParam param,
+    @Header("fcm-token") required String fcmToken,
   });
 
   @POST('/auth/oauth//login')

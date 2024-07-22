@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:miti/common/provider/secure_storage_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'common/logger/custom_logger.dart';
@@ -26,9 +27,10 @@ class Notification extends _$Notification {
 
   @override
   void build() async {
-    FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
+    FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) async {
       // TODO: If necessary send token to application server.
       log('refresh fcm token ${fcmToken}');
+      ref.read(fcmTokenProvider.notifier).update((state) => fcmToken);
       // Note: This callback is fired at each app startup and whenever a new
       // token is generated.
     }).onError((err) {
