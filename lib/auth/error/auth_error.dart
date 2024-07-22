@@ -287,37 +287,40 @@ class AuthError extends ErrorBase {
           });
     } else if (this.status_code == Forbidden && this.error_code == 341) {
       /// 타 oauth 서비스 사용자
-      if (AuthType.kakao == type) {
-        /// 애플 가입 사용자
-        showDialog(
-            context: context,
-            builder: (_) {
-              return CustomDialog(
-                title: 'Apple ID 가입 사용자',
-                content:
-                    '해당 번호로 Apple ID 가입 이력이 존재합니다.\nApple ID 로그인을 통해 로그인 해주시기 바랍니다.',
-                btnDesc: 'Apple ID 로그인 하러 가기',
+      /// 애플 가입 사용자
+      showModalBottomSheet(
+          context: context,
+          builder: (_) {
+            return BottomDialog(
+              title: 'Apple ID 가입 사용자',
+              content:
+                  '해당 번호로 Apple ID 가입 이력이 존재합니다.\nApple ID 로그인을 통해 로그인 해주시기 바랍니다.',
+              btn: TextButton(
                 onPressed: () {
                   context.pop();
                   context.goNamed(LoginScreen.routeName);
                 },
-              );
-            });
-      } else {
-        showDialog(
-            context: context,
-            builder: (_) {
-              return CustomDialog(
-                title: '카카오 가입 사용자',
-                content: '해당 번호로 카카오 가입 이력이 존재합니다.\n카카오 로그인을 통해 로그인 해주시기 바랍니다.',
-                btnDesc: '카카오 로그인 하러 가기',
+                child: const Text("Apple ID 로그인 하러 가기"),
+              ),
+            );
+          });
+    } else if (this.status_code == Forbidden && this.error_code == 342) {
+      /// 타 oauth 서비스 사용자
+      showModalBottomSheet(
+          context: context,
+          builder: (_) {
+            return BottomDialog(
+              title: '카카오 가입 사용자',
+              content: '해당 번호로 카카오 가입 이력이 존재합니다.\n카카오 로그인을 통해 로그인 해주시기 바랍니다.',
+              btn: TextButton(
                 onPressed: () {
                   context.pop();
                   context.goNamed(LoginScreen.routeName);
                 },
-              );
-            });
-      }
+                child: const Text("카카오로 로그인 하러 가기"),
+              ),
+            );
+          });
     } else if (this.status_code == Forbidden && this.error_code == 361) {
       /// 일반 로그인 사용자
       context.pushNamed(OauthErrorScreen.routeName);
@@ -423,14 +426,16 @@ class AuthError extends ErrorBase {
       showModalBottomSheet(
           context: context,
           builder: (context) {
-            return CustomDialog(
+            return BottomDialog(
               title: '이메일 가입 사용자',
               content: '해당 번호로 이메일 가입 이력이 존재합니다.\n일반 로그인을 통해 로그인 해주시기 바랍니다.',
-              btnDesc: '이메일 로그인 하러 가기',
-              onPressed: () {
-                ref.read(signUpPopProvider.notifier).update((state) => true);
-                context.goNamed(LoginScreen.routeName);
-              },
+              btn: TextButton(
+                onPressed: () {
+                  context.pop();
+                  context.goNamed(LoginScreen.routeName);
+                },
+                child: const Text("이메일 로그인 하러 가기"),
+              ),
             );
           });
     } else if (status_code == BadRequest && error_code == 341) {
@@ -439,22 +444,36 @@ class AuthError extends ErrorBase {
       showModalBottomSheet(
           context: context,
           builder: (context) {
-            return const CustomDialog(
+            return BottomDialog(
               title: 'Apple ID 가입 사용자',
               content:
                   '해당 번호로 Apple ID 가입 이력이 존재합니다.\nApple ID 로그인을 통해 로그인 해주시기 바랍니다.',
-              btnDesc: 'Apple ID 로그인 하러 가기',
+              btn: TextButton(
+                onPressed: () {
+                  context.pop();
+                  context.goNamed(LoginScreen.routeName);
+                },
+                child: const Text("Apple ID 로그인 하러 가기"),
+              ),
             );
           });
     } else if (status_code == BadRequest && error_code == 342) {
       /// 회원가입 - 카카오 가입 사용자
+      ///
+
       showModalBottomSheet(
           context: context,
           builder: (context) {
-            return const CustomDialog(
+            return BottomDialog(
               title: '카카오 가입 사용자',
               content: '해당 번호로 카카오 가입 이력이 존재합니다.\n카카오 로그인을 통해 로그인 해주시기 바랍니다.',
-              btnDesc: '카카오 로그인 하러 가기',
+              btn: TextButton(
+                onPressed: () {
+                  context.pop();
+                  context.goNamed(LoginScreen.routeName);
+                },
+                child: const Text("카카오 로그인 하러 가기"),
+              ),
             );
           });
     } else if (status_code == BadRequest && error_code == 440) {
