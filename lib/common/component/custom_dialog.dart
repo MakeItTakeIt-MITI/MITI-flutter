@@ -17,7 +17,8 @@ class CustomDialog extends StatelessWidget {
       required this.title,
       this.onPressed,
       required this.content,
-      this.btnDesc = '확인', this.button});
+      this.btnDesc = '확인',
+      this.button});
 
   @override
   Widget build(BuildContext context) {
@@ -50,29 +51,76 @@ class CustomDialog extends StatelessWidget {
               ),
             ),
             SizedBox(height: 30.h),
-            if(button == null)
-            ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 48.h, minHeight: 48.h),
-              child: TextButton(
-                onPressed: onPressed ??
-                    () => Navigator.of(context, rootNavigator: true)
-                        .pop('dialog'),
-                style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.r))),
-                child: Text(
-                  btnDesc,
-                  style: MITITextStyle.mdBold.copyWith(
-                    color: MITIColor.gray800,
+            if (button == null)
+              ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: 48.h, minHeight: 48.h),
+                child: TextButton(
+                  onPressed: onPressed ??
+                      () => Navigator.of(context, rootNavigator: true)
+                          .pop('dialog'),
+                  style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.r))),
+                  child: Text(
+                    btnDesc,
+                    style: MITITextStyle.mdBold.copyWith(
+                      color: MITIColor.gray800,
+                    ),
                   ),
                 ),
               ),
-            ),
-            if(button!=null)
-              button!
+            if (button != null) button!
           ],
         ),
+      ),
+    );
+  }
+}
+
+class BottomDialog extends StatelessWidget {
+  final String title;
+  final String content;
+  final Widget btn;
+
+  const BottomDialog(
+      {super.key,
+      required this.title,
+      required this.content,
+      required this.btn});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      // height: 196.h,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+        color: MITIColor.gray700,
+      ),
+      padding: EdgeInsets.all(20.r),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            title,
+            style: MITITextStyle.mdBold.copyWith(
+              color: MITIColor.gray100,
+            ),
+          ),
+          SizedBox(height: 16.h),
+          Text(
+            content,
+            textAlign: TextAlign.center,
+            style: MITITextStyle.xxsmLight150.copyWith(
+              color: MITIColor.gray300,
+            ),
+          ),
+          SizedBox(height: 30.h),
+          btn,
+          SizedBox(
+            height: 21.h,
+          )
+        ],
       ),
     );
   }
