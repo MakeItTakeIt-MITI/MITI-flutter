@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kpostal/kpostal.dart';
+import 'package:miti/auth/view/signup/signup_screen.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/component/default_layout.dart';
@@ -67,6 +68,7 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
     return Scaffold(
+      // resizeToAvoidBottomInset: false,
       body: NestedScrollView(
         controller: _scrollController,
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -79,12 +81,13 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
         },
         body: Padding(
           padding: EdgeInsets.only(
+            // vertical: 20.h,
             left: 21.w,
             right: 21.w,
+            // bottom: bottomPadding,
           ),
           child: CustomScrollView(
             slivers: <Widget>[
-              getSpacer(height: 20),
               const _TitleForm(),
               getSpacer(),
               V2DateForm(),
@@ -101,166 +104,60 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
               const _FeeForm(),
               getSpacer(),
               const _AdditionalInfoForm(),
-              getSpacer(height: 19),
-              SliverToBoxAdapter(child: Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  final valid =
-                      ref.watch(gameFormProvider.notifier).formValid();
-                  return SizedBox(
-                    height: 48.h,
-                    child: TextButton(
-                        onPressed: valid
-                            ? () async {
-                                final result =
-                                    await ref.read(gameCreateProvider.future);
-                                if (context.mounted) {
-                                  if (result is ErrorModel) {
-                                    GameError.fromModel(model: result)
-                                        .responseError(context,
-                                            GameApiType.createGame, ref);
-                                  } else {
-                                    final model = result
-                                        as ResponseModel<GameDetailModel>;
-                                    Map<String, String> pathParameters = {
-                                      'gameId': model.data!.id.toString()
-                                    };
-                                    final Map<String, String> queryParameters =
-                                        {
-                                      'bottomIdx': widget.bottomIdx.toString()
-                                    };
-                                    context.pushNamed(
-                                      GameCreateCompleteScreen.routeName,
-                                      pathParameters: pathParameters,
-                                      queryParameters: queryParameters,
-                                    );
-                                  }
-                                }
-                              }
-                            : () {},
-                        style: TextButton.styleFrom(
-                            backgroundColor:
-                                valid ? MITIColor.primary : MITIColor.gray500,
-                            fixedSize: Size(double.infinity, 48.h)),
-                        child: Text(
-                          '경기 생성하기',
-                          style: TextStyle(
-                            color: valid ? MITIColor.gray800 : MITIColor.gray50,
-                          ),
-                        )),
-                  );
-                },
-              )),
-              getSpacer(height: 8),
+              getSpacer(height: 32),
+              _AgreeTermComponent(),
+              getSpacer(height: 20),
+
+              // getSpacer(height: 8),
             ],
           ),
         ),
       ),
-    );
-    return DefaultLayout(
-      bottomIdx: widget.bottomIdx,
-      scrollController: _scrollController,
-      body: NestedScrollView(
-        controller: _scrollController,
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return [
-            const DefaultAppBar(
-              isSliver: true,
-              title: '경기 생성하기',
-            )
-          ];
-        },
-        body: Padding(
-          padding: EdgeInsets.only(
-            left: 16.w,
-            right: 16.w,
-            bottom: bottomPadding,
-          ),
-          child: CustomScrollView(
-            slivers: <Widget>[
-              getSpacer(height: 18),
-              SliverToBoxAdapter(
+      bottomNavigationBar: Consumer(
+        builder: (BuildContext context, WidgetRef ref, Widget? child) {
+          final valid = ref.watch(gameFormProvider.notifier).formValid();
+          return BottomButton(
+              button: SizedBox(
+            height: 48.h,
+            child: TextButton(
+                onPressed: valid
+                    ? () async {
+                        final result =
+                            await ref.read(gameCreateProvider.future);
+                        if (context.mounted) {
+                          if (result is ErrorModel) {
+                            GameError.fromModel(model: result).responseError(
+                                context, GameApiType.createGame, ref);
+                          } else {
+                            final model =
+                                result as ResponseModel<GameDetailModel>;
+                            Map<String, String> pathParameters = {
+                              'gameId': model.data!.id.toString()
+                            };
+                            final Map<String, String> queryParameters = {
+                              'bottomIdx': widget.bottomIdx.toString()
+                            };
+                            context.pushNamed(
+                              GameCreateCompleteScreen.routeName,
+                              pathParameters: pathParameters,
+                              queryParameters: queryParameters,
+                            );
+                          }
+                        }
+                      }
+                    : () {},
+                style: TextButton.styleFrom(
+                    backgroundColor:
+                        valid ? MITIColor.primary : MITIColor.gray500,
+                    fixedSize: Size(double.infinity, 48.h)),
                 child: Text(
-                  '경기 정보',
+                  '경기 생성하기',
                   style: TextStyle(
-                    color: const Color(0xFF222222),
-                    fontSize: 16.sp,
-                    fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.25.sp,
+                    color: valid ? MITIColor.gray800 : MITIColor.gray50,
                   ),
-                ),
-              ),
-              getSpacer(),
-              const _TitleForm(),
-              getSpacer(),
-              const _DateForm(),
-              getSpacer(),
-              const _AddressForm(),
-              getSpacer(),
-              SliverToBoxAdapter(
-                  child: ApplyForm(
-                formKeys: formKeys,
-                focusNodes: focusNodes,
-              )),
-              getSpacer(),
-              const _FeeForm(),
-              getSpacer(),
-              const _AdditionalInfoForm(),
-              getSpacer(height: 19),
-              SliverToBoxAdapter(child: Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  final valid =
-                      ref.watch(gameFormProvider.notifier).formValid();
-                  return SizedBox(
-                    height: 48.h,
-                    child: TextButton(
-                        onPressed: valid
-                            ? () async {
-                                final result =
-                                    await ref.read(gameCreateProvider.future);
-                                if (context.mounted) {
-                                  if (result is ErrorModel) {
-                                    GameError.fromModel(model: result)
-                                        .responseError(context,
-                                            GameApiType.createGame, ref);
-                                  } else {
-                                    final model = result
-                                        as ResponseModel<GameDetailModel>;
-                                    Map<String, String> pathParameters = {
-                                      'gameId': model.data!.id.toString()
-                                    };
-                                    final Map<String, String> queryParameters =
-                                        {
-                                      'bottomIdx': widget.bottomIdx.toString()
-                                    };
-                                    context.pushNamed(
-                                      GameCreateCompleteScreen.routeName,
-                                      pathParameters: pathParameters,
-                                      queryParameters: queryParameters,
-                                    );
-                                  }
-                                }
-                              }
-                            : () {},
-                        style: TextButton.styleFrom(
-                            backgroundColor: valid
-                                ? const Color(0xFF4065F6)
-                                : const Color(0xFFE8E8E8),
-                            fixedSize: Size(double.infinity, 48.h)),
-                        child: Text(
-                          '경기 생성하기',
-                          style: TextStyle(
-                            color:
-                                valid ? Colors.white : const Color(0xFF969696),
-                          ),
-                        )),
-                  );
-                },
-              )),
-              getSpacer(height: 8),
-            ],
-          ),
-        ),
+                )),
+          ));
+        },
       ),
     );
   }
@@ -846,97 +743,92 @@ class ApplyForm extends ConsumerWidget {
         ref.watch(gameFormProvider.select((value) => value.min_invitation));
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SizedBox(
-          height: 85.h,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Flexible(
-                child: CustomTextFormField(
-                  focusNode: focusNodes[1],
-                  key: formKeys[1],
-                  initialValue: initMinValue,
-                  hintText: '00',
-                  label: '총 모집 인원',
-                  textAlign: TextAlign.right,
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    NumberFormatter(),
-                  ],
-                  onChanged: (val) {
-                    ref
-                        .read(gameFormProvider.notifier)
-                        .update(min_invitation: val);
-                  },
-                  prefix: Text(
-                    "최소",
+        Row(
+          children: [
+            Expanded(
+              child: CustomTextFormField(
+                focusNode: focusNodes[1],
+                key: formKeys[1],
+                initialValue: initMinValue,
+                hintText: '00',
+                label: '총 모집 인원',
+                textAlign: TextAlign.right,
+                textInputAction: TextInputAction.next,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  NumberFormatter(),
+                ],
+                onChanged: (val) {
+                  ref
+                      .read(gameFormProvider.notifier)
+                      .update(min_invitation: val.replaceAll(',', ''));
+                },
+                prefix: Text(
+                  "최소",
+                  style: MITITextStyle.sm.copyWith(
+                    color: MITIColor.gray100,
+                  ),
+                ),
+                suffixIcon: Padding(
+                  padding: EdgeInsets.only(left: 12.w),
+                  child: Text(
+                    "명",
                     style: MITITextStyle.sm.copyWith(
                       color: MITIColor.gray100,
                     ),
                   ),
-                  suffixIcon: Padding(
-                    padding: EdgeInsets.only(left: 12.w),
-                    child: Text(
-                      "명",
-                      style: MITITextStyle.sm.copyWith(
-                        color: MITIColor.gray100,
-                      ),
-                    ),
-                  ),
                 ),
               ),
-              SizedBox(width: 12.w),
-              Flexible(
-                child: CustomTextFormField(
-                  focusNode: focusNodes[0],
-                  key: formKeys[0],
-                  initialValue: initMaxValue,
-                  hintText: '00',
-                  label: '',
-                  textAlign: TextAlign.right,
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    NumberFormatter(),
-                  ],
-                  onChanged: (val) {
-                    ref
-                        .read(gameFormProvider.notifier)
-                        .update(max_invitation: val);
-                  },
-                  prefix: Text(
-                    "최대",
+            ),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: CustomTextFormField(
+                focusNode: focusNodes[0],
+                key: formKeys[0],
+                initialValue: initMaxValue,
+                hintText: '00',
+                label: '',
+                textAlign: TextAlign.right,
+                textInputAction: TextInputAction.next,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  NumberFormatter(),
+                ],
+                onChanged: (val) {
+                  ref
+                      .read(gameFormProvider.notifier)
+                      .update(max_invitation: val.replaceAll(',', ''));
+                },
+                prefix: Text(
+                  "최대",
+                  style: MITITextStyle.sm.copyWith(
+                    color: MITIColor.gray100,
+                  ),
+                ),
+                suffixIcon: Padding(
+                  padding: EdgeInsets.only(left: 12.w),
+                  child: Text(
+                    "명",
                     style: MITITextStyle.sm.copyWith(
                       color: MITIColor.gray100,
                     ),
                   ),
-                  suffixIcon: Padding(
-                    padding: EdgeInsets.only(left: 12.w),
-                    child: Text(
-                      "명",
-                      style: MITITextStyle.sm.copyWith(
-                        color: MITIColor.gray100,
-                      ),
-                    ),
-                  ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         if (!ValidRegExp.validForm(min_invitation, max_invitation))
-          Row(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(
-                height: 14.r,
-                width: 14.r,
-                child: SvgPicture.asset('assets/images/icon/system_alert.svg'),
-              ),
-              SizedBox(width: 4.w),
+              SizedBox(height: 16.h),
               Text(
                 int.parse(max_invitation) <= 0
                     ? '총 모집 인원은 0명 이상이어야해요.'
@@ -996,14 +888,13 @@ class _AdditionalInfoForm extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            '추가 정보',
-            style: MITITextStyle.inputLabelIStyle
-                .copyWith(color: const Color(0xFF999999)),
+            '참고사항',
+            style: MITITextStyle.sm.copyWith(color: MITIColor.gray300),
           ),
           SizedBox(height: 10.h),
           ConstrainedBox(
             constraints: BoxConstraints(
-              minHeight: 68.h,
+              minHeight: 74.h,
               maxHeight: 300.h,
             ),
             child: Scrollbar(
@@ -1013,8 +904,8 @@ class _AdditionalInfoForm extends ConsumerWidget {
                 child: TextField(
                   maxLines: null,
                   textAlignVertical: TextAlignVertical.top,
-                  style: MITITextStyle.inputValueMStyle.copyWith(
-                    color: Colors.black,
+                  style: MITITextStyle.sm150.copyWith(
+                    color: MITIColor.gray100,
                   ),
                   onChanged: (val) {
                     ref.read(gameFormProvider.notifier).update(info: val);
@@ -1025,18 +916,18 @@ class _AdditionalInfoForm extends ConsumerWidget {
                       borderSide: BorderSide.none,
                     ),
                     constraints: BoxConstraints(
-                      minHeight: 68.h,
+                      minHeight: 74.h,
                       maxHeight: 300.h,
                     ),
                     hintText:
                         '주차, 샤워 가능 여부, 경기 진행 방식, 필요한 유니폼 색상 등 참가들에게 공지할 정보들을 입력해주세요',
-                    hintStyle: MITITextStyle.placeHolderMStyle
-                        .copyWith(color: const Color(0xFF969696)),
+                    hintStyle:
+                        MITITextStyle.sm150.copyWith(color: MITIColor.gray500),
                     hintMaxLines: 10,
-                    fillColor: const Color(0xFFF7F7F7),
+                    fillColor: MITIColor.gray700,
                     filled: true,
                     contentPadding:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                        EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
                     // isDense: true,
                   ),
                 ),
@@ -1044,6 +935,124 @@ class _AdditionalInfoForm extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _AgreeTermComponent extends ConsumerWidget {
+  const _AgreeTermComponent({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final checkBoxes =
+        ref.watch(gameFormProvider.select((value) => value.checkBoxes));
+    final title = ['[필수] 경기 관리 및 환불 처리 약관 동의', '[선택] 경기 정보 저장 및 활용 약관'];
+
+    return SliverToBoxAdapter(
+      child: Column(
+        children: [
+          CustomCheckBox(
+            title: '약관 전체 동의하기',
+            textStyle: MITITextStyle.md.copyWith(color: MITIColor.gray100),
+            isCheckBox: true,
+            check: false,
+            onTap: () {},
+          ),
+          Divider(
+            thickness: 1.h,
+            color: MITIColor.gray600,
+            height: 40.h,
+          ),
+          ListView.separated(
+              physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.zero,
+              shrinkWrap: true,
+              itemBuilder: (context, idx) {
+                return CustomCheckBox(
+                  title: title[idx],
+                  textStyle:
+                      MITITextStyle.sm.copyWith(color: MITIColor.gray200),
+                  hasDetail: true,
+                  check: checkBoxes[idx],
+                  onTap: () {},
+                  showDetail: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return OperationTermScreen(
+                            title: '경기 운영 약관',
+                            desc:
+                                '본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.',
+                            onPressed: () {
+                              checkBoxes[idx] = !checkBoxes[idx];
+                              ref
+                                  .read(gameFormProvider.notifier)
+                                  .update(checkBoxes:List.from(checkBoxes));
+                            },
+                          );
+                        });
+                    // Navigator.of(context).push(TutorialOverlay());
+                  },
+                );
+              },
+              separatorBuilder: (context, idx) => SizedBox(height: 16.h),
+              itemCount: 2),
+        ],
+      ),
+    );
+  }
+}
+
+class OperationTermScreen extends StatelessWidget {
+  final String title;
+  final String desc;
+  final VoidCallback onPressed;
+
+  const OperationTermScreen(
+      {super.key,
+      required this.title,
+      required this.desc,
+      required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog.fullscreen(
+      child: Scaffold(
+        appBar: DefaultAppBar(),
+        body: Padding(
+          padding:
+              EdgeInsets.only(top: 20.h, left: 21.w, right: 21.w, bottom: 20.h),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                title,
+                style: MITITextStyle.xxl140.copyWith(
+                  color: MITIColor.white,
+                ),
+              ),
+              SizedBox(height: 12.h),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Text(
+                        desc,
+                        style: MITITextStyle.xxsmLight150.copyWith(
+                          color: MITIColor.gray200,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 39.h),
+              TextButton(onPressed: onPressed, child: const Text("확인")),
+              SizedBox(height: 21.h),
+            ],
+          ),
+        ),
       ),
     );
   }

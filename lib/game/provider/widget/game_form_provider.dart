@@ -39,6 +39,7 @@ class GameForm extends _$GameForm {
       info: '',
       fee: '',
       court: GameCourtParam(name: '', address: '', address_detail: ''),
+      checkBoxes: [false, false],
     );
   }
 
@@ -51,6 +52,7 @@ class GameForm extends _$GameForm {
     String? info,
     String? fee,
     GameCourtParam? court,
+    List<bool>? checkBoxes,
   }) {
     if (fee != null) {
       fee = fee.replaceAll(',', '');
@@ -83,6 +85,7 @@ class GameForm extends _$GameForm {
       info: info,
       fee: fee,
       court: court,
+      checkBoxes: checkBoxes,
     );
   }
 

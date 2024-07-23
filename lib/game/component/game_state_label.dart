@@ -16,20 +16,20 @@ class GameStateLabel extends StatelessWidget {
 
     switch (gameStatus) {
       case GameStatus.open:
-        backgroundColor = const Color(0xFFC0DDFF);
+        backgroundColor = const Color(0xFFD8EAFF);
         textColor = const Color(0xFF0019FF);
         break;
       case GameStatus.closed:
-        backgroundColor = const Color(0xFFDBFFDF);
-        textColor = const Color(0xFF33FF00);
+        backgroundColor = const Color(0xFFD5FEFF);
+        textColor = const Color(0xFF00C0C3);
         break;
       case GameStatus.completed:
-        backgroundColor = const Color(0xFFF5CCFF);
-        textColor = const Color(0xFFCA00FC);
+        backgroundColor = const Color(0xFFF1F1F1);
+        textColor = const Color(0xFF737373);
         break;
       case GameStatus.canceled:
-        backgroundColor = const Color(0xFFFFC0C0);
-        textColor = const Color(0xFFFC0000);
+        backgroundColor = const Color(0xFFFFE8EC);
+        textColor = const Color(0xFFE55B8B);
         break;
     }
     return Container(
@@ -37,10 +37,10 @@ class GameStateLabel extends StatelessWidget {
         borderRadius: BorderRadius.circular(2.r),
         color: backgroundColor,
       ),
-      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+      padding: EdgeInsets.all(4.r),
       child: Text(
         gameStatus.displayName,
-        style: MITITextStyle.tagStyle.copyWith(color: textColor),
+        style: MITITextStyle.xxxsmBold.copyWith(color: textColor),
       ),
     );
   }
@@ -161,4 +161,3 @@ class BankLabel extends StatelessWidget {
     );
   }
 }
-

@@ -526,13 +526,8 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
                 width: 24.r,
                 height: 24.r,
               ),
-
-              // Icon(
-              //   Icons.check_box,
-              //   color: Color(widget.check ? 0xFF4065F6 : 0xFFE8E8E8),
-              // ),
             ),
-            SizedBox(width: 16.w),
+            SizedBox(width: widget.isCheckBox ? 16.w : 8.w),
             Text(
               widget.title,
               style: widget.textStyle,
@@ -545,11 +540,12 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
                   '확인',
                   style: TextStyle(
                     fontSize: 14.sp,
-                    // fontFamily: 'Pretendard',
-                    color: MITIColor.white,
+                    fontFamily: 'Pretendard',
+                    color: MITIColor.gray400,
                     fontWeight: FontWeight.w400,
                     letterSpacing: -0.28.sp,
                     decoration: TextDecoration.underline,
+                    decorationColor: MITIColor.gray400,
                   ),
                 ),
               ),

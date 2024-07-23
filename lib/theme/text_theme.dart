@@ -80,6 +80,18 @@ class MITITextStyle {
     letterSpacing: -12.sp * 0.02,
   );
 
+  static final TextStyle xxxsmBold = TextStyle(
+    fontSize: 10.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.bold,
+  );
+
+  static final TextStyle xxxsmLight = TextStyle(
+    fontSize: 10.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w300,
+  );
+
   static final TextStyle gameTitleMainStyle = TextStyle(
     fontSize: 16.sp,
     fontFamily: 'Pretendard',

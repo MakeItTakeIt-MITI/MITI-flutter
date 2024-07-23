@@ -97,80 +97,78 @@ class CustomTextFormField extends StatelessWidget {
                 ),
           ),
         if (label != null) SizedBox(height: 8.h),
-        SizedBox(
-          child: TextFormField(
-            initialValue: initialValue,
-            focusNode: focusNode,
-            controller: textEditingController,
-            textInputAction: textInputAction,
-            obscuringCharacter: '●',
-            obscureText: obscureText,
-            keyboardType: keyboardType,
-            inputFormatters: inputFormatters,
-            textAlign: textAlign,
-            enabled: enabled,
-            style: textStyle ??
-                MITITextStyle.md.copyWith(
-                  color: MITIColor.gray100,
-                ),
-            decoration: InputDecoration(
-              // contentPadding: EdgeInsets.symmetric(horizontal: 20.w),
-              // isDense: false,
-              // isCollapsed:true,
+        TextFormField(
+          initialValue: initialValue,
+          focusNode: focusNode,
+          controller: textEditingController,
+          textInputAction: textInputAction,
+          obscuringCharacter: '●',
+          obscureText: obscureText,
+          keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
+          textAlign: textAlign,
+          enabled: enabled,
+          style: textStyle ??
+              MITITextStyle.md.copyWith(
+                color: MITIColor.gray100,
+              ),
+          decoration: InputDecoration(
+            // contentPadding: EdgeInsets.symmetric(horizontal: 20.w),
+            // isDense: false,
+            // isCollapsed:true,
 
-              constraints: BoxConstraints(maxHeight: 48.h, minHeight: 48.h),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: showAutoComplete
-                    ? BorderRadius.vertical(top: Radius.circular(8.r))
-                    : BorderRadius.circular(8.r),
-                borderSide: borderColor == null
-                    ? BorderSide.none
-                    : BorderSide(color: borderColor!),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: showAutoComplete
-                    ? BorderRadius.vertical(top: Radius.circular(8.r))
-                    : BorderRadius.circular(8.r),
-                borderSide: borderColor == null
-                    ? BorderSide.none
-                    : BorderSide(color: borderColor!),
-              ),
-              border: OutlineInputBorder(
-                borderRadius: showAutoComplete
-                    ? BorderRadius.vertical(top: Radius.circular(8.r))
-                    : BorderRadius.circular(8.r),
-                borderSide: borderColor == null
-                    ? BorderSide.none
-                    : BorderSide(color: borderColor!),
-              ),
-              hintText: hintText,
-              hintStyle: hintTextStyle ??
-                  MITITextStyle.md.copyWith(
-                    color: MITIColor.gray500,
-                  ),
-              fillColor: MITIColor.gray700,
-              filled: true,
-              prefixIcon: prefix == null
-                  ? null
-                  : Padding(
-                      padding: EdgeInsets.only(left: prefix == null ? 0 : 20.w),
-                      child: prefix,
-                    ),
-              prefixIconConstraints: BoxConstraints.loose(
-                Size(double.infinity, 36.h),
-              ),
-              suffixIcon: Padding(
-                padding: EdgeInsets.only(right: suffixIcon == null ? 0 : 20.w),
-                child: suffixIcon,
-              ),
-              suffixIconConstraints: BoxConstraints.loose(
-                Size(double.infinity, 36.h),
-              ),
+            constraints: BoxConstraints(maxHeight: 48.h, minHeight: 48.h),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: showAutoComplete
+                  ? BorderRadius.vertical(top: Radius.circular(8.r))
+                  : BorderRadius.circular(8.r),
+              borderSide: borderColor == null
+                  ? BorderSide.none
+                  : BorderSide(color: borderColor!),
             ),
-            validator: validator,
-            onChanged: onChanged,
-            onEditingComplete: onNext,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: showAutoComplete
+                  ? BorderRadius.vertical(top: Radius.circular(8.r))
+                  : BorderRadius.circular(8.r),
+              borderSide: borderColor == null
+                  ? BorderSide.none
+                  : BorderSide(color: borderColor!),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: showAutoComplete
+                  ? BorderRadius.vertical(top: Radius.circular(8.r))
+                  : BorderRadius.circular(8.r),
+              borderSide: borderColor == null
+                  ? BorderSide.none
+                  : BorderSide(color: borderColor!),
+            ),
+            hintText: hintText,
+            hintStyle: hintTextStyle ??
+                MITITextStyle.md.copyWith(
+                  color: MITIColor.gray500,
+                ),
+            fillColor: MITIColor.gray700,
+            filled: true,
+            prefixIcon: prefix == null
+                ? null
+                : Padding(
+                    padding: EdgeInsets.only(left: prefix == null ? 0 : 20.w),
+                    child: prefix,
+                  ),
+            prefixIconConstraints: BoxConstraints.loose(
+              Size(double.infinity, 36.h),
+            ),
+            suffixIcon: Padding(
+              padding: EdgeInsets.only(right: suffixIcon == null ? 0 : 20.w),
+              child: suffixIcon,
+            ),
+            suffixIconConstraints: BoxConstraints.loose(
+              Size(double.infinity, 36.h),
+            ),
           ),
+          validator: validator,
+          onChanged: onChanged,
+          onEditingComplete: onNext,
         ),
         // if (showAutoComplete)
         //   AutoCompleteComponent(

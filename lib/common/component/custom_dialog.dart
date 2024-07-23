@@ -97,7 +97,8 @@ class BottomDialog extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
         color: MITIColor.gray700,
       ),
-      padding: EdgeInsets.all(20.r),
+      padding:
+          EdgeInsets.only(left: 20.w, right: 20.w, top: 30.h, bottom: 41.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

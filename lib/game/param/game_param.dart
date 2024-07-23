@@ -35,6 +35,8 @@ class GameCreateParam extends Equatable {
   final String info;
   final String fee;
   final GameCourtParam court;
+  @JsonKey(includeToJson: false)
+  final List<bool> checkBoxes;
 
   const GameCreateParam({
     required this.title,
@@ -47,6 +49,7 @@ class GameCreateParam extends Equatable {
     required this.info,
     required this.fee,
     required this.court,
+    required this.checkBoxes,
   });
 
   GameCreateParam copyWith({
@@ -60,6 +63,7 @@ class GameCreateParam extends Equatable {
     String? info,
     String? fee,
     GameCourtParam? court,
+    List<bool>? checkBoxes,
   }) {
     return GameCreateParam(
       title: title ?? this.title,
@@ -72,6 +76,7 @@ class GameCreateParam extends Equatable {
       info: info ?? this.info,
       fee: fee ?? this.fee,
       court: court ?? this.court,
+      checkBoxes: checkBoxes ?? this.checkBoxes,
     );
   }
 

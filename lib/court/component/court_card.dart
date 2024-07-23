@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:miti/court/model/court_model.dart';
+import 'package:miti/theme/color_theme.dart';
+import 'package:miti/theme/text_theme.dart';
+
+import '../../util/util.dart';
 
 class CourtAddressCard extends StatelessWidget {
   final int id;
@@ -40,11 +44,11 @@ class CourtAddressCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8.r),
+          color: MITIColor.gray600,
           border: Border.all(
-              color:
-                  selected ? const Color(0xFF4065F5) : const Color(0xFFE8E8E8)),
+              color: selected ? MITIColor.primary : Colors.transparent),
         ),
-        padding: EdgeInsets.all(10.r),
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           mainAxisSize: MainAxisSize.max,
@@ -55,34 +59,27 @@ class CourtAddressCard extends StatelessWidget {
                 children: [
                   Text(
                     name,
-                    style: TextStyle(
-                      color: const Color(0xFF333333),
-                      fontSize: 11.sp,
-                      fontFamily: 'Pretendard',
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.25.sp,
+                    style: MITITextStyle.mdBold.copyWith(
+                      color: MITIColor.gray100,
                     ),
                   ),
-                  SizedBox(height: 3.h),
+                  SizedBox(height: 4.h),
                   Text(
                     address,
-                    style: TextStyle(
-                      color: const Color(0xFF999999),
-                      fontSize: 10.sp,
-                      fontFamily: 'Pretendard',
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: -0.25.sp,
+                    style: MITITextStyle.xxsm.copyWith(
+                      color: MITIColor.gray400,
                     ),
                   )
                 ],
               ),
             ),
             SvgPicture.asset(
-              'assets/images/icon/select.svg',
+              AssetUtil.getAssetPath(
+                  type: AssetType.icon, name: "active_check"),
               height: 24.r,
               width: 24.r,
               colorFilter: ColorFilter.mode(
-                  selected ? const Color(0xFF4065F5) : const Color(0xFF666666),
+                  selected ? MITIColor.primary : MITIColor.gray800,
                   BlendMode.srcIn),
             )
           ],

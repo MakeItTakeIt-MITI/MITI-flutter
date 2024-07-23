@@ -49,10 +49,10 @@ class GameDetail extends _$GameDetail {
 
   Future<void> get({required int gameId}) async {
     final repository = ref.watch(gameRepositoryProvider);
-    final response =
-        await Dio().request('https://dev.makeittakeit.kr/games/1229');
-    final data = response.data['data'];
-    log('data $data');
+    // final response =
+    //     await Dio().request('https://dev.makeittakeit.kr/games/1229');
+    // final data = response.data['data'];
+    // log('data $data');
 
     repository.getGameDetail(gameId: gameId).then((value) {
       logger.i(value);

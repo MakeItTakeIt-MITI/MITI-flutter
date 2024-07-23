@@ -13,6 +13,7 @@ class MITIColor {
   static const Color gray500 = Color(0xFF737373);
   static const Color gray600 = Color(0xFF525252);
   static const Color gray700 = Color(0xFF404040);
+  static const Color gray750 = Color(0xFF343434);
   static const Color gray800 = Color(0xFF262626);
   static const Color gray900 = Color(0xFF171717);
   static const Color black = Color(0xFF000000);
