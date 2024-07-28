@@ -58,6 +58,13 @@ class MITITextStyle {
     letterSpacing: -14.sp * 0.02,
   );
 
+  static final TextStyle smSemiBold = TextStyle(
+    fontSize: 14.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w600,
+    letterSpacing: -14.sp * 0.02,
+  );
+
   static final TextStyle smBold = TextStyle(
     fontSize: 14.sp,
     fontFamily: 'Pretendard',

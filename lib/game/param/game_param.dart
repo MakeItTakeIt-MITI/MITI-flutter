@@ -104,23 +104,27 @@ class GameCreateParam extends Equatable {
 class GameCourtParam extends Equatable {
   final String name;
   final String address;
-  final String address_detail;
+  final String? address_detail;
+  // final String? info;
 
   const GameCourtParam({
     required this.name,
     required this.address,
-    required this.address_detail,
+    this.address_detail,
+    // this.info,
   });
 
   GameCourtParam copyWith({
     String? name,
     String? address,
     String? address_detail,
+    String? info,
   }) {
     return GameCourtParam(
       name: name ?? this.name,
       address: address ?? this.address,
       address_detail: address_detail ?? this.address_detail,
+      // info: info ?? this.info,
     );
   }
 

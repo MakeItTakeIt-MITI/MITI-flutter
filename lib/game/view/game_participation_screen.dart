@@ -162,7 +162,7 @@ class _PlayerComponent extends StatelessWidget {
         flag = decimalPoint != 0;
       }
       final String star = flag
-          ? 'half_star'
+          ? 'Star_half_v2'
           : rating >= i + 1
               ? 'fill_star'
               : 'unfill_star';

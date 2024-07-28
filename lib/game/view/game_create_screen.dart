@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:math' hide log;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:kpostal/kpostal.dart';
 import 'package:miti/auth/view/signup/signup_screen.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
@@ -23,6 +25,7 @@ import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
+import '../../common/component/custom_time_picker.dart';
 import '../../common/provider/router_provider.dart';
 import '../../court/component/court_list_component.dart';
 import '../../util/util.dart';
@@ -67,6 +70,7 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
+
     return Scaffold(
       // resizeToAvoidBottomInset: false,
       body: NestedScrollView(
@@ -115,7 +119,8 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
       ),
       bottomNavigationBar: Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
-          final valid = ref.watch(gameFormProvider.notifier).formValid();
+          ref.watch(gameFormProvider);
+          final valid = ref.read(gameFormProvider.notifier).formValid();
           return BottomButton(
               button: SizedBox(
             height: 48.h,
@@ -189,219 +194,13 @@ class _TitleForm extends StatelessWidget {
   }
 }
 
+final dateFormProvider = StateProvider.autoDispose<String?>((ref) => null);
+
 class V2DateForm extends StatefulWidget {
   const V2DateForm({super.key});
 
   @override
   State<V2DateForm> createState() => _V2DateFormState();
-}
-
-class DatePickerSpinner extends StatefulWidget {
-  final double? height;
-  final double? width;
-  final int? interval;
-  final DateTime date;
-  final Function(String) onChanged;
-
-  const DatePickerSpinner({
-    super.key,
-    this.height,
-    this.width,
-    this.interval,
-    required this.date,
-    required this.onChanged,
-  });
-
-  @override
-  State<DatePickerSpinner> createState() => _DatePickerSpinnerState();
-}
-
-class _DatePickerSpinnerState extends State<DatePickerSpinner> {
-  late FixedExtentScrollController _yearController;
-  late FixedExtentScrollController _monthController;
-  late FixedExtentScrollController _dayController;
-  List<String> _year = [];
-  final List<String> _month = List.generate(
-      12, (index) => index < 9 ? "0${index + 1}" : "${index + 1}");
-  List<String> _day = [];
-  late double _width;
-  late double _height;
-  late Size _itemSize;
-  late ValueNotifier<String> currentDate;
-
-  @override
-  void initState() {
-    currentDate = ValueNotifier(
-        widget.date.toString().replaceAll("-", "").substring(0, 8));
-    _width = 400;
-    _height = 760;
-    _itemSize = Size(_width / 3, _height);
-    int _currentYear = DateTime.now().year;
-    _year = List.generate(
-        widget.interval == null || widget.interval == 0
-            ? 100
-            : widget.interval!,
-        (index) => widget.interval == null || widget.interval! < 1
-            ? "${index + (_currentYear - 50)}"
-            : "${index + (_currentYear - (widget.interval == 1 ? 0 : widget.interval! ~/ 2))}");
-    _daySetting(true);
-    int _initialYear = _year.indexOf(currentDate.value.substring(0, 4));
-    int _initialMonth = _month.indexOf(currentDate.value.substring(4, 6));
-    int _initialDay = _day.indexOf(currentDate.value.substring(6, 8));
-    _yearController = FixedExtentScrollController(initialItem: _initialYear);
-    _monthController = FixedExtentScrollController(initialItem: _initialMonth);
-    _dayController = FixedExtentScrollController(initialItem: _initialDay);
-    super.initState();
-  }
-
-  void _changedDate(int dateType, int index) {
-    String _currentYear = currentDate.value.substring(0, 4);
-    String _currentMonth = currentDate.value.substring(4, 6);
-    String _currentDay = currentDate.value.substring(6, 8);
-
-    switch (dateType) {
-      case 0:
-        currentDate.value = _year[index] + _currentMonth + _currentDay;
-        if (_currentMonth == "02") {
-          _leapYearChecked();
-        }
-        break;
-      case 1:
-        currentDate.value = _currentYear + _month[index] + _currentDay;
-        _daySetting(false);
-        break;
-      case 2:
-        currentDate.value = _currentYear + _currentMonth + _day[index];
-        break;
-      default:
-    }
-  }
-
-  void _daySetting(bool initial) {
-    int _month = int.parse(currentDate.value.substring(4, 6));
-    List _thiryFirst = [1, 3, 5, 7, 8, 10, 12];
-    int _selectedDayItem = !initial ? _dayController.selectedItem : 0;
-    if (_thiryFirst.contains(_month)) {
-      _day = List.generate(
-          31, (index) => index < 9 ? "0${index + 1}" : "${index + 1}");
-    } else if (_month == 2) {
-      _leapYearChecked();
-      if (_day.length <= _selectedDayItem) {
-        _dayController.jumpToItem(_day.length - 1);
-      }
-    } else {
-      _day = List.generate(
-          30, (index) => index < 9 ? "0${index + 1}" : "${index + 1}");
-      if (_selectedDayItem == 30) {
-        _dayController.jumpToItem(29);
-      }
-    }
-  }
-
-  void _leapYearChecked() {
-    int _dayLength = 0;
-    int _year = int.parse(currentDate.value.substring(0, 4));
-    if (((_year % 4 == 0) && (_year % 100 != 0)) || (_year % 400 == 0)) {
-      _dayLength = 29;
-    } else {
-      _dayLength = 28;
-    }
-    _day = List.generate(
-        _dayLength, (index) => index < 9 ? "0${index + 1}" : "${index + 1}");
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<String>(
-        valueListenable: currentDate,
-        builder: (context, value, child) {
-          return Container(
-            height: 96.h,
-            width: _width,
-            color: MITIColor.gray700,
-            padding: EdgeInsets.all(20.r),
-            child: Row(
-              children: [
-                _pickerForm(
-                    controller: _yearController,
-                    date: _year,
-                    dateIndex: 0,
-                    current: value.substring(0, 4)),
-                _pickerForm(
-                    controller: _monthController,
-                    date: _month,
-                    dateIndex: 1,
-                    current: value.substring(4, 6)),
-                _pickerForm(
-                    controller: _dayController,
-                    date: _day,
-                    dateIndex: 2,
-                    current: value.substring(6, 8)),
-              ],
-            ),
-          );
-        });
-  }
-
-  SizedBox _pickerForm({
-    required List<String> date,
-    required int dateIndex,
-    required String current,
-    required FixedExtentScrollController controller,
-  }) {
-    return SizedBox(
-      height: 96.h,
-      width: 100,
-      child: Stack(
-        children: [
-          Positioned(
-            top: 96.h / 3,
-            child: Row(
-              children: [
-                Container(
-                  width: 100.w,
-                  height: 32.h,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.r),
-                    color: MITIColor.gray600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          ListWheelScrollView.useDelegate(
-            controller: controller,
-            onSelectedItemChanged: (int i) {
-              HapticFeedback.lightImpact();
-              _changedDate(dateIndex, i);
-              widget.onChanged(currentDate.value);
-            },
-            squeeze: 0.5,
-            perspective: 0.01,
-            physics: const FixedExtentScrollPhysics(),
-            // magnification: 0.1,
-            diameterRatio: 10,
-            // useMagnifier:true,
-            itemExtent: 20,
-            childDelegate: ListWheelChildLoopingListDelegate(children: [
-              ...List.generate(
-                date.length,
-                (index) => Text(
-                  date[index],
-                  style: MITITextStyle.md.copyWith(
-                    fontSize: 16,
-                    color: date[index] == current
-                        ? MITIColor.primary
-                        : MITIColor.gray300,
-                  ),
-                ),
-              ),
-            ]),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class _V2DateFormState extends State<V2DateForm> {
@@ -432,11 +231,19 @@ class _V2DateFormState extends State<V2DateForm> {
                   ),
                   color: MITIColor.gray700,
                 ),
-                child: Text(
-                  "경기 날짜와 시간을 선택해 주세요.",
-                  style: MITITextStyle.md.copyWith(
-                    color: MITIColor.gray500,
-                  ),
+                child: Consumer(
+                  builder:
+                      (BuildContext context, WidgetRef ref, Widget? child) {
+                    final date = ref.watch(dateFormProvider);
+                    return Text(
+                      date ?? "경기 날짜와 시간을 선택해 주세요.",
+                      style: MITITextStyle.md.copyWith(
+                        color: date == null
+                            ? MITIColor.gray500
+                            : MITIColor.gray100,
+                      ),
+                    );
+                  },
                 ),
               ),
               const Spacer(),
@@ -445,8 +252,89 @@ class _V2DateFormState extends State<V2DateForm> {
                   showDialog(
                       context: context,
                       builder: (_) {
-                        return DatePickerSpinner(
-                            date: DateTime.now(), onChanged: (onChanged) {});
+                        return Align(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 21.w),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: MITIColor.gray700,
+                                  borderRadius: BorderRadius.circular(20.r)),
+                              padding: EdgeInsets.all(20.r),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "경기 시간 설정",
+                                        style: MITITextStyle.mdBold
+                                            .copyWith(color: MITIColor.gray100),
+                                      ),
+                                      IconButton(
+                                          onPressed: () => context.pop(),
+                                          style: const ButtonStyle(
+                                              tapTargetSize:
+                                                  MaterialTapTargetSize
+                                                      .shrinkWrap),
+                                          constraints: BoxConstraints.tight(
+                                              Size(24.r, 24.r)),
+                                          padding: EdgeInsets.zero,
+                                          icon: const Icon(
+                                            Icons.close,
+                                            color: MITIColor.gray100,
+                                          ))
+                                    ],
+                                  ),
+                                  SizedBox(height: 40.h),
+                                  const _GameTimePicker(
+                                    isStart: true,
+                                  ),
+                                  Divider(
+                                    height: 41.h,
+                                    color: MITIColor.gray600,
+                                  ),
+                                  const _GameTimePicker(
+                                    isStart: false,
+                                  ),
+                                  SizedBox(height: 40.h),
+                                  Consumer(
+                                    builder: (BuildContext context,
+                                        WidgetRef ref, Widget? child) {
+                                      final valid = ref
+                                              .watch(datePickerProvider(true))
+                                              .isNotEmpty &&
+                                          ref
+                                              .watch(datePickerProvider(false))
+                                              .isNotEmpty;
+
+                                      return TextButton(
+                                        onPressed: valid
+                                            ? () {
+                                                selectDay(ref);
+                                              }
+                                            : null,
+                                        style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.all(valid
+                                                    ? MITIColor.primary
+                                                    : MITIColor.gray500)),
+                                        child: Text(
+                                          "선택 완료",
+                                          style: MITITextStyle.mdBold.copyWith(
+                                              color: valid
+                                                  ? MITIColor.gray800
+                                                  : MITIColor.gray50),
+                                        ),
+                                      );
+                                    },
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
                       });
                 },
                 child: Container(
@@ -475,71 +363,236 @@ class _V2DateFormState extends State<V2DateForm> {
       ),
     );
   }
-}
 
-class _DateForm extends ConsumerStatefulWidget {
-  const _DateForm({super.key});
+  void selectDay(WidgetRef ref) {
+    final startDate = ref.watch(datePickerProvider(true));
+    final endDate = ref.watch(datePickerProvider(false));
 
-  @override
-  ConsumerState<_DateForm> createState() => _DateFormState();
-}
+    log("start = $startDate");
+    final parsingStart = parseDate(startDate);
+    final parsingEnd = parseDate(endDate);
 
-class _DateFormState extends ConsumerState<_DateForm> {
-  late final TextEditingController dateController;
+    ref.read(gameFormProvider.notifier).update(
+          startdate: parsingStart.date,
+          starttime: parsingStart.time,
+          enddate: parsingEnd.date,
+          endtime: parsingEnd.time,
+        );
+    FocusScope.of(context).requestFocus(FocusNode());
 
-  @override
-  void initState() {
-    super.initState();
-    dateController = TextEditingController();
+    ref.read(dateFormProvider.notifier).update(
+        (state) => "${startDate.substring(7)} ~ ${endDate.substring(7)}");
+    context.pop();
   }
+
+  GameDate parseDate(String dateTime) {
+    final inputFormat = DateFormat("yyyy / MM / dd (E) hh:mm", "ko_KR");
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+    DateFormat timeFormat = DateFormat("HH:mm");
+    DateTime parsedDate = inputFormat.parse(dateTime);
+    String formattedDate = dateFormat.format(parsedDate);
+    String formattedTime = timeFormat.format(parsedDate);
+    log("formattedDate $formattedDate, formattedTime $formattedTime");
+    return GameDate(date: formattedDate, time: formattedTime);
+  }
+}
+
+class GameDate {
+  final String date;
+  final String time;
+
+  GameDate({required this.date, required this.time});
+}
+
+final datePickerProvider =
+    StateProvider.family.autoDispose<String, bool>((ref, isStart) => "");
+
+class _GameTimePicker extends StatefulWidget {
+  final bool isStart;
+
+  const _GameTimePicker({super.key, required this.isStart});
+
+  @override
+  State<_GameTimePicker> createState() => _GameTimePickerState();
+}
+
+class _GameTimePickerState extends State<_GameTimePicker> {
+  bool isOpen = false;
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(dateProvider(DateTimeType.start), (previous, next) {
-      final endDate = ref.read(dateProvider(DateTimeType.end));
-      if (next != null && endDate != null) {
-        final formatStart = DateTimeUtil.getDateTime(dateTime: next);
-        final formatEnd = DateTimeUtil.getDateTime(dateTime: endDate);
-        dateController.text = '$formatStart ~ $formatEnd';
-        ref
-            .read(gameFormProvider.notifier)
-            .update(startDateTime: next, endDateTime: endDate);
-        ref.read(gameFormProvider.notifier).validDatetimeInteraction();
-      }
-    });
-    ref.listen(dateProvider(DateTimeType.end), (previous, next) {
-      final startDate = ref.read(dateProvider(DateTimeType.start));
-      if (next != null && startDate != null) {
-        final formatStart = DateTimeUtil.getDateTime(dateTime: startDate);
-        final formatEnd = DateTimeUtil.getDateTime(dateTime: next);
-        dateController.text = '$formatStart ~ $formatEnd';
-        ref
-            .read(gameFormProvider.notifier)
-            .update(startDateTime: startDate, endDateTime: next);
-        ref.read(gameFormProvider.notifier).validDatetimeInteraction();
-      }
-    });
-
-    final interactionDesc =
-        ref.watch(interactionDescProvider(InteractionType.date));
-    return SliverToBoxAdapter(
-        child: Column(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        DateInputForm(
-          textEditingController: dateController,
-          hintText: '경기 시간을 선택해주세요.',
-          label: '경기 시간',
-          enabled: false,
-          labelTextStyle: TextStyleUtil.getLabelTextStyle(),
-          hintTextStyle: TextStyleUtil.getHintTextStyle(),
-          textStyle: TextStyleUtil.getTextStyle(),
-          isRangeCalendar: true,
-          interactionDesc: interactionDesc,
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              isOpen = !isOpen;
+            });
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                widget.isStart ? "경기 시작 시간" : "경기 종료 시간",
+                style: MITITextStyle.sm.copyWith(
+                  color: MITIColor.gray100,
+                ),
+              ),
+              Row(
+                // crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Consumer(
+                    builder:
+                        (BuildContext context, WidgetRef ref, Widget? child) {
+                      final dateTime =
+                          ref.watch(datePickerProvider(widget.isStart));
+                      final text = dateTime.isNotEmpty
+                          ? dateTime.substring(7)
+                          : dateTime;
+                      return Text(
+                        text,
+                        style: MITITextStyle.smSemiBold.copyWith(
+                          color: MITIColor.primary,
+                        ),
+                      );
+                    },
+                  ),
+                  SizedBox(width: 16.w),
+                  SvgPicture.asset(
+                    AssetUtil.getAssetPath(
+                        type: AssetType.icon, name: "top_arrow"),
+                  )
+                ],
+              )
+            ],
+          ),
+        ),
+        SizedBox(height: 12.h),
+        AnimatedContainer(
+          height: isOpen ? 96.h : 0,
+          duration: const Duration(milliseconds: 300),
+          child: isOpen
+              ? CustomDateTimePicker(
+                  isStart: widget.isStart,
+                )
+              : SizedBox.shrink(),
         ),
       ],
-    ));
+    );
   }
 }
+
+class _TimePicker extends StatefulWidget {
+  const _TimePicker({super.key});
+
+  @override
+  State<_TimePicker> createState() => _TimePickerState();
+}
+
+class _TimePickerState extends State<_TimePicker> {
+  int v = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final widget = CupertinoPicker(
+      itemExtent: 32.h,
+      diameterRatio: 10,
+      squeeze: 1.0,
+      onSelectedItemChanged: (int value) {
+        setState(() {
+          v = value;
+        });
+      },
+
+      // backgroundColor: MITIColor.gray700,
+      looping: true,
+      selectionOverlay: CupertinoPickerDefaultSelectionOverlay(
+        background: MITIColor.white.withOpacity(0.1),
+      ),
+      children: List.generate(
+          12,
+          (index) => Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "${index + 1}",
+                  style: MITITextStyle.md.copyWith(
+                    color: v == index ? MITIColor.primary : MITIColor.gray300,
+                  ),
+                ),
+              )),
+    );
+    return SizedBox(
+      height: 96.h,
+      child: widget,
+    );
+  }
+}
+
+// class _DateForm extends ConsumerStatefulWidget {
+//   const _DateForm({super.key});
+//
+//   @override
+//   ConsumerState<_DateForm> createState() => _DateFormState();
+// }
+//
+// class _DateFormState extends ConsumerState<_DateForm> {
+//   late final TextEditingController dateController;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     dateController = TextEditingController();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     ref.listen(dateProvider(DateTimeType.start), (previous, next) {
+//       final endDate = ref.read(dateProvider(DateTimeType.end));
+//       if (next != null && endDate != null) {
+//         final formatStart = DateTimeUtil.getDateTime(dateTime: next);
+//         final formatEnd = DateTimeUtil.getDateTime(dateTime: endDate);
+//         dateController.text = '$formatStart ~ $formatEnd';
+//         ref
+//             .read(gameFormProvider.notifier)
+//             .update(startDateTime: next, endDateTime: endDate);
+//         ref.read(gameFormProvider.notifier).validDatetimeInteraction();
+//       }
+//     });
+//     ref.listen(dateProvider(DateTimeType.end), (previous, next) {
+//       final startDate = ref.read(dateProvider(DateTimeType.start));
+//       if (next != null && startDate != null) {
+//         final formatStart = DateTimeUtil.getDateTime(dateTime: startDate);
+//         final formatEnd = DateTimeUtil.getDateTime(dateTime: next);
+//         dateController.text = '$formatStart ~ $formatEnd';
+//         ref
+//             .read(gameFormProvider.notifier)
+//             .update(startDateTime: startDate, endDateTime: next);
+//         ref.read(gameFormProvider.notifier).validDatetimeInteraction();
+//       }
+//     });
+//
+//     final interactionDesc =
+//         ref.watch(interactionDescProvider(InteractionType.date));
+//     return SliverToBoxAdapter(
+//         child: Column(
+//       children: [
+//         DateInputForm(
+//           textEditingController: dateController,
+//           hintText: '경기 시간을 선택해주세요.',
+//           label: '경기 시간',
+//           enabled: false,
+//           labelTextStyle: TextStyleUtil.getLabelTextStyle(),
+//           hintTextStyle: TextStyleUtil.getHintTextStyle(),
+//           textStyle: TextStyleUtil.getTextStyle(),
+//           isRangeCalendar: true,
+//           interactionDesc: interactionDesc,
+//         ),
+//       ],
+//     ));
+//   }
+// }
 
 class AddressComponent extends StatelessWidget {
   final GameCourtParam court;
@@ -682,7 +735,7 @@ class _AddressFormState extends ConsumerState<_AddressForm> {
           nameController.text = next.court.name;
         }
         if (previous?.court.address_detail != next.court.address_detail) {
-          addressDetailController.text = next.court.address_detail;
+          addressDetailController.text = next.court.address_detail ?? '';
         }
       }
     });
@@ -726,6 +779,7 @@ class ApplyForm extends ConsumerWidget {
   final String? initMinValue;
   final List<GlobalKey> formKeys;
   final List<FocusNode> focusNodes;
+  final bool isUpdateForm;
 
   const ApplyForm({
     super.key,
@@ -733,6 +787,7 @@ class ApplyForm extends ConsumerWidget {
     this.initMinValue,
     required this.formKeys,
     required this.focusNodes,
+    this.isUpdateForm = false,
   });
 
   @override
@@ -755,7 +810,7 @@ class ApplyForm extends ConsumerWidget {
                 key: formKeys[1],
                 initialValue: initMinValue,
                 hintText: '00',
-                label: '총 모집 인원',
+                label: isUpdateForm ? null : '총 모집 인원',
                 textAlign: TextAlign.right,
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
@@ -792,7 +847,7 @@ class ApplyForm extends ConsumerWidget {
                 key: formKeys[0],
                 initialValue: initMaxValue,
                 hintText: '00',
-                label: '',
+                label: isUpdateForm ? null : '',
                 textAlign: TextAlign.right,
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
@@ -945,7 +1000,7 @@ class _AgreeTermComponent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final checkBoxes =
+    List<bool> checkBoxes =
         ref.watch(gameFormProvider.select((value) => value.checkBoxes));
     final title = ['[필수] 경기 관리 및 환불 처리 약관 동의', '[선택] 경기 정보 저장 및 활용 약관'];
 
@@ -956,8 +1011,10 @@ class _AgreeTermComponent extends ConsumerWidget {
             title: '약관 전체 동의하기',
             textStyle: MITITextStyle.md.copyWith(color: MITIColor.gray100),
             isCheckBox: true,
-            check: false,
-            onTap: () {},
+            check: checkBoxes[0],
+            onTap: () {
+              ref.read(gameFormProvider.notifier).updateCheckBox(0);
+            },
           ),
           Divider(
             thickness: 1.h,
@@ -974,8 +1031,10 @@ class _AgreeTermComponent extends ConsumerWidget {
                   textStyle:
                       MITITextStyle.sm.copyWith(color: MITIColor.gray200),
                   hasDetail: true,
-                  check: checkBoxes[idx],
-                  onTap: () {},
+                  check: checkBoxes[idx + 1],
+                  onTap: () {
+                    ref.read(gameFormProvider.notifier).updateCheckBox(idx + 1);
+                  },
                   showDetail: () {
                     showDialog(
                         context: context,
@@ -985,10 +1044,12 @@ class _AgreeTermComponent extends ConsumerWidget {
                             desc:
                                 '본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.',
                             onPressed: () {
-                              checkBoxes[idx] = !checkBoxes[idx];
-                              ref
-                                  .read(gameFormProvider.notifier)
-                                  .update(checkBoxes:List.from(checkBoxes));
+                              if (!checkBoxes[idx + 1]) {
+                                ref
+                                    .read(gameFormProvider.notifier)
+                                    .updateCheckBox(idx + 1);
+                              }
+                              context.pop();
                             },
                           );
                         });
@@ -1019,6 +1080,7 @@ class OperationTermScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog.fullscreen(
       child: Scaffold(
+        backgroundColor: MITIColor.gray800,
         appBar: DefaultAppBar(),
         body: Padding(
           padding:

@@ -33,6 +33,11 @@ abstract class GameRepository {
       {@Path() required int gameId});
 
   @Headers({'token': 'true'})
+  @PATCH('/games/{gameId}/convert-free-game')
+  Future<ResponseModel<GameDetailModel>> freeGame(
+      {@Path() required int gameId});
+
+  @Headers({'token': 'true'})
   @POST('/games')
   Future<ResponseModel<GameDetailModel>> createGame(
       {@Body() required GameCreateParam param});

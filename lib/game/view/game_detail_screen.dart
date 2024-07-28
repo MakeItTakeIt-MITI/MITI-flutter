@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:flash/flash.dart';
+import 'package:flash/flash_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -329,7 +331,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
   Widget getDivider() {
     return Container(
       height: 4.h,
-      color: MITIColor.black,
+      color: MITIColor.gray750,
     );
   }
 }
@@ -396,7 +398,7 @@ class HostComponent extends StatelessWidget {
         flag = decimalPoint != 0;
       }
       final String star = flag
-          ? 'half'
+          ? 'Star_half_v2'
           : rating >= i + 1
               ? 'fill_star'
               : 'unfill_star';
@@ -600,6 +602,8 @@ class SummaryComponent extends StatelessWidget {
   final String duration;
   final int max_invitation;
   final int num_of_confirmed_participations;
+  final int? gameId;
+  final bool isUpdateForm;
 
   const SummaryComponent(
       {super.key,
@@ -611,9 +615,12 @@ class SummaryComponent extends StatelessWidget {
       required this.max_invitation,
       required this.num_of_confirmed_participations,
       this.bankStatus,
-      required this.duration});
+      required this.duration,
+      this.gameId,
+      this.isUpdateForm = false});
 
-  factory SummaryComponent.fromDetailModel({required GameDetailModel model}) {
+  factory SummaryComponent.fromDetailModel(
+      {required GameDetailModel model, bool isUpdateForm = false}) {
     final start = DateTime.parse("${model.startdate} ${model.starttime}");
     final end = DateTime.parse("${model.enddate} ${model.endtime}");
 
@@ -629,6 +636,7 @@ class SummaryComponent extends StatelessWidget {
     final address =
         '${model.court.address} ${model.court.address_detail ?? ''}';
     return SummaryComponent(
+      gameId: model.id,
       gameStatus: model.game_status,
       title: model.title,
       gameDate: gameDate,
@@ -637,6 +645,7 @@ class SummaryComponent extends StatelessWidget {
       max_invitation: model.max_invitation,
       num_of_confirmed_participations: model.num_of_confirmed_participations,
       duration: end.difference(start).inMinutes.toString(),
+      isUpdateForm: isUpdateForm,
     );
   }
 
@@ -714,6 +723,87 @@ class SummaryComponent extends StatelessWidget {
     ]);
   }
 
+  Widget feeComponent(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "참가비 $fee 원",
+          style: MITITextStyle.mdBold.copyWith(
+            color: MITIColor.primary,
+          ),
+          textAlign: TextAlign.left,
+        ),
+        if (isUpdateForm)
+          GestureDetector(
+            onTap: () {
+              showModalBottomSheet(
+                  context: context,
+                  builder: (_) {
+                    return BottomDialog(
+                      title: '경기 참가비 무료로 전환',
+                      content:
+                          '무료 경기로 변경 시, 기존 참가자의 결제는 자동으로 취소되며\n이후 참가비 변경이 불가능합니다.',
+                      btn: Consumer(
+                        builder: (BuildContext context, WidgetRef ref,
+                            Widget? child) {
+                          return TextButton(
+                            onPressed: () async {
+                              final result = await ref.read(
+                                  gameFreeProvider(gameId: gameId!).future);
+
+                              if (context.mounted) {
+                                if (result is ErrorModel) {
+                                } else {
+                                  context.pop();
+
+                                  context.showFlash(builder:
+                                      (BuildContext context,
+                                          FlashController<String> controller) {
+
+                                    return FlashBar(
+                                        position: FlashPosition.top,
+                                        controller: controller,
+                                        content: Text(
+                                          "무료 경기로 전환되었습니다.",
+                                          style: MITITextStyle.smBold.copyWith(
+                                            color: MITIColor.correct,
+                                          ),
+                                        ));
+                                  });
+
+                                  // context.showToast(child);
+                                }
+                              }
+                            },
+                            child: const Text("무료 경기로 전환"),
+                          );
+                        },
+                      ),
+                    );
+                  });
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100.r),
+                color: MITIColor.gray600,
+              ),
+              padding: EdgeInsets.symmetric(
+                horizontal: 16.w,
+                vertical: 8.h,
+              ),
+              child: Text(
+                "무료 경기로 전환하기",
+                style: MITITextStyle.smBold.copyWith(
+                  color: MITIColor.primary,
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final desc = [
@@ -757,13 +847,7 @@ class SummaryComponent extends StatelessWidget {
               separatorBuilder: (_, idx) => SizedBox(height: 4.h),
               itemCount: 3),
           SizedBox(height: 20.h),
-          Text(
-            "참가비 $fee 원",
-            style: MITITextStyle.mdBold.copyWith(
-              color: MITIColor.primary,
-            ),
-            textAlign: TextAlign.left,
-          )
+          feeComponent(context),
         ],
       ),
     );

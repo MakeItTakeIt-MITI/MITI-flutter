@@ -39,14 +39,18 @@ class GameForm extends _$GameForm {
       info: '',
       fee: '',
       court: GameCourtParam(name: '', address: '', address_detail: ''),
-      checkBoxes: [false, false],
+      checkBoxes: [false, false, false],
     );
   }
 
   void update({
     String? title,
-    DateTime? startDateTime,
-    DateTime? endDateTime,
+    // DateTime? startDateTime,
+    // DateTime? endDateTime,
+    String? startdate,
+    String? starttime,
+    String? enddate,
+    String? endtime,
     String? min_invitation,
     String? max_invitation,
     String? info,
@@ -57,22 +61,19 @@ class GameForm extends _$GameForm {
     if (fee != null) {
       fee = fee.replaceAll(',', '');
     }
-    String? startdate;
-    String? starttime;
-    String? enddate;
-    String? endtime;
-    if (startDateTime != null) {
-      final dateFormat = DateFormat('yyyy-MM-dd');
-      final timeFormat = DateFormat('HH:mm');
-      startdate = dateFormat.format(startDateTime);
-      starttime = timeFormat.format(startDateTime);
-    }
-    if (endDateTime != null) {
-      final dateFormat = DateFormat('yyyy-MM-dd');
-      final timeFormat = DateFormat('HH:mm');
-      enddate = dateFormat.format(endDateTime);
-      endtime = timeFormat.format(endDateTime);
-    }
+
+    // if (startDateTime != null) {
+    //   final dateFormat = DateFormat('yyyy-MM-dd');
+    //   final timeFormat = DateFormat('HH:mm');
+    //   startdate = dateFormat.format(startDateTime);
+    //   starttime = timeFormat.format(startDateTime);
+    // }
+    // if (endDateTime != null) {
+    //   final dateFormat = DateFormat('yyyy-MM-dd');
+    //   final timeFormat = DateFormat('HH:mm');
+    //   enddate = dateFormat.format(endDateTime);
+    //   endtime = timeFormat.format(endDateTime);
+    // }
 
     state = state.copyWith(
       title: title,
@@ -87,6 +88,17 @@ class GameForm extends _$GameForm {
       court: court,
       checkBoxes: checkBoxes,
     );
+  }
+
+  void updateCheckBox(int idx) {
+    List<bool> newCheckBoxes = state.checkBoxes.toList();
+    newCheckBoxes[idx] = !newCheckBoxes[idx];
+    if (idx == 0) {
+      newCheckBoxes.fillRange(0, 3, newCheckBoxes[0]);
+    }
+
+    state = state.copyWith(checkBoxes: newCheckBoxes);
+    formValid();
   }
 
   bool validInvitation() {
@@ -183,10 +195,12 @@ class GameForm extends _$GameForm {
     log('validInvitation() = ${validInvitation()} validDatetime() = ${validDatetime()}');
     final formValid = ValidRegExp.gameTitle(state.title) &
         ValidRegExp.gameAddress(state.court.address) &
-        ValidRegExp.gameAddressDetail(state.court.address_detail) &
+        // ValidRegExp.gameAddressDetail(state.court.address_detail) &
         ValidRegExp.courtName(state.court.name);
-
-    return validInvitation() && validDatetime() && formValid;
+    bool checkBox = state.checkBoxes[1];
+    log("formvalid = $formValid");
+    log("checkbox = $checkBox");
+    return validInvitation() && validDatetime()&& formValid && checkBox;
   }
 }
 
