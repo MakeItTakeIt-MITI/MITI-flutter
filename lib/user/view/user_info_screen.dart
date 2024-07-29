@@ -133,7 +133,7 @@ class _UserInfoCard extends ConsumerWidget {
               ? 'fill_star'
               : 'unfill_star';
       result.add(SvgPicture.asset(
-        'assets/images/icon/$star.svg',
+        AssetUtil.getAssetPath(type: AssetType.icon, name: star),
         height: 14.r,
         width: 14.r,
       ));

@@ -91,37 +91,7 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
         button: TextButton(
           onPressed: valid()
               ? () async {
-                  final result = await ref
-                      .read(gameUpdateProvider(gameId: widget.gameId).future);
-                  if (result is ErrorModel) {
-                    if (context.mounted) {
-                      GameError.fromModel(model: result)
-                          .responseError(context, GameApiType.update, ref);
-                    }
-                  } else {
-                    if (context.mounted) {
-                      final extra = CustomDialog(
-                        title: '경기 모집 정보 수정 완료',
-                        content: '경기 정보가 정상적으로 수정되었습니다.',
-                        onPressed: () {
-                          Navigator.of(context, rootNavigator: true)
-                              .pop('dialog');
-                          Map<String, String> pathParameters = {
-                            'gameId': widget.gameId.toString()
-                          };
-                          final Map<String, String> queryParameters = {
-                            'bottomIdx': widget.bottomIdx.toString()
-                          };
-                          context.goNamed(
-                            GameDetailScreen.routeName,
-                            pathParameters: pathParameters,
-                            queryParameters: queryParameters,
-                          );
-                        },
-                      );
-                      context.pushNamed(DialogPage.routeName, extra: extra);
-                    }
-                  }
+                  await onUpdate(context);
                 }
               : () {},
           style: TextButton.styleFrom(
@@ -163,7 +133,10 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
                   final model = result.data!;
                   return Column(
                     children: [
-                      SummaryComponent.fromDetailModel(model: model, isUpdateForm: true,),
+                      SummaryComponent.fromDetailModel(
+                        model: model,
+                        isUpdateForm: true,
+                      ),
                       getDivider(),
                       _GameUpdateFormComponent(
                         initMaxValue: model.max_invitation.toString(),
@@ -188,6 +161,47 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> onUpdate(BuildContext context) async {
+    final result =
+        await ref.read(gameUpdateProvider(gameId: widget.gameId).future);
+    if (result is ErrorModel) {
+      if (context.mounted) {
+        GameError.fromModel(model: result)
+            .responseError(context, GameApiType.update, ref);
+      }
+    } else {
+      if (context.mounted) {
+        showModalBottomSheet(
+            context: context,
+            isDismissible: false,
+            enableDrag: false,
+            builder: (context) {
+              return BottomDialog(
+                title: '경기 모집 정보 수정 완료',
+                content: '경기 정보가 정상적으로 수정되었습니다.',
+                btn: TextButton(
+                  onPressed: () {
+                    Map<String, String> pathParameters = {
+                      'gameId': widget.gameId.toString()
+                    };
+                    final Map<String, String> queryParameters = {
+                      'bottomIdx': widget.bottomIdx.toString()
+                    };
+                    context.pop();
+                    context.goNamed(
+                      GameDetailScreen.routeName,
+                      pathParameters: pathParameters,
+                      queryParameters: queryParameters,
+                    );
+                  },
+                  child: const Text("확인"),
+                ),
+              );
+            });
+      }
+    }
   }
 
   Widget getDivider() {

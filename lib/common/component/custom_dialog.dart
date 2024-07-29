@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/theme/color_theme.dart';
@@ -82,12 +85,31 @@ class BottomDialog extends StatelessWidget {
   final String title;
   final String content;
   final Widget btn;
+  final bool hasPop;
 
   const BottomDialog(
       {super.key,
       required this.title,
       required this.content,
-      required this.btn});
+      required this.btn,  this.hasPop = false});
+
+  Widget popButton(BuildContext context){
+    return Align(
+        alignment: Alignment.topRight,
+        child: IconButton(
+            onPressed: () => context.pop(),
+            style: ButtonStyle(
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+
+                padding: MaterialStateProperty.all(EdgeInsets.zero)),
+            constraints: BoxConstraints.tight(
+                Size(24.r, 24.r)),
+            icon: const Icon(
+              Icons.close,
+              color: MITIColor.white,
+
+            )));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +124,8 @@ class BottomDialog extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          if(hasPop)
+          popButton(context),
           Text(
             title,
             style: MITITextStyle.mdBold.copyWith(
@@ -118,9 +142,10 @@ class BottomDialog extends StatelessWidget {
           ),
           SizedBox(height: 30.h),
           btn,
-          SizedBox(
-            height: 21.h,
-          )
+          if (Platform.isIOS)
+            SizedBox(
+              height: 21.h,
+            )
         ],
       ),
     );

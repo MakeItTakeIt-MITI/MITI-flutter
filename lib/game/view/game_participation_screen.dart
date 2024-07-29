@@ -11,6 +11,7 @@ import 'package:miti/game/model/game_player_model.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/view/review_form_screen.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:miti/util/util.dart';
 
 import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
@@ -167,7 +168,7 @@ class _PlayerComponent extends StatelessWidget {
               ? 'fill_star'
               : 'unfill_star';
       result.add(SvgPicture.asset(
-        'assets/images/icon/$star.svg',
+        AssetUtil.getAssetPath(type: AssetType.icon, name: star),
         height: 14.r,
         width: 14.r,
       ));

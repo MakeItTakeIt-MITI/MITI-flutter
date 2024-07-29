@@ -10,10 +10,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/common/component/custom_dialog.dart';
+import 'package:miti/common/component/defalut_flashbar.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/component/default_layout.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/game/component/game_state_label.dart';
+import 'package:miti/game/error/game_error.dart';
 import 'package:miti/game/model/game_model.dart';
 import 'package:miti/game/model/game_payment_model.dart';
 import 'package:miti/game/provider/game_provider.dart';
@@ -331,7 +333,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
   Widget getDivider() {
     return Container(
       height: 4.h,
-      color: MITIColor.gray750,
+      color: MITIColor.gray800,
     );
   }
 }
@@ -548,14 +550,10 @@ class ParticipationComponent extends StatelessWidget {
                   ],
                 )),
           if (confimed_participations.isEmpty)
-            Padding(
-              padding: EdgeInsets.all(24.r),
-              child: Text(
-                "경기의 첫번째 플레이어가 되어보세요!",
-                style: MITITextStyle.xxsm.copyWith(
-                  color: MITIColor.gray100,
-                ),
-                textAlign: TextAlign.center,
+            Text(
+              "아직 참여한 게스트가 없습니다.",
+              style: MITITextStyle.xxsm.copyWith(
+                color: MITIColor.gray100,
               ),
             )
         ],
@@ -723,7 +721,30 @@ class SummaryComponent extends StatelessWidget {
     ]);
   }
 
+  Widget _freeChip({required String title}) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(100.r),
+        color: MITIColor.gray600,
+      ),
+      padding: EdgeInsets.symmetric(
+        horizontal: 16.w,
+        vertical: 8.h,
+      ),
+      child: Text(
+        title,
+        style: MITITextStyle.smBold.copyWith(
+          color: MITIColor.primary,
+        ),
+      ),
+    );
+  }
+
   Widget feeComponent(BuildContext context) {
+    if (fee == "0") {
+      return _freeChip(title: "무료 경기");
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -741,6 +762,7 @@ class SummaryComponent extends StatelessWidget {
                   context: context,
                   builder: (_) {
                     return BottomDialog(
+                      hasPop: true,
                       title: '경기 참가비 무료로 전환',
                       content:
                           '무료 경기로 변경 시, 기존 참가자의 결제는 자동으로 취소되며\n이후 참가비 변경이 불가능합니다.',
@@ -754,25 +776,14 @@ class SummaryComponent extends StatelessWidget {
 
                               if (context.mounted) {
                                 if (result is ErrorModel) {
+                                  GameError.fromModel(model: result)
+                                      .responseError(
+                                          context, GameApiType.free, ref);
                                 } else {
                                   context.pop();
-
-                                  context.showFlash(builder:
-                                      (BuildContext context,
-                                          FlashController<String> controller) {
-
-                                    return FlashBar(
-                                        position: FlashPosition.top,
-                                        controller: controller,
-                                        content: Text(
-                                          "무료 경기로 전환되었습니다.",
-                                          style: MITITextStyle.smBold.copyWith(
-                                            color: MITIColor.correct,
-                                          ),
-                                        ));
-                                  });
-
-                                  // context.showToast(child);
+                                  FlashUtil.showFlash(
+                                      context, "무료 경기로 전환되었습니다.");
+                                  // todo
                                 }
                               }
                             },
@@ -783,22 +794,7 @@ class SummaryComponent extends StatelessWidget {
                     );
                   });
             },
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100.r),
-                color: MITIColor.gray600,
-              ),
-              padding: EdgeInsets.symmetric(
-                horizontal: 16.w,
-                vertical: 8.h,
-              ),
-              child: Text(
-                "무료 경기로 전환하기",
-                style: MITITextStyle.smBold.copyWith(
-                  color: MITIColor.primary,
-                ),
-              ),
-            ),
+            child: _freeChip(title: "무료 경기로 전환하기"),
           ),
       ],
     );
