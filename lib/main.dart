@@ -78,6 +78,7 @@ Future<FlutterLocalNotificationsPlugin> _initLocalNotification() async {
 Future<void> getFcmToken(WidgetRef ref) async {
   String? token;
   FirebaseMessaging messaging = FirebaseMessaging.instance;
+  log('FCM Token 가져오기');
 
   // 플랫폼 별 토큰 가져오기
   if (defaultTargetPlatform == TargetPlatform.iOS) {
@@ -86,6 +87,7 @@ Future<void> getFcmToken(WidgetRef ref) async {
     token = await messaging.getToken();
   }
   ref.read(fcmTokenProvider.notifier).update((state) => token);
+  print("FCM Token: $token");
   log('FCM Token: $token');
 }
 

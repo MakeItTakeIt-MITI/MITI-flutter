@@ -104,6 +104,13 @@ class InfoBody extends ConsumerWidget {
               child: Text('노티'),
             ),
           ),
+
+          Consumer(builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        final token =     ref.watch(fcmTokenProvider);
+           return SliverToBoxAdapter(child: Text("$token"),);
+
+          },
+          ),
           SliverToBoxAdapter(
             child: Lottie.asset(
               'assets/lottie/fail_animation.json',
