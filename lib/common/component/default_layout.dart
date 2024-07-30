@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -70,6 +71,7 @@ class BottomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Container(
 
       decoration: BoxDecoration(
@@ -85,6 +87,7 @@ class BottomButton extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           button,
+          if(Platform.isIOS)
           SizedBox(height: 21.h),
         ],
       ),

@@ -8,9 +8,11 @@ import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/common/error/view/error_screen.dart';
 import 'package:miti/dio/response_code.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
+import 'package:miti/theme/color_theme.dart';
 
 import '../../common/component/custom_dialog.dart';
 import '../../common/component/custom_text_form_field.dart';
+import '../../common/component/defalut_flashbar.dart';
 import '../../common/error/common_error.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
@@ -26,6 +28,7 @@ enum GameApiType {
   getReview,
   createGuestReview,
   createHostReview,
+  free,
 }
 
 class GameError extends ErrorBase {
@@ -71,6 +74,9 @@ class GameError extends ErrorBase {
         break;
       case GameApiType.createHostReview:
         _createHostReview(context, ref);
+        break;
+      case GameApiType.free:
+        _free(context, ref);
         break;
       default:
         break;
@@ -530,7 +536,7 @@ class GameError extends ErrorBase {
   }
 
   /// 호스트 리뷰 작성 API
-  void _createHostReview(BuildContext context, WidgetRef ref){
+  void _createHostReview(BuildContext context, WidgetRef ref) {
     if (this.status_code == BadRequest && this.error_code == 101) {
       /// 요청 데이터 유효성 오류
       showDialog(
@@ -637,6 +643,35 @@ class GameError extends ErrorBase {
           );
         },
       );
+    }
+  }
+
+  /// 경기 무료 전환 API
+  void _free(BuildContext context, WidgetRef ref) {
+    if (this.status_code == Forbidden && this.error_code == 940) {
+      /// 요청 권한 없음
+      FlashUtil.showFlash(context, "경기 무료 전환에 실패하였습니다.",
+          textColor: MITIColor.error);
+    } else if (this.status_code == Forbidden && this.error_code == 941) {
+      /// 변경 불가능한 경기
+      FlashUtil.showFlash(context, "경기 무료 전환에 실패하였습니다.",
+          textColor: MITIColor.error);
+    } else if (this.status_code == Forbidden && this.error_code == 942) {
+      /// 무료 참여인 경기
+      FlashUtil.showFlash(context, "경기 무료 전환에 실패하였습니다.",
+          textColor: MITIColor.error);
+    } else if (this.status_code == NotFound && this.error_code == 940) {
+      /// 경기 정보 조회 결과 없음
+      FlashUtil.showFlash(context, "경기 무료 전환에 실패하였습니다.",
+          textColor: MITIColor.error);
+    } else if (this.status_code == ServerError && this.error_code == 340) {
+      /// 서버 내부 오류
+      FlashUtil.showFlash(context, "경기 무료 전환에 실패하였습니다.",
+          textColor: MITIColor.error);
+    } else {
+      /// 서버 오류
+      FlashUtil.showFlash(context, "경기 무료 전환에 실패하였습니다.",
+          textColor: MITIColor.error);
     }
   }
 }

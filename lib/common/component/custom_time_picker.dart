@@ -43,8 +43,12 @@ class _CustomTimePickerState extends ConsumerState<CustomDateTimePicker> {
       selectedHour = DateTime.now().hour;
       selectedMinute = ((DateTime.now().minute ~/ 10) * 10);
       ref.read(datePickerProvider(widget.isStart).notifier).update((state) =>
-          "$date ${selectedHour.toString()}:${selectedMinute.toString()}");
+          "$date ${oneDigitFormat(selectedHour)}:${oneDigitFormat(selectedMinute)}");
     });
+  }
+
+  String oneDigitFormat(int n) {
+    return n < 10 ? "0$n" : n.toString();
   }
 
   String generateDateString(int idx) {
@@ -111,7 +115,7 @@ class _CustomTimePickerState extends ConsumerState<CustomDateTimePicker> {
 
   void changeSelectDate() {
     ref.read(datePickerProvider(widget.isStart).notifier).update((state) =>
-        "$date ${selectedHour.toString()}:${selectedMinute.toString()}");
+        "$date ${oneDigitFormat(selectedHour)}:${oneDigitFormat(selectedMinute)}");
   }
 
   int getCurrentDateIndex() {
@@ -168,8 +172,9 @@ class _CustomTimePickerState extends ConsumerState<CustomDateTimePicker> {
             scrollController:
                 FixedExtentScrollController(initialItem: selectedHour),
             children: List<Widget>.generate(24, (int index) {
+
               return Center(
-                  child: Text('$index',
+                  child: Text(oneDigitFormat(index),
                       style: MITITextStyle.md.copyWith(
                         color: selectedHour == index
                             ? MITIColor.primary
@@ -198,7 +203,7 @@ class _CustomTimePickerState extends ConsumerState<CustomDateTimePicker> {
             children: List<Widget>.generate(6, (int index) {
               return Center(
                   child: Text(
-                '${index * 10}',
+                oneDigitFormat(index * 10),
                 style: MITITextStyle.md.copyWith(
                   color: selectedMinute ~/ 10 == index
                       ? MITIColor.primary

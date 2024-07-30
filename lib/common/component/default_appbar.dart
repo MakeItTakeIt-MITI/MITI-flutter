@@ -42,9 +42,9 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
 
         /// 앱바 pinned 시 surface 컬러
         surfaceTintColor: backgroundColor ?? MITIColor.gray800,
-        // shape: const Border(
-        //   bottom: BorderSide(color: Color(0xFFE8E8E8)),
-        // ),
+        shape: const Border(
+          bottom: BorderSide(color: MITIColor.gray600),
+        ),
         centerTitle: true,
         leading: context.canPop()
             ? IconButton(
@@ -61,6 +61,9 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
       );
     }
     return AppBar(
+      shape: const Border(
+        bottom: BorderSide(color: MITIColor.gray600),
+      ),
       title: Text(
         title ?? '',
         style: MITITextStyle.mdBold.copyWith(

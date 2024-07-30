@@ -84,10 +84,11 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
           ];
         },
         body: Padding(
-          padding: EdgeInsets.only(
-            // vertical: 20.h,
-            left: 21.w,
-            right: 21.w,
+          padding: EdgeInsets.symmetric(
+            vertical: 20.h,
+
+            horizontal: 21.w,
+
             // bottom: bottomPadding,
           ),
           child: CustomScrollView(
@@ -109,10 +110,8 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
               getSpacer(),
               const _AdditionalInfoForm(),
               getSpacer(height: 32),
-              _AgreeTermComponent(),
-              getSpacer(height: 20),
+              const _AgreeTermComponent(),
 
-              // getSpacer(height: 8),
             ],
           ),
         ),
@@ -247,7 +246,7 @@ class _V2DateFormState extends State<V2DateForm> {
                 ),
               ),
               const Spacer(),
-              InkWell(
+              GestureDetector(
                 onTap: () {
                   showDialog(
                       context: context,
@@ -908,12 +907,14 @@ class _FeeForm extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final fee = ref.watch(gameFormProvider.select((value) => value.fee));
     return SliverToBoxAdapter(
         child: CustomTextFormField(
       hintText: '경기 참가비를 입력해주세요.',
       label: '경기 참가비',
       keyboardType: TextInputType.number,
       textInputAction: TextInputAction.next,
+      // textAlign: fee.isNotEmpty ? TextAlign.right : TextAlign.left,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
         NumberFormatter(),
@@ -922,7 +923,7 @@ class _FeeForm extends ConsumerWidget {
         ref.read(gameFormProvider.notifier).update(fee: val);
       },
       suffixIcon: Text(
-        '원',
+        '₩',
         textAlign: TextAlign.center,
         style: MITITextStyle.sm.copyWith(
           color: MITIColor.gray100,
@@ -1038,7 +1039,9 @@ class _AgreeTermComponent extends ConsumerWidget {
                   showDetail: () {
                     showDialog(
                         context: context,
+                        barrierColor:  MITIColor.gray800,
                         builder: (context) {
+
                           return OperationTermScreen(
                             title: '경기 운영 약관',
                             desc:
@@ -1079,6 +1082,7 @@ class OperationTermScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog.fullscreen(
+      backgroundColor: MITIColor.gray800,
       child: Scaffold(
         backgroundColor: MITIColor.gray800,
         appBar: DefaultAppBar(),

@@ -509,7 +509,7 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
     final active = widget.isCheckBox ? "active_checkBox" : "active_check";
     final disable = widget.isCheckBox ? "disabled_checkBox" : "disabled_check";
 
-    return InkWell(
+    return GestureDetector(
       onTap: widget.onTap,
       child: SizedBox(
         height: 24.h,
@@ -1415,6 +1415,7 @@ class SignUpCompleteScreen extends StatelessWidget {
         ),
       ],
     );
+
   }
 
   Widget getProgress(int idx) {
