@@ -5,8 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/view/user_info_screen.dart';
+import 'package:miti/util/util.dart';
 import 'court/view/court_map_screen.dart';
 import 'game/view/game_screen.dart';
 import 'menu/view/menu_screen.dart';
@@ -112,26 +114,10 @@ class CustomBottomNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.bottomCenter,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF000000).withOpacity(0.1),
-              offset: Offset(0, 1.h),
-              blurRadius: 3.r,
-            ),
-            BoxShadow(
-              color: const Color(0xFF000000).withOpacity(0.08),
-              offset: Offset(0, -1.h),
-              blurRadius: 1.r,
-            ),
-            BoxShadow(
-              color: const Color(0xFF000000).withOpacity(0.06),
-              offset: Offset(0, -1.h),
-              blurRadius: 2.r,
-            ),
-          ]),
+      decoration: const BoxDecoration(
+        border: Border(top: BorderSide(color: MITIColor.gray700)),
+        color: MITIColor.gray900,
+      ),
       constraints: BoxConstraints.tight(Size(double.infinity, 80.h)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -143,7 +129,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
               },
               label: '홈',
               selected: index == 0,
-              iconName: index == 0 ? 'fill_home' : 'unfill_home',
+              iconName: index == 0 ? 'home' : 'home',
             ),
           ),
           Expanded(
@@ -151,9 +137,9 @@ class CustomBottomNavigationBar extends StatelessWidget {
               onTap: () {
                 onTap(1);
               },
-              label: '경기',
+              label: '내 경기',
               selected: index == 1,
-              iconName: index == 1 ? 'fill_game' : 'unfill_game',
+              iconName: index == 1 ? 'game' : 'game',
             ),
           ),
           Expanded(
@@ -161,9 +147,9 @@ class CustomBottomNavigationBar extends StatelessWidget {
               onTap: () {
                 onTap(2);
               },
-              label: '내정보',
+              label: '경기장',
               selected: index == 2,
-              iconName: index == 2 ? 'fill_info' : 'unfill_info',
+              iconName: index == 2 ? 'court' : 'court',
             ),
           ),
           Expanded(
@@ -171,9 +157,9 @@ class CustomBottomNavigationBar extends StatelessWidget {
               onTap: () {
                 onTap(3);
               },
-              label: '전체',
+              label: '내 정보',
               selected: index == 3,
-              iconName: index == 3 ? 'fill_menu' : 'unfill_menu',
+              iconName: index == 3 ? 'profile' : 'profile',
             ),
           ),
         ],
@@ -197,26 +183,25 @@ class CustomBottomItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = MITITextStyle.menuCategoryStyle;
+    final textStyle = MITITextStyle.xxsmSemiBold;
     return InkWell(
       onTap: onTap,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SvgPicture.asset(
-            'assets/images/icon/$iconName.svg',
+            AssetUtil.getAssetPath(type: AssetType.icon, name: iconName),
             height: 24.r,
             width: 24.r,
             colorFilter: ColorFilter.mode(
-                selected ? const Color(0xFF4065F6) : const Color(0xFF969696),
+                selected ? MITIColor.gray100 : MITIColor.gray500,
                 BlendMode.srcIn),
           ),
-          SizedBox(height: 4.h),
+          SizedBox(height: 6.h),
           Text(
             label,
             style: textStyle.copyWith(
-              color:
-                  selected ? const Color(0xFF4065F6) : const Color(0xFF969696),
+              color: selected ? MITIColor.gray100 : MITIColor.gray500,
             ),
           )
         ],

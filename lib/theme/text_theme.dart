@@ -79,6 +79,13 @@ class MITITextStyle {
     height: 1,
   );
 
+  static final TextStyle xxsmSemiBold = TextStyle(
+    fontSize: 12.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w600,
+    height: 1,
+  );
+
   static final TextStyle xxsmLight150 = TextStyle(
     fontSize: 12.sp,
     fontFamily: 'Pretendard',

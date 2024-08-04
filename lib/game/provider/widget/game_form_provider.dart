@@ -200,7 +200,7 @@ class GameForm extends _$GameForm {
     bool checkBox = state.checkBoxes[1];
     log("formvalid = $formValid");
     log("checkbox = $checkBox");
-    return validInvitation() && validDatetime()&& formValid && checkBox;
+    return validInvitation() && validDatetime() && formValid && checkBox;
   }
 }
 

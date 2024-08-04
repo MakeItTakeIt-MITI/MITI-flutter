@@ -17,7 +17,9 @@ import 'package:miti/court/component/court_component.dart';
 import 'package:miti/game/component/game_state_label.dart';
 import 'package:miti/game/param/game_param.dart';
 import 'package:miti/game/provider/game_provider.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:miti/util/util.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:collection/collection.dart';
 
@@ -212,16 +214,64 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
           },
         ),
         Positioned(
-          left: 10.w,
+          top: 44.h,
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 13.w),
+            child: Row(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50.r),
+                    color: MITIColor.gray800,
+                  ),
+                  padding:
+                      EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
+                  child: Text(
+                    "날짜 및 시간",
+                    style: MITITextStyle.smSemiBold
+                        .copyWith(color: MITIColor.gray50),
+                  ),
+                ),
+                SizedBox(
+                  width: 8.w,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50.r),
+                    color: MITIColor.gray800,
+                  ),
+                  padding:
+                      EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
+                  child: Text(
+                    "경기 상태",
+                    style: MITITextStyle.smSemiBold
+                        .copyWith(color: MITIColor.gray50),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          left: 12.w,
           bottom: MediaQuery.of(context).size.height * 0.14,
           child: Container(
+            padding: EdgeInsets.all(10.r),
             decoration: BoxDecoration(
-                color: Colors.white,
+                color:
+                    position != null ? const Color(0xFFE9FFFF) : Colors.white,
+                shape: BoxShape.circle,
                 border: Border.all(
-                  color: Colors.grey,
-                )),
-            child: IconButton(
-              onPressed: () async {
+                  color:
+                      position != null ? MITIColor.primary : MITIColor.gray50,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                      color: const Color(0xFF000000).withOpacity(0.25),
+                      blurRadius: 10.r)
+                ]),
+            child: GestureDetector(
+              onTap: () async {
                 if (position == null) {
                   _permission();
                 } else {
@@ -230,18 +280,18 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
                       .setLocationTrackingMode(NLocationTrackingMode.none);
                 }
               },
-              icon: Icon(
-                Icons.gps_fixed,
-                color:
-                    position != null ? const Color(0xFF4065F6) : Colors.black54,
+              child: SvgPicture.asset(
+                AssetUtil.getAssetPath(
+                    type: AssetType.icon,
+                    name: position != null ? "gps" : "un_gps"),
               ),
             ),
           ),
         ),
         DraggableScrollableSheet(
-          initialChildSize: 0.12,
+          initialChildSize: 0.05,
           maxChildSize: 0.9,
-          minChildSize: 0.12,
+          minChildSize: 0.05,
           snap: true,
           controller: _draggableScrollableController,
           builder: (BuildContext context, ScrollController scrollController) {
@@ -256,7 +306,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
             }).toList();
             return Container(
               decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: MITIColor.gray900,
                   borderRadius:
                       BorderRadius.vertical(top: Radius.circular(16.r))),
               child: CustomScrollView(
@@ -265,15 +315,19 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
                   SliverToBoxAdapter(
                     child: Column(
                       children: [
-                        SizedBox(height: 7.h),
+                        SizedBox(height: 8.h),
                         Container(
                           height: 4.h,
                           width: 60.w,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFD9D9D9),
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(8.r)),
+                            color: MITIColor.gray100,
                           ),
                         ),
-                        SizedBox(height: 12.h),
+                        SizedBox(height: 8.h),
+
+                        /// 지울 예정
                         SingleChildScrollView(
                           controller: _dayScrollController,
                           scrollDirection: Axis.horizontal,
@@ -305,23 +359,29 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
                     ),
                   ),
                   SliverToBoxAdapter(
-                    child: SizedBox(height: 14.h),
+                    child: SizedBox(height: 10.h),
                   ),
                   Consumer(
                     builder:
                         (BuildContext context, WidgetRef ref, Widget? child) {
                       final modelList = ref.watch(selectGameListProvider);
+
                       return SliverPadding(
                         padding: EdgeInsets.symmetric(horizontal: 21.w),
                         sliver: SliverMainAxisGroup(slivers: [
-                          SliverToBoxAdapter(
-                            child: Text(
-                              '${modelList.length}개의 매치',
-                              style: MITITextStyle.selectionDayStyle.copyWith(
-                                color: const Color(0xFF333333),
+                          if (modelList.isNotEmpty)
+                            SliverToBoxAdapter(
+                              child: Padding(
+                                padding: EdgeInsets.only(left: 12.w),
+                                child: Text(
+                                  '${modelList.length}개의 매치',
+                                  style:
+                                      MITITextStyle.selectionDayStyle.copyWith(
+                                    color: MITIColor.gray100,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
                           _getCourtComponent(modelList),
                         ]),
                       );
@@ -371,22 +431,20 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     if (modelList.isEmpty) {
       return SliverToBoxAdapter(
           child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: 12.h),
-          SvgPicture.asset(
-            'assets/images/icon/system_alert.svg',
-            height: 70.r,
-            width: 70.r,
-            colorFilter:
-                const ColorFilter.mode(Color(0xFF999999), BlendMode.srcIn),
-          ),
-          SizedBox(height: 24.h),
+          SizedBox(height: 250.h),
           Text(
-            '경기가 없습니다.\n경기를 직접 호스팅해보세요!',
-            style: MITITextStyle.pageSubTextStyle
-                .copyWith(color: const Color(0xFF999999)),
+            '검색된 경기가 없습니다.',
+            style: MITITextStyle.xxl140.copyWith(color: MITIColor.white),
             textAlign: TextAlign.center,
-          )
+          ),
+          SizedBox(height: 20.h),
+          Text(
+            '필터를 변경하여 다른 경기를 찾아보세요!',
+            style: MITITextStyle.xxl140.copyWith(color: MITIColor.gray300),
+            textAlign: TextAlign.center,
+          ),
         ],
       ));
     }
@@ -577,9 +635,10 @@ class CourtCard extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8.r),
-            border: Border.all(color: const Color(0xFFE8E8E8))),
-        padding: EdgeInsets.all(8.r),
+            color: MITIColor.gray700,
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(color: MITIColor.gray600)),
+        padding: EdgeInsets.all(16.r),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
@@ -589,44 +648,95 @@ class CourtCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   GameStateLabel(gameStatus: game_status),
-                  SizedBox(height: 3.h),
+                  SizedBox(height: 8.h),
                   Text(
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: MITITextStyle.gameTitleMainStyle.copyWith(
-                      color: const Color(0xFF333333),
+                      color: MITIColor.gray200,
                     ),
                   ),
-                  SizedBox(height: 3.h),
-                  Text(
-                    '${starttime.substring(0, 5)} ~ ${endtime.substring(0, 5)}',
-                    style: MITITextStyle.gameTimeCardMStyle.copyWith(
-                      color: const Color(0xFF999999),
-                    ),
+                  SizedBox(height: 12.h),
+                  Row(
+                    children: [
+                      SvgPicture.asset(
+                        AssetUtil.getAssetPath(
+                          type: AssetType.icon,
+                          name: "clock",
+                        ),
+                        width: 16.r,
+                        height: 16.r,
+                        colorFilter: const ColorFilter.mode(
+                            MITIColor.gray500, BlendMode.srcIn),
+                      ),
+                      SizedBox(width: 4.w),
+                      Text(
+                        '${starttime.substring(0, 5)} ~ ${endtime.substring(0, 5)}',
+                        style: MITITextStyle.gameTimeCardMStyle.copyWith(
+                          color: MITIColor.gray300,
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 3.h),
+                  SizedBox(height: 4.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: [
-                          SvgPicture.asset('assets/images/icon/people.svg'),
-                          SizedBox(width: 5.w),
-                          Text(
-                            '$num_of_participations/$max_invitation',
-                            style:
-                                MITITextStyle.participationCardStyle.copyWith(
-                              color: const Color(0xFF444444),
-                            ),
-                          )
+                          Row(
+                            children: [
+                              SvgPicture.asset(
+                                'assets/images/icon/people.svg',
+                                colorFilter: const ColorFilter.mode(
+                                    MITIColor.gray500, BlendMode.srcIn),
+                              ),
+                              SizedBox(width: 5.w),
+                              Text(
+                                '$num_of_participations/$max_invitation',
+                                style: MITITextStyle.participationCardStyle
+                                    .copyWith(
+                                  color: MITIColor.gray300,
+                                ),
+                              )
+                            ],
+                          ),
+                          SizedBox(width: 12.w),
+                          Consumer(
+                            builder: (BuildContext context, WidgetRef ref,
+                                Widget? child) {
+                              final position = ref.watch(positionProvider);
+
+                              return Row(
+                                children: [
+                                  SvgPicture.asset(
+                                    AssetUtil.getAssetPath(
+                                      type: AssetType.icon,
+                                      name: "map_pin",
+                                    ),
+                                    colorFilter: const ColorFilter.mode(
+                                        MITIColor.gray500, BlendMode.srcIn),
+                                  ),
+                                  SizedBox(width: 5.w),
+                                  Text(
+                                    '$num_of_participations/$max_invitation',
+                                    style: MITITextStyle.participationCardStyle
+                                        .copyWith(
+                                      color: MITIColor.gray300,
+                                    ),
+                                  )
+                                ],
+                              );
+                            },
+                          ),
                         ],
                       ),
                       Text(
                         '₩$fee',
                         textAlign: TextAlign.right,
                         style: MITITextStyle.feeStyle.copyWith(
-                          color: const Color(0xFF4065F6),
+                          color: MITIColor.primary,
                         ),
                       )
                     ],

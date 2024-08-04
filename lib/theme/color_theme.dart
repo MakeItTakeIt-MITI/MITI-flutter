@@ -2,6 +2,7 @@ import 'dart:ui';
 
 class MITIColor {
   static const Color primary = Color(0xFF7FEEF0);
+  static const Color primaryLight = Color(0xFFBFF9FA);
   static const Color correct = Color(0xFF49B7FF);
   static const Color error = Color(0xFFFF4079);
   static const Color white = Color(0xFFFFFFFF);

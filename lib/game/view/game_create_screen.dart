@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:marquee/marquee.dart';
 import 'dart:math' hide log;
 
 import 'package:flutter/cupertino.dart';
@@ -9,7 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:kpostal/kpostal.dart';
 import 'package:miti/auth/view/signup/signup_screen.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
@@ -84,11 +85,10 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
           ];
         },
         body: Padding(
-          padding: EdgeInsets.symmetric(
-            vertical: 20.h,
-
-            horizontal: 21.w,
-
+          padding: EdgeInsets.only(
+            top: 20.h,
+            left: 21.w,
+            right: 21.w,
             // bottom: bottomPadding,
           ),
           child: CustomScrollView(
@@ -111,7 +111,7 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
               const _AdditionalInfoForm(),
               getSpacer(height: 32),
               const _AgreeTermComponent(),
-
+              getSpacer(height: 20),
             ],
           ),
         ),
@@ -234,6 +234,26 @@ class _V2DateFormState extends State<V2DateForm> {
                   builder:
                       (BuildContext context, WidgetRef ref, Widget? child) {
                     final date = ref.watch(dateFormProvider);
+                    final painter = TextPainter(
+                        maxLines: 1,
+                        textDirection: TextDirection.ltr,
+                        text: TextSpan(text: date ?? "경기 날짜와 시간을 선택해 주세요."));
+                    painter.layout(maxWidth: 233.w);
+
+                    if (painter.didExceedMaxLines) {
+                      return Marquee(
+                        text: date ?? "경기 날짜와 시간을 선택해 주세요.",
+                        textScaleFactor: 1,
+                        velocity: 20,
+                        blankSpace: 20.w,
+                        style: MITITextStyle.md.copyWith(
+                          color: date == null
+                              ? MITIColor.gray500
+                              : MITIColor.gray100,
+                        ),
+                      );
+                    }
+
                     return Text(
                       date ?? "경기 날짜와 시간을 선택해 주세요.",
                       style: MITITextStyle.md.copyWith(
@@ -248,6 +268,7 @@ class _V2DateFormState extends State<V2DateForm> {
               const Spacer(),
               GestureDetector(
                 onTap: () {
+                  FocusScope.of(context).requestFocus(FocusNode());
                   showDialog(
                       context: context,
                       builder: (_) {
@@ -260,6 +281,7 @@ class _V2DateFormState extends State<V2DateForm> {
                                   borderRadius: BorderRadius.circular(20.r)),
                               padding: EdgeInsets.all(20.r),
                               child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Row(
@@ -297,16 +319,38 @@ class _V2DateFormState extends State<V2DateForm> {
                                   const _GameTimePicker(
                                     isStart: false,
                                   ),
-                                  SizedBox(height: 40.h),
                                   Consumer(
                                     builder: (BuildContext context,
                                         WidgetRef ref, Widget? child) {
-                                      final valid = ref
+                                      final hasTime = ref
                                               .watch(datePickerProvider(true))
                                               .isNotEmpty &&
                                           ref
                                               .watch(datePickerProvider(false))
                                               .isNotEmpty;
+                                      return Visibility(
+                                          visible:
+                                              hasTime && !validDateTime(ref),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.stretch,
+                                            children: [
+                                              SizedBox(height: 20.h),
+                                              Text(
+                                                "경기 종료 시간이 시작 시간의 이후가 되도록 설정해 주세요.",
+                                                style: MITITextStyle.xxsm
+                                                    .copyWith(
+                                                        color: MITIColor.error),
+                                              ),
+                                            ],
+                                          ));
+                                    },
+                                  ),
+                                  SizedBox(height: 40.h),
+                                  Consumer(
+                                    builder: (BuildContext context,
+                                        WidgetRef ref, Widget? child) {
+                                      final valid = validDateTime(ref);
 
                                       return TextButton(
                                         onPressed: valid
@@ -361,6 +405,25 @@ class _V2DateFormState extends State<V2DateForm> {
         ],
       ),
     );
+  }
+
+  bool validDateTime(WidgetRef ref) {
+    final start = ref.watch(datePickerProvider(true));
+    final end = ref.watch(datePickerProvider(false));
+
+    final format = DateFormat("yyyy / MM / dd (EEE) HH:mm", 'ko');
+    if (start.isNotEmpty && end.isNotEmpty) {
+      final startParse = format.parse(start);
+      final endParse = format.parse(end);
+
+      final validNum = startParse.compareTo(endParse);
+      if (validNum < 0) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
   }
 
   void selectDay(WidgetRef ref) {
@@ -850,6 +913,7 @@ class ApplyForm extends ConsumerWidget {
                 textAlign: TextAlign.right,
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
+                borderColor: !ValidRegExp.validForm(min_invitation, max_invitation)  ? MITIColor.error : null,
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
                   NumberFormatter(),
@@ -884,16 +948,10 @@ class ApplyForm extends ConsumerWidget {
             children: [
               SizedBox(height: 16.h),
               Text(
-                int.parse(max_invitation) <= 0
-                    ? '총 모집 인원은 0명 이상이어야해요.'
+                int.parse(max_invitation) < 1
+                    ? '총 모집 인원은 1명 이상이어야해요.'
                     : '총 모집 인원은 최소 모집 인원보다 많아야해요.',
-                style: TextStyle(
-                  color: const Color(0xFFE92C2C),
-                  fontSize: 13.sp,
-                  fontFamily: 'Pretendard',
-                  fontWeight: FontWeight.w400,
-                  letterSpacing: -0.25.sp,
-                ),
+                style: MITITextStyle.xxsm.copyWith(color: MITIColor.error),
               ),
             ],
           ),
@@ -1039,9 +1097,8 @@ class _AgreeTermComponent extends ConsumerWidget {
                   showDetail: () {
                     showDialog(
                         context: context,
-                        barrierColor:  MITIColor.gray800,
+                        barrierColor: MITIColor.gray800,
                         builder: (context) {
-
                           return OperationTermScreen(
                             title: '경기 운영 약관',
                             desc:
@@ -1085,7 +1142,10 @@ class OperationTermScreen extends StatelessWidget {
       backgroundColor: MITIColor.gray800,
       child: Scaffold(
         backgroundColor: MITIColor.gray800,
-        appBar: DefaultAppBar(),
+        appBar: const DefaultAppBar(
+          hasBorder: false,
+          leadingIcon: "remove",
+        ),
         body: Padding(
           padding:
               EdgeInsets.only(top: 20.h, left: 21.w, right: 21.w, bottom: 20.h),

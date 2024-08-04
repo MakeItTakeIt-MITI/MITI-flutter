@@ -79,10 +79,12 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
           }
           result as ResponseModel<GameDetailModel>;
           final model = result.data!;
-
-          return BottomButton(
-            button: getBottomButton(model, ref, context),
-          );
+          final button = getBottomButton(model, ref, context);
+          return button != null
+              ? BottomButton(
+                  button: button,
+                )
+              : const SizedBox();
         },
       ),
       body: NestedScrollView(
@@ -143,7 +145,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
     );
   }
 
-  Widget getBottomButton(
+  Widget? getBottomButton(
       GameDetailModel model, WidgetRef ref, BuildContext context) {
     Widget? button;
     final buttonTextStyle = MITITextStyle.btnTextBStyle.copyWith(
@@ -267,9 +269,8 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
       style: TextButton.styleFrom(
         fixedSize: Size(double.infinity, 48.h),
       ),
-      child: Text(
-        '경기 참가하기',
-        style: buttonTextStyle,
+      child: const Text(
+        '경기 참여하기',
       ),
     );
     final reviewButton = TextButton(
@@ -327,7 +328,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
         break;
     }
 
-    return button ?? Container();
+    return button;
   }
 
   Widget getDivider() {

@@ -16,6 +16,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
   final Color? backgroundColor;
   final String leadingIcon;
+  final bool hasBorder;
 
   const DefaultAppBar({
     super.key,
@@ -25,6 +26,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.actions,
     this.backgroundColor,
     this.leadingIcon = "back_arrow",
+    this.hasBorder = true,
   });
 
   @override
@@ -42,9 +44,11 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
 
         /// 앱바 pinned 시 surface 컬러
         surfaceTintColor: backgroundColor ?? MITIColor.gray800,
-        shape: const Border(
-          bottom: BorderSide(color: MITIColor.gray600),
-        ),
+        shape: hasBorder
+            ? const Border(
+                bottom: BorderSide(color: MITIColor.gray600),
+              )
+            : null,
         centerTitle: true,
         leading: context.canPop()
             ? IconButton(
@@ -61,9 +65,11 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
       );
     }
     return AppBar(
-      shape: const Border(
+      shape: hasBorder
+          ? const Border(
         bottom: BorderSide(color: MITIColor.gray600),
-      ),
+      )
+          : null,
       title: Text(
         title ?? '',
         style: MITITextStyle.mdBold.copyWith(

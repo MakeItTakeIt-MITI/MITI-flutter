@@ -106,8 +106,13 @@ Future<BaseModel> gameUpdate(GameUpdateRef ref, {required int gameId}) async {
 Future<BaseModel> gameFree(GameFreeRef ref, {required int gameId}) async {
   final repository = ref.watch(gameRepositoryProvider);
 
-  return await repository.freeGame(gameId: gameId).then<BaseModel>((value) {
+  return await repository
+      .freeGame(gameId: gameId)
+      .then<BaseModel>((value) async {
     logger.i(value);
+    await ref
+        .read(gameDetailProvider(gameId: gameId).notifier)
+        .get(gameId: gameId);
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
