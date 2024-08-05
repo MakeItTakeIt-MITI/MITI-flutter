@@ -19,6 +19,7 @@ import 'package:miti/user/provider/user_provider.dart';
 import 'package:miti/user/view/user_delete_screen.dart';
 import 'package:miti/user/view/user_profile_form_screen.dart';
 import 'package:miti/user/view/user_review_screen.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../account/view/bank_transfer_form_screen.dart';
 import '../../account/view/bank_transfer_screen.dart';
@@ -104,12 +105,22 @@ class InfoBody extends ConsumerWidget {
               child: Text('노티'),
             ),
           ),
-
-          Consumer(builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        final token =     ref.watch(fcmTokenProvider);
-           return SliverToBoxAdapter(child: Text("$token"),);
-
-          },
+          SliverToBoxAdapter(
+            child: TextButton(
+              onPressed: () async {
+                // final result = await Share.share("text");
+                final result = await Share.shareUri(Uri(scheme: "naver"));
+              },
+              child: Text("공유"),
+            ),
+          ),
+          Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              final token = ref.watch(fcmTokenProvider);
+              return SliverToBoxAdapter(
+                child: Text("$token"),
+              );
+            },
           ),
           SliverToBoxAdapter(
             child: Lottie.asset(
@@ -135,7 +146,6 @@ class _UserInfoCard extends ConsumerWidget {
       }
       final String star = flag
           ? 'Star_half_v2'
-
           : rating >= i + 1
               ? 'fill_star'
               : 'unfill_star';
