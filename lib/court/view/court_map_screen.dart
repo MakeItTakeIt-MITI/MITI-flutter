@@ -190,6 +190,9 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
             ),
             locale: Locale('ko'),
           ),
+          onMapTapped: (NPoint point, NLatLng latLng) {
+            print("tap point = $point latLng = $latLng");
+          },
           onMapReady: (controller) async {
             log('controller Map Loading');
 
@@ -212,6 +215,43 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
             _mapController = controller;
             // await getLocation();
           },
+        ),
+        Positioned(
+          top: 0,
+          child: Container(
+            color: MITIColor.gray800,
+            child: Column(
+              children: [
+                Container(),
+                Container(
+                  padding: EdgeInsets.only(
+                    left: 21.w,
+                    right: 21.w,
+                    top: 20.h,
+                    bottom: 24.h,
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        "날짜",
+                        style: MITITextStyle.smSemiBold.copyWith(
+                          color: MITIColor.gray50,
+                        ),
+                      ),
+                      SizedBox(width: 12.w),
+                      Text(
+                        "8월",
+                        style: MITITextStyle.xxsm.copyWith(
+                          color: MITIColor.gray300,
+                        ),
+                      ),
+                      SizedBox(height: 12.h),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
         ),
         Positioned(
           top: 44.h,
@@ -442,7 +482,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
           SizedBox(height: 20.h),
           Text(
             '필터를 변경하여 다른 경기를 찾아보세요!',
-            style: MITITextStyle.xxl140.copyWith(color: MITIColor.gray300),
+            style: MITITextStyle.sm.copyWith(color: MITIColor.gray300),
             textAlign: TextAlign.center,
           ),
         ],
@@ -485,12 +525,13 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     final List<MapMarkerModel> markerList = [];
     for (MapPosition key in markers.keys) {
       final GameModel model = markers[key]!.first;
-      final fee = NumberFormat.decimalPattern().format(model.fee);
+      final fee = model.fee == 0
+          ? "무료 경기"
+          : '₩${NumberFormat.decimalPattern().format(model.fee)}';
 
       markerList.add(MapMarkerModel(
-          time:
-              '${model.starttime.substring(0, 5)}-${model.endtime.substring(0, 5)}',
-          cost: '₩$fee',
+          time: '${model.starttime.substring(0, 5)}~',
+          cost: fee,
           moreCnt: markers[key]!.length,
           id: model.id,
           latitude: key.latitude,
@@ -653,7 +694,7 @@ class CourtCard extends StatelessWidget {
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: MITITextStyle.gameTitleMainStyle.copyWith(
+                    style: MITITextStyle.mdBold.copyWith(
                       color: MITIColor.gray200,
                     ),
                   ),
@@ -673,7 +714,7 @@ class CourtCard extends StatelessWidget {
                       SizedBox(width: 4.w),
                       Text(
                         '${starttime.substring(0, 5)} ~ ${endtime.substring(0, 5)}',
-                        style: MITITextStyle.gameTimeCardMStyle.copyWith(
+                        style: MITITextStyle.xxsm.copyWith(
                           color: MITIColor.gray300,
                         ),
                       ),
@@ -695,7 +736,7 @@ class CourtCard extends StatelessWidget {
                               SizedBox(width: 5.w),
                               Text(
                                 '$num_of_participations/$max_invitation',
-                                style: MITITextStyle.participationCardStyle
+                                style: MITITextStyle.xxsm
                                     .copyWith(
                                   color: MITIColor.gray300,
                                 ),
@@ -721,7 +762,7 @@ class CourtCard extends StatelessWidget {
                                   SizedBox(width: 5.w),
                                   Text(
                                     '$num_of_participations/$max_invitation',
-                                    style: MITITextStyle.participationCardStyle
+                                    style: MITITextStyle.xxsm
                                         .copyWith(
                                       color: MITIColor.gray300,
                                     ),
@@ -735,7 +776,7 @@ class CourtCard extends StatelessWidget {
                       Text(
                         '₩$fee',
                         textAlign: TextAlign.right,
-                        style: MITITextStyle.feeStyle.copyWith(
+                        style: MITITextStyle.mdBold.copyWith(
                           color: MITIColor.primary,
                         ),
                       )

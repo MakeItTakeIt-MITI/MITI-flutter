@@ -146,7 +146,8 @@ class _CustomMapMakerState extends ConsumerState<CustomMapMaker> {
                 color: widget.selected
                     ? MITIColor.primaryLight
                     : MITIColor.gray50),
-            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+            padding: EdgeInsets.symmetric(horizontal: 14.w),
+            alignment: Alignment.center,
             child: desc,
           ),
         ),

@@ -118,50 +118,47 @@ class CustomBottomNavigationBar extends StatelessWidget {
         border: Border(top: BorderSide(color: MITIColor.gray700)),
         color: MITIColor.gray900,
       ),
-      constraints: BoxConstraints.tight(Size(double.infinity, 80.h)),
+      constraints: BoxConstraints.tight(Size(double.infinity, 86.h)),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Expanded(
-            child: CustomBottomItem(
-              onTap: () {
-                onTap(0);
-              },
-              label: '홈',
-              selected: index == 0,
-              iconName: index == 0 ? 'home' : 'home',
-            ),
+          // SizedBox(height: 40.w),
+          CustomBottomItem(
+            onTap: () {
+              onTap(0);
+            },
+            label: '홈',
+            selected: index == 0,
+            iconName: index == 0 ? 'home' : 'home',
           ),
-          Expanded(
-            child: CustomBottomItem(
-              onTap: () {
-                onTap(1);
-              },
-              label: '내 경기',
-              selected: index == 1,
-              iconName: index == 1 ? 'game' : 'game',
-            ),
+          // const Spacer(),
+          CustomBottomItem(
+            onTap: () {
+              onTap(1);
+            },
+            label: '내 경기',
+            selected: index == 1,
+            iconName: index == 1 ? 'game' : 'game',
           ),
-          Expanded(
-            child: CustomBottomItem(
-              onTap: () {
-                onTap(2);
-              },
-              label: '경기장',
-              selected: index == 2,
-              iconName: index == 2 ? 'court' : 'court',
-            ),
+          // const Spacer(),
+          CustomBottomItem(
+            onTap: () {
+              onTap(2);
+            },
+            label: '경기장',
+            selected: index == 2,
+            iconName: index == 2 ? 'court' : 'court',
           ),
-          Expanded(
-            child: CustomBottomItem(
-              onTap: () {
-                onTap(3);
-              },
-              label: '내 정보',
-              selected: index == 3,
-              iconName: index == 3 ? 'profile' : 'profile',
-            ),
+          // const Spacer(),
+          CustomBottomItem(
+            onTap: () {
+              onTap(3);
+            },
+            label: '내 정보',
+            selected: index == 3,
+            iconName: index == 3 ? 'profile' : 'profile',
           ),
+          // SizedBox(height: 40.w),
         ],
       ),
     );
@@ -187,8 +184,11 @@ class CustomBottomItem extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          SizedBox(
+            height: 11.h,
+          ),
           SvgPicture.asset(
             AssetUtil.getAssetPath(type: AssetType.icon, name: iconName),
             height: 24.r,
