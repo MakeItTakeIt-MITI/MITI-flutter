@@ -37,7 +37,7 @@ class LoginForm extends _$LoginForm {
 
   bool isValid() {
     final validEmail = RegExp(
-        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
         .hasMatch(state.email);
     if (validEmail && state.password.length > 7) {
       return true;
@@ -50,14 +50,15 @@ class LoginForm extends _$LoginForm {
 Future<BaseModel> login(LoginRef ref,
     {required LoginBaseParam param, required AuthType type}) async {
   final fcmToken = ref.read(fcmTokenProvider)!;
+  print("login fcm_token ${fcmToken}");
 
   return await ref
       .watch(authRepositoryProvider)
       .login(
-    param: param,
-    provider: type,
-    fcmToken: fcmToken,
-  )
+        param: param,
+        provider: type,
+        fcmToken: fcmToken,
+      )
       .then<BaseModel>((value) async {
     logger.i('login $param!');
     final model = value.data!;
@@ -68,8 +69,7 @@ Future<BaseModel> login(LoginRef ref,
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
     logger.e(
-        'status_code = ${error.status_code}\nerror.error_code = ${error
-            .error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
     return error;
   });
 }
@@ -91,9 +91,11 @@ Future<void> saveUserInfo(FlutterSecureStorage storage, LoginModel model,
 @riverpod
 Future<BaseModel> oauthLogin(OauthLoginRef ref,
     {required LoginBaseParam param, required AuthType type}) async {
+  final fcmToken = ref.read(fcmTokenProvider)!;
+  print("login fcm_token ${fcmToken}");
   return await ref
       .watch(authRepositoryProvider)
-      .oauthLogin(param: param, provider: type)
+      .oauthLogin(param: param, provider: type, fcmToken: fcmToken)
       .then<BaseModel>((value) async {
     logger.i('oauthLogin $param!');
     final model = value.data!;
@@ -107,8 +109,7 @@ Future<BaseModel> oauthLogin(OauthLoginRef ref,
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
     logger.e(
-        'status_code = ${error.status_code}\nerror.error_code = ${error
-            .error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
     return error;
   });
 }
