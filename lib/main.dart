@@ -82,8 +82,9 @@ Future<void> getFcmToken(WidgetRef ref) async {
 
   // 플랫폼 별 토큰 가져오기
   if (defaultTargetPlatform == TargetPlatform.iOS) {
-    token = await messaging.getAPNSToken();
-
+    final apnToken = await messaging.getAPNSToken();
+    print("apnToken : $apnToken");
+    token = await messaging.getToken();
   } else {
     token = await messaging.getToken();
   }
