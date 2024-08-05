@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miti/auth/view/login_screen.dart';
 
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
@@ -38,7 +39,7 @@ class TokenProvider extends ChangeNotifier {
   String? redirectLogic(GoRouterState goRouteState) {
     log('redirect start!');
     final tokens = ref.read(authProvider);
-    final loginIn = goRouteState.path == '/home/login';
+    final loginIn = goRouteState.path == '/login';
 
     // 유저 정보가 없는데
     // 로그인중이면 그대로 로그인 페이지에 두고
@@ -46,9 +47,9 @@ class TokenProvider extends ChangeNotifier {
     if (tokens == null) {
       log("로그인으로 redirect!! ${goRouteState.path}");
       if (goRouteState.path == '/home') {
-        return '/home/login';
+        return '/splash/login';
       }
-      return loginIn ? null : '/home/login';
+      return loginIn ? null : '/login';
     }
 
     if (loginIn) {
@@ -116,11 +117,16 @@ class AuthStateNotifier extends StateNotifier<AuthModel?> {
         nickname: nickname,
         signUpType: signUpType,
       );
+      if (context != null && context.mounted) {
+        context.goNamed(CourtMapScreen.routeName);
+      }
+    }else{
+      if (context != null && context.mounted) {
+        context.goNamed(LoginScreen.routeName);
+      }
     }
 
-    if (context != null && context.mounted) {
-      context.goNamed(CourtMapScreen.routeName);
-    }
+
   }
 
   Future<void> logout() async {

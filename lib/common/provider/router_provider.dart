@@ -98,10 +98,240 @@ final routerProvider = Provider<GoRouter>((ref) {
           builder: (context, state) {
             return SplashScreen();
           },
+
           // pageBuilder: (context, state) {
           //   return NoTransitionPage(child: SplashScreen());
           // },
         ),
+
+        GoRoute(
+            path: '/login',
+            parentNavigatorKey: rootNavKey,
+            name: LoginScreen.routeName,
+            builder: (_, state) => const LoginScreen(),
+            // pageBuilder: (context, state) {
+            //   return const NoTransitionPage(child: LoginScreen());
+            // },
+            routes: [
+              GoRoute(
+                path: 'oauthError',
+                parentNavigatorKey: rootNavKey,
+                name: OauthErrorScreen.routeName,
+                builder: (_, state) => const OauthErrorScreen(),
+                // pageBuilder: (context, state) {
+                //   return const NoTransitionPage(
+                //       child: OauthErrorScreen());
+                // },
+              ),
+              GoRoute(
+                path: 'completeResetPassword',
+                parentNavigatorKey: rootNavKey,
+                name: CompleteRestPasswordScreen.routeName,
+                builder: (_, state) => const CompleteRestPasswordScreen(),
+                // pageBuilder: (context, state) {
+                //   return const NoTransitionPage(
+                //       child: CompleteRestPasswordScreen());
+                // },
+              ),
+              GoRoute(
+                path: 'phoneSuccess',
+                parentNavigatorKey: rootNavKey,
+                name: PhoneAuthSuccess.routeName,
+                builder: (_, state) => const PhoneAuthSuccess(),
+                // pageBuilder: (context, state) {
+                //   return const NoTransitionPage(
+                //       child: PhoneAuthSuccess());
+                // },
+              ),
+              GoRoute(
+                path: 'phoneSend',
+                parentNavigatorKey: rootNavKey,
+                name: PhoneAuthSendScreen.routeName,
+                builder: (_, state) => const PhoneAuthSendScreen(),
+                // pageBuilder: (context, state) {
+                //   return const NoTransitionPage(
+                //       child: PhoneAuthSendScreen());
+                // },
+              ),
+              GoRoute(
+                  path: 'findInfo',
+                  parentNavigatorKey: rootNavKey,
+                  name: FindInfoScreen.routeName,
+                  builder: (_, state) {
+                    return FindInfoScreen();
+                  },
+                  // pageBuilder: (context, state) {
+                  //   return NoTransitionPage(child: FindInfoScreen());
+                  // },
+                  routes: [
+                    GoRoute(
+                      path: 'findEmail',
+                      parentNavigatorKey: rootNavKey,
+                      name: FindEmailScreen.routeName,
+                      builder: (_, state) {
+                        final email = state.uri.queryParameters['email']!;
+
+                        return FindEmailScreen(
+                          findEmail: email,
+                        );
+                      },
+                    ),
+                    GoRoute(
+                      path: 'otherAccount',
+                      parentNavigatorKey: rootNavKey,
+                      name: OtherAccountScreen.routeName,
+                      builder: (_, state) {
+                        final AuthType authType = state.extra as AuthType;
+                        return OtherAccountScreen(
+                          authType: authType,
+                        );
+                      },
+                    ),
+                    GoRoute(
+                      path: 'notFoundAccount',
+                      parentNavigatorKey: rootNavKey,
+                      name: NotFoundAccountScreen.routeName,
+                      builder: (_, state) {
+                        return const NotFoundAccountScreen();
+                      },
+                    ),
+                    GoRoute(
+                      path: 'resetPassword',
+                      parentNavigatorKey: rootNavKey,
+                      name: ResetPasswordScreen.routeName,
+                      builder: (_, state) {
+                        final String password_update_token = state
+                            .uri.queryParameters['password_update_token']!;
+
+                        final int userId =
+                        int.parse(state.uri.queryParameters['userId']!);
+                        return ResetPasswordScreen(
+                          password_update_token: password_update_token,
+                          userId: userId,
+                        );
+                      },
+                      // pageBuilder: (context, state) {
+                      //   return NoTransitionPage(
+                      //       child: ResetPasswordScreen());
+                      // },
+                    ),
+                  ]),
+              GoRoute(
+                  path: 'signUpSelect',
+                  parentNavigatorKey: rootNavKey,
+                  name: SignUpSelectScreen.routeName,
+                  builder: (_, state) => const SignUpSelectScreen(),
+                  // pageBuilder: (context, state) {
+                  //   return const NoTransitionPage(
+                  //       child: SignUpSelectScreen());
+                  // },
+                  routes: [
+                    GoRoute(
+                      path: 'signUp',
+                      parentNavigatorKey: rootNavKey,
+                      name: SignUpScreen.routeName,
+
+                      // onExit: (context) {
+                      //   if (ref.read(signUpPopProvider)) {
+                      //     return true;
+                      //   }
+                      //
+                      //   showDialog(
+                      //     context: context,
+                      //     builder: (BuildContext context) {
+                      //       final button = Row(
+                      //         mainAxisAlignment:
+                      //             MainAxisAlignment.center,
+                      //         children: [
+                      //           Expanded(
+                      //             child: TextButton(
+                      //               onPressed: () {
+                      //                 context.pop();
+                      //                 context.pop();
+                      //                 ref
+                      //                     .read(signUpPopProvider
+                      //                         .notifier)
+                      //                     .update((state) => true);
+                      //               },
+                      //               style: ButtonStyle(
+                      //                   backgroundColor:
+                      //                       MaterialStateProperty.all(
+                      //                           MITIColor.gray600)),
+                      //               child: Text(
+                      //                 '취소하기',
+                      //                 style: MITITextStyle.mdBold
+                      //                     .copyWith(
+                      //                   color: MITIColor.primary,
+                      //                 ),
+                      //               ),
+                      //             ),
+                      //           ),
+                      //           SizedBox(width: 6.w),
+                      //           Expanded(
+                      //             child: TextButton(
+                      //               onPressed: () {
+                      //                 context.pop();
+                      //               },
+                      //               child: Text(
+                      //                 '가입 계속하기',
+                      //                 style: MITITextStyle.mdBold
+                      //                     .copyWith(
+                      //                   color: MITIColor.gray800,
+                      //                 ),
+                      //               ),
+                      //             ),
+                      //           ),
+                      //         ],
+                      //       );
+                      //       return Material(
+                      //         color: Colors.transparent,
+                      //         child: CustomDialog(
+                      //           title: '회원가입 취소',
+                      //           content:
+                      //               '회원가입 취소 시 입력하신 정보가 모두 삭제됩니다.\n회원가입을 취소하시겠습니까?',
+                      //           button: button,
+                      //         ),
+                      //       );
+                      //     },
+                      //   );
+                      //   return false;
+                      // },
+                      builder: (_, state) {
+                        AuthType extra = state.extra as AuthType;
+
+                        return SignUpScreen(
+                          type: extra,
+                        );
+                      },
+                      routes: [],
+                      // pageBuilder: (context, state) {
+                      //   return const NoTransitionPage(
+                      //       child: SignUpScreen());
+                      // },
+                    ),
+                  ]),
+              GoRoute(
+                  path: 'phoneAuth',
+                  parentNavigatorKey: rootNavKey,
+                  name: PhoneAuthScreen.routeName,
+                  builder: (_, state) => const PhoneAuthScreen(),
+                  // pageBuilder: (context, state) {
+                  //   return const NoTransitionPage(
+                  //       child: PhoneAuthScreen());
+                  // },
+                  routes: [
+                    GoRoute(
+                        path: 'phoneAuthInfo',
+                        parentNavigatorKey: rootNavKey,
+                        name: PhoneAuthInfoScreen.routeName,
+                        builder: (_, state) => const PhoneAuthInfoScreen(),
+                        // pageBuilder: (context, state) {
+                        //   return const NoTransitionPage(
+                        //       child: PhoneAuthInfoScreen());
+                        // },
+                        routes: []),
+                  ]),
+            ]),
         GoRoute(
           path: '/error',
           parentNavigatorKey: rootNavKey,
@@ -149,6 +379,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/home',
+                redirect: (_, state) => provider.redirectLogic(state),
                 parentNavigatorKey: shellNavKey,
                 name: CourtMapScreen.routeName,
                 builder: (context, state) {
@@ -163,242 +394,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                       parentNavigatorKey: rootNavKey,
                       name: SignUpCompleteScreen.routeName,
                       builder: (_, state) => SignUpCompleteScreen(),
-
                       routes: []),
-                  GoRoute(
-                      path: 'login',
-                      parentNavigatorKey: rootNavKey,
-                      name: LoginScreen.routeName,
-                      builder: (_, state) => const LoginScreen(),
-                      // pageBuilder: (context, state) {
-                      //   return const NoTransitionPage(child: LoginScreen());
-                      // },
-                      routes: [
-                        GoRoute(
-                          path: 'oauthError',
-                          parentNavigatorKey: rootNavKey,
-                          name: OauthErrorScreen.routeName,
-                          builder: (_, state) => const OauthErrorScreen(),
-                          // pageBuilder: (context, state) {
-                          //   return const NoTransitionPage(
-                          //       child: OauthErrorScreen());
-                          // },
-                        ),
-                        GoRoute(
-                          path: 'completeResetPassword',
-                          parentNavigatorKey: rootNavKey,
-                          name: CompleteRestPasswordScreen.routeName,
-                          builder: (_, state) =>
-                              const CompleteRestPasswordScreen(),
-                          // pageBuilder: (context, state) {
-                          //   return const NoTransitionPage(
-                          //       child: CompleteRestPasswordScreen());
-                          // },
-                        ),
-                        GoRoute(
-                          path: 'phoneSuccess',
-                          parentNavigatorKey: rootNavKey,
-                          name: PhoneAuthSuccess.routeName,
-                          builder: (_, state) => const PhoneAuthSuccess(),
-                          // pageBuilder: (context, state) {
-                          //   return const NoTransitionPage(
-                          //       child: PhoneAuthSuccess());
-                          // },
-                        ),
-                        GoRoute(
-                          path: 'phoneSend',
-                          parentNavigatorKey: rootNavKey,
-                          name: PhoneAuthSendScreen.routeName,
-                          builder: (_, state) => const PhoneAuthSendScreen(),
-                          // pageBuilder: (context, state) {
-                          //   return const NoTransitionPage(
-                          //       child: PhoneAuthSendScreen());
-                          // },
-                        ),
-                        GoRoute(
-                            path: 'findInfo',
-                            parentNavigatorKey: rootNavKey,
-                            name: FindInfoScreen.routeName,
-                            builder: (_, state) {
-                              return FindInfoScreen();
-                            },
-                            // pageBuilder: (context, state) {
-                            //   return NoTransitionPage(child: FindInfoScreen());
-                            // },
-                            routes: [
-                              GoRoute(
-                                path: 'findEmail',
-                                parentNavigatorKey: rootNavKey,
-                                name: FindEmailScreen.routeName,
-                                builder: (_, state) {
-                                  final email =
-                                      state.uri.queryParameters['email']!;
-
-                                  return FindEmailScreen(
-                                    findEmail: email,
-                                  );
-                                },
-                              ),
-                              GoRoute(
-                                path: 'otherAccount',
-                                parentNavigatorKey: rootNavKey,
-                                name: OtherAccountScreen.routeName,
-                                builder: (_, state) {
-                                  final AuthType authType =
-                                      state.extra as AuthType;
-                                  return OtherAccountScreen(
-                                    authType: authType,
-                                  );
-                                },
-                              ),
-                              GoRoute(
-                                path: 'notFoundAccount',
-                                parentNavigatorKey: rootNavKey,
-                                name: NotFoundAccountScreen.routeName,
-                                builder: (_, state) {
-                                  return const NotFoundAccountScreen();
-                                },
-                              ),
-                              GoRoute(
-                                path: 'resetPassword',
-                                parentNavigatorKey: rootNavKey,
-                                name: ResetPasswordScreen.routeName,
-                                builder: (_, state) {
-                                  final String password_update_token =
-                                      state.uri.queryParameters[
-                                          'password_update_token']!;
-
-                                  final int userId = int.parse(
-                                      state.uri.queryParameters['userId']!);
-                                  return ResetPasswordScreen(
-                                    password_update_token:
-                                        password_update_token,
-                                    userId: userId,
-                                  );
-                                },
-                                // pageBuilder: (context, state) {
-                                //   return NoTransitionPage(
-                                //       child: ResetPasswordScreen());
-                                // },
-                              ),
-                            ]),
-                        GoRoute(
-                            path: 'signUpSelect',
-                            parentNavigatorKey: rootNavKey,
-                            name: SignUpSelectScreen.routeName,
-                            builder: (_, state) => const SignUpSelectScreen(),
-                            // pageBuilder: (context, state) {
-                            //   return const NoTransitionPage(
-                            //       child: SignUpSelectScreen());
-                            // },
-                            routes: [
-                              GoRoute(
-                                path: 'signUp',
-                                parentNavigatorKey: rootNavKey,
-                                name: SignUpScreen.routeName,
-
-                                // onExit: (context) {
-                                //   if (ref.read(signUpPopProvider)) {
-                                //     return true;
-                                //   }
-                                //
-                                //   showDialog(
-                                //     context: context,
-                                //     builder: (BuildContext context) {
-                                //       final button = Row(
-                                //         mainAxisAlignment:
-                                //             MainAxisAlignment.center,
-                                //         children: [
-                                //           Expanded(
-                                //             child: TextButton(
-                                //               onPressed: () {
-                                //                 context.pop();
-                                //                 context.pop();
-                                //                 ref
-                                //                     .read(signUpPopProvider
-                                //                         .notifier)
-                                //                     .update((state) => true);
-                                //               },
-                                //               style: ButtonStyle(
-                                //                   backgroundColor:
-                                //                       MaterialStateProperty.all(
-                                //                           MITIColor.gray600)),
-                                //               child: Text(
-                                //                 '취소하기',
-                                //                 style: MITITextStyle.mdBold
-                                //                     .copyWith(
-                                //                   color: MITIColor.primary,
-                                //                 ),
-                                //               ),
-                                //             ),
-                                //           ),
-                                //           SizedBox(width: 6.w),
-                                //           Expanded(
-                                //             child: TextButton(
-                                //               onPressed: () {
-                                //                 context.pop();
-                                //               },
-                                //               child: Text(
-                                //                 '가입 계속하기',
-                                //                 style: MITITextStyle.mdBold
-                                //                     .copyWith(
-                                //                   color: MITIColor.gray800,
-                                //                 ),
-                                //               ),
-                                //             ),
-                                //           ),
-                                //         ],
-                                //       );
-                                //       return Material(
-                                //         color: Colors.transparent,
-                                //         child: CustomDialog(
-                                //           title: '회원가입 취소',
-                                //           content:
-                                //               '회원가입 취소 시 입력하신 정보가 모두 삭제됩니다.\n회원가입을 취소하시겠습니까?',
-                                //           button: button,
-                                //         ),
-                                //       );
-                                //     },
-                                //   );
-                                //   return false;
-                                // },
-                                builder: (_, state) {
-                                  AuthType extra = state.extra as AuthType;
-
-                                  return SignUpScreen(
-                                    type: extra,
-                                  );
-                                },
-                                routes: [],
-                                // pageBuilder: (context, state) {
-                                //   return const NoTransitionPage(
-                                //       child: SignUpScreen());
-                                // },
-                              ),
-                            ]),
-                        GoRoute(
-                            path: 'phoneAuth',
-                            parentNavigatorKey: rootNavKey,
-                            name: PhoneAuthScreen.routeName,
-                            builder: (_, state) => const PhoneAuthScreen(),
-                            // pageBuilder: (context, state) {
-                            //   return const NoTransitionPage(
-                            //       child: PhoneAuthScreen());
-                            // },
-                            routes: [
-                              GoRoute(
-                                  path: 'phoneAuthInfo',
-                                  parentNavigatorKey: rootNavKey,
-                                  name: PhoneAuthInfoScreen.routeName,
-                                  builder: (_, state) =>
-                                      const PhoneAuthInfoScreen(),
-                                  // pageBuilder: (context, state) {
-                                  //   return const NoTransitionPage(
-                                  //       child: PhoneAuthInfoScreen());
-                                  // },
-                                  routes: []),
-                            ]),
-                      ]),
                   GoRoute(
                     path: 'user/delete',
                     parentNavigatorKey: rootNavKey,
@@ -420,6 +416,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                   path: '/game',
                   parentNavigatorKey: shellNavKey,
+                  redirect: (_, state) => provider.redirectLogic(state),
                   name: GameScreen.routeName,
                   builder: (context, state) {
                     return GameScreen();
@@ -953,6 +950,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/menu',
                 parentNavigatorKey: shellNavKey,
+                redirect: (_, state) => provider.redirectLogic(state),
                 name: MenuBody.routeName,
                 builder: (context, state) {
                   return MenuBody();
