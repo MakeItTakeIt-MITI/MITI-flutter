@@ -4,10 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:miti/game/provider/widget/game_filter_provider.dart';
 import 'package:miti/game/view/game_create_screen.dart';
 
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
+import 'package:collection/collection.dart';
 
 class CustomDateTimePicker extends ConsumerStatefulWidget {
   final bool isStart;
@@ -18,10 +20,11 @@ class CustomDateTimePicker extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<CustomDateTimePicker> createState() => _CustomTimePickerState();
+  ConsumerState<CustomDateTimePicker> createState() =>
+      _CustomDateTimePickerState();
 }
 
-class _CustomTimePickerState extends ConsumerState<CustomDateTimePicker> {
+class _CustomDateTimePickerState extends ConsumerState<CustomDateTimePicker> {
   int dateIdx = 0;
 
   DateTime selectedDate = DateTime.now();
@@ -172,7 +175,6 @@ class _CustomTimePickerState extends ConsumerState<CustomDateTimePicker> {
             scrollController:
                 FixedExtentScrollController(initialItem: selectedHour),
             children: List<Widget>.generate(24, (int index) {
-
               return Center(
                   child: Text(oneDigitFormat(index),
                       style: MITITextStyle.md.copyWith(
@@ -193,6 +195,140 @@ class _CustomTimePickerState extends ConsumerState<CustomDateTimePicker> {
               setState(() {
                 selectedMinute = index * 10;
 
+                changeSelectDate();
+              });
+            },
+            looping: true,
+            selectionOverlay: selectionOverlay(),
+            scrollController:
+                FixedExtentScrollController(initialItem: selectedMinute ~/ 10),
+            children: List<Widget>.generate(6, (int index) {
+              return Center(
+                  child: Text(
+                oneDigitFormat(index * 10),
+                style: MITITextStyle.md.copyWith(
+                  color: selectedMinute ~/ 10 == index
+                      ? MITIColor.primary
+                      : MITIColor.gray300,
+                ),
+              ));
+            }),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class CustomTimePicker extends ConsumerStatefulWidget {
+  const CustomTimePicker({super.key});
+
+  @override
+  ConsumerState<CustomTimePicker> createState() => _CustomTimePickerState();
+}
+
+class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
+  late final FixedExtentScrollController timeController;
+
+  String date = "";
+  bool isAfternoon = DateTime.now().hour >= 12;
+  int selectedHour = DateTime.now().hour;
+  int selectedMinute = (DateTime.now().minute ~/ 10) * 10;
+
+  @override
+  void initState() {
+    super.initState();
+    timeController =
+        FixedExtentScrollController(initialItem: isAfternoon ? 1 : 0);
+  }
+
+  Widget selectionOverlay() => Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadiusDirectional.all(Radius.circular(8.r)),
+          color: CupertinoDynamicColor.resolve(
+              MITIColor.white.withOpacity(0.1), context),
+        ),
+      );
+
+  String oneDigitFormat(int n) {
+    return n < 10 ? "0$n" : n.toString();
+  }
+
+  void changeSelectDate() {
+    final hour = selectedHour + 1 + (isAfternoon ? 12 : 0);
+    final String starttime = "$hour:$selectedMinute";
+    ref.read(gameFilterProvider.notifier).update(starttime: starttime);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Flexible(
+          child: CupertinoPicker(
+              itemExtent: 32.h,
+              diameterRatio: 10,
+              squeeze: 1.0,
+              onSelectedItemChanged: (int index) {
+                setState(() {
+                  if (index == 0) {
+                    isAfternoon = false;
+                  } else {
+                    isAfternoon = true;
+                  }
+                  changeSelectDate();
+                });
+              },
+              selectionOverlay: selectionOverlay(),
+              scrollController: timeController,
+              children: ['오전', '오후']
+                  .mapIndexed((index, e) => Center(
+                      child: Text(e,
+                          style: MITITextStyle.md.copyWith(
+                            color: isAfternoon && index == 1 ||
+                                    !isAfternoon && index == 0
+                                ? MITIColor.primary
+                                : MITIColor.gray300,
+                          ))))
+                  .toList() //generateDateItems(),
+              ),
+        ),
+        SizedBox(width: 7.w),
+        Flexible(
+          child: CupertinoPicker(
+            itemExtent: 32.h,
+            diameterRatio: 10,
+            squeeze: 1.0,
+            onSelectedItemChanged: (int index) {
+              setState(() {
+                selectedHour = index;
+                changeSelectDate();
+              });
+            },
+            looping: true,
+            selectionOverlay: selectionOverlay(),
+            scrollController:
+                FixedExtentScrollController(initialItem: selectedHour),
+            children: List<Widget>.generate(12, (int index) {
+              return Center(
+                  child: Text(oneDigitFormat(index + 1),
+                      style: MITITextStyle.md.copyWith(
+                        color: selectedHour == index
+                            ? MITIColor.primary
+                            : MITIColor.gray300,
+                      )));
+            }),
+          ),
+        ),
+        SizedBox(width: 7.w),
+        Flexible(
+          child: CupertinoPicker(
+            itemExtent: 32.h,
+            diameterRatio: 10,
+            squeeze: 1.0,
+            onSelectedItemChanged: (int index) {
+              setState(() {
+                selectedMinute = index * 10;
                 changeSelectDate();
               });
             },

@@ -47,7 +47,7 @@ class TokenProvider extends ChangeNotifier {
     if (tokens == null) {
       log("로그인으로 redirect!! ${goRouteState.path}");
       if (goRouteState.path == '/home') {
-        return '/splash/login';
+        return '/login';
       }
       return loginIn ? null : '/login';
     }

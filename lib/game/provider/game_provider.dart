@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:miti/game/model/game_model.dart';
 import 'package:miti/game/param/game_param.dart';
+import 'package:miti/game/provider/widget/game_filter_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:miti/game/repository/game_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -18,13 +19,14 @@ part 'game_provider.g.dart';
 class GameList extends _$GameList {
   @override
   BaseModel build() {
-    getList(param: GameListParam());
+    getList();
     return LoadingModel();
   }
 
-  Future<void> getList({required GameListParam param}) async {
+  Future<void> getList() async {
     state = LoadingModel();
     final repository = ref.watch(gameRepositoryProvider);
+    final param = ref.read(gameFilterProvider);
     repository.getGameList(param: param).then((value) {
       logger.i(value);
       ref.read(selectGameListProvider.notifier).update((state) => value.data!);

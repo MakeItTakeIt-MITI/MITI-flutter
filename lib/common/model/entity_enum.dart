@@ -3,13 +3,13 @@ import 'package:json_annotation/json_annotation.dart';
 @JsonEnum(valueField: 'value')
 enum GameStatus {
   @JsonValue('open')
-  open('모집중', 'open'),
+  open('모집 중', 'open'),
   @JsonValue('closed')
   closed('모집 완료', 'closed'),
+  completed('경기 완료', 'completed'),
   @JsonValue('canceled')
-  canceled('경기 취소', 'canceled'),
+  canceled('경기 취소', 'canceled');
   // @JsonValue('completed')
-  completed('경기 완료', 'completed');
 
   const GameStatus(this.displayName, this.value);
 

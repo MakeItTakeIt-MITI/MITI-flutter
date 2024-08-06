@@ -1,26 +1,42 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../common/model/entity_enum.dart';
+
 part 'game_param.g.dart';
 
 @JsonSerializable()
 class GameListParam extends Equatable {
   final String? startdate;
-
-  // final String? starttime;
+  final String? starttime;
+  @JsonKey(name: "game_status")
+  final List<GameStatus>? gameStatus;
 
   const GameListParam({
     this.startdate,
-    // this.starttime,
+    this.starttime,
+    this.gameStatus,
   });
 
   Map<String, dynamic> toJson() => _$GameListParamToJson(this);
 
   @override
-  List<Object?> get props => [startdate];
+  List<Object?> get props => [startdate, starttime, gameStatus];
 
   @override
   bool? get stringify => true;
+
+  GameListParam copyWith({
+    String? startdate,
+    String? starttime,
+    List<GameStatus>? gameStatus,
+  }) {
+    return GameListParam(
+      startdate: startdate ?? this.startdate,
+      starttime: starttime ?? this.starttime,
+      gameStatus: gameStatus ?? this.gameStatus,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -105,6 +121,7 @@ class GameCourtParam extends Equatable {
   final String name;
   final String address;
   final String? address_detail;
+
   // final String? info;
 
   const GameCourtParam({

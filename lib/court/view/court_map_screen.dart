@@ -12,11 +12,13 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:miti/common/component/custom_dialog.dart';
+import 'package:miti/common/component/custom_time_picker.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/court/component/court_component.dart';
 import 'package:miti/game/component/game_state_label.dart';
 import 'package:miti/game/param/game_param.dart';
 import 'package:miti/game/provider/game_provider.dart';
+import 'package:miti/game/provider/widget/game_filter_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/util/util.dart';
@@ -33,6 +35,7 @@ final selectGameListProvider =
 final selectMakerProvider = StateProvider.autoDispose<int?>((ref) => null);
 final draggableScrollController =
     StateProvider.autoDispose<ScrollController?>((ref) => null);
+final showFilterProvider = StateProvider.autoDispose((ref) => false);
 
 class CourtMapScreen extends ConsumerStatefulWidget {
   static String get routeName => 'home';
@@ -50,9 +53,7 @@ final positionProvider = StateProvider.autoDispose<Position?>((ref) => null);
 class _HomeScreenState extends ConsumerState<CourtMapScreen>
     with AutomaticKeepAliveClientMixin {
   late final DraggableScrollableController _draggableScrollableController;
-  late final ScrollController _dayScrollController;
   NaverMapController? _mapController;
-  final List<GlobalKey> dayKeys = [];
 
   @override
   bool get wantKeepAlive => true; //override with True.
@@ -61,10 +62,6 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     super.initState();
     log('page init!!');
     _draggableScrollableController = DraggableScrollableController();
-    for (int i = 0; i < 14; i++) {
-      dayKeys.add(GlobalKey());
-    }
-    _dayScrollController = ScrollController();
   }
 
   @override
@@ -162,12 +159,12 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     // log('page build!!');
     final position = ref.watch(positionProvider);
     final select = ref.watch(selectMakerProvider);
-    ref.listen(selectedDayProvider, (previous, next) {
-      final date = DateFormat('yyyy-MM-dd').format(next);
-      ref
-          .read(gameListProvider.notifier)
-          .getList(param: GameListParam(startdate: date));
-    });
+    // ref.listen(selectedDayProvider, (previous, next) {
+    //   final date = DateFormat('yyyy-MM-dd').format(next);
+    //   ref
+    //       .read(gameListProvider.notifier)
+    //       .getList(param: GameListParam(startdate: date));
+    // });
     // final response = ref.watch(gameListProvider);
     ref.listen(gameListProvider, (previous, next) {
       if (_mapController != null) {
@@ -192,6 +189,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
           ),
           onMapTapped: (NPoint point, NLatLng latLng) {
             print("tap point = $point latLng = $latLng");
+            ref.read(showFilterProvider.notifier).update((state) => !state);
           },
           onMapReady: (controller) async {
             log('controller Map Loading');
@@ -218,83 +216,52 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
         ),
         Positioned(
           top: 0,
-          child: Container(
-            color: MITIColor.gray800,
-            child: Column(
-              children: [
-                Container(),
-                Container(
-                  padding: EdgeInsets.only(
-                    left: 21.w,
-                    right: 21.w,
-                    top: 20.h,
-                    bottom: 24.h,
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        "날짜",
-                        style: MITITextStyle.smSemiBold.copyWith(
-                          color: MITIColor.gray50,
-                        ),
-                      ),
-                      SizedBox(width: 12.w),
-                      Text(
-                        "8월",
-                        style: MITITextStyle.xxsm.copyWith(
-                          color: MITIColor.gray300,
-                        ),
-                      ),
-                      SizedBox(height: 12.h),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
+          left: 0,
+          right: 0,
+          child: _FilterComponent(),
         ),
-        Positioned(
-          top: 44.h,
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 13.w),
-            child: Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50.r),
-                    color: MITIColor.gray800,
-                  ),
-                  padding:
-                      EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
-                  child: Text(
-                    "날짜 및 시간",
-                    style: MITITextStyle.smSemiBold
-                        .copyWith(color: MITIColor.gray50),
-                  ),
-                ),
-                SizedBox(
-                  width: 8.w,
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50.r),
-                    color: MITIColor.gray800,
-                  ),
-                  padding:
-                      EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
-                  child: Text(
-                    "경기 상태",
-                    style: MITITextStyle.smSemiBold
-                        .copyWith(color: MITIColor.gray50),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        // Positioned(
+        //   top: 44.h,
+        //   child: Container(
+        //     padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 13.w),
+        //     child: Row(
+        //       children: [
+        //         Container(
+        //           decoration: BoxDecoration(
+        //             borderRadius: BorderRadius.circular(50.r),
+        //             color: MITIColor.gray800,
+        //           ),
+        //           padding:
+        //               EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
+        //           child: Text(
+        //             "날짜 및 시간",
+        //             style: MITITextStyle.smSemiBold
+        //                 .copyWith(color: MITIColor.gray50),
+        //           ),
+        //         ),
+        //         SizedBox(
+        //           width: 8.w,
+        //         ),
+        //         Container(
+        //           decoration: BoxDecoration(
+        //             borderRadius: BorderRadius.circular(50.r),
+        //             color: MITIColor.gray800,
+        //           ),
+        //           padding:
+        //               EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
+        //           child: Text(
+        //             "경기 상태",
+        //             style: MITITextStyle.smSemiBold
+        //                 .copyWith(color: MITIColor.gray50),
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
         Positioned(
           left: 12.w,
-          bottom: MediaQuery.of(context).size.height * 0.14,
+          bottom: 50.h,
           child: Container(
             padding: EdgeInsets.all(10.r),
             decoration: BoxDecoration(
@@ -329,9 +296,9 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
           ),
         ),
         DraggableScrollableSheet(
-          initialChildSize: 0.05,
-          maxChildSize: 0.9,
-          minChildSize: 0.05,
+          initialChildSize: 0.04,
+          maxChildSize: 0.8,
+          minChildSize: 0.04,
           snap: true,
           controller: _draggableScrollableController,
           builder: (BuildContext context, ScrollController scrollController) {
@@ -368,33 +335,33 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
                         SizedBox(height: 8.h),
 
                         /// 지울 예정
-                        SingleChildScrollView(
-                          controller: _dayScrollController,
-                          scrollDirection: Axis.horizontal,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 12.w),
-                            child: Row(
-                              children: [
-                                ...day.mapIndexed((idx, element) {
-                                  return Row(
-                                    children: [
-                                      DateBox(
-                                        day: DateTime.parse(day[idx][0]),
-                                        dayOfWeek: day[idx][1],
-                                        gKey: dayKeys[idx],
-                                        onTap: () {
-                                          selectDay(day, idx);
-                                        },
-                                      ),
-                                      if (idx != day.length - 1)
-                                        SizedBox(width: 16.w),
-                                    ],
-                                  );
-                                })
-                              ],
-                            ),
-                          ),
-                        ),
+                        // SingleChildScrollView(
+                        //   controller: _dayScrollController,
+                        //   scrollDirection: Axis.horizontal,
+                        //   child: Container(
+                        //     padding: EdgeInsets.symmetric(horizontal: 12.w),
+                        //     child: Row(
+                        //       children: [
+                        //         ...day.mapIndexed((idx, element) {
+                        //           return Row(
+                        //             children: [
+                        //               DateBox(
+                        //                 day: DateTime.parse(day[idx][0]),
+                        //                 dayOfWeek: day[idx][1],
+                        //                 gKey: dayKeys[idx],
+                        //                 onTap: () {
+                        //                   selectDay(day, idx);
+                        //                 },
+                        //               ),
+                        //               if (idx != day.length - 1)
+                        //                 SizedBox(width: 16.w),
+                        //             ],
+                        //           );
+                        //         })
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -433,37 +400,6 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
           },
         )
       ],
-    );
-  }
-
-  void selectDay(List<List<String>> day, int idx) {
-    ref
-        .read(selectedDayProvider.notifier)
-        .update((state) => DateTime.parse(day[idx][0]));
-
-    final RenderBox box =
-        dayKeys[idx].currentContext!.findRenderObject() as RenderBox;
-    final pos = box.localToGlobal(Offset.zero, ancestor: null);
-    final scrollPosition = _dayScrollController.position;
-    // log('idx = ${idx}, pos.dx = ${pos.dx}');
-    // log('scrollPosition.pixels = ${scrollPosition.pixels}');
-    // log('scrollPosition.viewportDimension = ${scrollPosition.viewportDimension}');
-    // log('box.size.width = ${box.size.width}');
-
-    /// 현재 화면의 위젯 x좌표 + 스크롤의 현재 위치 x좌표 - (화면 크기 / 2 - 위젯 크기 / 2)
-    double offset = pos.dx +
-        scrollPosition.pixels -
-        (scrollPosition.viewportDimension / 2 - box.size.width / 2);
-    if (idx == 0) {
-      offset = 0;
-    } else if (idx == 13) {
-      offset = scrollPosition.maxScrollExtent;
-    }
-
-    _dayScrollController.animateTo(
-      offset,
-      duration: const Duration(milliseconds: 600),
-      curve: Curves.easeInOut,
     );
   }
 
@@ -736,8 +672,7 @@ class CourtCard extends StatelessWidget {
                               SizedBox(width: 5.w),
                               Text(
                                 '$num_of_participations/$max_invitation',
-                                style: MITITextStyle.xxsm
-                                    .copyWith(
+                                style: MITITextStyle.xxsm.copyWith(
                                   color: MITIColor.gray300,
                                 ),
                               )
@@ -762,8 +697,7 @@ class CourtCard extends StatelessWidget {
                                   SizedBox(width: 5.w),
                                   Text(
                                     '$num_of_participations/$max_invitation',
-                                    style: MITITextStyle.xxsm
-                                        .copyWith(
+                                    style: MITITextStyle.xxsm.copyWith(
                                       color: MITIColor.gray300,
                                     ),
                                   )
@@ -823,37 +757,367 @@ class DateBox extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectDay = day.day;
     final selectedDay = ref.watch(selectedDayProvider);
-    final textStyle = MITITextStyle.selectionDayStyle.copyWith(
-      color: selectedDay == day ? Colors.white : const Color(0xFF707070),
-    );
+
+    final isSelect = selectedDay.day == selectDay;
     return InkWell(
-      key: gKey,
-      onTap: onTap,
-      child: Container(
-        width: 60.w,
-        // height: 52.h,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.r),
-          color: selectedDay == day
-              ? const Color(0xFF4065F6)
-              : const Color(0xFFF2F2F2),
-        ),
+        key: gKey,
+        onTap: onTap,
         child: Column(
           children: [
-            SizedBox(height: 8.h),
-            Text(
-              '$selectDay',
-              textAlign: TextAlign.center,
-              style: textStyle,
-            ),
-            SizedBox(height: 4.h),
             Text(
               dayOfWeek,
-              textAlign: TextAlign.center,
-              style: textStyle,
+              style: MITITextStyle.xxsm.copyWith(
+                color: dayOfWeek == "일"
+                    ? MITIColor.error
+                    : isSelect
+                        ? MITIColor.gray100
+                        : MITIColor.gray600,
+              ),
             ),
             SizedBox(height: 8.h),
+            Container(
+              height: 32.r,
+              width: 32.r,
+              decoration: isSelect
+                  ? const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: MITIColor.primary,
+                    )
+                  : null,
+              alignment: Alignment.center,
+              child: Text(
+                '$selectDay',
+                style: MITITextStyle.smBold.copyWith(
+                  color: isSelect ? MITIColor.gray900 : MITIColor.gray600,
+                ),
+              ),
+            )
           ],
+        )
+
+        // Container(
+        //   width: 60.w,
+        //   // height: 52.h,
+        //   decoration: BoxDecoration(
+        //     borderRadius: BorderRadius.circular(8.r),
+        //     color: selectedDay == day
+        //         ? const Color(0xFF4065F6)
+        //         : const Color(0xFFF2F2F2),
+        //   ),
+        //   child: Column(
+        //     children: [
+        //       SizedBox(height: 8.h),
+        //       Text(
+        //         '$selectDay',
+        //         textAlign: TextAlign.center,
+        //         style: textStyle,
+        //       ),
+        //       SizedBox(height: 4.h),
+        //       Text(
+        //         dayOfWeek,
+        //         textAlign: TextAlign.center,
+        //         style: textStyle,
+        //       ),
+        //       SizedBox(height: 8.h),
+        //     ],
+        //   ),
+        // ),
+        );
+  }
+}
+
+class _FilterComponent extends ConsumerStatefulWidget {
+  const _FilterComponent({super.key});
+
+  @override
+  ConsumerState<_FilterComponent> createState() => _FilterComponentState();
+}
+
+class _FilterComponentState extends ConsumerState<_FilterComponent> {
+  late final ScrollController _dayScrollController;
+  final List<GlobalKey> dayKeys = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    for (int i = 0; i < 14; i++) {
+      dayKeys.add(GlobalKey());
+    }
+    _dayScrollController = ScrollController();
+  }
+
+  void selectDay(List<List<String>> day, int idx) {
+    ref
+        .read(selectedDayProvider.notifier)
+        .update((state) => DateTime.parse(day[idx][0]));
+    ref.read(gameFilterProvider.notifier).update(startdate: day[idx][0]);
+
+    final RenderBox box =
+        dayKeys[idx].currentContext!.findRenderObject() as RenderBox;
+    final pos = box.localToGlobal(Offset.zero, ancestor: null);
+    final scrollPosition = _dayScrollController.position;
+    // log('idx = ${idx}, pos.dx = ${pos.dx}');
+    // log('scrollPosition.pixels = ${scrollPosition.pixels}');
+    // log('scrollPosition.viewportDimension = ${scrollPosition.viewportDimension}');
+    // log('box.size.width = ${box.size.width}');
+
+    /// 현재 화면의 위젯 x좌표 + 스크롤의 현재 위치 x좌표 - (화면 크기 / 2 - 위젯 크기 / 2)
+    double offset = pos.dx +
+        scrollPosition.pixels -
+        (scrollPosition.viewportDimension / 2 - box.size.width / 2);
+    if (idx == 0) {
+      offset = 0;
+    } else if (idx == 13) {
+      offset = scrollPosition.maxScrollExtent;
+    }
+
+    _dayScrollController.animateTo(
+      offset,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final padding = EdgeInsets.only(
+      left: 21.w,
+      right: 21.w,
+      top: 20.h,
+      bottom: 24.h,
+    );
+    const border = BoxDecoration(
+        border: Border(bottom: BorderSide(color: MITIColor.gray700)));
+
+    final dateTime = DateTime.now();
+    List<DateTime> dateTimes = [];
+    final dateFormat = DateFormat('yyyy-MM-dd E', 'ko');
+    for (int i = 0; i < 14; i++) {
+      dateTimes.add(dateTime.add(Duration(days: i)));
+    }
+    final day = dateTimes.map((e) {
+      return dateFormat.format(e).split(' ');
+    }).toList();
+    final selectedMonth = ref.watch(selectedDayProvider).month;
+    final visible = ref.watch(showFilterProvider);
+    return Visibility(
+      visible: visible,
+      child: Container(
+        color: MITIColor.gray800,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              decoration: border,
+              padding: padding,
+              child: Row(
+                children: [],
+              ),
+            ),
+            Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                // final startDate = ref
+                //     .watch(gameFilterProvider.select((value) => value.startdate));
+
+                return Container(
+                  decoration: border,
+                  padding: padding,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            "날짜",
+                            style: MITITextStyle.smSemiBold.copyWith(
+                              color: MITIColor.gray50,
+                            ),
+                          ),
+                          SizedBox(width: 12.w),
+                          Text(
+                            "$selectedMonth월",
+                            style: MITITextStyle.xxsm.copyWith(
+                              color: MITIColor.gray300,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 12.h),
+                      SingleChildScrollView(
+                        controller: _dayScrollController,
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            ...day.mapIndexed((idx, element) {
+                              return Row(
+                                children: [
+                                  DateBox(
+                                    day: DateTime.parse(day[idx][0]),
+                                    dayOfWeek: day[idx][1],
+                                    gKey: dayKeys[idx],
+                                    onTap: () {
+                                      selectDay(day, idx);
+                                    },
+                                  ),
+                                  if (idx != day.length - 1)
+                                    SizedBox(width: 16.w),
+                                ],
+                              );
+                            })
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            Container(
+              padding: padding,
+              decoration: border,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    "시간",
+                    style: MITITextStyle.smSemiBold.copyWith(
+                      color: MITIColor.gray50,
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                            height: 96.h, child: const CustomTimePicker()),
+                      ),
+                      SizedBox(width: 16.w),
+                      Text(
+                        "이후 경기",
+                        style:
+                            MITITextStyle.sm.copyWith(color: MITIColor.gray100),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            ),
+            Container(
+              padding: padding,
+              decoration: border,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    "경기 상태",
+                    style: MITITextStyle.smSemiBold
+                        .copyWith(color: MITIColor.gray50),
+                  ),
+                  SizedBox(height: 12.h),
+                  Consumer(
+                    builder:
+                        (BuildContext context, WidgetRef ref, Widget? child) {
+                      final gameStatus = ref.watch(gameFilterProvider
+                          .select((value) => value.gameStatus));
+
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: GameStatus.values
+                            .map((e) => _GameStatusButton(
+                                status: e,
+                                selected: gameStatus != null
+                                    ? gameStatus.contains(e)
+                                    : false))
+                            .toList(),
+                      );
+                    },
+                  )
+                ],
+              ),
+            ),
+            Container(
+              padding: padding,
+              child: Row(
+                children: [
+                  TextButton(
+                      onPressed: () {
+                        ref.read(gameFilterProvider.notifier).clear();
+                      },
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                            MITIColor.gray500,
+                          ),
+                          minimumSize:
+                              MaterialStateProperty.all(Size(98.w, 48.h)),
+                          maximumSize:
+                              MaterialStateProperty.all(Size(98.w, 48.h)),
+                          fixedSize:
+                              MaterialStateProperty.all(Size(98.w, 48.h))),
+                      child: Text(
+                        "초기화",
+                        style:
+                            MITITextStyle.md.copyWith(color: MITIColor.gray50),
+                      )),
+                  const Spacer(),
+                  TextButton(
+                      onPressed: () {
+                        ref.read(gameListProvider.notifier).getList();
+                        ref
+                            .read(showFilterProvider.notifier)
+                            .update((state) => false);
+                      },
+                      style: ButtonStyle(
+                          minimumSize:
+                              MaterialStateProperty.all(Size(223.w, 48.h)),
+                          maximumSize:
+                              MaterialStateProperty.all(Size(223.w, 48.h)),
+                          fixedSize:
+                              MaterialStateProperty.all(Size(223.w, 48.h))),
+                      child: Text(
+                        "적용하기",
+                      )),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _GameStatusButton extends ConsumerWidget {
+  final GameStatus status;
+  final bool selected;
+
+  const _GameStatusButton(
+      {super.key, required this.status, required this.selected});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GestureDetector(
+      onTap: () {
+        final status = ref.read(gameFilterProvider).gameStatus;
+        if (selected) {
+        } else {
+          if (status != null) {
+          } else {}
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+            color: MITIColor.gray800,
+            border: Border.all(
+              color: selected ? MITIColor.primary : MITIColor.gray500,
+            ),
+            borderRadius: BorderRadius.circular(8.r)),
+        padding: EdgeInsets.all(10.r),
+        child: Text(
+          status.displayName,
+          style: MITITextStyle.sm.copyWith(
+            color: selected ? MITIColor.primary : MITIColor.gray400,
+          ),
         ),
       ),
     );
