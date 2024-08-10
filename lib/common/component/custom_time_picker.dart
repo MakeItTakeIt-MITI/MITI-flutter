@@ -228,18 +228,25 @@ class CustomTimePicker extends ConsumerStatefulWidget {
 }
 
 class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
-  late final FixedExtentScrollController timeController;
+  late final FixedExtentScrollController timePeriodController;
+  late final FixedExtentScrollController hourController;
+  late final FixedExtentScrollController minController;
 
   String date = "";
   bool isAfternoon = DateTime.now().hour >= 12;
-  int selectedHour = DateTime.now().hour;
+  int selectedHour = DateTime.now().hour >= 12
+      ? DateTime.now().hour - 12
+      : DateTime.now().hour;
   int selectedMinute = (DateTime.now().minute ~/ 10) * 10;
 
   @override
   void initState() {
     super.initState();
-    timeController =
+    timePeriodController =
         FixedExtentScrollController(initialItem: isAfternoon ? 1 : 0);
+    hourController = FixedExtentScrollController(initialItem: selectedHour);
+    minController =
+        FixedExtentScrollController(initialItem: selectedMinute ~/ 10);
   }
 
   Widget selectionOverlay() => Container(
@@ -255,13 +262,36 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
   }
 
   void changeSelectDate() {
-    final hour = selectedHour + 1 + (isAfternoon ? 12 : 0);
+    int twelveAmPm = 0;
+    if (selectedHour == 12) {
+      twelveAmPm = isAfternoon ? -12 : 0;
+    }
+
+    final hour = selectedHour + (isAfternoon ? 12 : 0) + twelveAmPm;
     final String starttime = "$hour:$selectedMinute";
     ref.read(gameFilterProvider.notifier).update(starttime: starttime);
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(gameFilterProvider, (previous, next) {
+      if (previous?.starttime != next.starttime) {
+        // if (next.starttime != null) {
+        //   final times = next.starttime!.split(':');
+        //   final hour = int.parse(times[0]);
+        //   final min = int.parse(times[1]);
+        //
+        //   if(hour >= 12){
+        //     timePeriodController.animateToItem(1, duration: const Duration(milliseconds: 150), curve: Curves.easeOut);
+        //     hourController.animateToItem(hour-12, duration: const Duration(milliseconds: 150), curve: Curves.easeOut);
+        //   }else{
+        //     hourController.animateToItem(hour, duration: const Duration(milliseconds: 150), curve: Curves.easeOut);
+        //   }
+        //   minController.animateToItem(min, duration: const Duration(milliseconds: 150), curve: Curves.easeOut);
+        // }
+      }
+    });
+
     return Row(
       children: <Widget>[
         Flexible(
@@ -280,7 +310,7 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
                 });
               },
               selectionOverlay: selectionOverlay(),
-              scrollController: timeController,
+              scrollController: timePeriodController,
               children: ['오전', '오후']
                   .mapIndexed((index, e) => Center(
                       child: Text(e,
@@ -307,11 +337,10 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
             },
             looping: true,
             selectionOverlay: selectionOverlay(),
-            scrollController:
-                FixedExtentScrollController(initialItem: selectedHour),
+            scrollController: hourController,
             children: List<Widget>.generate(12, (int index) {
               return Center(
-                  child: Text(oneDigitFormat(index + 1),
+                  child: Text(index == 0 ? '12' : oneDigitFormat(index),
                       style: MITITextStyle.md.copyWith(
                         color: selectedHour == index
                             ? MITIColor.primary
@@ -334,8 +363,7 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
             },
             looping: true,
             selectionOverlay: selectionOverlay(),
-            scrollController:
-                FixedExtentScrollController(initialItem: selectedMinute ~/ 10),
+            scrollController: minController,
             children: List<Widget>.generate(6, (int index) {
               return Center(
                   child: Text(

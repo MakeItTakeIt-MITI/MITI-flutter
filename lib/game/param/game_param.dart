@@ -10,12 +10,12 @@ class GameListParam extends Equatable {
   final String? startdate;
   final String? starttime;
   @JsonKey(name: "game_status")
-  final List<GameStatus>? gameStatus;
+  final List<GameStatus> gameStatus;
 
   const GameListParam({
     this.startdate,
     this.starttime,
-    this.gameStatus,
+    required this.gameStatus,
   });
 
   Map<String, dynamic> toJson() => _$GameListParamToJson(this);

@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -188,7 +189,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
             locale: Locale('ko'),
           ),
           onMapTapped: (NPoint point, NLatLng latLng) {
-            print("tap point = $point latLng = $latLng");
+            // print("tap point = $point latLng = $latLng");
             ref.read(showFilterProvider.notifier).update((state) => !state);
           },
           onMapReady: (controller) async {
@@ -214,83 +215,65 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
             // await getLocation();
           },
         ),
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          child: _FilterComponent(),
+        Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final visible = ref.watch(showFilterProvider);
+            if (visible) {
+              return const Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: _FilterComponent(),
+              );
+            }
+            return Positioned(
+              child: SafeArea(
+                  child: Padding(
+                      padding: EdgeInsets.only(top: 16.h),
+                      child: const _FilterChipsComponent(
+                        inFilter: false,
+                      ))),
+            );
+          },
         ),
-        // Positioned(
-        //   top: 44.h,
-        //   child: Container(
-        //     padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 13.w),
-        //     child: Row(
-        //       children: [
-        //         Container(
-        //           decoration: BoxDecoration(
-        //             borderRadius: BorderRadius.circular(50.r),
-        //             color: MITIColor.gray800,
-        //           ),
-        //           padding:
-        //               EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
-        //           child: Text(
-        //             "날짜 및 시간",
-        //             style: MITITextStyle.smSemiBold
-        //                 .copyWith(color: MITIColor.gray50),
-        //           ),
-        //         ),
-        //         SizedBox(
-        //           width: 8.w,
-        //         ),
-        //         Container(
-        //           decoration: BoxDecoration(
-        //             borderRadius: BorderRadius.circular(50.r),
-        //             color: MITIColor.gray800,
-        //           ),
-        //           padding:
-        //               EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
-        //           child: Text(
-        //             "경기 상태",
-        //             style: MITITextStyle.smSemiBold
-        //                 .copyWith(color: MITIColor.gray50),
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //   ),
-        // ),
-        Positioned(
-          left: 12.w,
-          bottom: 50.h,
-          child: Container(
-            padding: EdgeInsets.all(10.r),
-            decoration: BoxDecoration(
-                color:
-                    position != null ? const Color(0xFFE9FFFF) : Colors.white,
-                shape: BoxShape.circle,
-                border: Border.all(
+        Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final visible = ref.watch(showFilterProvider);
+            return Visibility(visible: !visible, child: child!);
+          },
+          child: Positioned(
+            left: 12.w,
+            bottom: 50.h,
+            child: Container(
+              padding: EdgeInsets.all(10.r),
+              decoration: BoxDecoration(
                   color:
-                      position != null ? MITIColor.primary : MITIColor.gray50,
+                      position != null ? const Color(0xFFE9FFFF) : Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color:
+                        position != null ? MITIColor.primary : MITIColor.gray50,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                        color: const Color(0xFF000000).withOpacity(0.25),
+                        blurRadius: 10.r)
+                  ]),
+              child: GestureDetector(
+                onTap: () async {
+                  if (position == null) {
+                    _permission();
+                  } else {
+                    ref.read(positionProvider.notifier).update((state) => null);
+                    await _mapController!
+                        .setLocationTrackingMode(NLocationTrackingMode.none);
+                  }
+                },
+                child: SvgPicture.asset(
+                  AssetUtil.getAssetPath(
+                      type: AssetType.icon,
+                      name: position != null ? "gps" : "un_gps"),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                      color: const Color(0xFF000000).withOpacity(0.25),
-                      blurRadius: 10.r)
-                ]),
-            child: GestureDetector(
-              onTap: () async {
-                if (position == null) {
-                  _permission();
-                } else {
-                  ref.read(positionProvider.notifier).update((state) => null);
-                  await _mapController!
-                      .setLocationTrackingMode(NLocationTrackingMode.none);
-                }
-              },
-              child: SvgPicture.asset(
-                AssetUtil.getAssetPath(
-                    type: AssetType.icon,
-                    name: position != null ? "gps" : "un_gps"),
               ),
             ),
           ),
@@ -756,7 +739,13 @@ class DateBox extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectDay = day.day;
-    final selectedDay = ref.watch(selectedDayProvider);
+    final startdateByString =
+        ref.watch(gameFilterProvider.select((value) => value.startdate));
+
+    final selectedDay = startdateByString != null
+        ? DateTime.parse(startdateByString)
+        : DateTime.now();
+    DateTime.parse(DateFormat('yyyy-MM-dd').format(selectedDay));
 
     final isSelect = selectedDay.day == selectDay;
     return InkWell(
@@ -848,19 +837,21 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
   }
 
   void selectDay(List<List<String>> day, int idx) {
-    ref
-        .read(selectedDayProvider.notifier)
-        .update((state) => DateTime.parse(day[idx][0]));
+    // ref
+    //     .read(selectedDayProvider.notifier)
+    //     .update((state) => DateTime.parse(day[idx][0]));
     ref.read(gameFilterProvider.notifier).update(startdate: day[idx][0]);
 
     final RenderBox box =
         dayKeys[idx].currentContext!.findRenderObject() as RenderBox;
     final pos = box.localToGlobal(Offset.zero, ancestor: null);
+
     final scrollPosition = _dayScrollController.position;
-    // log('idx = ${idx}, pos.dx = ${pos.dx}');
-    // log('scrollPosition.pixels = ${scrollPosition.pixels}');
-    // log('scrollPosition.viewportDimension = ${scrollPosition.viewportDimension}');
-    // log('box.size.width = ${box.size.width}');
+    log('idx = ${idx}, pos.dx = ${pos.dx}');
+    log('scrollPosition.pixels = ${scrollPosition.pixels}');
+    log('scrollPosition.viewportDimension = ${scrollPosition.viewportDimension}');
+    log('_dayScrollController.position.maxScrollExtent = ${_dayScrollController.position.maxScrollExtent}');
+    log('box.size.width = ${box.size.width}');
 
     /// 현재 화면의 위젯 x좌표 + 스크롤의 현재 위치 x좌표 - (화면 크기 / 2 - 위젯 크기 / 2)
     double offset = pos.dx +
@@ -899,20 +890,24 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
     final day = dateTimes.map((e) {
       return dateFormat.format(e).split(' ');
     }).toList();
-    final selectedMonth = ref.watch(selectedDayProvider).month;
-    final visible = ref.watch(showFilterProvider);
-    return Visibility(
-      visible: visible,
-      child: Container(
-        color: MITIColor.gray800,
+    // final selectedMonth = ref.watch(selectedDayProvider).month;
+    final startdateByString =
+        ref.watch(gameFilterProvider.select((value) => value.startdate));
+    final selectedMonth = startdateByString != null
+        ? DateTime.parse(startdateByString).month
+        : DateTime.now().month;
+
+    return Container(
+      color: MITIColor.gray800,
+      child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Container(
               decoration: border,
-              padding: padding,
-              child: Row(
-                children: [],
+              padding: EdgeInsets.symmetric(vertical: 16.h),
+              child: const _FilterChipsComponent(
+                inFilter: true,
               ),
             ),
             Consumer(
@@ -922,36 +917,81 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
 
                 return Container(
                   decoration: border,
-                  padding: padding,
+                  padding: EdgeInsets.only(
+                    top: 20.h,
+                    bottom: 24.h,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Row(
-                        children: [
-                          Text(
-                            "날짜",
-                            style: MITITextStyle.smSemiBold.copyWith(
-                              color: MITIColor.gray50,
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 21.w,
+                        ),
+                        child: Row(
+                          children: [
+                            Text(
+                              "날짜",
+                              style: MITITextStyle.smSemiBold.copyWith(
+                                color: MITIColor.gray50,
+                              ),
                             ),
-                          ),
-                          SizedBox(width: 12.w),
-                          Text(
-                            "$selectedMonth월",
-                            style: MITITextStyle.xxsm.copyWith(
-                              color: MITIColor.gray300,
+                            SizedBox(width: 12.w),
+                            Text(
+                              "$selectedMonth월",
+                              style: MITITextStyle.xxsm.copyWith(
+                                color: MITIColor.gray300,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       SizedBox(height: 12.h),
                       SingleChildScrollView(
                         controller: _dayScrollController,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 21.w,
+                        ),
                         scrollDirection: Axis.horizontal,
+
                         child: Row(
                           children: [
                             ...day.mapIndexed((idx, element) {
+                              final date = day[idx][0].split('-');
+                              final month =
+                                  date[1][0] == '0' ? date[1][1] : date[1];
+
+                              final bool showYear =
+                                  month == '1' && date[2] == '01';
+                              final bool showMonth = date[2] == '01';
                               return Row(
                                 children: [
+                                  if (showMonth)
+                                    Padding(
+                                      padding: EdgeInsets.only(right: 16.w),
+                                      child: Column(
+                                        children: [
+                                          if (showYear)
+                                            Padding(
+                                              padding:
+                                                  EdgeInsets.only(bottom: 5.h),
+                                              child: Text(
+                                                date[0],
+                                                style:
+                                                    MITITextStyle.xxsm.copyWith(
+                                                  color: MITIColor.primary,
+                                                ),
+                                              ),
+                                            ),
+                                          Text(
+                                            "$month월",
+                                            style: MITITextStyle.smBold
+                                                .copyWith(
+                                                    color: MITIColor.primary),
+                                          )
+                                        ],
+                                      ),
+                                    ),
                                   DateBox(
                                     day: DateTime.parse(day[idx][0]),
                                     dayOfWeek: day[idx][1],
@@ -1026,7 +1066,7 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
                         children: GameStatus.values
                             .map((e) => _GameStatusButton(
                                 status: e,
-                                selected: gameStatus != null
+                                selected: gameStatus.isNotEmpty
                                     ? gameStatus.contains(e)
                                     : false))
                             .toList(),
@@ -1074,7 +1114,7 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
                               MaterialStateProperty.all(Size(223.w, 48.h)),
                           fixedSize:
                               MaterialStateProperty.all(Size(223.w, 48.h))),
-                      child: Text(
+                      child: const Text(
                         "적용하기",
                       )),
                 ],
@@ -1098,11 +1138,21 @@ class _GameStatusButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       onTap: () {
-        final status = ref.read(gameFilterProvider).gameStatus;
+        final filterStatus = ref.read(gameFilterProvider).gameStatus;
+        //선택 된 상태면 선택 해제
         if (selected) {
+          log("선택 된 상태면 선택 해제");
+          ref.read(gameFilterProvider.notifier).deleteStatus(status);
         } else {
-          if (status != null) {
-          } else {}
+          if (filterStatus.isNotEmpty) {
+            // 하나 이상 선택된 상태
+            log("하나 이상 선택된 상태");
+            ref.read(gameFilterProvider.notifier).addStatus(status);
+          } else {
+            //아무것도 선택 안된 상태
+            log("아무것도 선택 안된 상태");
+            ref.read(gameFilterProvider.notifier).initStatus(status);
+          }
         }
       },
       child: Container(
@@ -1119,6 +1169,162 @@ class _GameStatusButton extends ConsumerWidget {
             color: selected ? MITIColor.primary : MITIColor.gray400,
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _FilterChip extends ConsumerWidget {
+  final String title;
+  final bool selected;
+  final VoidCallback onTap;
+  final bool inFilter;
+
+  const _FilterChip(
+      {super.key,
+      required this.title,
+      required this.selected,
+      required this.onTap,
+      required this.inFilter});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GestureDetector(
+      onTap: !inFilter
+          ? () {
+              ref.read(showFilterProvider.notifier).update((state) => !state);
+            }
+          : null,
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(50.r),
+            color: inFilter ? MITIColor.gray700 : MITIColor.gray800),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+        child: Row(
+          children: [
+            Text(
+              title,
+              style: selected
+                  ? MITITextStyle.smSemiBold.copyWith(color: MITIColor.primary)
+                  : MITITextStyle.sm.copyWith(
+                      color: inFilter ? MITIColor.gray100 : MITIColor.gray50),
+            ),
+            if (selected)
+              Padding(
+                padding: EdgeInsets.only(left: 8.w),
+                child: GestureDetector(
+                  onTap: onTap,
+                  child: SvgPicture.asset(
+                    AssetUtil.getAssetPath(
+                      type: AssetType.icon,
+                      name: 'close2',
+                    ),
+                    colorFilter: const ColorFilter.mode(
+                        MITIColor.primary, BlendMode.srcIn),
+                  ),
+                ),
+              )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FilterChipsComponent extends StatelessWidget {
+  final bool inFilter;
+
+  const _FilterChipsComponent({super.key, required this.inFilter});
+
+  String parsingStatus(GameListParam filter) {
+    String gameStatus = filter.gameStatus
+        .fold("", (value, element) => "$value${element.displayName}, ");
+    if (gameStatus.isNotEmpty) {
+      gameStatus = gameStatus.substring(0, gameStatus.length - 2);
+    }
+    return gameStatus;
+  }
+
+  String parsingTime(GameListParam filter) {
+    // 시간 문자열을 DateTime 객체로 파싱
+    DateTime parsedTime = DateFormat("HH:mm").parse(filter.starttime!);
+
+    // DateTime 객체를 원하는 형식으로 포맷
+    String formattedTime = DateFormat("a hh:mm").format(parsedTime);
+
+    // 오전/오후 표시를 추가하여 출력
+    String time =
+        formattedTime.replaceFirst("AM", "오전").replaceFirst("PM", "오후");
+    return time;
+  }
+
+  String parsingDate(GameListParam filter) {
+    // 1. 문자열을 DateTime 객체로 변환
+    DateTime dateTime = DateTime.parse(filter.startdate!);
+
+    // 2. 원하는 형식으로 포맷팅
+    String formattedDate = DateFormat('MM-dd').format(dateTime);
+    String weekday = DateFormat.E('ko_KR').format(dateTime); // 요일을 한글로 표시
+
+    // 요일을 (토) 형식으로 변환
+    String finalString = '$formattedDate ($weekday)';
+    return finalString;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(horizontal: 13.w),
+      scrollDirection: Axis.horizontal,
+      child: Consumer(
+        builder: (BuildContext context, WidgetRef ref, Widget? child) {
+          final filter = ref.watch(gameFilterProvider);
+
+          String gameStatus = parsingStatus(filter);
+
+          // 1. 문자열을 DateTime 객체로 변환
+          String date = parsingDate(filter);
+
+          // 시간 문자열을 DateTime 객체로 파싱
+          String time = parsingTime(filter);
+
+          return Row(
+            children: [
+              _FilterChip(
+                title: filter.startdate != null ? date : '날짜',
+                selected: filter.startdate != null,
+                onTap: () {
+                  ref
+                      .read(gameFilterProvider.notifier)
+                      .removeFilter(FilterType.date);
+                },
+                inFilter: inFilter,
+              ),
+              SizedBox(width: 8.w),
+              _FilterChip(
+                title: filter.starttime != null ? time : '시간',
+                selected: filter.startdate != null,
+                onTap: () {
+                  ref
+                      .read(gameFilterProvider.notifier)
+                      .removeFilter(FilterType.time);
+                },
+                inFilter: inFilter,
+              ),
+              SizedBox(width: 8.w),
+              _FilterChip(
+                title: gameStatus.isEmpty ? '경기 상태' : gameStatus,
+                selected: filter.gameStatus.isNotEmpty,
+                onTap: () {
+                  ref
+                      .read(gameFilterProvider.notifier)
+                      .removeFilter(FilterType.status);
+                },
+                inFilter: inFilter,
+              ),
+            ],
+          );
+        },
       ),
     );
   }
