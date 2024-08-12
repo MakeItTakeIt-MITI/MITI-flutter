@@ -174,11 +174,15 @@ class SignUpScreen extends ConsumerWidget {
       if (type == AuthType.email) {
         return const PasswordForm();
       }
-      return const CheckBoxForm();
+      return Column(
+        children: [SizedBox(height: 40.h), const CheckBoxForm()],
+      );
     } else if (ref.watch(progressProvider).progress == 4) {
       return PersonalInfoForm(type: type);
     } else {
-      return const CheckBoxForm();
+      return Column(
+        children: [SizedBox(height: 40.h), const CheckBoxForm()],
+      );
     }
     (ref.watch(progressProvider).progress == 5);
   }
@@ -267,6 +271,60 @@ class _ProgressComponent extends ConsumerWidget {
   }
 }
 
+class CheckBoxFormV2 extends ConsumerStatefulWidget {
+  const CheckBoxFormV2({super.key});
+
+  @override
+  ConsumerState<CheckBoxFormV2> createState() => _CheckBoxFormV2State();
+}
+
+class _CheckBoxFormV2State extends ConsumerState<CheckBoxFormV2> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          child: CustomCheckBox(
+            title: '약관 전체 동의하기',
+            textStyle: MITITextStyle.md.copyWith(color: MITIColor.gray100),
+            check: true,
+            isCheckBox: true,
+            onTap: () {
+              showGeneralDialog(
+                  context: context,
+                  pageBuilder: (_, __, ___) {
+                    return Scaffold(
+                      appBar: DefaultAppBar(
+                        title: "SSS",
+                        hasBorder: false,
+                      ),
+                      backgroundColor: MITIColor.gray800,
+                      body: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 21.w),
+                        child: Column(
+                          children: [
+                            TextButton(onPressed: () {
+                              context.pop();
+                            }, child: Text("확인"))
+                          ],
+                        ),
+                      ),
+                    );
+                  });
+            },
+          ),
+        ),
+        Divider(
+          thickness: 1.h,
+          color: MITIColor.gray600,
+          height: 40.h,
+        ),
+      ],
+    );
+  }
+}
+
 class CheckBoxForm extends ConsumerStatefulWidget {
   const CheckBoxForm({super.key});
 
@@ -318,7 +376,6 @@ class _CheckBoxFormState extends ConsumerState<CheckBoxForm> {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(height: 40.h),
               Flexible(
                 child: CustomCheckBox(
                   title: '약관 전체 동의하기',
@@ -1415,7 +1472,6 @@ class SignUpCompleteScreen extends StatelessWidget {
         ),
       ],
     );
-
   }
 
   Widget getProgress(int idx) {

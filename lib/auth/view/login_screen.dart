@@ -46,6 +46,7 @@ class LoginScreen extends StatelessWidget {
       resizeToAvoidBottomInset: false,
       appBar: const DefaultAppBar(
         backgroundColor: MITIColor.black,
+        hasBorder: false,
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 21.w),

@@ -124,12 +124,12 @@ class _CustomMapMakerState extends ConsumerState<CustomMapMaker> {
         ));
     painter.layout(maxWidth: 130.r);
     // log('painter.width = ${painter.width}');
-
-    final shadow = BoxShadow(
-      color: const Color(0xFF000000).withOpacity(0.12),
-      blurRadius: 12.r,
-      offset: Offset(0, 8.h),
-    );
+    //
+    // final shadow = BoxShadow(
+    //   color: const Color(0xFF000000).withOpacity(0.12),
+    //   blurRadius: 12.r,
+    //   offset: Offset(0, 8.h),
+    // );
     return Stack(
       children: [
         Positioned(
@@ -138,7 +138,7 @@ class _CustomMapMakerState extends ConsumerState<CustomMapMaker> {
             height: 32.h,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20.r),
-                boxShadow: [shadow],
+                // boxShadow: [shadow],
                 border: Border.all(
                     color: widget.selected
                         ? MITIColor.gray600
@@ -157,7 +157,7 @@ class _CustomMapMakerState extends ConsumerState<CustomMapMaker> {
           left: painter.width + 14.w,
           child: Container(
             decoration: BoxDecoration(
-              boxShadow: [shadow],
+              // boxShadow: [shadow],
               shape: BoxShape.circle,
               color: widget.selected ? MITIColor.gray700 : MITIColor.white,
               border: Border.all(

@@ -72,96 +72,100 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
 
-    return Scaffold(
-      // resizeToAvoidBottomInset: false,
-      body: NestedScrollView(
-        controller: _scrollController,
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return [
-            const DefaultAppBar(
-              isSliver: true,
-              title: '경기 생성하기',
-            )
-          ];
-        },
-        body: Padding(
-          padding: EdgeInsets.only(
-            top: 20.h,
-            left: 21.w,
-            right: 21.w,
-            // bottom: bottomPadding,
-          ),
-          child: CustomScrollView(
-            slivers: <Widget>[
-              const _TitleForm(),
-              getSpacer(),
-              V2DateForm(),
-              // const _DateForm(),
-              getSpacer(),
-              const _AddressForm(),
-              getSpacer(),
-              SliverToBoxAdapter(
-                  child: ApplyForm(
-                formKeys: formKeys,
-                focusNodes: focusNodes,
-              )),
-              getSpacer(),
-              const _FeeForm(),
-              getSpacer(),
-              const _AdditionalInfoForm(),
-              getSpacer(height: 32),
-              const _AgreeTermComponent(),
-              getSpacer(height: 20),
-            ],
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      onPanDown: (v) => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        // resizeToAvoidBottomInset: false,
+        body: NestedScrollView(
+          controller: _scrollController,
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return [
+              const DefaultAppBar(
+                isSliver: true,
+                title: '경기 생성하기',
+              )
+            ];
+          },
+          body: Padding(
+            padding: EdgeInsets.only(
+              top: 20.h,
+              left: 21.w,
+              right: 21.w,
+              // bottom: bottomPadding,
+            ),
+            child: CustomScrollView(
+              slivers: <Widget>[
+                const _TitleForm(),
+                getSpacer(),
+                V2DateForm(),
+                // const _DateForm(),
+                getSpacer(),
+                const _AddressForm(),
+                getSpacer(),
+                SliverToBoxAdapter(
+                    child: ApplyForm(
+                  formKeys: formKeys,
+                  focusNodes: focusNodes,
+                )),
+                getSpacer(),
+                const _FeeForm(),
+                getSpacer(),
+                const _AdditionalInfoForm(),
+                getSpacer(height: 32),
+                const _AgreeTermComponent(),
+                getSpacer(height: 20),
+              ],
+            ),
           ),
         ),
-      ),
-      bottomNavigationBar: Consumer(
-        builder: (BuildContext context, WidgetRef ref, Widget? child) {
-          ref.watch(gameFormProvider);
-          final valid = ref.read(gameFormProvider.notifier).formValid();
-          return BottomButton(
-              button: SizedBox(
-            height: 48.h,
-            child: TextButton(
-                onPressed: valid
-                    ? () async {
-                        final result =
-                            await ref.read(gameCreateProvider.future);
-                        if (context.mounted) {
-                          if (result is ErrorModel) {
-                            GameError.fromModel(model: result).responseError(
-                                context, GameApiType.createGame, ref);
-                          } else {
-                            final model =
-                                result as ResponseModel<GameDetailModel>;
-                            Map<String, String> pathParameters = {
-                              'gameId': model.data!.id.toString()
-                            };
-                            final Map<String, String> queryParameters = {
-                              'bottomIdx': widget.bottomIdx.toString()
-                            };
-                            context.pushNamed(
-                              GameCreateCompleteScreen.routeName,
-                              pathParameters: pathParameters,
-                              queryParameters: queryParameters,
-                            );
+        bottomNavigationBar: Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            ref.watch(gameFormProvider);
+            final valid = ref.read(gameFormProvider.notifier).formValid();
+            return BottomButton(
+                button: SizedBox(
+              height: 48.h,
+              child: TextButton(
+                  onPressed: valid
+                      ? () async {
+                          final result =
+                              await ref.read(gameCreateProvider.future);
+                          if (context.mounted) {
+                            if (result is ErrorModel) {
+                              GameError.fromModel(model: result).responseError(
+                                  context, GameApiType.createGame, ref);
+                            } else {
+                              final model =
+                                  result as ResponseModel<GameDetailModel>;
+                              Map<String, String> pathParameters = {
+                                'gameId': model.data!.id.toString()
+                              };
+                              final Map<String, String> queryParameters = {
+                                'bottomIdx': widget.bottomIdx.toString()
+                              };
+                              context.pushNamed(
+                                GameCreateCompleteScreen.routeName,
+                                pathParameters: pathParameters,
+                                queryParameters: queryParameters,
+                              );
+                            }
                           }
                         }
-                      }
-                    : () {},
-                style: TextButton.styleFrom(
-                    backgroundColor:
-                        valid ? MITIColor.primary : MITIColor.gray500,
-                    fixedSize: Size(double.infinity, 48.h)),
-                child: Text(
-                  '경기 생성하기',
-                  style: TextStyle(
-                    color: valid ? MITIColor.gray800 : MITIColor.gray50,
-                  ),
-                )),
-          ));
-        },
+                      : () {},
+                  style: TextButton.styleFrom(
+                      backgroundColor:
+                          valid ? MITIColor.primary : MITIColor.gray500,
+                      fixedSize: Size(double.infinity, 48.h)),
+                  child: Text(
+                    '경기 생성하기',
+                    style: TextStyle(
+                      color: valid ? MITIColor.gray800 : MITIColor.gray50,
+                    ),
+                  )),
+            ));
+          },
+        ),
       ),
     );
   }
@@ -236,10 +240,15 @@ class _V2DateFormState extends State<V2DateForm> {
                     final date = ref.watch(dateFormProvider);
                     final painter = TextPainter(
                         maxLines: 1,
+                        textScaler: const TextScaler.linear(1.0),
                         textDirection: TextDirection.ltr,
-                        text: TextSpan(text: date ?? "경기 날짜와 시간을 선택해 주세요."));
+                        text: TextSpan(
+                            text: date ?? "경기 날짜와 시간을 선택해 주세요.",
+                            style: MITITextStyle.md
+                                .copyWith(color: MITIColor.white)));
                     painter.layout(maxWidth: 233.w);
 
+                    log("painter.didExceedMaxLines = ${painter.didExceedMaxLines}");
                     if (painter.didExceedMaxLines) {
                       return Marquee(
                         text: date ?? "경기 날짜와 시간을 선택해 주세요.",
@@ -913,7 +922,10 @@ class ApplyForm extends ConsumerWidget {
                 textAlign: TextAlign.right,
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
-                borderColor: !ValidRegExp.validForm(min_invitation, max_invitation)  ? MITIColor.error : null,
+                borderColor:
+                    !ValidRegExp.validForm(min_invitation, max_invitation)
+                        ? MITIColor.error
+                        : null,
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
                   NumberFormatter(),

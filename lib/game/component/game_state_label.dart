@@ -16,20 +16,20 @@ class GameStateLabel extends StatelessWidget {
 
     switch (gameStatus) {
       case GameStatus.open:
-        backgroundColor = const Color(0xFFD8EAFF);
-        textColor = const Color(0xFF0019FF);
+        backgroundColor = const Color(0xFF9DB6D4);
+        textColor = const Color(0xFF303FC5);
         break;
       case GameStatus.closed:
-        backgroundColor = const Color(0xFFD5FEFF);
-        textColor = const Color(0xFF00C0C3);
+        backgroundColor = const Color(0xFF92D2D4);
+        textColor = const Color(0xFF00797B);
         break;
       case GameStatus.completed:
-        backgroundColor = const Color(0xFFF1F1F1);
-        textColor = const Color(0xFF737373);
+        backgroundColor = const Color(0xFFC1C1C1);
+        textColor = const Color(0xFF484848);
         break;
       case GameStatus.canceled:
-        backgroundColor = const Color(0xFFFFE8EC);
-        textColor = const Color(0xFFE55B8B);
+        backgroundColor = const Color(0xFFE9C4D3);
+        textColor = const Color(0xFFDB0059);
         break;
     }
     return Container(

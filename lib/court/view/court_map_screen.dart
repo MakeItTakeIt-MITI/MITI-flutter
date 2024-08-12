@@ -568,7 +568,9 @@ class CourtCard extends StatelessWidget {
   });
 
   factory CourtCard.fromModel({required GameModel model}) {
-    final fee = NumberFormat.decimalPattern().format(model.fee);
+    final fee = model.fee == 0
+        ? '무료'
+        : "₩${NumberFormat.decimalPattern().format(model.fee)}";
     return CourtCard(
       game_status: model.game_status,
       title: model.title,
@@ -666,32 +668,55 @@ class CourtCard extends StatelessWidget {
                             builder: (BuildContext context, WidgetRef ref,
                                 Widget? child) {
                               final position = ref.watch(positionProvider);
+                              NLatLng? myPosition;
+                              double? distance;
+                              String formatDistance = ' m';
+                              if (position != null) {
+                                myPosition = NLatLng(
+                                    position.latitude, position.longitude);
 
-                              return Row(
-                                children: [
-                                  SvgPicture.asset(
-                                    AssetUtil.getAssetPath(
-                                      type: AssetType.icon,
-                                      name: "map_pin",
+                                distance = myPosition.distanceTo(NLatLng(
+                                    double.parse(court.latitude),
+                                    double.parse(court.longitude)));
+
+                                if (distance > 1000) {
+                                  distance /= 1000;
+                                  distance = distance.ceil().toDouble();
+                                  formatDistance = ' km';
+                                }
+                              }
+                              formatDistance =
+                                  distance.toString() + formatDistance;
+
+                              if (distance != null) {
+                                return Row(
+                                  children: [
+                                    SvgPicture.asset(
+                                      AssetUtil.getAssetPath(
+                                        type: AssetType.icon,
+                                        name: "map_pin",
+                                      ),
+                                      colorFilter: const ColorFilter.mode(
+                                          MITIColor.gray500, BlendMode.srcIn),
                                     ),
-                                    colorFilter: const ColorFilter.mode(
-                                        MITIColor.gray500, BlendMode.srcIn),
-                                  ),
-                                  SizedBox(width: 5.w),
-                                  Text(
-                                    '$num_of_participations/$max_invitation',
-                                    style: MITITextStyle.xxsm.copyWith(
-                                      color: MITIColor.gray300,
-                                    ),
-                                  )
-                                ],
-                              );
+                                    SizedBox(width: 5.w),
+                                    Text(
+                                      formatDistance,
+                                      style: MITITextStyle.xxsm.copyWith(
+                                        color: MITIColor.gray300,
+                                      ),
+                                    )
+                                  ],
+                                );
+                              } else {
+                                return Container();
+                              }
                             },
                           ),
                         ],
                       ),
                       Text(
-                        '₩$fee',
+                        '$fee',
                         textAlign: TextAlign.right,
                         style: MITITextStyle.mdBold.copyWith(
                           color: MITIColor.primary,
@@ -953,7 +978,6 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
                           horizontal: 21.w,
                         ),
                         scrollDirection: Axis.horizontal,
-
                         child: Row(
                           children: [
                             ...day.mapIndexed((idx, element) {

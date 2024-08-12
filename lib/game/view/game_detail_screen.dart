@@ -24,6 +24,7 @@ import 'package:miti/game/view/game_participation_screen.dart';
 import 'package:miti/game/view/game_refund_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../account/model/account_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../court/view/court_map_screen.dart';
@@ -68,6 +69,21 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MITIColor.gray750,
+      floatingActionButton: GestureDetector(
+        onTap: () async {
+          final result = await Share.shareUri(Uri(scheme: "naver"));
+        },
+        child: Container(
+          padding: EdgeInsets.all(10.r),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: const Color(0xFF000000).withOpacity(0.6),
+          ),
+          child: SvgPicture.asset(
+            AssetUtil.getAssetPath(type: AssetType.icon, name: 'share'),
+          ),
+        ),
+      ),
       bottomNavigationBar: Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
           final result = ref.watch(gameDetailProvider(gameId: widget.gameId));
@@ -597,7 +613,7 @@ class SummaryComponent extends StatelessWidget {
   final String title;
   final String gameDate;
   final String address;
-  final String fee;
+  final String? fee;
   final String duration;
   final int max_invitation;
   final int num_of_confirmed_participations;
@@ -610,7 +626,7 @@ class SummaryComponent extends StatelessWidget {
       required this.title,
       required this.gameDate,
       required this.address,
-      required this.fee,
+      this.fee,
       required this.max_invitation,
       required this.num_of_confirmed_participations,
       this.bankStatus,
@@ -843,8 +859,14 @@ class SummaryComponent extends StatelessWidget {
               },
               separatorBuilder: (_, idx) => SizedBox(height: 4.h),
               itemCount: 3),
-          SizedBox(height: 20.h),
-          feeComponent(context),
+          Visibility(
+              visible: gameId != null,
+              child: Column(
+                children: [
+                  SizedBox(height: 20.h),
+                  feeComponent(context),
+                ],
+              ))
         ],
       ),
     );
