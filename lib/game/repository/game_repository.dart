@@ -8,6 +8,7 @@ import '../../dio/provider/dio_provider.dart';
 import '../model/game_model.dart';
 import '../model/game_payment_model.dart';
 import '../model/game_player_model.dart';
+import '../model/game_recent_host_model.dart';
 import '../model/game_review_model.dart';
 import '../param/game_param.dart';
 
@@ -94,5 +95,11 @@ abstract class GameRepository {
   @GET('/ratings/{ratingId}')
   Future<ResponseModel<UserReviewModel>> getRating({
     @Path('ratingId') required int ratingId,
+  });
+
+  @Headers({'token': 'true'})
+  @GET('/users/{userId}/recent-hosted-games')
+  Future<ResponseListModel<GameRecentHostModel>> getRecentHostings({
+    @Path('userId') required int userId,
   });
 }

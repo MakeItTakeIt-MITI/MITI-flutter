@@ -26,7 +26,7 @@ class CourtAddressCard extends StatelessWidget {
   factory CourtAddressCard.fromModel({
     required CourtSearchModel model,
     required VoidCallback onTap,
-    required selected,
+    required bool selected,
   }) {
     return CourtAddressCard(
       address: '${model.address} ${model.address_detail ?? ''}',

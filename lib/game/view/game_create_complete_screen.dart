@@ -128,6 +128,7 @@ class GameCreateCompleteScreen extends StatelessWidget {
                 ),
                 child: ListView.separated(
                     shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (_, idx) {
                       return info(idx);
                     },

@@ -218,6 +218,17 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
         Consumer(
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
             final visible = ref.watch(showFilterProvider);
+            return Visibility(
+                visible: visible,
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: const Color(0xFF000000).withOpacity(0.64)),
+                ));
+          },
+        ),
+        Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final visible = ref.watch(showFilterProvider);
             if (visible) {
               return const Positioned(
                 top: 0,
@@ -279,31 +290,26 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
           ),
         ),
         DraggableScrollableSheet(
-          initialChildSize: 0.04,
+          initialChildSize: 0.1,
+          // 0.04
           maxChildSize: 0.8,
-          minChildSize: 0.04,
+          minChildSize: 0.1,
           snap: true,
           controller: _draggableScrollableController,
           builder: (BuildContext context, ScrollController scrollController) {
-            final dateTime = DateTime.now();
-            List<DateTime> dateTimes = [];
-            final dateFormat = DateFormat('yyyy-MM-dd E', 'ko');
-            for (int i = 0; i < 14; i++) {
-              dateTimes.add(dateTime.add(Duration(days: i)));
-            }
-            final day = dateTimes.map((e) {
-              return dateFormat.format(e).split(' ');
-            }).toList();
             return Container(
               decoration: BoxDecoration(
                   color: MITIColor.gray900,
                   borderRadius:
                       BorderRadius.vertical(top: Radius.circular(16.r))),
-              child: CustomScrollView(
-                controller: scrollController,
-                slivers: [
-                  SliverToBoxAdapter(
+              alignment: Alignment.topCenter,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SingleChildScrollView(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         SizedBox(height: 8.h),
                         Container(
@@ -316,66 +322,41 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
                           ),
                         ),
                         SizedBox(height: 8.h),
-
-                        /// 지울 예정
-                        // SingleChildScrollView(
-                        //   controller: _dayScrollController,
-                        //   scrollDirection: Axis.horizontal,
-                        //   child: Container(
-                        //     padding: EdgeInsets.symmetric(horizontal: 12.w),
-                        //     child: Row(
-                        //       children: [
-                        //         ...day.mapIndexed((idx, element) {
-                        //           return Row(
-                        //             children: [
-                        //               DateBox(
-                        //                 day: DateTime.parse(day[idx][0]),
-                        //                 dayOfWeek: day[idx][1],
-                        //                 gKey: dayKeys[idx],
-                        //                 onTap: () {
-                        //                   selectDay(day, idx);
-                        //                 },
-                        //               ),
-                        //               if (idx != day.length - 1)
-                        //                 SizedBox(width: 16.w),
-                        //             ],
-                        //           );
-                        //         })
-                        //       ],
-                        //     ),
-                        //   ),
-                        // ),
+                        Consumer(builder: (_, ref, child) {
+                          final modelList = ref.watch(selectGameListProvider);
+                          if (modelList.isNotEmpty) {
+                            return Padding(
+                              padding: EdgeInsets.only(left: 12.w),
+                              child: Text(
+                                '${modelList.length}개의 매치',
+                                style: MITITextStyle.selectionDayStyle.copyWith(
+                                  color: MITIColor.gray100,
+                                ),
+                              ),
+                            );
+                          }
+                          return Container();
+                        }),
+                        SizedBox(height: 10.h),
                       ],
                     ),
                   ),
-                  SliverToBoxAdapter(
-                    child: SizedBox(height: 10.h),
-                  ),
-                  Consumer(
-                    builder:
-                        (BuildContext context, WidgetRef ref, Widget? child) {
-                      final modelList = ref.watch(selectGameListProvider);
-
-                      return SliverPadding(
-                        padding: EdgeInsets.symmetric(horizontal: 21.w),
-                        sliver: SliverMainAxisGroup(slivers: [
-                          if (modelList.isNotEmpty)
-                            SliverToBoxAdapter(
-                              child: Padding(
-                                padding: EdgeInsets.only(left: 12.w),
-                                child: Text(
-                                  '${modelList.length}개의 매치',
-                                  style:
-                                      MITITextStyle.selectionDayStyle.copyWith(
-                                    color: MITIColor.gray100,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          _getCourtComponent(modelList),
-                        ]),
-                      );
-                    },
+                  Expanded(
+                    child: CustomScrollView(
+                      controller: scrollController,
+                      slivers: [
+                        Consumer(
+                          builder: (BuildContext context, WidgetRef ref,
+                              Widget? child) {
+                            final modelList = ref.watch(selectGameListProvider);
+                            return SliverPadding(
+                              padding: EdgeInsets.symmetric(horizontal: 21.w),
+                              sliver: _getCourtComponent(modelList),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -1102,6 +1083,7 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
             ),
             Container(
               padding: padding,
+              decoration: border,
               child: Row(
                 children: [
                   TextButton(
@@ -1142,6 +1124,21 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
                         "적용하기",
                       )),
                 ],
+              ),
+            ),
+
+            /// todo 수정 필요
+            GestureDetector(
+              onTap: () {
+                ref.read(showFilterProvider.notifier).update((state) => false);
+              },
+              child: SizedBox(
+                height: 21.h,
+                width: double.infinity,
+                child: const Icon(
+                  Icons.keyboard_arrow_up_outlined,
+                  color: MITIColor.primary,
+                ),
               ),
             )
           ],
@@ -1233,7 +1230,7 @@ class _FilterChip extends ConsumerWidget {
                   : MITITextStyle.sm.copyWith(
                       color: inFilter ? MITIColor.gray100 : MITIColor.gray50),
             ),
-            if (selected)
+            if (selected && inFilter)
               Padding(
                 padding: EdgeInsets.only(left: 8.w),
                 child: GestureDetector(

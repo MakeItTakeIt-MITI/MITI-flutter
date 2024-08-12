@@ -7,8 +7,10 @@ import 'package:miti/game/param/game_param.dart';
 import 'package:miti/game/provider/widget/game_filter_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:miti/game/repository/game_repository.dart';
+import 'package:miti/user/provider/user_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../auth/provider/auth_provider.dart';
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
 import '../../court/view/court_map_screen.dart';
@@ -309,3 +311,44 @@ Future<BaseModel> hostReview(
     return error;
   });
 }
+
+@riverpod
+Future<BaseModel> gameRecentHosting(GameRecentHostingRef ref) async {
+  final repository = ref.watch(gameRepositoryProvider);
+  final userId = ref.read(authProvider)!.id!;
+  return await repository
+      .getRecentHostings(userId: userId)
+      .then<BaseModel>((value) {
+    logger.i(value);
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
+}
+
+// @Riverpod(keepAlive: false)
+// class GameRecentHosting extends _$GameRecentHosting {
+//   @override
+//   BaseModel build() {
+//     getList();
+//     return LoadingModel();
+//   }
+//
+//   Future<void> getList() async {
+//     state = LoadingModel();
+//     final repository = ref.watch(gameRepositoryProvider);
+//     final userId = ref.read(authProvider)!.id!;
+//     repository.getRecentHostings(userId: userId).then((value) {
+//       logger.i(value);
+//       state = value;
+//     }).catchError((e) {
+//       final error = ErrorModel.respToError(e);
+//       logger.e(
+//           'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+//       state = error;
+//     });
+//   }
+// }

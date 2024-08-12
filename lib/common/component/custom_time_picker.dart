@@ -233,11 +233,9 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
   late final FixedExtentScrollController minController;
 
   String date = "";
-  bool isAfternoon = DateTime.now().hour >= 12;
-  int selectedHour = DateTime.now().hour >= 12
-      ? DateTime.now().hour - 12
-      : DateTime.now().hour;
-  int selectedMinute = (DateTime.now().minute ~/ 10) * 10;
+  bool isAfternoon = false;
+  int selectedHour = 0;
+  int selectedMinute =  0;
 
   @override
   void initState() {

@@ -33,10 +33,13 @@ class GameFilter extends _$GameFilter {
     final now = DateTime.now();
     final df = DateFormat('yyyy-MM-dd');
     final startDate = df.format(now);
-    final hour = DateTime.now().hour.toString();
-    final min = ((DateTime.now().minute ~/ 10) * 10).toString();
+    const hour = '0';
+    const min = '0';
+
     return GameListParam(
-        startdate: startDate, starttime: '$hour:$min', gameStatus: const []);
+        startdate: startDate,
+        starttime: '$hour:$min',
+        gameStatus: GameStatus.values.toList());
   }
 
   void clear() {
@@ -69,17 +72,19 @@ class GameFilter extends _$GameFilter {
     switch (type) {
       case FilterType.date:
         state = GameListParam(
-            startdate: startDate, starttime: state.starttime, gameStatus: state.gameStatus);
+            startdate: startDate,
+            starttime: state.starttime,
+            gameStatus: state.gameStatus);
         break;
       case FilterType.time:
         state = GameListParam(
-            startdate: state.startdate, starttime: '$hour:$min', gameStatus: state.gameStatus);
+            startdate: state.startdate,
+            starttime: '$hour:$min',
+            gameStatus: state.gameStatus);
         break;
       case FilterType.status:
         state = init();
         break;
     }
-
-
   }
 }

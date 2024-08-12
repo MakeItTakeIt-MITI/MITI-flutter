@@ -429,7 +429,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                       path: 'approval',
                       parentNavigatorKey: rootNavKey,
                       name: KakaoPayApprovalScreen.routeName,
-                      redirect: (_, state) => provider.redirectLogic(state),
+                      // redirect: (_, state) => provider.redirectLogic(state),
                       builder: (context, state) {
                         return KakaoPayApprovalScreen();
                       },
@@ -442,7 +442,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                       path: 'host',
                       parentNavigatorKey: rootNavKey,
                       name: GameHostScreen.routeName,
-                      redirect: (_, state) => provider.redirectLogic(state),
+                      // redirect: (_, state) => provider.redirectLogic(state),
                       builder: (context, state) {
                         UserGameType extra = state.extra as UserGameType;
                         final int bottomIdx =
@@ -464,7 +464,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                         path: 'create',
                         parentNavigatorKey: rootNavKey,
                         name: GameCreateScreen.routeName,
-                        redirect: (_, state) => provider.redirectLogic(state),
+                        // redirect: (_, state) => provider.redirectLogic(state),
                         builder: (context, state) {
                           final int bottomIdx = int.parse(
                               state.uri.queryParameters['bottomIdx']!);
@@ -528,8 +528,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                             path: 'players',
                             parentNavigatorKey: rootNavKey,
                             name: GameParticipationScreen.routeName,
-                            redirect: (_, state) =>
-                                provider.redirectLogic(state),
+                            // redirect: (_, state) =>
+                            //     provider.redirectLogic(state),
                             builder: (context, state) {
                               final int gameId =
                                   int.parse(state.pathParameters['gameId']!);
@@ -560,8 +560,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                             path: 'review',
                             parentNavigatorKey: rootNavKey,
                             name: ReviewScreen.routeName,
-                            redirect: (_, state) =>
-                                provider.redirectLogic(state),
+                            // redirect: (_, state) =>
+                            //     provider.redirectLogic(state),
                             builder: (context, state) {
                               final int gameId =
                                   int.parse(state.pathParameters['gameId']!);
@@ -605,8 +605,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                             path: 'cancel/:participationId',
                             parentNavigatorKey: rootNavKey,
                             name: GameRefundScreen.routeName,
-                            redirect: (_, state) =>
-                                provider.redirectLogic(state),
+                            // redirect: (_, state) =>
+                            //     provider.redirectLogic(state),
                             builder: (context, state) {
                               final int gameId =
                                   int.parse(state.pathParameters['gameId']!);
@@ -636,8 +636,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                               path: 'paymentInfo',
                               parentNavigatorKey: rootNavKey,
                               name: GamePaymentScreen.routeName,
-                              redirect: (_, state) =>
-                                  provider.redirectLogic(state),
+                              // redirect: (_, state) =>
+                              //     provider.redirectLogic(state),
                               builder: (context, state) {
                                 final int gameId =
                                     int.parse(state.pathParameters['gameId']!);
@@ -756,8 +756,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                             path: 'form',
                             parentNavigatorKey: rootNavKey,
                             name: SupportFormScreen.routeName,
-                            redirect: (_, state) =>
-                                provider.redirectLogic(state),
+                            // redirect: (_, state) =>
+                            //     provider.redirectLogic(state),
                             builder: (context, state) {
                               final int bottomIdx = int.parse(
                                   state.uri.queryParameters['bottomIdx']!);
@@ -774,8 +774,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                             path: ':questionId',
                             parentNavigatorKey: rootNavKey,
                             name: SupportDetailScreen.routeName,
-                            redirect: (_, state) =>
-                                provider.redirectLogic(state),
+                            // redirect: (_, state) =>
+                            //     provider.redirectLogic(state),
                             builder: (context, state) {
                               final int questionId = int.parse(
                                   state.pathParameters['questionId']!);

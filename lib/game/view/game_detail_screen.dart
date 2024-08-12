@@ -850,6 +850,7 @@ class SummaryComponent extends StatelessWidget {
           SizedBox(height: 20.h),
           ListView.separated(
               padding: EdgeInsets.zero,
+              physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemBuilder: (_, idx) {
                 return gameInfoComponent(

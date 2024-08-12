@@ -8,6 +8,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../common/component/custom_text_form_field.dart';
 import '../../../common/provider/widget/datetime_provider.dart';
+import '../../model/game_recent_host_model.dart';
 
 part 'game_form_provider.g.dart';
 
@@ -40,6 +41,20 @@ class GameForm extends _$GameForm {
       fee: '',
       court: GameCourtParam(name: '', address: '', address_detail: ''),
       checkBoxes: [false, false, false],
+    );
+  }
+
+  void selectGameHistory({required GameRecentHostModel model}) {
+    GameCourtParam court = GameCourtParam(
+        name: model.court.name,
+        address: model.court.address,
+        address_detail: model.court.address_detail);
+    state = state.copyWith(
+      court: court,
+      min_invitation: model.min_invitation.toString(),
+      max_invitation: model.max_invitation.toString(),
+      info: model.info,
+      fee: model.fee.toString(),
     );
   }
 

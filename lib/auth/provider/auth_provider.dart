@@ -118,15 +118,15 @@ class AuthStateNotifier extends StateNotifier<AuthModel?> {
         signUpType: signUpType,
       );
       if (context != null && context.mounted) {
+        log("로그인 완료!");
         context.goNamed(CourtMapScreen.routeName);
       }
-    }else{
+    } else {
       if (context != null && context.mounted) {
+        log("로그인 필요합니다!");
         context.goNamed(LoginScreen.routeName);
       }
     }
-
-
   }
 
   Future<void> logout() async {

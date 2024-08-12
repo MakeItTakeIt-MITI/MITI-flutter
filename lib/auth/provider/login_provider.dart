@@ -85,7 +85,7 @@ Future<void> saveUserInfo(FlutterSecureStorage storage, LoginModel model,
     storage.write(key: 'refreshToken', value: model.token.refresh),
     storage.write(key: 'tokenType', value: model.token.type),
   ]);
-  ref.read(authProvider.notifier).autoLogin();
+  await ref.read(authProvider.notifier).autoLogin();
 }
 
 @riverpod

@@ -151,7 +151,7 @@ class _CustomMapMakerState extends ConsumerState<CustomMapMaker> {
             child: desc,
           ),
         ),
-        // if (widget.model.moreCnt > 1)
+        if (widget.model.moreCnt > 1)
         Positioned(
           top: 0,
           left: painter.width + 14.w,

@@ -30,7 +30,9 @@ import '../../common/component/custom_time_picker.dart';
 import '../../common/provider/router_provider.dart';
 import '../../court/component/court_list_component.dart';
 import '../../util/util.dart';
+import '../component/game_recent_component.dart';
 import '../model/game_model.dart';
+import '../model/game_recent_host_model.dart';
 import '../param/game_param.dart';
 import 'game_create_complete_screen.dart';
 
@@ -60,6 +62,27 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      final result = await ref.read(gameRecentHostingProvider.future);
+
+      if (result is ErrorModel) {
+      } else {
+        final model = (result as ResponseListModel<GameRecentHostModel>).data!;
+        log("model ${model.length}");
+        if (model.isNotEmpty) {
+          final extra = GameRecentComponent(
+            models: model,
+          );
+          if (mounted) {
+            // showDialog(context: context, builder: (_){
+            //   return extra;
+            // });
+            context.pushNamed(DialogPage.routeName, extra: extra);
+          }
+        }
+      }
+    });
   }
 
   @override
@@ -70,13 +93,10 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
-
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       onPanDown: (v) => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        // resizeToAvoidBottomInset: false,
         body: NestedScrollView(
           controller: _scrollController,
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -492,6 +512,56 @@ class _GameTimePickerState extends State<_GameTimePicker> {
 
   @override
   Widget build(BuildContext context) {
+    // return ExpansionPanelList(children: [ExpansionPanel(
+    //
+    //     headerBuilder: (_, isExpand) {
+    //       return Row(
+    //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //         crossAxisAlignment: CrossAxisAlignment.center,
+    //         children: [
+    //           Text(
+    //             widget.isStart ? "경기 시작 시간" : "경기 종료 시간",
+    //             style: MITITextStyle.sm.copyWith(
+    //               color: MITIColor.gray100,
+    //             ),
+    //           ),
+    //           Row(
+    //             // crossAxisAlignment: CrossAxisAlignment.center,
+    //             children: [
+    //               Consumer(
+    //                 builder:
+    //                     (BuildContext context, WidgetRef ref, Widget? child) {
+    //                   final dateTime =
+    //                   ref.watch(datePickerProvider(widget.isStart));
+    //                   final text = dateTime.isNotEmpty
+    //                       ? dateTime.substring(7)
+    //                       : dateTime;
+    //                   return Text(
+    //                     text,
+    //                     style: MITITextStyle.smSemiBold.copyWith(
+    //                       color: MITIColor.primary,
+    //                     ),
+    //                   );
+    //                 },
+    //               ),
+    //               SizedBox(width: 16.w),
+    //               Transform.rotate(
+    //                 angle: isOpen ? 180 * pi / 180 : 0,
+    //                 child: SvgPicture.asset(
+    //                   AssetUtil.getAssetPath(
+    //                       type: AssetType.icon, name: "top_arrow"),
+    //                 ),
+    //               )
+    //             ],
+    //           )
+    //         ],
+    //       );
+    //     },
+    //     isExpanded: true,
+    //     canTapOnHeader: true,
+    //     body: CustomDateTimePicker(
+    //       isStart: widget.isStart,
+    //     ))],);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -531,9 +601,12 @@ class _GameTimePickerState extends State<_GameTimePicker> {
                     },
                   ),
                   SizedBox(width: 16.w),
-                  SvgPicture.asset(
-                    AssetUtil.getAssetPath(
-                        type: AssetType.icon, name: "top_arrow"),
+                  Transform.rotate(
+                    angle: isOpen ? 180 * pi / 180 : 0,
+                    child: SvgPicture.asset(
+                      AssetUtil.getAssetPath(
+                          type: AssetType.icon, name: "top_arrow"),
+                    ),
                   )
                 ],
               )
@@ -845,7 +918,7 @@ class _AddressFormState extends ConsumerState<_AddressForm> {
   }
 }
 
-class ApplyForm extends ConsumerWidget {
+class ApplyForm extends ConsumerStatefulWidget {
   final String? initMaxValue;
   final String? initMinValue;
   final List<GlobalKey> formKeys;
@@ -862,7 +935,33 @@ class ApplyForm extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ApplyForm> createState() => _ApplyFormState();
+}
+
+class _ApplyFormState extends ConsumerState<ApplyForm> {
+  late final TextEditingController maxController;
+  late final TextEditingController minController;
+
+  @override
+  void initState() {
+    super.initState();
+    maxController = TextEditingController();
+    minController = TextEditingController();
+  }
+
+  @override
+  Widget build(
+    BuildContext context,
+  ) {
+    ref.listen(gameFormProvider, (previous, next) {
+      if (previous?.max_invitation != next.max_invitation) {
+        maxController.text = next.max_invitation;
+      }
+      if (previous?.min_invitation != next.min_invitation) {
+        minController.text = next.min_invitation;
+      }
+    });
+
     final max_invitation =
         ref.watch(gameFormProvider.select((value) => value.max_invitation));
     final min_invitation =
@@ -877,11 +976,12 @@ class ApplyForm extends ConsumerWidget {
           children: [
             Expanded(
               child: CustomTextFormField(
-                focusNode: focusNodes[1],
-                key: formKeys[1],
-                initialValue: initMinValue,
+                textEditingController: maxController,
+                focusNode: widget.focusNodes[1],
+                key: widget.formKeys[1],
+                initialValue: widget.initMinValue,
                 hintText: '00',
-                label: isUpdateForm ? null : '총 모집 인원',
+                label: widget.isUpdateForm ? null : '총 모집 인원',
                 textAlign: TextAlign.right,
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
@@ -914,11 +1014,12 @@ class ApplyForm extends ConsumerWidget {
             SizedBox(width: 12.w),
             Expanded(
               child: CustomTextFormField(
-                focusNode: focusNodes[0],
-                key: formKeys[0],
-                initialValue: initMaxValue,
+                textEditingController: minController,
+                focusNode: widget.focusNodes[0],
+                key: widget.formKeys[0],
+                initialValue: widget.initMaxValue,
                 hintText: '00',
-                label: isUpdateForm ? null : '',
+                label: widget.isUpdateForm ? null : '',
                 textAlign: TextAlign.right,
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
@@ -972,14 +1073,33 @@ class ApplyForm extends ConsumerWidget {
   }
 }
 
-class _FeeForm extends ConsumerWidget {
+class _FeeForm extends ConsumerStatefulWidget {
   const _FeeForm({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_FeeForm> createState() => _FeeFormState();
+}
+
+class _FeeFormState extends ConsumerState<_FeeForm> {
+  late final TextEditingController feeController;
+
+  @override
+  void initState() {
+    super.initState();
+    feeController = TextEditingController();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ref.listen(gameFormProvider, (previous, next) {
+      if (previous?.fee != next.fee) {
+        feeController.text = next.fee;
+      }
+    });
     final fee = ref.watch(gameFormProvider.select((value) => value.fee));
     return SliverToBoxAdapter(
         child: CustomTextFormField(
+      textEditingController: feeController,
       hintText: '경기 참가비를 입력해주세요.',
       label: '경기 참가비',
       keyboardType: TextInputType.number,
@@ -1003,11 +1123,30 @@ class _FeeForm extends ConsumerWidget {
   }
 }
 
-class _AdditionalInfoForm extends ConsumerWidget {
+class _AdditionalInfoForm extends ConsumerStatefulWidget {
   const _AdditionalInfoForm({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_AdditionalInfoForm> createState() =>
+      _AdditionalInfoFormState();
+}
+
+class _AdditionalInfoFormState extends ConsumerState<_AdditionalInfoForm> {
+  late final TextEditingController infoController;
+
+  @override
+  void initState() {
+    super.initState();
+    infoController = TextEditingController();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ref.listen(gameFormProvider, (previous, next) {
+      if (previous?.info != next.info) {
+        infoController.text = next.info;
+      }
+    });
     final info = ref.watch(gameFormProvider.select((value) => value.info));
     return SliverToBoxAdapter(
       child: Column(
@@ -1029,6 +1168,7 @@ class _AdditionalInfoForm extends ConsumerWidget {
                 reverse: true,
                 child: TextField(
                   maxLines: null,
+                  controller: infoController,
                   textAlignVertical: TextAlignVertical.top,
                   style: MITITextStyle.sm150.copyWith(
                     color: MITIColor.gray100,
@@ -1172,16 +1312,18 @@ class OperationTermScreen extends StatelessWidget {
               ),
               SizedBox(height: 12.h),
               Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Text(
-                        desc,
-                        style: MITITextStyle.xxsmLight150.copyWith(
-                          color: MITIColor.gray200,
+                child: Scrollbar(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Text(
+                          desc,
+                          style: MITITextStyle.xxsmLight150.copyWith(
+                            color: MITIColor.gray200,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

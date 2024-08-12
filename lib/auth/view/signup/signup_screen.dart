@@ -1556,8 +1556,8 @@ class SignUpCompleteScreen extends StatelessWidget {
               Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   return TextButton(
-                      onPressed: () {
-                        ref
+                      onPressed: () async {
+                        await ref
                             .read(authProvider.notifier)
                             .autoLogin(context: context);
                       },
