@@ -110,6 +110,12 @@ class GameForm extends _$GameForm {
     newCheckBoxes[idx] = !newCheckBoxes[idx];
     if (idx == 0) {
       newCheckBoxes.fillRange(0, 3, newCheckBoxes[0]);
+    } else {
+      if (newCheckBoxes[1] && newCheckBoxes[2]) {
+        newCheckBoxes.fillRange(0, 3, true);
+      } else {
+        newCheckBoxes[0] = false;
+      }
     }
 
     state = state.copyWith(checkBoxes: newCheckBoxes);

@@ -945,8 +945,8 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
   @override
   void initState() {
     super.initState();
-    maxController = TextEditingController();
-    minController = TextEditingController();
+    maxController = TextEditingController(text: widget.initMaxValue);
+    minController = TextEditingController(text: widget.initMinValue);
   }
 
   @override
@@ -979,7 +979,7 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
                 textEditingController: maxController,
                 focusNode: widget.focusNodes[1],
                 key: widget.formKeys[1],
-                initialValue: widget.initMinValue,
+                // initialValue: widget.initMinValue,
                 hintText: '00',
                 label: widget.isUpdateForm ? null : '총 모집 인원',
                 textAlign: TextAlign.right,
@@ -1017,7 +1017,7 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
                 textEditingController: minController,
                 focusNode: widget.focusNodes[0],
                 key: widget.formKeys[0],
-                initialValue: widget.initMaxValue,
+                // initialValue: widget.initMaxValue,
                 hintText: '00',
                 label: widget.isUpdateForm ? null : '',
                 textAlign: TextAlign.right,
