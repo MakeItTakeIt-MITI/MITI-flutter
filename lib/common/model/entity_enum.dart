@@ -22,17 +22,17 @@ enum GameStatus {
 }
 
 enum ParticipationStatus {
-  /// 참여가 생성되었지만 결제가 이루어지지 않음
-  @JsonValue('참여요청')
-  apply('참여요청'),
+  /// 경기 참여 요청 생성 상태
+  @JsonValue('requested')
+  requested('참여요청'),
 
-  /// 참여 생성 및 결제 완료
-  @JsonValue('참여확정')
-  complete('참여확정'),
+  /// 경기 참여 확정 상태
+  @JsonValue('confirmed')
+  confirmed('참여확정'),
 
-  /// 결제 완료 후 결제 취소
-  @JsonValue('참여취소')
-  cancel('참여취소');
+  /// 경기 참여 취소 상태
+  @JsonValue('canceled')
+  canceled('참여취소');
 
   const ParticipationStatus(this.name);
 
@@ -226,3 +226,8 @@ enum InputFormType {
 }
 
 enum PasswordFormType { password, passwordCheck, newPassword, newPasswordCheck }
+
+enum PaymentMethodType {
+  empty_pay,
+  kakao_pay;
+}

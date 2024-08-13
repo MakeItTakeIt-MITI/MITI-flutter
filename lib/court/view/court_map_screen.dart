@@ -289,79 +289,105 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
             ),
           ),
         ),
-        DraggableScrollableSheet(
-          initialChildSize: 0.1,
-          // 0.04
-          maxChildSize: 0.8,
-          minChildSize: 0.1,
-          snap: true,
-          controller: _draggableScrollableController,
-          builder: (BuildContext context, ScrollController scrollController) {
-            return Container(
-              decoration: BoxDecoration(
-                  color: MITIColor.gray900,
-                  borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(16.r))),
-              alignment: Alignment.topCenter,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(height: 8.h),
-                        Container(
-                          height: 4.h,
-                          width: 60.w,
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(8.r)),
-                            color: MITIColor.gray100,
-                          ),
-                        ),
-                        SizedBox(height: 8.h),
-                        Consumer(builder: (_, ref, child) {
-                          final modelList = ref.watch(selectGameListProvider);
-                          if (modelList.isNotEmpty) {
-                            return Padding(
-                              padding: EdgeInsets.only(left: 12.w),
-                              child: Text(
-                                '${modelList.length}개의 매치',
-                                style: MITITextStyle.selectionDayStyle.copyWith(
-                                  color: MITIColor.gray100,
-                                ),
+        Positioned(
+
+          child: DraggableScrollableSheet(
+            initialChildSize: 0.04,
+            // 0.04
+            maxChildSize: 0.8,
+            minChildSize: 0.04,
+            snap: true,
+            controller: _draggableScrollableController,
+            builder: (BuildContext context, ScrollController scrollController) {
+              return Container(
+                decoration: BoxDecoration(
+                    color: MITIColor.gray900,
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(16.r))),
+                alignment: Alignment.topCenter,
+                child: Stack(
+                  // crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Positioned.fill(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: Scrollbar(
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: CustomScrollView(
+                                controller: scrollController,
+                                slivers: [
+                                  SliverToBoxAdapter(
+                                    child: SizedBox(height: 62.h),
+                                  ),
+                                  Consumer(
+                                    builder: (BuildContext context,
+                                        WidgetRef ref, Widget? child) {
+                                      final modelList =
+                                          ref.watch(selectGameListProvider);
+                                      return SliverPadding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 21.w),
+                                        sliver: _getCourtComponent(modelList),
+                                      );
+                                    },
+                                  ),
+                                ],
                               ),
-                            );
-                          }
-                          return Container();
-                        }),
-                        SizedBox(height: 10.h),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: CustomScrollView(
-                      controller: scrollController,
-                      slivers: [
-                        Consumer(
-                          builder: (BuildContext context, WidgetRef ref,
-                              Widget? child) {
-                            final modelList = ref.watch(selectGameListProvider);
-                            return SliverPadding(
-                              padding: EdgeInsets.symmetric(horizontal: 21.w),
-                              sliver: _getCourtComponent(modelList),
-                            );
-                          },
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          SizedBox(height: 8.h),
+                          Align(
+                            alignment: Alignment.center,
+                            child: Container(
+                              height: 4.h,
+                              width: 60.w,
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8.r)),
+                                color: MITIColor.gray100,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 20.h),
+                          Consumer(builder: (_, ref, child) {
+                            final modelList = ref.watch(selectGameListProvider);
+                            if (modelList.isNotEmpty) {
+                              return Padding(
+                                padding: EdgeInsets.only(left: 33.w),
+                                child: Text(
+                                  '${modelList.length}개의 매치',
+                                  style:
+                                      MITITextStyle.selectionDayStyle.copyWith(
+                                    color: MITIColor.gray100,
+                                  ),
+                                ),
+                              );
+                            }
+                            return Container();
+                          }),
+                          SizedBox(height: 10.h),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         )
       ],
     );

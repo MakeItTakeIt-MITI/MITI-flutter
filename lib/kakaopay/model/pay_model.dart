@@ -5,7 +5,34 @@ import 'package:miti/common/model/model_id.dart';
 part 'pay_model.g.dart';
 
 @JsonSerializable()
-class PayReadyModel {
+class PayBaseModel {
+  PayBaseModel();
+
+  factory PayBaseModel.fromJson(Map<String, dynamic> json) =>
+      _$PayBaseModelFromJson(json);
+}
+
+@JsonSerializable()
+class PayFreeModel extends PayBaseModel {
+  final int id;
+  final int game;
+  final int user;
+
+  final ParticipationStatus participation_status;
+
+  PayFreeModel({
+    required this.game,
+    required this.participation_status,
+    required this.user,
+    required this.id,
+  });
+
+  factory PayFreeModel.fromJson(Map<String, dynamic> json) =>
+      _$PayFreeModelFromJson(json);
+}
+
+@JsonSerializable()
+class PayReadyModel extends PayBaseModel {
   final String next_redirect_app_url;
   final String next_redirect_mobile_url;
   final String next_redirect_pc_url;

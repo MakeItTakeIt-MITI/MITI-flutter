@@ -19,6 +19,7 @@ import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/provider/secure_storage_provider.dart';
 import 'package:miti/common/provider/widget/form_provider.dart';
 import 'package:miti/court/view/court_map_screen.dart';
+import 'package:miti/game/view/game_create_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
@@ -29,6 +30,7 @@ import '../../../common/model/entity_enum.dart';
 import '../../../common/provider/form_util_provider.dart';
 import '../../../common/provider/router_provider.dart';
 import '../../../common/provider/widget/datetime_provider.dart';
+import '../../../game/view/game_refund_screen.dart';
 import '../../../util/util.dart';
 import '../../error/auth_error.dart';
 import '../../model/signup_model.dart';
@@ -272,7 +274,14 @@ class _ProgressComponent extends ConsumerWidget {
 }
 
 class CheckBoxFormV2 extends ConsumerStatefulWidget {
-  const CheckBoxFormV2({super.key});
+  final List<CustomCheckBox> checkBoxes;
+  final VoidCallback allTap;
+
+  const CheckBoxFormV2({
+    super.key,
+    required this.checkBoxes,
+    required this.allTap,
+  });
 
   @override
   ConsumerState<CheckBoxFormV2> createState() => _CheckBoxFormV2State();
@@ -281,6 +290,7 @@ class CheckBoxFormV2 extends ConsumerStatefulWidget {
 class _CheckBoxFormV2State extends ConsumerState<CheckBoxFormV2> {
   @override
   Widget build(BuildContext context) {
+    final checked = ref.watch(checkProvider(2));
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -288,31 +298,9 @@ class _CheckBoxFormV2State extends ConsumerState<CheckBoxFormV2> {
           child: CustomCheckBox(
             title: '약관 전체 동의하기',
             textStyle: MITITextStyle.md.copyWith(color: MITIColor.gray100),
-            check: true,
+            check: checked,
             isCheckBox: true,
-            onTap: () {
-              showGeneralDialog(
-                  context: context,
-                  pageBuilder: (_, __, ___) {
-                    return Scaffold(
-                      appBar: DefaultAppBar(
-                        title: "SSS",
-                        hasBorder: false,
-                      ),
-                      backgroundColor: MITIColor.gray800,
-                      body: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 21.w),
-                        child: Column(
-                          children: [
-                            TextButton(onPressed: () {
-                              context.pop();
-                            }, child: Text("확인"))
-                          ],
-                        ),
-                      ),
-                    );
-                  });
-            },
+            onTap: widget.allTap,
           ),
         ),
         Divider(
@@ -320,6 +308,15 @@ class _CheckBoxFormV2State extends ConsumerState<CheckBoxFormV2> {
           color: MITIColor.gray600,
           height: 40.h,
         ),
+        ListView.separated(
+            padding: EdgeInsets.zero,
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemBuilder: (_, idx) {
+              return widget.checkBoxes[idx];
+            },
+            separatorBuilder: (_, idx) => SizedBox(height: 16.h),
+            itemCount: widget.checkBoxes.length)
       ],
     );
   }
