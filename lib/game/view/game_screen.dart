@@ -105,8 +105,8 @@ class _GameScreenState extends ConsumerState<GameScreen>
             headerSliverBuilder:
                 (BuildContext context, bool innerBoxIsScrolled) {
               return [
-                SliverToBoxAdapter(
-                  child: TabBar(
+                SliverPersistentHeader(
+                  delegate: _SliverAppBarDelegate(TabBar(
                     indicatorWeight: 1.w,
                     unselectedLabelColor: MITIColor.gray500,
                     indicatorSize: TabBarIndicatorSize.tab,
@@ -120,8 +120,9 @@ class _GameScreenState extends ConsumerState<GameScreen>
                       Tab(child: Text('호스트로 참여한 경기')),
                       Tab(child: Text('게스트로 참여한 경기')),
                     ],
-                  ),
-                )
+                  )),
+                  pinned: true,
+                ),
               ];
             },
             body: TabBarView(controller: tabController, children: const [
@@ -134,5 +135,28 @@ class _GameScreenState extends ConsumerState<GameScreen>
             ])),
       ),
     );
+  }
+}
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  _SliverAppBarDelegate(this._tabBar);
+
+  final TabBar _tabBar;
+
+  @override
+  double get minExtent => _tabBar.preferredSize.height;
+
+  @override
+  double get maxExtent => _tabBar.preferredSize.height;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return _tabBar;
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return false;
   }
 }

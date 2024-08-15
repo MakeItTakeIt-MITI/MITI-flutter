@@ -7,24 +7,41 @@ import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
-class GameCreateCompleteScreen extends StatelessWidget {
+enum GameCompleteType {
+  create,
+  payment;
+}
+
+class GameCompleteScreen extends StatelessWidget {
   final int gameId;
+  final GameCompleteType type;
+  late final List<String> title;
 
-  static String get routeName => 'gameCreateComplete';
+  late final List<String> desc;
 
-  GameCreateCompleteScreen(
-      {super.key, required this.gameId, });
+  static String get routeName => 'gameComplete';
 
-  List<String> title = [
-    "경기 정보를 다시 확인해 주세요!",
-    "경기 무료 전환은 경기 시작 30분 전까지",
-    "매치 완료 후, 리뷰 남기기"
-  ];
-  List<String> desc = [
-    "경기 정보가 올바르게 작성되었는지 확인해 주세요.\n경기 취소는 경기 생성 후 2시간 이내로만 가능하니 잘못 생성 하셨다면 빠르게 취소해 주세요!",
-    "경기 참가비를 무료로 전환할 수 있어요. 다만, 경기 시작 30분 전까지만 전환 가능하니 주의해 주세요.",
-    "경기가 종료된 후, 리뷰를 통해 함께 플레이 한 선수들에게 리뷰를 남겨주세요. 리뷰는 올바른 농구 문화를 이루는 데 도움이 됩니다!"
-  ];
+  GameCompleteScreen({
+    super.key,
+    required this.gameId,
+    required this.type,
+  }) {
+    title = type == GameCompleteType.create
+        ? ["경기 정보를 다시 확인해 주세요!", "경기 무료 전환은 경기 시작 30분 전까지", "매치 완료 후, 리뷰 남기기"]
+        : ['경기 장소까지의 경로를 미리 검색하기', '경기 운영 정보를 확인하기', '매치 완료 후, 리뷰 남기기'];
+
+    desc = type == GameCompleteType.create
+        ? [
+            "경기 정보가 올바르게 작성되었는지 확인해 주세요.\n경기 취소는 경기 생성 후 2시간 이내로만 가능하니 잘못 생성 하셨다면 빠르게 취소해 주세요!",
+            "경기 참가비를 무료로 전환할 수 있어요. 다만, 경기 시작 30분 전까지만 전환 가능하니 주의해 주세요.",
+            "경기가 종료된 후, 리뷰를 통해 함께 플레이 한 선수들에게 리뷰를 남겨주세요. 리뷰는 올바른 농구 문화를 이루는 데 도움이 됩니다!"
+          ]
+        : [
+            '경기 상세 정보에서 참여할 경기의 시간과 경기 장소를 확인하여, 약속 시간에 늦지 않도록 경기장까지의 경로를 미리 찾아주세요!',
+            '경기 운영 정보를 통해 경기장의 주차, 샤워실, 유니폼, 참여인원 등을 미리 확인하여 경기 참여 시 차질이 없도록 준비해 주세요.',
+            '경기가 종료된 후, 리뷰를 통해 함께 플레이 한 선수들에게 리뷰를 남겨주세요. 리뷰는 올바른 농구 문화를 이루는 데 도움이 됩니다!'
+          ];
+  }
 
   Widget getProgress(int idx) {
     return Container(
@@ -87,7 +104,7 @@ class GameCreateCompleteScreen extends StatelessWidget {
             children: [
               SizedBox(height: 60.h),
               Text(
-                '경기 생성 완료!',
+                type == GameCompleteType.create ? '경기 생성 완료!' : '경기 참여 완료!',
                 style: MITITextStyle.xxl140.copyWith(
                   color: Colors.white,
                 ),
@@ -103,7 +120,9 @@ class GameCreateCompleteScreen extends StatelessWidget {
               ),
               SizedBox(height: 60.h),
               Text(
-                "새로운 경기를 생성하셨습니다.",
+                type == GameCompleteType.create
+                    ? "새로운 경기를 생성하셨습니다."
+                    : '경기 참여가 확정되었습니다.',
                 style: MITITextStyle.md.copyWith(
                   color: MITIColor.gray100,
                 ),

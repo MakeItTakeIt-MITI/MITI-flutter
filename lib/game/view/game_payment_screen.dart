@@ -24,8 +24,10 @@ import 'package:miti/theme/text_theme.dart';
 import 'package:miti/util/util.dart';
 
 import '../../auth/view/signup/signup_screen.dart';
+import '../../kakaopay/view/approval_screen.dart';
 import '../../kakaopay/view/payment_screen.dart';
 import '../error/game_error.dart';
+import 'game_create_complete_screen.dart';
 import 'game_create_screen.dart';
 import 'game_detail_screen.dart';
 
@@ -125,9 +127,11 @@ class GamePaymentScreen extends StatelessWidget {
                               ],
                             )),
                         getDivider(),
-                        const _PaymentAndRefundPolicyComponent(),
+                        const PaymentAndRefundPolicyComponent(
+                          title: '결제 및 환불 정책',
+                        ),
                         getDivider(),
-                        const _PaymentCheckForm(),
+                        const PaymentCheckForm(),
                       ],
                     ),
                   );
@@ -167,11 +171,19 @@ class GamePaymentScreen extends StatelessWidget {
             break;
           case PaymentMethodType.empty_pay:
             log("무료 경기 참여 완료");
-            final pathParameters = {'gameId': gameId.toString()};
-            context.goNamed(
-              GameDetailScreen.routeName,
+            Map<String, String> pathParameters = {'gameId': gameId.toString()};
+            const GameCompleteType extra = GameCompleteType.payment;
+
+            context.pushNamed(
+              GameCompleteScreen.routeName,
               pathParameters: pathParameters,
+              extra: extra,
             );
+            // final pathParameters = {'gameId': gameId.toString()};
+            // context.goNamed(
+            //   GameDetailScreen.routeName,
+            //   pathParameters: pathParameters,
+            // );
             break;
         }
       }
@@ -179,14 +191,14 @@ class GamePaymentScreen extends StatelessWidget {
   }
 }
 
-class _PaymentCheckForm extends ConsumerStatefulWidget {
-  const _PaymentCheckForm({super.key});
+class PaymentCheckForm extends ConsumerStatefulWidget {
+  const PaymentCheckForm({super.key});
 
   @override
-  ConsumerState<_PaymentCheckForm> createState() => _PaymentCheckFormState();
+  ConsumerState<PaymentCheckForm> createState() => PaymentCheckFormState();
 }
 
-class _PaymentCheckFormState extends ConsumerState<_PaymentCheckForm> {
+class PaymentCheckFormState extends ConsumerState<PaymentCheckForm> {
   bool check1 = false;
   bool check2 = false;
 
@@ -461,8 +473,10 @@ class PayWayButton extends ConsumerWidget {
   }
 }
 
-class _PaymentAndRefundPolicyComponent extends StatelessWidget {
-  const _PaymentAndRefundPolicyComponent({super.key});
+class PaymentAndRefundPolicyComponent extends StatelessWidget {
+  final String title;
+
+  const PaymentAndRefundPolicyComponent({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -482,7 +496,7 @@ class _PaymentAndRefundPolicyComponent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            '결제 및 환불 정책',
+            title,
             style: MITITextStyle.mdBold.copyWith(
               color: MITIColor.gray100,
             ),

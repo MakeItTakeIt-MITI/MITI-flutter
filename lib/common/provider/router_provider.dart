@@ -470,13 +470,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                           GoRoute(
                             path: ':gameId/complete',
                             parentNavigatorKey: rootNavKey,
-                            name: GameCreateCompleteScreen.routeName,
+                            name: GameCompleteScreen.routeName,
                             builder: (context, state) {
+                              final extra = state.extra as GameCompleteType;
+
                               final int gameId =
                                   int.parse(state.pathParameters['gameId']!);
-
-                              return GameCreateCompleteScreen(
+                              return GameCompleteScreen(
                                 gameId: gameId,
+                                type: extra,
                               );
                             },
                             // pageBuilder: (context, state) {

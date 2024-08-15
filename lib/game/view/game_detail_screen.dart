@@ -195,7 +195,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
                                       if (result is ErrorModel) {
                                       } else {
                                         if (context.mounted) {
-                                          context.pop();
+                                          context.goNamed(GameScreen.routeName);
                                         }
                                       }
                                     },

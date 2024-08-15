@@ -131,7 +131,7 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
                 getSpacer(),
                 const _AdditionalInfoForm(),
                 getSpacer(height: 32),
-                const _AgreeTermComponent(),
+                const AgreeTermComponent(),
                 getSpacer(height: 20),
               ],
             ),
@@ -159,10 +159,11 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
                               Map<String, String> pathParameters = {
                                 'gameId': model.data!.id.toString()
                               };
-
+                              const GameCompleteType extra = GameCompleteType.create;
                               context.pushNamed(
-                                GameCreateCompleteScreen.routeName,
+                                GameCompleteScreen.routeName,
                                 pathParameters: pathParameters,
+                                extra: extra,
                               );
                             }
                           }
@@ -1253,8 +1254,8 @@ class _AdditionalInfoFormState extends ConsumerState<_AdditionalInfoForm> {
   }
 }
 
-class _AgreeTermComponent extends ConsumerWidget {
-  const _AgreeTermComponent({super.key});
+class AgreeTermComponent extends ConsumerWidget {
+  const AgreeTermComponent({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

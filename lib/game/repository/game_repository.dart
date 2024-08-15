@@ -104,7 +104,7 @@ abstract class GameRepository {
   });
 
   @Headers({'token': 'true'})
-  @GET('/games/{gameId}/cancel')
+  @PUT('/games/{gameId}/cancel')
   Future<ResponseModel<GameDetailModel>> cancelRecruitGame({
     @Path('gameId') required int gameId,
   });

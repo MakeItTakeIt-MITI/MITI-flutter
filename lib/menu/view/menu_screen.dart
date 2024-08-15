@@ -129,12 +129,8 @@ class _GameComponent extends StatelessWidget {
                 SizedBox(height: 20.h),
                 InkWell(
                   onTap: () {
-                    final Map<String, String> queryParameters = {
-                      'bottomIdx': '3'
-                    };
                     context.pushNamed(
                       GameCreateScreen.routeName,
-                      queryParameters: queryParameters,
                     );
                   },
                   child: Text(

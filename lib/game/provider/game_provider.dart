@@ -13,7 +13,10 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../auth/provider/auth_provider.dart';
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
+import '../../common/param/pagination_param.dart';
 import '../../court/view/court_map_screen.dart';
+import '../../user/provider/user_pagination_provider.dart';
+import '../../user/repository/user_repository.dart';
 
 part 'game_provider.g.dart';
 
@@ -78,6 +81,14 @@ Future<BaseModel> gameCreate(GameCreateRef ref) async {
 
   return await repository.createGame(param: param).then<BaseModel>((value) {
     logger.i(value);
+    final userId = ref.read(authProvider)!.id!;
+    ref
+        .read(userHostingPProvider(PaginationStateParam(path: userId)).notifier)
+        .paginate(
+          path: userId,
+          forceRefetch: true,
+          paginationParams: const PaginationParam(page: 1),
+        );
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
@@ -337,6 +348,15 @@ Future<BaseModel> cancelRecruitGame(CancelRecruitGameRef ref,
       .cancelRecruitGame(gameId: gameId)
       .then<BaseModel>((value) {
     logger.i(value);
+    final userId = ref.read(authProvider)?.id!;
+
+    ref
+        .read(userHostingPProvider(PaginationStateParam(path: userId)).notifier)
+        .paginate(
+          path: userId,
+          forceRefetch: true,
+          paginationParams: const PaginationParam(page: 1),
+        );
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
