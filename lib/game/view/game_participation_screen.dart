@@ -20,12 +20,10 @@ import '../model/game_model.dart';
 
 class GameParticipationScreen extends StatefulWidget {
   final int gameId;
-  final int bottomIdx;
 
   static String get routeName => 'participation';
 
-  const GameParticipationScreen(
-      {super.key, required this.gameId, required this.bottomIdx});
+  const GameParticipationScreen({super.key, required this.gameId});
 
   @override
   State<GameParticipationScreen> createState() =>
@@ -50,7 +48,7 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
-      bottomIdx: widget.bottomIdx,
+      bottomIdx: 0,
       scrollController: _scrollController,
       body: NestedScrollView(
         controller: _scrollController,
@@ -91,12 +89,10 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
                         _HostReviewComponent(
                           host: model.host!,
                           gameId: widget.gameId,
-                          bottomIdx: widget.bottomIdx,
                         ),
                       _GuestReviewComponent(
                         participated_users: model.participations,
                         gameId: widget.gameId,
-                        bottomIdx: widget.bottomIdx,
                       ),
                     ],
                   );
@@ -116,41 +112,37 @@ class _PlayerComponent extends StatelessWidget {
   final GamePlayerModel user;
   final int gameId;
   final int? participationId;
-  final int bottomIdx;
 
-  const _PlayerComponent(
-      {super.key,
-      required this.id,
-      this.participation_status,
-      required this.user,
-      this.participationId,
-      required this.gameId,
-      required this.bottomIdx});
+  const _PlayerComponent({
+    super.key,
+    required this.id,
+    this.participation_status,
+    required this.user,
+    this.participationId,
+    required this.gameId,
+  });
 
-  factory _PlayerComponent.fromParticipationModel(
-      {required GameParticipationModel model,
-      required int gameId,
-      required int bottomIdx}) {
+  factory _PlayerComponent.fromParticipationModel({
+    required GameParticipationModel model,
+    required int gameId,
+  }) {
     return _PlayerComponent(
       id: model.id,
       participation_status: model.participation_status,
       user: model.user,
       gameId: gameId,
       participationId: model.id,
-      bottomIdx: bottomIdx,
     );
   }
 
   factory _PlayerComponent.fromHostModel({
     required GamePlayerModel model,
     required int gameId,
-    required int bottomIdx,
   }) {
     return _PlayerComponent(
       id: model.id,
       user: model,
       gameId: gameId,
-      bottomIdx: bottomIdx,
     );
   }
 
@@ -183,17 +175,10 @@ class _PlayerComponent extends StatelessWidget {
         Map<String, String> pathParameters = {
           'gameId': gameId.toString(),
         };
-        Map<String, String> queryParameters = {
-          'bottomIdx': bottomIdx.toString()
-        };
-        if (participationId != null) {
-          queryParameters['participationId'] = participationId.toString();
-        }
-        queryParameters['ratingId'] = user.rating.id.toString();
+
         context.pushNamed(
           ReviewScreen.routeName,
           pathParameters: pathParameters,
-          queryParameters: queryParameters,
         );
       },
       child: Container(
@@ -260,13 +245,12 @@ class _PlayerComponent extends StatelessWidget {
 class _HostReviewComponent extends StatelessWidget {
   final GamePlayerModel host;
   final int gameId;
-  final int bottomIdx;
 
-  const _HostReviewComponent(
-      {super.key,
-      required this.host,
-      required this.gameId,
-      required this.bottomIdx});
+  const _HostReviewComponent({
+    super.key,
+    required this.host,
+    required this.gameId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -285,7 +269,6 @@ class _HostReviewComponent extends StatelessWidget {
           _PlayerComponent.fromHostModel(
             model: host,
             gameId: gameId,
-            bottomIdx: bottomIdx,
           ),
         ],
       ),
@@ -296,13 +279,12 @@ class _HostReviewComponent extends StatelessWidget {
 class _GuestReviewComponent extends StatelessWidget {
   final List<GameParticipationModel> participated_users;
   final int gameId;
-  final int bottomIdx;
 
-  const _GuestReviewComponent(
-      {super.key,
-      required this.participated_users,
-      required this.gameId,
-      required this.bottomIdx});
+  const _GuestReviewComponent({
+    super.key,
+    required this.participated_users,
+    required this.gameId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -328,7 +310,6 @@ class _GuestReviewComponent extends StatelessWidget {
                     model: participated_users[idx],
                     gameId: gameId,
                     // participationId: participationId,
-                    bottomIdx: bottomIdx,
                   );
                 },
                 separatorBuilder: (_, idx) {

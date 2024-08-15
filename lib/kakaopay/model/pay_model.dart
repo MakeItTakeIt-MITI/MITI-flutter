@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:json_annotation/json_annotation.dart';
 import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/common/model/model_id.dart';
@@ -8,8 +10,22 @@ part 'pay_model.g.dart';
 class PayBaseModel {
   PayBaseModel();
 
-  factory PayBaseModel.fromJson(Map<String, dynamic> json) =>
-      _$PayBaseModelFromJson(json);
+  // 기본 fromJson 메소드
+  factory PayBaseModel.fromJson(Map<String, dynamic> json) {
+    // 타입을 구분할 수 있는 필드를 기준으로 적절한 서브클래스를 반환합니다.
+    if (json.containsKey('next_redirect_app_url')) {
+      log("PayReadyModel");
+      return PayReadyModel.fromJson(json);
+    } else if (json.containsKey('game')) {
+      log("PayFreeModel");
+      return PayFreeModel.fromJson(json);
+    } else {
+      // 필요한 경우 기본 PayBaseModel을 반환
+      log("_PayBaseModelFromJson");
+
+      return _$PayBaseModelFromJson(json);
+    }
+  }
 }
 
 @JsonSerializable()

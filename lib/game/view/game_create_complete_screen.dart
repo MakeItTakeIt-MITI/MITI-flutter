@@ -9,12 +9,11 @@ import 'package:miti/theme/text_theme.dart';
 
 class GameCreateCompleteScreen extends StatelessWidget {
   final int gameId;
-  final int bottomIdx;
 
   static String get routeName => 'gameCreateComplete';
 
   GameCreateCompleteScreen(
-      {super.key, required this.gameId, required this.bottomIdx});
+      {super.key, required this.gameId, });
 
   List<String> title = [
     "경기 정보를 다시 확인해 주세요!",
@@ -145,13 +144,10 @@ class GameCreateCompleteScreen extends StatelessWidget {
                     Map<String, String> pathParameters = {
                       'gameId': gameId.toString()
                     };
-                    final Map<String, String> queryParameters = {
-                      'bottomIdx': bottomIdx.toString()
-                    };
+
                     context.goNamed(
                       GameDetailScreen.routeName,
                       pathParameters: pathParameters,
-                      queryParameters: queryParameters,
                     );
                   },
                   style: TextButton.styleFrom(

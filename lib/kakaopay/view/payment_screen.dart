@@ -64,6 +64,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                 }
               }
 
+
               return NavigationDecision.prevent;
             } else if (request.url.startsWith(
                 'https://www.makeittakeit.kr/payments/kakao/cancel')) {
@@ -84,11 +85,9 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               Map<String, String> pathParameters = {
                 'gameId': widget.gameId.toString()
               };
-              final Map<String, String> queryParameters = {'bottomIdx': '1'};
               context.goNamed(
                 GameDetailScreen.routeName,
                 pathParameters: pathParameters,
-                queryParameters: queryParameters,
               );
               showDialog(
                   context: context,

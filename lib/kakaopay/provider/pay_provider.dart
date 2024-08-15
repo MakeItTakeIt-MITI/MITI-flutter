@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
+import '../../game/provider/game_provider.dart';
 import '../model/pay_model.dart';
 
 part 'pay_provider.g.dart';
@@ -25,6 +26,10 @@ Future<BaseModel> readyPay(ReadyPayRef ref,
         logger.i('readyPay url = $url!');
         break;
       case PaymentMethodType.empty_pay:
+        ref
+            .read(gameDetailProvider(gameId: gameId).notifier)
+            .get(gameId: gameId);
+
         break;
     }
     return value;
@@ -45,6 +50,7 @@ Future<BaseModel> approvalPay(ApprovalPayRef ref,
       .then<BaseModel>((value) async {
     logger.i('approvalPay = !');
     final model = value.data!;
+
 
     return value;
   }).catchError((e) {

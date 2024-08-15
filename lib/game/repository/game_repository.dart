@@ -102,4 +102,10 @@ abstract class GameRepository {
   Future<ResponseListModel<GameRecentHostModel>> getRecentHostings({
     @Path('userId') required int userId,
   });
+
+  @Headers({'token': 'true'})
+  @GET('/games/{gameId}/cancel')
+  Future<ResponseModel<GameDetailModel>> cancelRecruitGame({
+    @Path('gameId') required int gameId,
+  });
 }

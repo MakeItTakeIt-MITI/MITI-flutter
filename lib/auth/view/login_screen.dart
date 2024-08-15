@@ -41,51 +41,56 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: MITIColor.black,
-      resizeToAvoidBottomInset: false,
-      appBar: const DefaultAppBar(
+    return
+      GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        onPanDown: (v) => FocusScope.of(context).unfocus(),
+      child: Scaffold(
         backgroundColor: MITIColor.black,
-        hasBorder: false,
-      ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 21.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(height: 34.h),
-            SvgPicture.asset(
-              AssetUtil.getAssetPath(type: AssetType.logo, name: 'MITI'),
-              width: 80.w,
-              height: 42.h,
-            ),
-            SizedBox(height: 44.h),
-            const LoginComponent(),
-            Text(
-              '또는',
-              textAlign: TextAlign.center,
-              style: MITITextStyle.xxsm.copyWith(
-                color: const Color(0xFFEAEAEA),
+        resizeToAvoidBottomInset: false,
+        appBar: const DefaultAppBar(
+          backgroundColor: MITIColor.black,
+          hasBorder: false,
+        ),
+        body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 21.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: 34.h),
+              SvgPicture.asset(
+                AssetUtil.getAssetPath(type: AssetType.logo, name: 'MITI'),
+                width: 80.w,
+                height: 42.h,
               ),
-            ),
-            SizedBox(height: 12.h),
-            const KakaoLoginButton(
-              isLogin: true,
-            ),
-            SizedBox(height: 8.h),
-            if (Platform.isIOS)
-              const AppleLoginButton(
+              SizedBox(height: 44.h),
+              const LoginComponent(),
+              Text(
+                '또는',
+                textAlign: TextAlign.center,
+                style: MITITextStyle.xxsm.copyWith(
+                  color: const Color(0xFFEAEAEA),
+                ),
+              ),
+              SizedBox(height: 12.h),
+              const KakaoLoginButton(
                 isLogin: true,
               ),
-            SizedBox(height: 16.h),
-            OtherWayComponent(
-              // desc: '아직 회원이 아니신가요?',
-              way: '회원가입 하러 가기',
-              onTap: () => context.pushNamed(SignUpSelectScreen.routeName),
-            ),
-            const Spacer(),
-            const HelpComponent(),
-          ],
+              SizedBox(height: 8.h),
+              if (Platform.isIOS)
+                const AppleLoginButton(
+                  isLogin: true,
+                ),
+              SizedBox(height: 16.h),
+              OtherWayComponent(
+                // desc: '아직 회원이 아니신가요?',
+                way: '회원가입 하러 가기',
+                onTap: () => context.pushNamed(SignUpSelectScreen.routeName),
+              ),
+              const Spacer(),
+              const HelpComponent(),
+            ],
+          ),
         ),
       ),
     );

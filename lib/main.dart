@@ -251,6 +251,13 @@ class _MyAppState extends ConsumerState<MyApp> {
                 child: child!);
           },
           theme: ThemeData(
+              // splashFactory: InkSplash(
+              //   controller: controller,
+              //   referenceBox: referenceBox,
+              //   textDirection: TextDirection.ltr,
+              //   color: const Color(0xFF404040),
+              //   radius: 8.r
+              // ),
               colorScheme: const ColorScheme(
                 brightness: Brightness.dark,
                 primary: MITIColor.primary,

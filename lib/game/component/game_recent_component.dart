@@ -136,7 +136,7 @@ class _GameRecentCard extends ConsumerWidget {
     final address =
         '${model.court.address} ${(model.court.address_detail ?? '')}';
     return _GameRecentCard(
-      title: "경기 제목",
+      title: model.title,
       address: address,
       id: model.id,
     );

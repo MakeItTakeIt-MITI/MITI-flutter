@@ -14,7 +14,6 @@ import 'package:miti/game/view/game_participation_screen.dart';
 import 'package:miti/game/view/game_refund_screen.dart';
 import 'package:miti/game/view/game_create_screen.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
-import 'package:miti/game/view/game_host_list_screen.dart';
 import 'package:miti/game/view/game_payment_screen.dart';
 import 'package:miti/game/view/game_update_screen.dart';
 import 'package:miti/game/view/review_form_screen.dart';
@@ -103,7 +102,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           //   return NoTransitionPage(child: SplashScreen());
           // },
         ),
-
         GoRoute(
             path: '/login',
             parentNavigatorKey: rootNavKey,
@@ -200,11 +198,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                       parentNavigatorKey: rootNavKey,
                       name: ResetPasswordScreen.routeName,
                       builder: (_, state) {
-                        final String password_update_token = state
-                            .uri.queryParameters['password_update_token']!;
+                        final String password_update_token =
+                            state.uri.queryParameters['password_update_token']!;
 
                         final int userId =
-                        int.parse(state.uri.queryParameters['userId']!);
+                            int.parse(state.uri.queryParameters['userId']!);
                         return ResetPasswordScreen(
                           password_update_token: password_update_token,
                           userId: userId,
@@ -445,11 +443,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                       // redirect: (_, state) => provider.redirectLogic(state),
                       builder: (context, state) {
                         UserGameType extra = state.extra as UserGameType;
-                        final int bottomIdx =
-                            int.parse(state.uri.queryParameters['bottomIdx']!);
                         return GameHostScreen(
                           type: extra,
-                          bottomIdx: bottomIdx,
                         );
                       },
                       // pageBuilder: (context, state) {
@@ -466,11 +461,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                         name: GameCreateScreen.routeName,
                         // redirect: (_, state) => provider.redirectLogic(state),
                         builder: (context, state) {
-                          final int bottomIdx = int.parse(
-                              state.uri.queryParameters['bottomIdx']!);
-                          return GameCreateScreen(
-                            bottomIdx: bottomIdx,
-                          );
+                          return const GameCreateScreen();
                         },
                         // pageBuilder: (context, state) {
                         //   return NoTransitionPage(child: GameCreateScreen());
@@ -484,11 +475,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                               final int gameId =
                                   int.parse(state.pathParameters['gameId']!);
 
-                              final int bottomIdx = int.parse(
-                                  state.uri.queryParameters['bottomIdx']!);
                               return GameCreateCompleteScreen(
                                 gameId: gameId,
-                                bottomIdx: bottomIdx,
                               );
                             },
                             // pageBuilder: (context, state) {
@@ -508,11 +496,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                         builder: (context, state) {
                           final int gameId =
                               int.parse(state.pathParameters['gameId']!);
-                          final int bottomIdx = int.parse(
-                              state.uri.queryParameters['bottomIdx']!);
                           return GameDetailScreen(
                             gameId: gameId,
-                            bottomIdx: bottomIdx,
                           );
                         },
                         // pageBuilder: (context, state) {
@@ -533,11 +518,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                             builder: (context, state) {
                               final int gameId =
                                   int.parse(state.pathParameters['gameId']!);
-                              final int bottomIdx = int.parse(
-                                  state.uri.queryParameters['bottomIdx']!);
                               return GameParticipationScreen(
                                 gameId: gameId,
-                                bottomIdx: bottomIdx,
                               );
                             },
                             // pageBuilder: (context, state) {
@@ -612,12 +594,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                                   int.parse(state.pathParameters['gameId']!);
                               final int participationId = int.parse(
                                   state.pathParameters['participationId']!);
-                              final int bottomIdx = int.parse(
-                                  state.uri.queryParameters['bottomIdx']!);
+
                               return GameRefundScreen(
                                 gameId: gameId,
                                 participationId: participationId,
-                                bottomIdx: bottomIdx,
                               );
                             },
                             // pageBuilder: (context, state) {
@@ -690,11 +670,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                             builder: (context, state) {
                               final int gameId =
                                   int.parse(state.pathParameters['gameId']!);
-                              final int bottomIdx = int.parse(
-                                  state.uri.queryParameters['bottomIdx']!);
+
                               return GameUpdateScreen(
                                 gameId: gameId,
-                                bottomIdx: bottomIdx,
                               );
                             },
                             // pageBuilder: (context, state) {

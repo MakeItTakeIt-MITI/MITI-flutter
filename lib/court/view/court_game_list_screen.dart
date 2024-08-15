@@ -100,7 +100,7 @@ class _CourtGameListScreenState extends ConsumerState<CourtGameListScreen> {
                     itemBuilder:
                         (BuildContext context, int index, Base pModel) {
                       final model = pModel as GameListByDateModel;
-                      return GameCardByDate.fromModel(model: model, bottomIdx: widget.bottomIdx,);
+                      return GameCardByDate.fromModel(model: model);
                     },
                     param: CourtPaginationParam(search: ''),
                     skeleton: Container(),

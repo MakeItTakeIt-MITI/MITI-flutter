@@ -2,6 +2,8 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:miti/theme/color_theme.dart';
+import 'package:miti/theme/text_theme.dart';
 
 final dropDownValueProvider = StateProvider.autoDispose<String?>((ref) => null);
 
@@ -49,18 +51,16 @@ class _CustomDropDownButtonState extends ConsumerState<CustomDropDownButton> {
     return DropdownButtonHideUnderline(
       child: DropdownButton2<String>(
         // isDense: true,
-        style: widget.textStyle ?? TextStyle(
-          color: const Color(0xFF333333),
-          fontSize: 12.sp,
-          fontFamily: 'Pretendard',
-          fontWeight: FontWeight.w500,
-          letterSpacing: -0.25.sp,
-        ),
+        style: widget.textStyle ??
+            MITITextStyle.xxsm.copyWith(
+              color: MITIColor.gray100,
+              fontWeight: FontWeight.w400,
+            ),
         items: widget.items
             .map((String item) => DropdownMenuItem<String>(
                   value: item,
                   child: Align(
-                    alignment: Alignment.center,
+                    alignment: Alignment.centerLeft,
                     child: Text(
                       item,
                     ),
@@ -70,34 +70,37 @@ class _CustomDropDownButtonState extends ConsumerState<CustomDropDownButton> {
         value: selectedValue,
         onChanged: widget.onChanged,
         buttonStyleData: ButtonStyleData(
-          padding: EdgeInsets.all(widget.padding ?? 8.r),
+          padding: EdgeInsets.only(left: 16.w, right: 4.w),
+          // padding: EdgeInsets.all(widget.padding ?? 8.r),
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(widget.radius ?? 4.r),
-              color: const Color(0xFFF7F7F7)),
-          height: widget.height ?? 39.h,
-          width: widget.width ?? 85.w,
+            borderRadius: BorderRadius.circular(widget.radius ?? 100.r),
+            color: MITIColor.gray700,
+          ),
+          height: widget.height ?? 28.h,
+          width: widget.width ?? 92.w,
         ),
         iconStyleData: IconStyleData(
             icon: Icon(
           Icons.keyboard_arrow_down,
+          color: MITIColor.primary,
           size: 16.r,
         )),
         dropdownStyleData: DropdownStyleData(
-            scrollPadding: EdgeInsets.zero,
+            // scrollPadding: EdgeInsets.only(top: 4.h),
             // width: 85.w,
+            offset: Offset(0, -4.h),
             elevation: 0,
             maxHeight: MediaQuery.of(context).size.height < 600.h
                 ? MediaQuery.of(context).size.height - 200.h
                 : 300.h,
-            padding: EdgeInsets.all(8.r),
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(4.r),
-                ),
-                color: const Color(0xFFF7F7F7))),
+                borderRadius: BorderRadius.circular(12.r),
+                color: MITIColor.gray750)),
         menuItemStyleData: MenuItemStyleData(
-          height: 30.h,
-          padding: EdgeInsets.zero,
+          overlayColor: MaterialStateProperty.all(const Color(0xFF404040)),
+          height: 24.h,
+          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
         ),
       ),
     );

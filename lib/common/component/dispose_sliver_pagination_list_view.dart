@@ -115,6 +115,7 @@ class _PaginationListViewState<T extends Base>
     // CursorPaginationRefetching
 
     final cp = state as ResponseModel<PaginationModel<T>>;
+    log('state.data!.page_content = ${state.data!.page_content.length}');
     if (state.data!.page_content.isEmpty) {
       return SliverFillRemaining(child: widget.emptyWidget);
     }

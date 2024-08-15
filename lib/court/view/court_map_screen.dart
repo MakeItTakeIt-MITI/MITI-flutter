@@ -157,16 +157,16 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(showFilterProvider, (previous, next) {
+      if (next) {
+        _draggableScrollableController.reset();
+      }
+    });
+
     // log('page build!!');
     final position = ref.watch(positionProvider);
     final select = ref.watch(selectMakerProvider);
-    // ref.listen(selectedDayProvider, (previous, next) {
-    //   final date = DateFormat('yyyy-MM-dd').format(next);
-    //   ref
-    //       .read(gameListProvider.notifier)
-    //       .getList(param: GameListParam(startdate: date));
-    // });
-    // final response = ref.watch(gameListProvider);
+
     ref.listen(gameListProvider, (previous, next) {
       if (_mapController != null) {
         if (next is LoadingModel) {
@@ -290,7 +290,6 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
           ),
         ),
         Positioned(
-
           child: DraggableScrollableSheet(
             initialChildSize: 0.04,
             // 0.04
@@ -308,6 +307,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
                 child: Stack(
                   // crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // 내용
                     Positioned.fill(
                       top: 0,
                       left: 0,
@@ -341,6 +341,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
                         ),
                       ),
                     ),
+                    // 핸들 부분
                     Positioned(
                       top: 0,
                       left: 0,
@@ -352,13 +353,24 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
                           SizedBox(height: 8.h),
                           Align(
                             alignment: Alignment.center,
-                            child: Container(
-                              height: 4.h,
-                              width: 60.w,
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(8.r)),
-                                color: MITIColor.gray100,
+                            child: GestureDetector(
+                              onVerticalDragUpdate: (details) {
+                                final newSize = _draggableScrollableController.size + details.primaryDelta! / MediaQuery.of(context).size.height;
+                                if (newSize >= 0.04 && newSize <= 0.8) {
+                                  _draggableScrollableController.animateTo(
+                                    newSize,
+                                    duration: Duration(milliseconds: 100),
+                                    curve: Curves.easeInOut,
+                                  );
+                                }
+                              },
+                              child: Container(
+                                height: 4.h,
+                                width: 60.w,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(8.r)),
+                                  color: MITIColor.gray100,
+                                ),
                               ),
                             ),
                           ),
@@ -869,34 +881,10 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
   }
 
   void selectDay(List<List<String>> day, int idx) {
-    // ref
-    //     .read(selectedDayProvider.notifier)
-    //     .update((state) => DateTime.parse(day[idx][0]));
     ref.read(gameFilterProvider.notifier).update(startdate: day[idx][0]);
-
-    final RenderBox box =
-        dayKeys[idx].currentContext!.findRenderObject() as RenderBox;
-    final pos = box.localToGlobal(Offset.zero, ancestor: null);
-
-    final scrollPosition = _dayScrollController.position;
-    log('idx = ${idx}, pos.dx = ${pos.dx}');
-    log('scrollPosition.pixels = ${scrollPosition.pixels}');
-    log('scrollPosition.viewportDimension = ${scrollPosition.viewportDimension}');
-    log('_dayScrollController.position.maxScrollExtent = ${_dayScrollController.position.maxScrollExtent}');
-    log('box.size.width = ${box.size.width}');
-
-    /// 현재 화면의 위젯 x좌표 + 스크롤의 현재 위치 x좌표 - (화면 크기 / 2 - 위젯 크기 / 2)
-    double offset = pos.dx +
-        scrollPosition.pixels -
-        (scrollPosition.viewportDimension / 2 - box.size.width / 2);
-    if (idx == 0) {
-      offset = 0;
-    } else if (idx == 13) {
-      offset = scrollPosition.maxScrollExtent;
-    }
-
-    _dayScrollController.animateTo(
-      offset,
+    Scrollable.ensureVisible(
+      dayKeys[idx].currentContext!,
+      alignment: 0.5,
       duration: const Duration(milliseconds: 600),
       curve: Curves.easeInOut,
     );

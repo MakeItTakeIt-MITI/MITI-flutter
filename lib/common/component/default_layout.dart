@@ -35,7 +35,7 @@ class _DefaultLayoutState extends State<DefaultLayout> {
       onTap: () => FocusScope.of(context).unfocus(),
       onPanDown: (v) => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        // backgroundColor: Colors.white,
+        backgroundColor: MITIColor.gray800,
         body: widget.body,
         resizeToAvoidBottomInset: false,
         bottomNavigationBar: CustomBottomNavigationBar(

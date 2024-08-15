@@ -6,6 +6,7 @@ import 'package:miti/common/component/custom_drop_down_button.dart';
 import 'package:miti/common/component/default_layout.dart';
 import 'package:miti/common/component/dispose_sliver_pagination_list_view.dart';
 import 'package:miti/common/param/pagination_param.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:miti/user/provider/user_pagination_provider.dart';
 import 'package:miti/user/provider/user_provider.dart';
 
@@ -23,13 +24,11 @@ import '../param/user_profile_param.dart';
 
 class GameHostScreen extends ConsumerStatefulWidget {
   static String get routeName => 'host';
-  final int bottomIdx;
   final UserGameType type;
 
   const GameHostScreen({
     super.key,
     required this.type,
-    required this.bottomIdx,
   });
 
   @override
@@ -38,11 +37,11 @@ class GameHostScreen extends ConsumerStatefulWidget {
 
 class _GameHostScreenState extends ConsumerState<GameHostScreen> {
   final items = [
-    '모집중',
+    '모집 중',
     '모집 완료',
     '경기 취소',
     '경기 완료',
-    '전체 보기',
+    '전체',
   ];
   late final ScrollController _scrollController;
 
@@ -60,7 +59,7 @@ class _GameHostScreenState extends ConsumerState<GameHostScreen> {
 
   GameStatus? getStatus(String? value) {
     switch (value) {
-      case '모집중':
+      case '모집 중':
         return GameStatus.open;
       case '모집 완료':
         return GameStatus.closed;
@@ -97,81 +96,67 @@ class _GameHostScreenState extends ConsumerState<GameHostScreen> {
   Widget build(BuildContext context) {
     final id = ref.watch(authProvider)!.id!;
 
-    return DefaultLayout(
-      bottomIdx: widget.bottomIdx,
-      scrollController: _scrollController,
-      body: NestedScrollView(
-        controller: _scrollController,
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return [
-            DefaultAppBar(
-              title:
-                  widget.type == UserGameType.host ? '나의 호스팅 경기' : '나의 참여 경기',
-              isSliver: true,
-            ),
-          ];
-        },
-        body: RefreshIndicator(
-          onRefresh: refresh,
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.only(right: 12.w, top: 12.h),
-                  child: Row(
-                    children: [
-                      const Spacer(),
-                      CustomDropDownButton(
-                        initValue: '전체 보기',
-                        onChanged: (value) {
-                          changeDropButton(value, id);
-                        },
-                        items: items,
-                      )
-                    ],
-                  ),
+    return NestedScrollView(
+      controller: _scrollController,
+      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+        return [];
+      },
+      body: RefreshIndicator(
+        onRefresh: refresh,
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.only(right: 21.w, top: 20.h),
+                child: Row(
+                  children: [
+                    const Spacer(),
+                    CustomDropDownButton(
+                      initValue: '전체',
+                      onChanged: (value) {
+                        changeDropButton(value, id);
+                      },
+                      items: items,
+                    )
+                  ],
                 ),
               ),
-              Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  final gameStatus =
-                      getStatus(ref.watch(dropDownValueProvider));
-                  final provider = widget.type == UserGameType.host
-                      ? userHostingPProvider(PaginationStateParam(path: id))
-                          as AutoDisposeStateNotifierProvider<
-                              PaginationProvider<
-                                  Base,
-                                  DefaultParam,
-                                  IBasePaginationRepository<Base,
-                                      DefaultParam>>,
-                              BaseModel>
-                      : userParticipationPProvider(
-                          PaginationStateParam(path: id));
-                  return SliverPadding(
-                    padding:
-                        EdgeInsets.only(right: 12.w, left: 12.w, bottom: 12.h),
-                    sliver: DisposeSliverPaginationListView(
-                      provider: provider,
-                      itemBuilder:
-                          (BuildContext context, int index, Base pModel) {
-                        final model = pModel as GameListByDateModel;
-                        return GameCardByDate.fromModel(
-                          model: model,
-                          bottomIdx: widget.bottomIdx,
-                        );
-                      },
-                      skeleton: Container(),
-                      param: UserGameParam(
-                        game_status: gameStatus,
-                      ),
-                      controller: _scrollController,
-                      emptyWidget: getEmptyWidget(widget.type),
+            ),
+            Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                final gameStatus = getStatus(ref.watch(dropDownValueProvider));
+                final provider = widget.type == UserGameType.host
+                    ? userHostingPProvider(PaginationStateParam(path: id))
+                        as AutoDisposeStateNotifierProvider<
+                            PaginationProvider<Base, DefaultParam,
+                                IBasePaginationRepository<Base, DefaultParam>>,
+                            BaseModel>
+                    : userParticipationPProvider(
+                        PaginationStateParam(path: id));
+                return SliverPadding(
+                  padding:
+                      EdgeInsets.only(right: 21.w, left: 21.w, bottom: 20.h),
+                  sliver: DisposeSliverPaginationListView(
+                    provider: provider,
+                    itemBuilder:
+                        (BuildContext context, int index, Base pModel) {
+                      final model = pModel as GameListByDateModel;
+                      return GameCardByDate.fromModel(
+                        model: model,
+                      );
+                    },
+                    skeleton: Container(),
+                    param: UserGameParam(
+                      game_status: gameStatus,
                     ),
-                  );
-                },
-              ),
-            ],
-          ),
+                    controller: _scrollController,
+                    emptyWidget: getEmptyWidget(widget.type),
+                    separateSize: 0,
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -184,12 +169,14 @@ class _GameHostScreenState extends ConsumerState<GameHostScreen> {
       children: [
         Text(
           '$title 경기가 없습니다.',
-          style: MITITextStyle.pageMainTextStyle,
+          style: MITITextStyle.pageMainTextStyle
+              .copyWith(color: MITIColor.gray100),
         ),
         SizedBox(height: 20.h),
         Text(
           '경기 생성을 통해 경기를 모집해보세요!',
-          style: MITITextStyle.pageSubTextStyle,
+          style:
+              MITITextStyle.pageSubTextStyle.copyWith(color: MITIColor.gray100),
         )
       ],
     );

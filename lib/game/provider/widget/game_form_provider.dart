@@ -50,6 +50,7 @@ class GameForm extends _$GameForm {
         address: model.court.address,
         address_detail: model.court.address_detail);
     state = state.copyWith(
+      title: model.title,
       court: court,
       min_invitation: model.min_invitation.toString(),
       max_invitation: model.max_invitation.toString(),

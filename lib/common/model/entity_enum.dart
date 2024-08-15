@@ -84,7 +84,7 @@ enum ReviewType {
 
 @JsonEnum(valueField: 'value')
 enum ItemType {
-  pickUp('픽업게임');
+  pickUp('pickup_game');
 
   const ItemType(this.value);
 

@@ -9,6 +9,7 @@ import 'package:miti/common/model/default_model.dart';
 import 'package:miti/court/component/court_list_component.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/default_appbar.dart';
@@ -21,13 +22,12 @@ class GameRefundScreen extends StatefulWidget {
   static String get routeName => 'gameRefund';
   final int participationId;
   final int gameId;
-  final int bottomIdx;
 
-  const GameRefundScreen(
-      {super.key,
-      required this.participationId,
-      required this.gameId,
-      required this.bottomIdx});
+  const GameRefundScreen({
+    super.key,
+    required this.participationId,
+    required this.gameId,
+  });
 
   @override
   State<GameRefundScreen> createState() => _GameRefundScreenState();
@@ -57,9 +57,33 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultLayout(
-      bottomIdx: widget.bottomIdx,
-      scrollController: _scrollController,
+    return Scaffold(
+      backgroundColor: MITIColor.gray750,
+      bottomNavigationBar: BottomButton(
+        button: Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final valid = ref.watch(checkProvider(1));
+            return TextButton(
+              onPressed: valid
+                  ? () async {
+                      await refund(ref, context);
+                    }
+                  : () {},
+              style: TextButton.styleFrom(
+                fixedSize: Size(double.infinity, 48.h),
+                backgroundColor:
+                    valid ? const Color(0xFF4065F5) : const Color(0xffE8E8E8),
+              ),
+              child: Text(
+                '참여 취소하기',
+                style: MITITextStyle.btnTextBStyle.copyWith(
+                  color: valid ? Colors.white : const Color(0xff969696),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
       body: NestedScrollView(
         controller: _scrollController,
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -67,6 +91,7 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
             const DefaultAppBar(
               isSliver: true,
               title: '참여 경기 취소',
+              backgroundColor: MITIColor.gray750,
             ),
           ];
         },
@@ -87,38 +112,6 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
                       ],
                     ),
                   ),
-                  Consumer(
-                    builder:
-                        (BuildContext context, WidgetRef ref, Widget? child) {
-                      final valid = ref.watch(checkProvider(1));
-                      return Positioned(
-                        bottom: 8.h,
-                        right: 16.w,
-                        left: 16.w,
-                        child: TextButton(
-                          onPressed: valid
-                              ? () async {
-                                  await refund(ref, context);
-                                }
-                              : () {},
-                          style: TextButton.styleFrom(
-                            fixedSize: Size(double.infinity, 48.h),
-                            backgroundColor: valid
-                                ? const Color(0xFF4065F5)
-                                : const Color(0xffE8E8E8),
-                          ),
-                          child: Text(
-                            '참여 취소하기',
-                            style: MITITextStyle.btnTextBStyle.copyWith(
-                              color: valid
-                                  ? Colors.white
-                                  : const Color(0xff969696),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
                 ],
               ),
             ),
@@ -126,6 +119,12 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
         ),
       ),
     );
+
+    // return DefaultLayout(
+    //   bottomIdx: 0,
+    //   scrollController: _scrollController,
+    //   body: ,
+    // );
   }
 
   Future<void> refund(WidgetRef ref, BuildContext context) async {
@@ -146,13 +145,10 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
             Map<String, String> pathParameters = {
               'gameId': widget.gameId.toString()
             };
-            final Map<String, String> queryParameters = {
-              'bottomIdx': widget.bottomIdx.toString()
-            };
+
             context.goNamed(
               GameDetailScreen.routeName,
               pathParameters: pathParameters,
-              queryParameters: queryParameters,
             );
           },
         );
@@ -205,7 +201,9 @@ class _RefundInfoComponent extends ConsumerWidget {
               fee: formatFee(model.payment_amount.total_amount)),
           getDivider(),
           getPayment(
-              title: '결제 수수료', fee: formatFee(model.commission_amount.payment_commission_amount)),
+              title: '결제 수수료',
+              fee:
+                  formatFee(model.commission_amount.payment_commission_amount)),
           SizedBox(height: 12.h),
           getPayment(
               title: '참여 취소 수수료',

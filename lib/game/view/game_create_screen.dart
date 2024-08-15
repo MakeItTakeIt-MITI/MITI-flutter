@@ -38,11 +38,9 @@ import 'game_create_complete_screen.dart';
 
 class GameCreateScreen extends ConsumerStatefulWidget {
   static String get routeName => 'create';
-  final int bottomIdx;
 
   const GameCreateScreen({
     super.key,
-    required this.bottomIdx,
   });
 
   @override
@@ -161,13 +159,10 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
                               Map<String, String> pathParameters = {
                                 'gameId': model.data!.id.toString()
                               };
-                              final Map<String, String> queryParameters = {
-                                'bottomIdx': widget.bottomIdx.toString()
-                              };
+
                               context.pushNamed(
                                 GameCreateCompleteScreen.routeName,
                                 pathParameters: pathParameters,
-                                queryParameters: queryParameters,
                               );
                             }
                           }
@@ -195,17 +190,42 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
       );
 }
 
-class _TitleForm extends StatelessWidget {
+class _TitleForm extends StatefulWidget {
   const _TitleForm({super.key});
+
+  @override
+  State<_TitleForm> createState() => _TitleFormState();
+}
+
+class _TitleFormState extends State<_TitleForm> {
+  late final TextEditingController titleController;
+
+  @override
+  void initState() {
+    super.initState();
+    titleController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        ref.listen(gameFormProvider, (previous, next) {
+          if (previous?.title != next.title) {
+            titleController.text = next.title;
+          }
+        });
         final title =
             ref.watch(gameFormProvider.select((value) => value.title));
         return SliverToBoxAdapter(
             child: CustomTextFormField(
+          textEditingController: titleController,
           hintText: '경기 제목을 입력해주세요.',
           label: '경기 제목',
           onChanged: (val) {
@@ -871,6 +891,14 @@ class _AddressFormState extends ConsumerState<_AddressForm> {
   }
 
   @override
+  void dispose() {
+    addressController.dispose();
+    addressDetailController.dispose();
+    nameController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final court = ref.watch(gameFormProvider.select((value) => value.court));
     ref.listen(gameFormProvider, (previous, next) {
@@ -950,6 +978,13 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
   }
 
   @override
+  void dispose() {
+    maxController.dispose();
+    minController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(
     BuildContext context,
   ) {
@@ -976,7 +1011,7 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
           children: [
             Expanded(
               child: CustomTextFormField(
-                textEditingController: maxController,
+                textEditingController: minController,
                 focusNode: widget.focusNodes[1],
                 key: widget.formKeys[1],
                 // initialValue: widget.initMinValue,
@@ -1014,7 +1049,7 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
             SizedBox(width: 12.w),
             Expanded(
               child: CustomTextFormField(
-                textEditingController: minController,
+                textEditingController: maxController,
                 focusNode: widget.focusNodes[0],
                 key: widget.formKeys[0],
                 // initialValue: widget.initMaxValue,
@@ -1090,6 +1125,12 @@ class _FeeFormState extends ConsumerState<_FeeForm> {
   }
 
   @override
+  void dispose() {
+    feeController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     ref.listen(gameFormProvider, (previous, next) {
       if (previous?.fee != next.fee) {
@@ -1138,6 +1179,12 @@ class _AdditionalInfoFormState extends ConsumerState<_AdditionalInfoForm> {
   void initState() {
     super.initState();
     infoController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    infoController.dispose();
+    super.dispose();
   }
 
   @override

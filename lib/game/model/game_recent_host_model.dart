@@ -8,6 +8,8 @@ part 'game_recent_host_model.g.dart';
 
 @JsonSerializable()
 class GameRecentHostModel extends IModelWithId {
+  final String title;
+
   final int min_invitation;
   final int max_invitation;
   final int fee;
@@ -16,6 +18,7 @@ class GameRecentHostModel extends IModelWithId {
 
   GameRecentHostModel({
     required super.id,
+    required this.title,
     required this.min_invitation,
     required this.max_invitation,
     required this.fee,

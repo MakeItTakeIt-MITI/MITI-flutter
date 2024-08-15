@@ -245,6 +245,7 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
   void focusScrollable(int i) {
     Scrollable.ensureVisible(
       formKeys[i].currentContext!,
+
       duration: const Duration(milliseconds: 600),
       curve: Curves.easeInOut,
     );

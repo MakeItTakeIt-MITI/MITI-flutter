@@ -329,26 +329,19 @@ Future<BaseModel> gameRecentHosting(GameRecentHostingRef ref) async {
   });
 }
 
-// @Riverpod(keepAlive: false)
-// class GameRecentHosting extends _$GameRecentHosting {
-//   @override
-//   BaseModel build() {
-//     getList();
-//     return LoadingModel();
-//   }
-//
-//   Future<void> getList() async {
-//     state = LoadingModel();
-//     final repository = ref.watch(gameRepositoryProvider);
-//     final userId = ref.read(authProvider)!.id!;
-//     repository.getRecentHostings(userId: userId).then((value) {
-//       logger.i(value);
-//       state = value;
-//     }).catchError((e) {
-//       final error = ErrorModel.respToError(e);
-//       logger.e(
-//           'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
-//       state = error;
-//     });
-//   }
-// }
+@riverpod
+Future<BaseModel> cancelRecruitGame(CancelRecruitGameRef ref,
+    {required int gameId}) async {
+  final repository = ref.watch(gameRepositoryProvider);
+  return await repository
+      .cancelRecruitGame(gameId: gameId)
+      .then<BaseModel>((value) {
+    logger.i(value);
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
+}

@@ -151,10 +151,13 @@ class GamePaymentScreen extends StatelessWidget {
       } else {
         switch (type) {
           case PaymentMethodType.kakao_pay:
-            result as ResponseModel<PayReadyModel>;
+            final model = (result as ResponseModel<PayBaseModel>).data!;
+            model as PayReadyModel;
+            // log('model = ${model.runtimeType}');
+
             final pathParameters = {'gameId': gameId.toString()};
             final queryParameters = {
-              'redirectUrl': result.data!.next_redirect_mobile_url
+              'redirectUrl': model.next_redirect_mobile_url
             };
             context.pushNamed(
               PaymentScreen.routeName,
@@ -164,7 +167,11 @@ class GamePaymentScreen extends StatelessWidget {
             break;
           case PaymentMethodType.empty_pay:
             log("무료 경기 참여 완료");
-            context.goNamed(CourtMapScreen.routeName);
+            final pathParameters = {'gameId': gameId.toString()};
+            context.goNamed(
+              GameDetailScreen.routeName,
+              pathParameters: pathParameters,
+            );
             break;
         }
       }

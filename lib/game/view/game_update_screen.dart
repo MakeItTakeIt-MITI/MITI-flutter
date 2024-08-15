@@ -23,12 +23,10 @@ import 'game_detail_screen.dart';
 class GameUpdateScreen extends ConsumerStatefulWidget {
   static String get routeName => 'gameUpdate';
   final int gameId;
-  final int bottomIdx;
 
   const GameUpdateScreen({
     super.key,
     required this.gameId,
-    required this.bottomIdx,
   });
 
   @override
@@ -85,79 +83,83 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: MITIColor.gray750,
-      bottomNavigationBar: BottomButton(
-        button: TextButton(
-          onPressed: valid()
-              ? () async {
-                  await onUpdate(context);
-                }
-              : () {},
-          style: TextButton.styleFrom(
-              backgroundColor: valid() ? MITIColor.primary : MITIColor.gray500),
-          child: Text(
-            '저장하기',
-            style: MITITextStyle.btnTextBStyle.copyWith(
-              color: valid() ? MITIColor.gray800 : MITIColor.gray50,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      onPanDown: (v) => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: MITIColor.gray750,
+        bottomNavigationBar: BottomButton(
+          button: TextButton(
+            onPressed: valid()
+                ? () async {
+                    await onUpdate(context);
+                  }
+                : () {},
+            style: TextButton.styleFrom(
+                backgroundColor: valid() ? MITIColor.primary : MITIColor.gray500),
+            child: Text(
+              '저장하기',
+              style: MITITextStyle.btnTextBStyle.copyWith(
+                color: valid() ? MITIColor.gray800 : MITIColor.gray50,
+              ),
             ),
           ),
         ),
-      ),
-      body: NestedScrollView(
-        controller: _scrollController,
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return [
-            const DefaultAppBar(
-              title: '경기 수정하기',
-              backgroundColor: MITIColor.gray750,
-              isSliver: true,
-            ),
-          ];
-        },
-        body: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  final result =
-                      ref.watch(gameDetailProvider(gameId: widget.gameId));
-                  if (result is LoadingModel) {
-                    return CircularProgressIndicator();
-                  } else if (result is ErrorModel) {
-                    GameError.fromModel(model: result)
-                        .responseError(context, GameApiType.get, ref);
-                    return Text('에러');
-                  }
-                  result as ResponseModel<GameDetailModel>;
-                  final model = result.data!;
-                  return Column(
-                    children: [
-                      SummaryComponent.fromDetailModel(
-                        model: model,
-                        isUpdateForm: true,
-                      ),
-                      getDivider(),
-                      _GameUpdateFormComponent(
-                        initMaxValue: model.max_invitation.toString(),
-                        initMinValue: model.min_invitation.toString(),
-                        focusNodes: focusNodes,
-                        formKeys: formKeys,
-                      ),
-                      getDivider(),
-                      _InfoComponent(
-                        info: model.info,
-                        focusNodes: focusNodes,
-                        formKeys: formKeys,
-                      ),
-                      SizedBox(height: 80.h),
-                      // const Spacer(),
-                    ],
-                  );
-                },
+        body: NestedScrollView(
+          controller: _scrollController,
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return [
+              const DefaultAppBar(
+                title: '경기 수정하기',
+                backgroundColor: MITIColor.gray750,
+                isSliver: true,
               ),
-            ),
-          ],
+            ];
+          },
+          body: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Consumer(
+                  builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                    final result =
+                        ref.watch(gameDetailProvider(gameId: widget.gameId));
+                    if (result is LoadingModel) {
+                      return CircularProgressIndicator();
+                    } else if (result is ErrorModel) {
+                      GameError.fromModel(model: result)
+                          .responseError(context, GameApiType.get, ref);
+                      return Text('에러');
+                    }
+                    result as ResponseModel<GameDetailModel>;
+                    final model = result.data!;
+                    return Column(
+                      children: [
+                        SummaryComponent.fromDetailModel(
+                          model: model,
+                          isUpdateForm: true,
+                        ),
+                        getDivider(),
+                        _GameUpdateFormComponent(
+                          initMaxValue: model.max_invitation.toString(),
+                          initMinValue: model.min_invitation.toString(),
+                          focusNodes: focusNodes,
+                          formKeys: formKeys,
+                        ),
+                        getDivider(),
+                        _InfoComponent(
+                          info: model.info,
+                          focusNodes: focusNodes,
+                          formKeys: formKeys,
+                        ),
+                        SizedBox(height: 80.h),
+                        // const Spacer(),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -186,14 +188,11 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
                     Map<String, String> pathParameters = {
                       'gameId': widget.gameId.toString()
                     };
-                    final Map<String, String> queryParameters = {
-                      'bottomIdx': widget.bottomIdx.toString()
-                    };
+
                     context.pop();
                     context.goNamed(
                       GameDetailScreen.routeName,
                       pathParameters: pathParameters,
-                      queryParameters: queryParameters,
                     );
                   },
                   child: const Text("확인"),

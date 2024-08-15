@@ -40,10 +40,11 @@ import 'game_update_screen.dart';
 class GameDetailScreen extends StatefulWidget {
   static String get routeName => 'gameDetail';
   final int gameId;
-  final int bottomIdx;
 
-  const GameDetailScreen(
-      {super.key, required this.gameId, required this.bottomIdx});
+  const GameDetailScreen({
+    super.key,
+    required this.gameId,
+  });
 
   @override
   State<GameDetailScreen> createState() => _GameDetailScreenState();
@@ -185,7 +186,19 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
                           children: [
                             Expanded(
                                 child: TextButton(
-                                    onPressed: () {},
+                                    onPressed: () async {
+                                      final result = await ref.read(
+                                          cancelRecruitGameProvider(
+                                                  gameId: widget.gameId)
+                                              .future);
+
+                                      if (result is ErrorModel) {
+                                      } else {
+                                        if (context.mounted) {
+                                          context.pop();
+                                        }
+                                      }
+                                    },
                                     style: ButtonStyle(
                                         backgroundColor:
                                             MaterialStateProperty.all(
@@ -221,13 +234,10 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
               Map<String, String> pathParameters = {
                 'gameId': model.id.toString()
               };
-              final Map<String, String> queryParameters = {
-                'bottomIdx': widget.bottomIdx.toString()
-              };
+
               context.pushNamed(
                 GameUpdateScreen.routeName,
                 pathParameters: pathParameters,
-                queryParameters: queryParameters,
               );
             },
             style: TextButton.styleFrom(
@@ -244,13 +254,10 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
           'gameId': widget.gameId.toString(),
           'participationId': participationId!.toString(),
         };
-        final Map<String, String> queryParameters = {
-          'bottomIdx': widget.bottomIdx.toString(),
-        };
+
         context.pushNamed(
           GameRefundScreen.routeName,
           pathParameters: pathParameters,
-          queryParameters: queryParameters,
         );
       },
       style: TextButton.styleFrom(
@@ -292,13 +299,10 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
     final reviewButton = TextButton(
       onPressed: () {
         Map<String, String> pathParameters = {'gameId': model.id.toString()};
-        Map<String, String> queryParameters = {
-          'bottomIdx': widget.bottomIdx.toString()
-        };
+
         context.pushNamed(
           GameParticipationScreen.routeName,
           pathParameters: pathParameters,
-          queryParameters: queryParameters,
         );
       },
       style: TextButton.styleFrom(
@@ -343,7 +347,6 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
         }
         break;
     }
-
     return button;
   }
 

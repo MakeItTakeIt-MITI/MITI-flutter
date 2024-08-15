@@ -50,7 +50,7 @@ class _DefaultShellScreenState extends ConsumerState<DefaultShellScreen> {
     final index = getIndex(context);
     return Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.white,
+        backgroundColor: MITIColor.gray800,
         body: widget.body,
         bottomNavigationBar: CustomBottomNavigationBar(
           index: index,
