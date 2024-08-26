@@ -10,6 +10,7 @@ import 'package:miti/common/model/default_model.dart';
 import 'package:miti/game/model/game_player_model.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/view/review_form_screen.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/util/util.dart';
 
@@ -170,73 +171,86 @@ class _PlayerComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        Map<String, String> pathParameters = {
-          'gameId': gameId.toString(),
-        };
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: MITIColor.gray600)),
+      padding: EdgeInsets.all(16.r),
+      child: Row(
+        children: [
+          SvgPicture.asset(
+            'assets/images/icon/user_thum.svg',
+            width: 36.r,
+            height: 36.r,
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  user.nickname,
+                  style:
+                      MITITextStyle.smBold.copyWith(color: MITIColor.gray100),
+                ),
+                SizedBox(height: 4.h),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const NeverScrollableScrollPhysics(),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ...getStar(user.rating.average_rating),
+                      SizedBox(width: 6.w),
+                      Text(
+                        user.rating.average_rating.toStringAsFixed(1),
+                        style: MITITextStyle.sm.copyWith(
+                          color: MITIColor.gray100,
+                        ),
+                      ),
+                      SizedBox(width: 6.w),
+                      Text(
+                        '리뷰 ${user.rating.num_of_reviews}',
+                        style: MITITextStyle.sm.copyWith(
+                          color: MITIColor.gray100,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Spacer(),
+          TextButton(
+              onPressed: () {
+                Map<String, String> pathParameters = {
+                  'gameId': gameId.toString(),
+                };
+                Map<String, String> queryParameters = {
+                  'ratingId': user.rating.id.toString()
+                };
 
-        context.pushNamed(
-          ReviewScreen.routeName,
-          pathParameters: pathParameters,
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8.r),
-            border: Border.all(color: const Color(0xFFE8E8E8))),
-        padding: EdgeInsets.all(12.r),
-        child: Row(
-          children: [
-            SvgPicture.asset(
-              'assets/images/icon/user_thum.svg',
-              width: 40.r,
-              height: 40.r,
-            ),
-            SizedBox(width: 10.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    user.nickname,
-                    style: MITITextStyle.nicknameCardStyle
-                        .copyWith(color: const Color(0xFF444444)),
-                  ),
-                  SizedBox(height: 5.h),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        ...getStar(user.rating.average_rating),
-                        SizedBox(width: 3.w),
-                        Text(
-                          user.rating.average_rating.toStringAsFixed(1),
-                          style: MITITextStyle.gameTimePlainStyle.copyWith(
-                            color: const Color(0xFF222222),
-                          ),
-                        ),
-                        SizedBox(width: 9.w),
-                        Text(
-                          '후기 ${user.rating.num_of_reviews}',
-                          style: MITITextStyle.gameTimePlainStyle.copyWith(
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SvgPicture.asset(
-              'assets/images/icon/chevron_right.svg',
-              height: 14.h,
-              width: 7.w,
-            ),
-          ],
-        ),
+                context.pushNamed(
+                  ReviewScreen.routeName,
+                  pathParameters: pathParameters,
+                  queryParameters: queryParameters,
+                );
+              },
+              style: TextButton.styleFrom(
+                  minimumSize: Size(75.w, 30.h),
+                  fixedSize: Size(75.w, 30.h),
+                  maximumSize: Size(75.w, 30.h),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.r))),
+              child: Text(
+                "리뷰 쓰기",
+                style: MITITextStyle.smSemiBold.copyWith(
+                  color: MITIColor.gray800,
+                ),
+              ))
+        ],
       ),
     );
   }
@@ -255,12 +269,12 @@ class _HostReviewComponent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(12.r),
+      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            '호스트 리뷰',
+            '호스트',
             style: MITITextStyle.sectionTitleStyle.copyWith(
               color: const Color(0xff0d0000),
             ),
@@ -294,7 +308,7 @@ class _GuestReviewComponent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            '게스트 리뷰',
+            '게스트',
             style: MITITextStyle.sectionTitleStyle.copyWith(
               color: const Color(0xff0d0000),
             ),

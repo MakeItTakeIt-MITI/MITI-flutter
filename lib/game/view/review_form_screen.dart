@@ -15,6 +15,7 @@ import 'package:miti/game/model/game_model.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:miti/game/view/game_participation_screen.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:collection/collection.dart';
 
@@ -22,22 +23,22 @@ import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
 import '../../common/model/default_model.dart';
 import '../../common/provider/router_provider.dart';
+import '../../util/util.dart';
 import 'game_detail_screen.dart';
 
 class ReviewScreen extends StatefulWidget {
   final int gameId;
   final int ratingId;
   final int? participationId;
-  final int bottomIdx;
 
   static String get routeName => 'reviewForm';
 
-  const ReviewScreen(
-      {super.key,
-      required this.gameId,
-      this.participationId,
-      required this.ratingId,
-      required this.bottomIdx});
+  const ReviewScreen({
+    super.key,
+    required this.gameId,
+    this.participationId,
+    required this.ratingId,
+  });
 
   @override
   State<ReviewScreen> createState() => _ReviewScreenState();
@@ -60,19 +61,45 @@ class _ReviewScreenState extends State<ReviewScreen> {
 
   Widget getDivider() {
     return Container(
-      height: 5.h,
-      color: const Color(0xFFF8F8F8),
+      height: 4.h,
+      color: MITIColor.gray900,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final bottomPadding = MediaQuery.of(context).viewInsets.bottom > 80.h
-        ? MediaQuery.of(context).viewInsets.bottom - 80.h
-        : 0.0;
-    return DefaultLayout(
-      bottomIdx: widget.bottomIdx,
-      scrollController: _scrollController,
+    return Scaffold(
+      backgroundColor: MITIColor.gray750,
+      bottomNavigationBar: BottomButton(
+        button: Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final form = ref.watch(reviewFormProvider);
+            final valid = form.rating != null && form.comment.isNotEmpty;
+            return TextButton(
+              onPressed: valid
+                  ? () async {
+                      final result =
+                          ref.read(ratingProvider(ratingId: widget.ratingId));
+                      if (result is ResponseModel<UserReviewModel>) {
+                        final model = (result).data!;
+                        createReview(ref, context, model.nickname);
+                      } else {
+                        createReview(ref, context, '닉네임');
+                      }
+                    }
+                  : () {},
+              style: TextButton.styleFrom(
+                  backgroundColor:
+                      valid ? MITIColor.primary : MITIColor.gray500),
+              child: Text(
+                '작성 완료',
+                style: MITITextStyle.mdBold.copyWith(
+                    color: valid ? MITIColor.gray800 : MITIColor.gray50),
+              ),
+            );
+          },
+        ),
+      ),
       body: NestedScrollView(
         controller: _scrollController,
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -80,74 +107,33 @@ class _ReviewScreenState extends State<ReviewScreen> {
             DefaultAppBar(
               title: widget.participationId != null ? '게스트 리뷰' : '호스트 리뷰',
               isSliver: true,
+              backgroundColor: MITIColor.gray750,
             )
           ];
         },
-        body: Padding(
-          padding: EdgeInsets.only(bottom: bottomPadding),
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    _PlayerComponent(
-                      participationId: widget.participationId,
-                      ratingId: widget.ratingId,
-                    ),
-                    getDivider(),
-                    _RatingForm(
-                      participationId: widget.participationId,
-                    ),
-                    getDivider(),
-                    _CommentForm(
-                      participationId: widget.participationId,
-                    ),
-                    Consumer(
-                      builder:
-                          (BuildContext context, WidgetRef ref, Widget? child) {
-                        final form = ref.watch(reviewFormProvider);
-                        final valid =
-                            form.rating != null && form.comment.isNotEmpty;
-                        return Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16.w,
-                            vertical: 8.h,
-                          ),
-                          child: TextButton(
-                            onPressed: valid
-                                ? () async {
-                                    final result = ref.read(ratingProvider(
-                                        ratingId: widget.ratingId));
-                                    if (result
-                                        is ResponseModel<UserReviewModel>) {
-                                      final model = (result).data!;
-                                      createReview(
-                                          ref, context, model.nickname);
-                                    } else {
-                                      createReview(ref, context, '닉네임');
-                                    }
-                                  }
-                                : () {},
-                            style: TextButton.styleFrom(
-                                backgroundColor: valid
-                                    ? const Color(0xFF4065F5)
-                                    : const Color(0xFFE8E8E8)),
-                            child: Text(
-                              '리뷰 작성하기',
-                              style: MITITextStyle.btnTextBStyle.copyWith(
-                                  color: valid
-                                      ? Colors.white
-                                      : const Color(0xff969696)),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
+        body: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Column(
+                children: [
+                  _PlayerComponent(
+                    participationId: widget.participationId,
+                    ratingId: widget.ratingId,
+                  ),
+                  getDivider(),
+                  _RatingForm(
+                    participationId: widget.participationId,
+                  ),
+                  getDivider(),
+                  _CommentForm(
+                    participationId: widget.participationId,
+                  ),
+                  getDivider(),
+                  _ReviewForm(),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -185,20 +171,85 @@ class _ReviewScreenState extends State<ReviewScreen> {
             Map<String, String> pathParameters = {
               'gameId': widget.gameId.toString()
             };
-            Map<String, String> queryParameters = {
-              'bottomIdx': widget.bottomIdx.toString()
-            };
 
             context.goNamed(
               GameParticipationScreen.routeName,
               pathParameters: pathParameters,
-              queryParameters: queryParameters,
             );
           },
         );
         context.pushNamed(DialogPage.routeName, extra: extra);
       }
     }
+  }
+}
+
+class _ReviewForm extends StatelessWidget {
+  const _ReviewForm({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            "자유로운 후기를 남겨주세요!",
+            style: MITITextStyle.mdBold.copyWith(
+              color: MITIColor.gray100,
+            ),
+          ),
+          SizedBox(height: 20.r),
+          Scrollbar(
+            child: SingleChildScrollView(
+              // scrollDirection: Axis.vertical,
+              // reverse: true,
+              child: IntrinsicHeight(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: 110.h,
+                    maxHeight: 500.h,
+                  ),
+                  child: TextFormField(
+                    maxLines: null,
+                    expands: true,
+                    enabled: true,
+                    textAlignVertical: TextAlignVertical.top,
+                    style: MITITextStyle.sm150.copyWith(
+                      color: MITIColor.gray100,
+                    ),
+                    onChanged: (val) {
+                      // ref.read(reviewFormProvider.notifier).updateComment(val);
+                    },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                        borderSide: BorderSide.none,
+                      ),
+
+                      // constraints: BoxConstraints(
+                      //   minHeight: 68.h,
+                      //   maxHeight: 500.h,
+                      // ),
+                      hintText: '리뷰를 작성해주세요.',
+                      hintStyle: MITITextStyle.sm150
+                          .copyWith(color: MITIColor.gray500),
+                      hintMaxLines: 10,
+                      fillColor: MITIColor.gray700,
+                      filled: true,
+                      contentPadding: EdgeInsets.symmetric(
+                          horizontal: 16.w, vertical: 12.h),
+                      // isDense: true,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -235,34 +286,42 @@ class _RatingForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(12.r),
+      padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 21.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            participationId != null ? '게스트 평점' : '호스트 평점',
-            style: MITITextStyle.sectionTitleStyle.copyWith(
-              color: const Color(0xff222222),
+            // participationId != null ? '게스트 평점' : '호스트 평점',
+            '호스트는 어땠나요?',
+            style: MITITextStyle.mdBold.copyWith(
+              color: MITIColor.gray100,
             ),
           ),
-          SizedBox(height: 12.r),
+          SizedBox(height: 20.r),
           Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
               return Center(
                 child: RatingBar(
                   ratingWidget: RatingWidget(
                     full: SvgPicture.asset(
-                      'assets/images/icon/fill_star2.svg',
+                      AssetUtil.getAssetPath(
+                          type: AssetType.icon, name: 'fill_star2'),
+
+                      // 'assets/images/icon/fill_star2.svg',
                       height: 40.r,
                       width: 40.r,
                     ),
                     half: SvgPicture.asset(
-                      'assets/images/icon/fill_star2.svg',
+                      AssetUtil.getAssetPath(
+                          type: AssetType.icon, name: 'fill_star2'),
+                      // 'assets/images/icon/fill_star2.svg',
                       height: 40.r,
                       width: 40.r,
                     ),
                     empty: SvgPicture.asset(
-                      'assets/images/icon/unfill_star2.svg',
+                      AssetUtil.getAssetPath(
+                          type: AssetType.icon, name: 'unfill_star2'),
+                      // 'assets/images/icon/unfill_star2.svg',
                       height: 40.r,
                       width: 40.r,
                     ),
@@ -275,12 +334,10 @@ class _RatingForm extends StatelessWidget {
                         .read(reviewFormProvider.notifier)
                         .updateRating((v.toInt()));
                   },
-
                 ),
               );
             },
           ),
-
         ],
       ),
     );
@@ -320,82 +377,65 @@ class _CommentForm extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     List<String> comments = [
-      '경기 진행이 매끄럽습니다.',
-      '음료수를 제공해주셨어요.',
-      '아주 친절하십니다.',
-      '직접 작성',
+      '득점 능력',
+      '볼핸들링',
+      '수비 적극성',
+      '패스',
+      '슛 정확도',
+      '공간 창출',
+      '블로킹',
+      '1:1수비',
+      '스포츠맨쉽',
+      '매너',
+      '인사성',
+      '리더쉽',
+      '팀워크'
     ];
     final selected = ref.watch(selectedProvider);
     return Padding(
-      padding: EdgeInsets.all(12.r),
+      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            participationId != null ? '게스트 한줄평' : '호스트 한줄평',
-            style: MITITextStyle.sectionTitleStyle.copyWith(
-              color: const Color(0xff222222),
+            '어떤 점이 좋았나요?',
+            style: MITITextStyle.mdBold.copyWith(
+              color: MITIColor.gray100,
             ),
           ),
-          SizedBox(height: 12.r),
-          ListView.separated(
-              physics: const NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              itemBuilder: (_, idx) {
-                return getComments(idx, comments[idx]);
-              },
-              separatorBuilder: (_, idx) {
-                return SizedBox(height: 3.h);
-              },
-              itemCount: comments.length),
-          SizedBox(height: 12.r),
-          Scrollbar(
-            child: SingleChildScrollView(
-              // scrollDirection: Axis.vertical,
-              // reverse: true,
-              child: IntrinsicHeight(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: 110.h,
-                    maxHeight: 500.h,
-                  ),
-                  child: TextFormField(
-                    maxLines: null,
-                    expands: true,
-                    enabled: selected == 3,
-                    textAlignVertical: TextAlignVertical.top,
-                    style: MITITextStyle.inputValueMStyle.copyWith(
-                      color: Colors.black,
-                    ),
-                    onChanged: (val) {
-                      ref.read(reviewFormProvider.notifier).updateComment(val);
-                    },
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                        borderSide: BorderSide.none,
-                      ),
+          SizedBox(height: 20.r),
+          Wrap(
+            spacing: 8.w,
+            runSpacing: 8.h,
+            children: [
+              ...comments
+                  .map((e) =>
+                      _ReviewChip(selected: true, onTap: () {}, title: e))
+                  .toList()
 
-                      // constraints: BoxConstraints(
-                      //   minHeight: 68.h,
-                      //   maxHeight: 500.h,
-                      // ),
-                      hintText: '리뷰를 작성해주세요.',
-                      hintStyle: MITITextStyle.placeHolderMStyle
-                          .copyWith(color: const Color(0xFF969696)),
-                      hintMaxLines: 10,
-                      fillColor: const Color(0xFFF7F7F7),
-                      filled: true,
-                      contentPadding: EdgeInsets.symmetric(
-                          horizontal: 12.w, vertical: 12.h),
-                      // isDense: true,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+              // _ReviewChip(
+              //   selected: true,
+              //   onTap: () {},
+              //   title: '득점 능력',
+              // ),
+              // _ReviewChip(
+              //   selected: false,
+              //   onTap: () {},
+              //   title: '득점 능력',
+              // )
+            ],
           ),
+          // ListView.separated(
+          //     physics: const NeverScrollableScrollPhysics(),
+          //     padding: EdgeInsets.zero,
+          //     shrinkWrap: true,
+          //     itemBuilder: (_, idx) {
+          //       return getComments(idx, comments[idx]);
+          //     },
+          //     separatorBuilder: (_, idx) {
+          //       return SizedBox(height: 3.h);
+          //     },
+          //     itemCount: comments.length),
         ],
       ),
     );
@@ -431,6 +471,53 @@ class _CommentForm extends ConsumerWidget {
           ]),
         );
       },
+    );
+  }
+}
+
+class _ReviewChip extends StatelessWidget {
+  final bool selected;
+  final VoidCallback onTap;
+  final String title;
+
+  const _ReviewChip(
+      {super.key,
+      required this.selected,
+      required this.onTap,
+      required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 14.w),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(100.r),
+          gradient: selected
+              ? const LinearGradient(
+                  begin: Alignment.bottomLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                      Color(0xFFAFFEFF),
+                      Color(0xFF7EFDFF),
+                    ])
+              : null,
+          color: selected ? null : MITIColor.gray800,
+          // border: selected
+          //     ? Border.all(
+          //         color: MITIColor.primary,
+          //       )
+          //     : null
+          // color: selected ?
+        ),
+        child: Text(
+          title,
+          style: MITITextStyle.smSemiBold.copyWith(
+            color: selected ? MITIColor.gray800 : MITIColor.gray300,
+          ),
+        ),
+      ),
     );
   }
 }

@@ -557,13 +557,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 participationId = int.parse(state
                                     .uri.queryParameters['participationId']!);
                               }
-                              final int bottomIdx = int.parse(
-                                  state.uri.queryParameters['bottomIdx']!);
+
                               return ReviewScreen(
                                 gameId: gameId,
                                 participationId: participationId,
                                 ratingId: ratingId,
-                                bottomIdx: bottomIdx,
                               );
                             },
                             // pageBuilder: (context, state) {

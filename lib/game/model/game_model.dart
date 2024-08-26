@@ -144,7 +144,6 @@ class RatingModel extends IModelWithId {
       _$RatingModelFromJson(json);
 }
 
-
 @JsonSerializable()
 class ConfirmedParticipationModel extends IModelWithId {
   final String nickname;
@@ -213,7 +212,7 @@ class GameDetailModel extends IModelWithId {
   final bool is_host;
   final ParticipationModel? participation;
 
-  GameDetailModel( {
+  GameDetailModel({
     required super.id,
     required this.host,
     required this.court,
@@ -239,4 +238,3 @@ class GameDetailModel extends IModelWithId {
   factory GameDetailModel.fromJson(Map<String, dynamic> json) =>
       _$GameDetailModelFromJson(json);
 }
-

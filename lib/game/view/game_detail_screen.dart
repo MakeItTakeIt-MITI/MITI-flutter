@@ -307,9 +307,28 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
       },
       style: TextButton.styleFrom(
         fixedSize: Size(double.infinity, 48.h),
+        maximumSize: Size(double.infinity, 48.h),
+        minimumSize: Size(double.infinity, 48.h),
+        // maximumSize: Size(223.w, 48.h),
+        // minimumSize: Size(223.w, 48.h),
       ),
       child: const Text('리뷰 작성하기'),
     );
+    final reportButton = TextButton(
+        onPressed: () {},
+        style: TextButton.styleFrom(
+          fixedSize: Size(98.w, 48.h),
+          maximumSize: Size(98.w, 48.h),
+          minimumSize: Size(98.w, 48.h),
+          backgroundColor: MITIColor.gray700,
+        ),
+        child: Text(
+          "신고하기",
+          style: MITITextStyle.md.copyWith(
+            color: MITIColor.error,
+          ),
+        ));
+
     final gameStatus = model.game_status;
     final startTime = DateTime.parse('${model.startdate} ${model.starttime}');
     final policyValid = DateTime.now().difference(startTime).inHours <= -2;
@@ -343,7 +362,14 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
         break;
       case GameStatus.completed:
         if (model.is_participated || model.is_host) {
-          button = reviewButton;
+          button = Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Flexible(child: reportButton),
+              SizedBox(width: 12.w),
+              Expanded(child: reviewButton)
+            ],
+          );
         }
         break;
     }
@@ -422,8 +448,8 @@ class HostComponent extends StatelessWidget {
       final String star = flag
           ? 'Star_half_v2'
           : rating >= i + 1
-              ? 'fill_star'
-              : 'unfill_star';
+              ? 'fill_star2'
+              : 'unfill_star2';
       result.add(SvgPicture.asset(
         AssetUtil.getAssetPath(type: AssetType.icon, name: star),
         // height: 16.r,
@@ -435,89 +461,79 @@ class HostComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            isHost ? "호스트 소개" : '게스트 소개',
-            style: MITITextStyle.mdBold.copyWith(color: MITIColor.gray100),
-          ),
-          SizedBox(height: 20.h),
-          Consumer(
-            builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              return Column(
+    return Consumer(
+      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
+          child: Column(
+            children: [
+              Row(
                 children: [
-                  Row(
-                    children: [
-                      SvgPicture.asset(
-                        AssetUtil.getAssetPath(
-                            type: AssetType.icon, name: "user_thum"),
-                        width: 36.r,
-                        height: 36.r,
-                      ),
-                      SizedBox(width: 12.w),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            nickname,
-                            style: MITITextStyle.smBold
-                                .copyWith(color: MITIColor.gray100),
-                          ),
-                          SizedBox(height: 4.h),
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                ...getStar(rating.average_rating),
-                                SizedBox(width: 6.w),
-                                Text(
-                                  rating.average_rating.toStringAsFixed(1),
-                                  style: MITITextStyle.sm.copyWith(
-                                    color: MITIColor.gray100,
-                                  ),
-                                ),
-                                SizedBox(width: 6.w),
-                                Text(
-                                  '리뷰 ${rating.num_of_reviews}',
-                                  style: MITITextStyle.sm.copyWith(
-                                      color: MITIColor.gray100,
-                                      decoration: TextDecoration.underline,
-                                      decorationColor: MITIColor.gray100),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
+                  SvgPicture.asset(
+                    AssetUtil.getAssetPath(
+                        type: AssetType.icon, name: "user_thum"),
+                    width: 36.r,
+                    height: 36.r,
                   ),
-                  // SizedBox(height: 19.h),
-                  // ListView.separated(
-                  //     padding: EdgeInsets.zero,
-                  //     shrinkWrap: true,
-                  //     physics: const NeverScrollableScrollPhysics(),
-                  //     itemBuilder: (_, idx) {
-                  //       return Text(
-                  //         reviews[idx].comment,
-                  //         overflow: TextOverflow.ellipsis,
-                  //         style: MITITextStyle.reviewSummaryStyle
-                  //             .copyWith(color: const Color(0xFF666666)),
-                  //       );
-                  //     },
-                  //     separatorBuilder: (_, idx) {
-                  //       return SizedBox(height: 8.h);
-                  //     },
-                  //     itemCount: reviews.length),
+                  SizedBox(width: 12.w),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        nickname,
+                        style: MITITextStyle.smBold
+                            .copyWith(color: MITIColor.gray100),
+                      ),
+                      SizedBox(height: 4.h),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            ...getStar(rating.average_rating),
+                            SizedBox(width: 6.w),
+                            Text(
+                              rating.average_rating.toStringAsFixed(1),
+                              style: MITITextStyle.sm.copyWith(
+                                color: MITIColor.gray100,
+                              ),
+                            ),
+                            SizedBox(width: 6.w),
+                            Text(
+                              '리뷰 ${rating.num_of_reviews}',
+                              style: MITITextStyle.sm.copyWith(
+                                  color: MITIColor.gray100,
+                                  decoration: TextDecoration.underline,
+                                  decorationColor: MITIColor.gray100),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
                 ],
-              );
-            },
+              ),
+              // SizedBox(height: 19.h),
+              // ListView.separated(
+              //     padding: EdgeInsets.zero,
+              //     shrinkWrap: true,
+              //     physics: const NeverScrollableScrollPhysics(),
+              //     itemBuilder: (_, idx) {
+              //       return Text(
+              //         reviews[idx].comment,
+              //         overflow: TextOverflow.ellipsis,
+              //         style: MITITextStyle.reviewSummaryStyle
+              //             .copyWith(color: const Color(0xFF666666)),
+              //       );
+              //     },
+              //     separatorBuilder: (_, idx) {
+              //       return SizedBox(height: 8.h);
+              //     },
+              //     itemCount: reviews.length),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

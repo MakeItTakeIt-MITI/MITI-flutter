@@ -71,9 +71,7 @@ class BottomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
-
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(
@@ -85,10 +83,10 @@ class BottomButton extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 18.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           button,
-          if(Platform.isIOS)
-          SizedBox(height: 21.h),
+          if (Platform.isIOS) SizedBox(height: 21.h),
         ],
       ),
     );
