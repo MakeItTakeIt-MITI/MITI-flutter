@@ -28,7 +28,7 @@ class MapPosition extends Equatable {
 @JsonSerializable()
 class GameListByDateModel extends Base {
   final String startdate;
-  final List<GameBaseModel> games;
+  final List<GameHostModel> games;
 
   GameListByDateModel({
     required this.startdate,
@@ -37,6 +37,37 @@ class GameListByDateModel extends Base {
 
   factory GameListByDateModel.fromJson(Map<String, dynamic> json) =>
       _$GameListByDateModelFromJson(json);
+}
+
+@JsonSerializable()
+class GameHostModel extends IModelWithId {
+  final GameStatus game_status;
+  final String title;
+  final String startdate;
+  final String starttime;
+  final String enddate;
+  final String endtime;
+  final int fee;
+  final int num_of_participations;
+  final int min_invitation;
+  final int max_invitation;
+
+  GameHostModel({
+    required super.id,
+    required this.game_status,
+    required this.title,
+    required this.startdate,
+    required this.starttime,
+    required this.enddate,
+    required this.endtime,
+    required this.fee,
+    required this.num_of_participations,
+    required this.min_invitation,
+    required this.max_invitation,
+  });
+
+  factory GameHostModel.fromJson(Map<String, dynamic> json) =>
+      _$GameHostModelFromJson(json);
 }
 
 @JsonSerializable()
@@ -116,12 +147,10 @@ class ReviewGameModel extends GameBaseModel {
 class UserReviewModel extends IModelWithId {
   final String nickname;
   final RatingModel rating;
-  final List<WrittenReviewModel> reviews;
 
   UserReviewModel({
     required this.nickname,
     required this.rating,
-    required this.reviews,
     required super.id,
   });
 
@@ -130,18 +159,43 @@ class UserReviewModel extends IModelWithId {
 }
 
 @JsonSerializable()
-class RatingModel extends IModelWithId {
-  final int num_of_reviews;
-  final double average_rating;
+class ReviewerModel extends IModelWithId {
+  final int reviewer;
+
+  ReviewerModel({
+    required this.reviewer,
+    required super.id,
+  });
+
+  factory ReviewerModel.fromJson(Map<String, dynamic> json) =>
+      _$ReviewerModelFromJson(json);
+}
+
+@JsonSerializable()
+class RatingModel {
+  final Rating host_rating;
+  final Rating guest_rating;
 
   RatingModel({
-    required super.id,
-    required this.num_of_reviews,
-    required this.average_rating,
+    required this.host_rating,
+    required this.guest_rating,
   });
 
   factory RatingModel.fromJson(Map<String, dynamic> json) =>
       _$RatingModelFromJson(json);
+}
+
+@JsonSerializable()
+class Rating {
+  final int num_of_reviews;
+  final double? average_rating;
+
+  Rating({
+    required this.num_of_reviews,
+    required this.average_rating,
+  });
+
+  factory Rating.fromJson(Map<String, dynamic> json) => _$RatingFromJson(json);
 }
 
 @JsonSerializable()

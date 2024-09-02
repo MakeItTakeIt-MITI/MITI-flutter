@@ -22,22 +22,24 @@ import 'package:collection/collection.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
 import '../../common/model/default_model.dart';
+import '../../common/model/entity_enum.dart';
 import '../../common/provider/router_provider.dart';
 import '../../util/util.dart';
 import 'game_detail_screen.dart';
 
 class ReviewScreen extends StatefulWidget {
   final int gameId;
-  final int ratingId;
-  final int? participationId;
+
+  // final int ratingId;
+  final int participationId;
 
   static String get routeName => 'reviewForm';
 
   const ReviewScreen({
     super.key,
     required this.gameId,
-    this.participationId,
-    required this.ratingId,
+    required this.participationId,
+    // required this.ratingId,
   });
 
   @override
@@ -74,12 +76,15 @@ class _ReviewScreenState extends State<ReviewScreen> {
         button: Consumer(
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
             final form = ref.watch(reviewFormProvider);
-            final valid = form.rating != null && form.comment.isNotEmpty;
+            final valid = form.rating > 0 &&
+                form.comment.isNotEmpty &&
+                form.tags.length > 1;
+            log("valid  = $valid");
             return TextButton(
               onPressed: valid
                   ? () async {
-                      final result =
-                          ref.read(ratingProvider(ratingId: widget.ratingId));
+                      final result = ref.read(
+                          ratingProvider(ratingId: widget.participationId));
                       if (result is ResponseModel<UserReviewModel>) {
                         final model = (result).data!;
                         createReview(ref, context, model.nickname);
@@ -112,13 +117,14 @@ class _ReviewScreenState extends State<ReviewScreen> {
           ];
         },
         body: CustomScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           slivers: [
             SliverToBoxAdapter(
               child: Column(
                 children: [
                   _PlayerComponent(
                     participationId: widget.participationId,
-                    ratingId: widget.ratingId,
+                    ratingId: widget.participationId,
                   ),
                   getDivider(),
                   _RatingForm(
@@ -184,14 +190,15 @@ class _ReviewScreenState extends State<ReviewScreen> {
   }
 }
 
-class _ReviewForm extends StatelessWidget {
+class _ReviewForm extends ConsumerWidget {
   const _ReviewForm({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
@@ -201,53 +208,135 @@ class _ReviewForm extends StatelessWidget {
             ),
           ),
           SizedBox(height: 20.r),
-          Scrollbar(
-            child: SingleChildScrollView(
-              // scrollDirection: Axis.vertical,
-              // reverse: true,
-              child: IntrinsicHeight(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: 110.h,
-                    maxHeight: 500.h,
-                  ),
-                  child: TextFormField(
-                    maxLines: null,
-                    expands: true,
-                    enabled: true,
-                    textAlignVertical: TextAlignVertical.top,
-                    style: MITITextStyle.sm150.copyWith(
-                      color: MITIColor.gray100,
-                    ),
-                    onChanged: (val) {
-                      // ref.read(reviewFormProvider.notifier).updateComment(val);
-                    },
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                        borderSide: BorderSide.none,
-                      ),
-
-                      // constraints: BoxConstraints(
-                      //   minHeight: 68.h,
-                      //   maxHeight: 500.h,
-                      // ),
-                      hintText: '리뷰를 작성해주세요.',
-                      hintStyle: MITITextStyle.sm150
-                          .copyWith(color: MITIColor.gray500),
-                      hintMaxLines: 10,
-                      fillColor: MITIColor.gray700,
-                      filled: true,
-                      contentPadding: EdgeInsets.symmetric(
-                          horizontal: 16.w, vertical: 12.h),
-                      // isDense: true,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          Flexible(
+              child: MultiLineTextFormField(
+            onChanged: (val) {
+              ref.read(reviewFormProvider.notifier).updateComment(val);
+            },
+            hint: '리뷰를 작성해주세요.',
+          )),
+          // Scrollbar(
+          //   child: SingleChildScrollView(
+          //     // scrollDirection: Axis.vertical,
+          //     // reverse: true,
+          //     child: IntrinsicHeight(
+          //       child: ConstrainedBox(
+          //         constraints: BoxConstraints(
+          //           minHeight: 110.h,
+          //           maxHeight: 500.h,
+          //         ),
+          //         child: TextFormField(
+          //           maxLines: null,
+          //           expands: true,
+          //           enabled: true,
+          //           textAlignVertical: TextAlignVertical.top,
+          //           style: MITITextStyle.sm150.copyWith(
+          //             color: MITIColor.gray100,
+          //           ),
+          //           onChanged: (val) {
+          //             ref.read(reviewFormProvider.notifier).updateComment(val);
+          //           },
+          //           decoration: InputDecoration(
+          //             border: OutlineInputBorder(
+          //               borderRadius: BorderRadius.circular(12.r),
+          //               borderSide: BorderSide.none,
+          //             ),
+          //
+          //             // constraints: BoxConstraints(
+          //             //   minHeight: 68.h,
+          //             //   maxHeight: 500.h,
+          //             // ),
+          //             hintText: '리뷰를 작성해주세요.',
+          //             hintStyle: MITITextStyle.sm150
+          //                 .copyWith(color: MITIColor.gray500),
+          //             hintMaxLines: 10,
+          //             fillColor: MITIColor.gray700,
+          //             filled: true,
+          //             contentPadding: EdgeInsets.symmetric(
+          //                 horizontal: 16.w, vertical: 12.h),
+          //             // isDense: true,
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
+      ),
+    );
+  }
+}
+
+class MultiLineTextFormField extends StatefulWidget {
+  final String hint;
+  final double height;
+  final ValueChanged<String>? onChanged;
+
+  const MultiLineTextFormField({super.key, this.onChanged, required this.hint, this.height = 100});
+
+  @override
+  State<MultiLineTextFormField> createState() => _MultiLineTextFormFieldState();
+}
+
+class _MultiLineTextFormFieldState extends State<MultiLineTextFormField> {
+  late final TextEditingController _editTextController;
+
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _editTextController = TextEditingController();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _editTextController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      child: RawScrollbar(
+        thumbColor: MITIColor.gray500,
+        controller: _scrollController,
+        crossAxisMargin: 4.w,
+        thickness: 2.w,
+        radius: Radius.circular(100.r),
+        trackVisibility: true,
+        child: TextField(
+            scrollController: _scrollController,
+            // autofocus: true,
+            keyboardType: TextInputType.multiline,
+            maxLines: null,
+            autocorrect: true,
+            // expands: true,
+            style: MITITextStyle.sm150.copyWith(
+              color: MITIColor.gray100,
+            ),
+            textAlignVertical: TextAlignVertical.top,
+            onChanged: widget.onChanged,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.r),
+                borderSide: BorderSide.none,
+              ),
+              constraints: BoxConstraints(
+                minHeight: 68.h,
+                maxHeight: widget.height.h,
+              ),
+              hintText: widget.hint,
+              hintStyle: MITITextStyle.sm150.copyWith(color: MITIColor.gray500),
+              hintMaxLines: 10,
+              fillColor: MITIColor.gray700,
+              filled: true,
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              // isDense: true,
+            )),
       ),
     );
   }
@@ -376,21 +465,8 @@ class _CommentForm extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    List<String> comments = [
-      '득점 능력',
-      '볼핸들링',
-      '수비 적극성',
-      '패스',
-      '슛 정확도',
-      '공간 창출',
-      '블로킹',
-      '1:1수비',
-      '스포츠맨쉽',
-      '매너',
-      '인사성',
-      '리더쉽',
-      '팀워크'
-    ];
+    final chips = PlayerReviewTagType.values.toList();
+
     final selected = ref.watch(selectedProvider);
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
@@ -408,10 +484,20 @@ class _CommentForm extends ConsumerWidget {
             spacing: 8.w,
             runSpacing: 8.h,
             children: [
-              ...comments
-                  .map((e) =>
-                      _ReviewChip(selected: true, onTap: () {}, title: e))
-                  .toList()
+              ...chips.map((e) => Consumer(
+                    builder:
+                        (BuildContext context, WidgetRef ref, Widget? child) {
+                      final tags = ref.watch(
+                          reviewFormProvider.select((form) => form.tags));
+
+                      return _ReviewChip(
+                          selected: tags.contains(e),
+                          onTap: () {
+                            ref.read(reviewFormProvider.notifier).updateChip(e);
+                          },
+                          title: e.name);
+                    },
+                  ))
 
               // _ReviewChip(
               //   selected: true,

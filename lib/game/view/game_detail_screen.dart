@@ -362,13 +362,15 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
         break;
       case GameStatus.completed:
         if (model.is_participated || model.is_host) {
-          button = Row(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Flexible(child: reportButton),
-              SizedBox(width: 12.w),
-              Expanded(child: reviewButton)
-            ],
+          button = Align(
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                reportButton,
+                SizedBox(width: 12.w),
+                Expanded(child: reviewButton)
+              ],
+            ),
           );
         }
         break;
@@ -416,14 +418,12 @@ class InfoComponent extends StatelessWidget {
 class HostComponent extends StatelessWidget {
   final String nickname;
   final RatingModel rating;
-  final List<WrittenReviewModel> reviews;
   final bool isHost;
 
   const HostComponent({
     super.key,
     required this.nickname,
     required this.rating,
-    required this.reviews,
     this.isHost = true,
   });
 
@@ -432,7 +432,6 @@ class HostComponent extends StatelessWidget {
     return HostComponent(
       nickname: model.nickname,
       rating: model.rating,
-      reviews: model.reviews,
       isHost: isHost,
     );
   }
@@ -490,17 +489,19 @@ class HostComponent extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            ...getStar(rating.average_rating),
+                            ...getStar(rating.host_rating.average_rating ?? 0),
                             SizedBox(width: 6.w),
                             Text(
-                              rating.average_rating.toStringAsFixed(1),
+                              rating.host_rating.average_rating
+                                      ?.toStringAsFixed(1) ??
+                                  '0',
                               style: MITITextStyle.sm.copyWith(
                                 color: MITIColor.gray100,
                               ),
                             ),
                             SizedBox(width: 6.w),
                             Text(
-                              '리뷰 ${rating.num_of_reviews}',
+                              '리뷰 ${rating.host_rating.num_of_reviews}',
                               style: MITITextStyle.sm.copyWith(
                                   color: MITIColor.gray100,
                                   decoration: TextDecoration.underline,

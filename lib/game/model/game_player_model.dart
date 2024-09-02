@@ -7,28 +7,33 @@ import 'game_model.dart';
 part 'game_player_model.g.dart';
 
 @JsonSerializable()
-class GamePlayerListModel {
+class GameRevieweesModel {
   final List<GameParticipationModel> participations;
   final GamePlayerModel? host;
 
-  GamePlayerListModel({
+  GameRevieweesModel({
     required this.participations,
     required this.host,
   });
 
-  factory GamePlayerListModel.fromJson(Map<String, dynamic> json) =>
-      _$GamePlayerListModelFromJson(json);
+  factory GameRevieweesModel.fromJson(Map<String, dynamic> json) =>
+      _$GameRevieweesModelFromJson(json);
 }
 
 @JsonSerializable()
 class GameParticipationModel extends IModelWithId {
+  final int user;
   final ParticipationStatus participation_status;
-  final GamePlayerModel user;
+  final Rating guest_rating;
+  final List<ReviewerModel> guest_reviews;
+
 
   GameParticipationModel({
     required super.id,
-    required this.participation_status,
     required this.user,
+    required this.participation_status,
+    required this.guest_rating,
+    required this.guest_reviews,
   });
 
   factory GameParticipationModel.fromJson(Map<String, dynamic> json) =>
@@ -36,14 +41,14 @@ class GameParticipationModel extends IModelWithId {
 }
 
 @JsonSerializable()
-class GamePlayerModel extends IModelWithId {
-  final String nickname;
-  final RatingModel rating;
+class GamePlayerModel  {
+  final Rating host_rating;
+  final List<ReviewerModel> host_reviews;
+
 
   GamePlayerModel({
-    required super.id,
-    required this.nickname,
-    required this.rating,
+    required this.host_rating,
+    required this.host_reviews,
   });
 
   factory GamePlayerModel.fromJson(Map<String, dynamic> json) =>

@@ -183,6 +183,39 @@ enum DistrictType {
   }
 }
 
+enum PlayerReviewTagType {
+  @JsonValue('scoring_ability')
+  scoringAbility('득점능력'),
+  @JsonValue('ball_handling')
+  ballHandling('볼핸들링'),
+  @JsonValue('defensive_aggressiveness')
+  defensiveAggressiveness('수비적극성'),
+  @JsonValue('passing')
+  passing('패스'),
+  @JsonValue('shooting_accuracy')
+  shootingAccuracy('슛정확도'),
+  @JsonValue('space_creation')
+  spaceCreation('공간창출'),
+  @JsonValue('shoot_blocking')
+  shootBlocking('블로킹'),
+  @JsonValue('man_to_man_defence')
+  manToManDefence('1:1수비'),
+  @JsonValue('sportsmanship')
+  sportsmanship('스포츠맨쉽'),
+  @JsonValue('manners')
+  manners('매너'),
+  @JsonValue('politeness')
+  politeness('인사성'),
+  @JsonValue('leadership')
+  leadership('리더쉽'),
+  @JsonValue('teamwork')
+  teamwork('팀워크');
+
+  const PlayerReviewTagType(this.name);
+
+  final String name;
+}
+
 enum AuthType {
   email,
   kakao,

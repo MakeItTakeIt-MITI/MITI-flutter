@@ -7,6 +7,7 @@ import 'package:miti/util/util.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../common/component/custom_text_form_field.dart';
+import '../../../common/model/entity_enum.dart';
 import '../../../common/provider/widget/datetime_provider.dart';
 import '../../model/game_recent_host_model.dart';
 
@@ -231,8 +232,9 @@ class ReviewForm extends _$ReviewForm {
   @override
   GameReviewParam build() {
     return const GameReviewParam(
-      rating: null,
+      rating: 0,
       comment: '',
+      tags: [],
     );
   }
 
@@ -244,9 +246,21 @@ class ReviewForm extends _$ReviewForm {
     state = state.copyWith(comment: comment);
   }
 
+  void updateChip(PlayerReviewTagType chip) {
+    if (state.tags.contains(chip)) {
+      final newTags = state.tags.toList();
+      newTags.remove(chip);
+      state = state.copyWith(tags: newTags);
+    } else {
+      final newTags = state.tags.toList();
+      newTags.add(chip);
+      state = state.copyWith(tags: newTags);
+    }
+  }
+
   bool valid() {
     log('state.rating = ${state.rating}');
     log('state.comment.isNotEmpty = ${state.comment.isNotEmpty}');
-    return state.rating != null && state.comment.isNotEmpty;
+    return state.comment.isNotEmpty && state.tags.length > 1;
   }
 }

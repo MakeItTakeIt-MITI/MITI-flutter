@@ -48,9 +48,8 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultLayout(
-      bottomIdx: 0,
-      scrollController: _scrollController,
+    return Scaffold(
+      backgroundColor: MITIColor.gray750,
       body: NestedScrollView(
         controller: _scrollController,
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -58,6 +57,7 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
             const DefaultAppBar(
               title: '경기 리뷰 남기기',
               isSliver: true,
+              backgroundColor: MITIColor.gray750,
             )
           ];
         },
@@ -78,19 +78,23 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
                     );
                   }
                   final model =
-                      (result as ResponseModel<GamePlayerListModel>).data!;
+                      (result as ResponseModel<GameRevieweesModel>).data!;
                   final userId = ref.read(authProvider)?.id ?? 0;
 
                   /// 본인 리뷰 제거
-                  model.participations.removeWhere((e) => e.user.id == userId);
+                  // model.participations.removeWhere((e) => e.user.id == userId);
 
                   return Column(
                     children: [
-                      if (model.host != null && model.host?.id != userId)
-                        _HostReviewComponent(
-                          host: model.host!,
-                          gameId: widget.gameId,
-                        ),
+                      // if (model.host != null && model.host?.id != userId)
+                      _HostReviewComponent(
+                        host: model.host!,
+                        gameId: widget.gameId,
+                      ),
+                      Container(
+                        color: MITIColor.gray800,
+                        height: 4.h,
+                      ),
                       _GuestReviewComponent(
                         participated_users: model.participations,
                         gameId: widget.gameId,
@@ -108,17 +112,13 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
 }
 
 class _PlayerComponent extends StatelessWidget {
-  final int id;
   final ParticipationStatus? participation_status;
-  final GamePlayerModel user;
   final int gameId;
   final int? participationId;
 
   const _PlayerComponent({
     super.key,
-    required this.id,
     this.participation_status,
-    required this.user,
     this.participationId,
     required this.gameId,
   });
@@ -128,9 +128,7 @@ class _PlayerComponent extends StatelessWidget {
     required int gameId,
   }) {
     return _PlayerComponent(
-      id: model.id,
       participation_status: model.participation_status,
-      user: model.user,
       gameId: gameId,
       participationId: model.id,
     );
@@ -141,8 +139,6 @@ class _PlayerComponent extends StatelessWidget {
     required int gameId,
   }) {
     return _PlayerComponent(
-      id: model.id,
-      user: model,
       gameId: gameId,
     );
   }
@@ -174,8 +170,10 @@ class _PlayerComponent extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.r),
+          color: MITIColor.gray700,
           border: Border.all(color: MITIColor.gray600)),
       padding: EdgeInsets.all(16.r),
+      alignment: Alignment.center,
       child: Row(
         children: [
           SvgPicture.asset(
@@ -188,11 +186,11 @@ class _PlayerComponent extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  user.nickname,
-                  style:
-                      MITITextStyle.smBold.copyWith(color: MITIColor.gray100),
-                ),
+                // Text(
+                //   user.nickname,
+                //   style:
+                //       MITITextStyle.smBold.copyWith(color: MITIColor.gray100),
+                // ),
                 SizedBox(height: 4.h),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -201,21 +199,21 @@ class _PlayerComponent extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      ...getStar(user.rating.average_rating),
+                      // ...getStar(user.rating.average_rating),
                       SizedBox(width: 6.w),
-                      Text(
-                        user.rating.average_rating.toStringAsFixed(1),
-                        style: MITITextStyle.sm.copyWith(
-                          color: MITIColor.gray100,
-                        ),
-                      ),
+                      // Text(
+                      //   user.rating.average_rating.toStringAsFixed(1),
+                      //   style: MITITextStyle.sm.copyWith(
+                      //     color: MITIColor.gray100,
+                      //   ),
+                      // ),
                       SizedBox(width: 6.w),
-                      Text(
-                        '리뷰 ${user.rating.num_of_reviews}',
-                        style: MITITextStyle.sm.copyWith(
-                          color: MITIColor.gray100,
-                        ),
-                      ),
+                      // Text(
+                      //   '리뷰 ${user.rating.num_of_reviews}',
+                      //   style: MITITextStyle.sm.copyWith(
+                      //     color: MITIColor.gray100,
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
@@ -228,8 +226,9 @@ class _PlayerComponent extends StatelessWidget {
                 Map<String, String> pathParameters = {
                   'gameId': gameId.toString(),
                 };
+                // todo 쿼리 설정 필요
                 Map<String, String> queryParameters = {
-                  'ratingId': user.rating.id.toString()
+                  'participationId': participationId.toString()
                 };
 
                 context.pushNamed(
@@ -239,6 +238,9 @@ class _PlayerComponent extends StatelessWidget {
                 );
               },
               style: TextButton.styleFrom(
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                   minimumSize: Size(75.w, 30.h),
                   fixedSize: Size(75.w, 30.h),
                   maximumSize: Size(75.w, 30.h),
@@ -273,10 +275,13 @@ class _HostReviewComponent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            '호스트',
-            style: MITITextStyle.sectionTitleStyle.copyWith(
-              color: const Color(0xff0d0000),
+          Padding(
+            padding: EdgeInsets.only(left: 12.w),
+            child: Text(
+              '호스트',
+              style: MITITextStyle.mdBold.copyWith(
+                color: MITIColor.gray100,
+              ),
             ),
           ),
           SizedBox(height: 12.h),
@@ -303,14 +308,17 @@ class _GuestReviewComponent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(12.r),
+      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            '게스트',
-            style: MITITextStyle.sectionTitleStyle.copyWith(
-              color: const Color(0xff0d0000),
+          Padding(
+            padding: EdgeInsets.only(left: 12.w),
+            child: Text(
+              '게스트',
+              style: MITITextStyle.mdBold.copyWith(
+                color: MITIColor.gray100,
+              ),
             ),
           ),
           if (participated_users.isEmpty) getEmptyWidget(),

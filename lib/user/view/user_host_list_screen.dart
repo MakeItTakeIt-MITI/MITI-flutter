@@ -163,18 +163,24 @@ class _GameHostScreenState extends ConsumerState<GameHostScreen> {
   }
 
   Widget getEmptyWidget(UserGameType type) {
-    final title = type == UserGameType.host ? '호스팅' : '참여한';
+    final title = type == UserGameType.host
+        ? '아직 생성한 경기가 없습니다.'
+        : '참여가 예정된 경기나\n참여한 경기 내역이 없습니다.';
+    final desc = type == UserGameType.host
+        ? '원하는 경기를 생성하고 게스트를 모집해보세요!'
+        : '새로운 경기를 찾아보거나 직접 경기를 생성해보세요!';
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          '$title 경기가 없습니다.',
+          title,
           style: MITITextStyle.pageMainTextStyle
               .copyWith(color: MITIColor.gray100),
+          textAlign: TextAlign.center,
         ),
         SizedBox(height: 20.h),
         Text(
-          '경기 생성을 통해 경기를 모집해보세요!',
+          desc,
           style:
               MITITextStyle.pageSubTextStyle.copyWith(color: MITIColor.gray100),
         )

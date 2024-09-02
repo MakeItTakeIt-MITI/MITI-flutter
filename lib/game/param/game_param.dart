@@ -201,21 +201,25 @@ class GameUpdateParam extends Equatable {
 
 @JsonSerializable()
 class GameReviewParam extends Equatable {
-  final int? rating;
+  final int rating;
+  final List<PlayerReviewTagType> tags;
   final String comment;
 
   const GameReviewParam({
     required this.rating,
     required this.comment,
+    required this.tags,
   });
 
   GameReviewParam copyWith({
     int? rating,
     String? comment,
+    List<PlayerReviewTagType>? tags,
   }) {
     return GameReviewParam(
       rating: rating ?? this.rating,
       comment: comment ?? this.comment,
+      tags: tags ?? this.tags,
     );
   }
 

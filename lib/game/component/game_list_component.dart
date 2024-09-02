@@ -17,7 +17,7 @@ import 'game_state_label.dart';
 
 class GameCardByDate extends StatelessWidget {
   final String dateTime;
-  final List<GameBaseModel> models;
+  final List<GameHostModel> models;
 
   const GameCardByDate({
     super.key,
@@ -78,7 +78,6 @@ class GameCard extends StatelessWidget {
   final String starttime;
   final String enddate;
   final String endtime;
-  final CourtModel court;
 
   const GameCard({
     super.key,
@@ -88,11 +87,10 @@ class GameCard extends StatelessWidget {
     required this.starttime,
     required this.enddate,
     required this.endtime,
-    required this.court,
     required this.id,
   });
 
-  factory GameCard.fromModel({required GameBaseModel model}) {
+  factory GameCard.fromModel({required GameHostModel model}) {
     return GameCard(
       game_status: model.game_status,
       title: model.title,
@@ -100,7 +98,6 @@ class GameCard extends StatelessWidget {
       starttime: model.starttime,
       enddate: model.enddate,
       endtime: model.endtime,
-      court: model.court,
       id: model.id,
     );
   }

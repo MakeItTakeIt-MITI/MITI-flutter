@@ -200,14 +200,14 @@ class _UserInfoCard extends ConsumerWidget {
                     SizedBox(height: 3.h),
                     Row(
                       children: [
-                        ...getStar(model.rating.average_rating),
+                        // ...getStar(model.rating.average_rating),
                         SizedBox(width: 1.w),
-                        Flexible(
-                          child: Text(
-                            model.rating.average_rating.toStringAsFixed(1),
-                            style: MITITextStyle.emailTextStyle,
-                          ),
-                        ),
+                        // Flexible(
+                        //   child: Text(
+                        //     model.rating.average_rating.toStringAsFixed(1),
+                        //     style: MITITextStyle.emailTextStyle,
+                        //   ),
+                        // ),
                       ],
                     )
                   ],

@@ -549,19 +549,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                             builder: (context, state) {
                               final int gameId =
                                   int.parse(state.pathParameters['gameId']!);
-                              final int ratingId = int.parse(
-                                  state.uri.queryParameters['ratingId']!);
-                              int? participationId;
-                              if (state.uri.queryParameters
-                                  .containsKey('participationId')) {
-                                participationId = int.parse(state
-                                    .uri.queryParameters['participationId']!);
-                              }
+                              // final int ratingId = int.parse(
+                              //     state.uri.queryParameters['ratingId']!);
+                              int participationId = int.parse(state
+                                  .uri.queryParameters['participationId']!);
 
                               return ReviewScreen(
                                 gameId: gameId,
                                 participationId: participationId,
-                                ratingId: ratingId,
+                                // ratingId: ratingId,
                               );
                             },
                             // pageBuilder: (context, state) {

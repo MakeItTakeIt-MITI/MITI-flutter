@@ -23,6 +23,7 @@ import 'package:miti/court/provider/court_provider.dart';
 import 'package:miti/game/error/game_error.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
+import 'package:miti/game/view/review_form_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
@@ -159,7 +160,8 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
                               Map<String, String> pathParameters = {
                                 'gameId': model.data!.id.toString()
                               };
-                              const GameCompleteType extra = GameCompleteType.create;
+                              const GameCompleteType extra =
+                                  GameCompleteType.create;
                               context.pushNamed(
                                 GameCompleteScreen.routeName,
                                 pathParameters: pathParameters,
@@ -1205,6 +1207,13 @@ class _AdditionalInfoFormState extends ConsumerState<_AdditionalInfoForm> {
             style: MITITextStyle.sm.copyWith(color: MITIColor.gray300),
           ),
           SizedBox(height: 10.h),
+          MultiLineTextFormField(
+            onChanged: (val) {
+              ref.read(gameFormProvider.notifier).update(info: val);
+            },
+            height: 200,
+            hint: '주차, 샤워 가능 여부, 경기 진행 방식, 필요한 유니폼 색상 등 참가들에게 공지할 정보들을 입력해주세요',
+          ),
           ConstrainedBox(
             constraints: BoxConstraints(
               minHeight: 74.h,

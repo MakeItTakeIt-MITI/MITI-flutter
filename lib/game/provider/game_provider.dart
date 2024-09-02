@@ -240,7 +240,7 @@ class GamePlayers extends _$GamePlayers {
   Future<void> getPlayers({required int gameId}) async {
     state = LoadingModel();
     final repository = ref.watch(gameRepositoryProvider);
-    repository.getPlayers(gameId: gameId).then((value) {
+    repository.getReviewees(gameId: gameId).then((value) {
       logger.i(value);
       state = value;
     }).catchError((e) {

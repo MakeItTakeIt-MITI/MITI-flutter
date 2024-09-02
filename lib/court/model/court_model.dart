@@ -2,6 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
+import '../../game/model/game_model.dart';
 
 part 'court_model.g.dart';
 
@@ -28,8 +29,9 @@ class CourtModel extends IModelWithId {
 class CourtDetailModel extends CourtModel {
   final String name;
   final String? info;
+  final List<GameHostModel> soonest_games;
 
-  CourtDetailModel({
+  CourtDetailModel( {
     required super.id,
     required super.address,
     required super.address_detail,
@@ -37,11 +39,13 @@ class CourtDetailModel extends CourtModel {
     required this.info,
     required super.latitude,
     required super.longitude,
+    required this.soonest_games,
   });
 
   factory CourtDetailModel.fromJson(Map<String, dynamic> json) =>
       _$CourtDetailModelFromJson(json);
 }
+
 
 @JsonSerializable()
 class CourtAddressModel extends IModelWithId {
