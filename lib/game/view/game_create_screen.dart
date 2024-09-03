@@ -833,6 +833,7 @@ class AddressComponent extends StatelessWidget {
                                 ref
                                     .read(gameFormProvider.notifier)
                                     .update(court: newCourt);
+                                // todo fix court pagination
                                 final result =
                                     await ref.read(courtListProvider.future);
 

@@ -35,6 +35,8 @@ class CustomDropDownButton extends ConsumerStatefulWidget {
 }
 
 class _CustomDropDownButtonState extends ConsumerState<CustomDropDownButton> {
+  String? selectedValue = '전체';
+
   @override
   void initState() {
     super.initState();
@@ -47,7 +49,7 @@ class _CustomDropDownButtonState extends ConsumerState<CustomDropDownButton> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedValue = ref.watch(dropDownValueProvider);
+    selectedValue = ref.watch(dropDownValueProvider);
     return DropdownButtonHideUnderline(
       child: DropdownButton2<String>(
         // isDense: true,
@@ -56,6 +58,7 @@ class _CustomDropDownButtonState extends ConsumerState<CustomDropDownButton> {
               color: MITIColor.gray100,
               fontWeight: FontWeight.w400,
             ),
+
         items: widget.items
             .map((String item) => DropdownMenuItem<String>(
                   value: item,
@@ -80,11 +83,16 @@ class _CustomDropDownButtonState extends ConsumerState<CustomDropDownButton> {
           width: widget.width ?? 92.w,
         ),
         iconStyleData: IconStyleData(
+            openMenuIcon: Icon(
+              Icons.keyboard_arrow_up,
+              color: MITIColor.primary,
+              size: 16.r,
+            ),
             icon: Icon(
-          Icons.keyboard_arrow_down,
-          color: MITIColor.primary,
-          size: 16.r,
-        )),
+              Icons.keyboard_arrow_down,
+              color: MITIColor.primary,
+              size: 16.r,
+            )),
         dropdownStyleData: DropdownStyleData(
             // scrollPadding: EdgeInsets.only(top: 4.h),
             // width: 85.w,

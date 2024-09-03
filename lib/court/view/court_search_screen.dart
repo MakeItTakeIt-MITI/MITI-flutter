@@ -19,6 +19,7 @@ import 'package:miti/court/provider/court_pagination_provider.dart';
 import 'package:miti/court/provider/court_provider.dart';
 import 'package:miti/court/provider/widget/court_search_provider.dart';
 import 'package:miti/court/view/court_game_list_screen.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/default_appbar.dart';
@@ -57,65 +58,61 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultLayout(
-      bottomIdx: widget.bottomIdx,
-      body: NestedScrollView(
-          headerSliverBuilder:
-              ((BuildContext context, bool innerBoxIsScrolled) {
-            return [
-              const DefaultAppBar(
-                isSliver: true,
-                title: '경기장 조회',
-              ),
-            ];
-          }),
-          body: RefreshIndicator(
-            onRefresh: refresh,
-            child: CustomScrollView(
-              controller: controller,
-              slivers: [
-                SliverPadding(
-                  padding: EdgeInsets.all(14.r),
-                  sliver: SliverMainAxisGroup(slivers: [
-                    SliverToBoxAdapter(
-                      child: Column(
-                        children: [
-                          _SearchComponent(),
-                          SizedBox(height: 14.h),
-                        ],
-                      ),
-                    ),
-                    Consumer(
-                      builder:
-                          (BuildContext context, WidgetRef ref, Widget? child) {
-                        final form = ref.watch(courtSearchProvider);
-
-                        return DisposeSliverPaginationListView(
-                          provider: courtPageProvider(PaginationStateParam()),
-                          itemBuilder:
-                              (BuildContext context, int index, Base model) {
-                            model as CourtSearchModel;
-                            return ResultCard.fromModel(
-                              model: model,
-                              onTap: () {
-                                onTap(model, context);
-                              },
-                            );
-                          },
-                          param: form,
-                          skeleton: Container(),
-                          controller: controller,
-                          emptyWidget: getEmptyWidget(),
-                        );
-                      },
-                    ),
-                  ]),
-                ),
-              ],
+    return NestedScrollView(
+        headerSliverBuilder: ((BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            const DefaultAppBar(
+              isSliver: true,
+              title: '경기장 조회',
             ),
-          )),
-      scrollController: controller,
-    );
+          ];
+        }),
+        body: RefreshIndicator(
+          onRefresh: refresh,
+          child: CustomScrollView(
+            controller: controller,
+            slivers: [
+              SliverPadding(
+                padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 24.h),
+                sliver: SliverMainAxisGroup(slivers: [
+                  SliverToBoxAdapter(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(child: _SearchComponent()),
+                        SizedBox(height: 20.h),
+                      ],
+                    ),
+                  ),
+                  Consumer(
+                    builder:
+                        (BuildContext context, WidgetRef ref, Widget? child) {
+                      final form = ref.watch(courtSearchProvider);
+
+                      return DisposeSliverPaginationListView(
+                        provider: courtPageProvider(PaginationStateParam()),
+                        itemBuilder:
+                            (BuildContext context, int index, Base model) {
+                          model as CourtSearchModel;
+                          return ResultCard.fromModel(
+                            model: model,
+                            onTap: () {
+                              onTap(model, context);
+                            },
+                          );
+                        },
+                        param: form,
+                        skeleton: Container(),
+                        controller: controller,
+                        emptyWidget: getEmptyWidget(),
+                      );
+                    },
+                  ),
+                ]),
+              ),
+            ],
+          ),
+        ));
   }
 
   void onTap(CourtSearchModel model, BuildContext context) {
@@ -167,7 +164,7 @@ class _SearchComponent extends StatelessWidget {
     '경남',
     '제주',
     '대전',
-    '전체 보기',
+    '전체',
   ];
 
   _SearchComponent({super.key});
@@ -182,26 +179,23 @@ class _SearchComponent extends StatelessWidget {
             return Expanded(
               child: TextFormField(
                 decoration: InputDecoration(
-                  prefixIconColor: const Color(0xFF969696),
-                  suffixIcon: const Icon(
-                    Icons.search,
-                    // size: 16.r,
-                  ),
+                  filled: true,
+                  constraints:
+                      BoxConstraints.loose(Size(double.infinity, 100.h)),
                   contentPadding: EdgeInsets.symmetric(horizontal: 16.r),
-                  constraints: BoxConstraints(
-                    maxHeight: 39.h,
-                  ),
-                  border: const OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                  ),
-                  hintText: '경기장 검색어(주소 / 경기장 명)',
-                  hintStyle: MITITextStyle.placeHolderMStyle.copyWith(
+                  border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(100.r)),
+                  hintText: '경기장 (주소/경기장 명)을 검색해주세요',
+                  hintStyle: MITITextStyle.xxsmSemiBold.copyWith(
                     height: 1,
-                    color: const Color(0xff969696),
+                    color: MITIColor.gray500,
                   ),
+                  fillColor: MITIColor.gray700,
                   isDense: true,
                 ),
-                style: MITITextStyle.placeHolderMStyle.copyWith(
+                style: MITITextStyle.xxsmSemiBold.copyWith(
+                  color: MITIColor.gray100,
                   height: 1,
                 ),
                 onChanged: (val) {
@@ -219,11 +213,11 @@ class _SearchComponent extends StatelessWidget {
             );
           },
         ),
-        SizedBox(width: 12.w),
+        SizedBox(width: 8.w),
         Consumer(
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
             return CustomDropDownButton(
-              initValue: '전체 보기',
+              initValue: '전체',
               items: items,
               onChanged: (val) {
                 changeDropButton(val, ref);

@@ -683,15 +683,20 @@ final routerProvider = Provider<GoRouter>((ref) {
                         ]),
                   ]),
               GoRoute(
-                  path: '/info',
+                  path: '/court',
                   parentNavigatorKey: shellNavKey,
-                  name: InfoBody.routeName,
+                  name: CourtSearchScreen.routeName,
                   redirect: (_, state) => provider.redirectLogic(state),
                   builder: (context, state) {
-                    return InfoBody();
+                    return CourtSearchScreen(
+                      bottomIdx: 2,
+                    );
                   },
                   pageBuilder: (context, state) {
-                    return NoTransitionPage(child: InfoBody());
+                    return NoTransitionPage(
+                        child: CourtSearchScreen(
+                      bottomIdx: 2,
+                    ));
                   },
                   routes: [
                     GoRoute(
@@ -920,6 +925,24 @@ final routerProvider = Provider<GoRouter>((ref) {
                       //   ));
                       // },
                     ),
+                    GoRoute(
+                      path: ':courtId',
+                      parentNavigatorKey: rootNavKey,
+                      name: CourtGameListScreen.routeName,
+                      builder: (context, state) {
+                        final int courtId =
+                            int.parse(state.pathParameters['courtId']!);
+                        final CourtSearchModel extra =
+                            state.extra! as CourtSearchModel;
+                        final int bottomIdx =
+                            int.parse(state.uri.queryParameters['bottomIdx']!);
+                        return CourtGameListScreen(
+                          courtId: courtId,
+                          model: extra,
+                          bottomIdx: bottomIdx,
+                        );
+                      },
+                    ),
                   ]),
               GoRoute(
                 path: '/menu',
@@ -948,37 +971,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                     //   return NoTransitionPage(child: FAQScreen());
                     // },
                   ),
-                  GoRoute(
-                      path: 'court',
-                      parentNavigatorKey: rootNavKey,
-                      name: CourtSearchScreen.routeName,
-                      builder: (context, state) {
-                        final int bottomIdx =
-                            int.parse(state.uri.queryParameters['bottomIdx']!);
-                        return CourtSearchScreen(
-                          bottomIdx: bottomIdx,
-                        );
-                      },
-                      routes: [
-                        GoRoute(
-                          path: ':courtId',
-                          parentNavigatorKey: rootNavKey,
-                          name: CourtGameListScreen.routeName,
-                          builder: (context, state) {
-                            final int courtId =
-                                int.parse(state.pathParameters['courtId']!);
-                            final CourtSearchModel extra =
-                                state.extra! as CourtSearchModel;
-                            final int bottomIdx = int.parse(
-                                state.uri.queryParameters['bottomIdx']!);
-                            return CourtGameListScreen(
-                              courtId: courtId,
-                              model: extra,
-                              bottomIdx: bottomIdx,
-                            );
-                          },
-                        ),
-                      ]),
                 ],
               ),
             ]),

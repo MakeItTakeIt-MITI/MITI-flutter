@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:miti/theme/color_theme.dart';
 
 import '../../theme/text_theme.dart';
 import '../model/court_model.dart';
@@ -40,10 +41,11 @@ class ResultCard extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(12.r),
+        padding: EdgeInsets.all(16.r),
         decoration: BoxDecoration(
+            color: MITIColor.gray700,
             borderRadius: BorderRadius.circular(8.r),
-            border: Border.all(color: const Color(0xFFE8E8E8))),
+            border: Border.all(color: MITIColor.gray600)),
         child: Row(
           children: [
             Expanded(
@@ -53,14 +55,14 @@ class ResultCard extends StatelessWidget {
                   Text(
                     name,
                     style: MITITextStyle.courtNameCardStyle.copyWith(
-                      color: const Color(0xff333333),
+                      color: MITIColor.gray100,
                     ),
                   ),
-                  SizedBox(height: 9.h),
+                  SizedBox(height: 4.h),
                   Text(
                     address,
                     style: MITITextStyle.courtAddressCardStyle.copyWith(
-                      color: const Color(0xff999999),
+                      color: MITIColor.gray400,
                     ),
                   ),
                 ],

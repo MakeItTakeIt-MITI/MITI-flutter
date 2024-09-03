@@ -102,7 +102,7 @@ class CustomDioInterceptor extends Interceptor {
         return handler.resolve(reResponse);
       } on DioException catch (e) {
         // 리프레쉬 토큰 만료 된 경우
-        log("리프레쉬 만료 언어선택으로 이동 !!");
+        log("리프레쉬 만료 !!");
         await ref.read(tokenProvider.notifier).logout();
         return;
       }

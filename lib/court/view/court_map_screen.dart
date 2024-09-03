@@ -355,7 +355,10 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
                             alignment: Alignment.center,
                             child: GestureDetector(
                               onVerticalDragUpdate: (details) {
-                                final newSize = _draggableScrollableController.size + details.primaryDelta! / MediaQuery.of(context).size.height;
+                                final newSize =
+                                    _draggableScrollableController.size +
+                                        details.primaryDelta! /
+                                            MediaQuery.of(context).size.height;
                                 if (newSize >= 0.04 && newSize <= 0.8) {
                                   _draggableScrollableController.animateTo(
                                     newSize,
@@ -368,7 +371,8 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
                                 height: 4.h,
                                 width: 60.w,
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(8.r)),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(8.r)),
                                   color: MITIColor.gray100,
                                 ),
                               ),

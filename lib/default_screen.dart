@@ -10,6 +10,7 @@ import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/view/user_info_screen.dart';
 import 'package:miti/util/util.dart';
 import 'court/view/court_map_screen.dart';
+import 'court/view/court_search_screen.dart';
 import 'game/view/game_screen.dart';
 import 'menu/view/menu_screen.dart';
 
@@ -38,7 +39,7 @@ class _DefaultShellScreenState extends ConsumerState<DefaultShellScreen> {
       return 0;
     } else if (GoRouterState.of(context).matchedLocation.startsWith('/game')) {
       return 1;
-    } else if (GoRouterState.of(context).matchedLocation.startsWith('/info')) {
+    } else if (GoRouterState.of(context).matchedLocation.startsWith('/court')) {
       return 2;
     } else {
       return 3;
@@ -78,12 +79,12 @@ class _DefaultShellScreenState extends ConsumerState<DefaultShellScreen> {
             } else if (page == 2) {
               if (GoRouterState.of(context)
                   .matchedLocation
-                  .startsWith('/info')) {
+                  .startsWith('/court')) {
                 // controller[2].animateTo(0,
                 //     duration: const Duration(milliseconds: 500),
                 //     curve: Curves.easeInOut);
               } else {
-                context.goNamed(InfoBody.routeName);
+                context.goNamed(CourtSearchScreen.routeName);
               }
             } else {
               if (GoRouterState.of(context)
