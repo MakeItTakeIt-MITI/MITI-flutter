@@ -18,7 +18,8 @@ import 'package:miti/game/component/game_state_label.dart';
 import 'package:miti/game/error/game_error.dart';
 import 'package:miti/game/model/game_model.dart';
 import 'package:miti/game/model/game_payment_model.dart';
-import 'package:miti/game/provider/game_provider.dart';
+import 'package:miti/game/model/widget/user_reivew_short_info_model.dart';
+import 'package:miti/game/provider/game_provider.dart' hide Rating;
 import 'package:collection/collection.dart';
 import 'package:miti/game/view/game_participation_screen.dart';
 import 'package:miti/game/view/game_refund_screen.dart';
@@ -142,7 +143,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
                             getDivider(),
                             ParticipationComponent.fromModel(model: model),
                             getDivider(),
-                            HostComponent.fromModel(model: model.host),
+                            // UserShortInfoComponent.fromModel(model: model.host),
                             getDivider(),
                             InfoComponent(
                               info: model.info,
@@ -415,24 +416,24 @@ class InfoComponent extends StatelessWidget {
   }
 }
 
-class HostComponent extends StatelessWidget {
+class UserShortInfoComponent extends StatelessWidget {
   final String nickname;
-  final RatingModel rating;
-  final bool isHost;
+  final Rating rating;
 
-  const HostComponent({
+  // final bool isHost;
+
+  const UserShortInfoComponent({
     super.key,
     required this.nickname,
     required this.rating,
-    this.isHost = true,
+    // this.isHost = true,
   });
 
-  factory HostComponent.fromModel(
-      {required UserReviewModel model, bool isHost = true}) {
-    return HostComponent(
+  factory UserShortInfoComponent.fromModel(
+      {required UserReviewShortInfoModel model}) {
+    return UserShortInfoComponent(
       nickname: model.nickname,
       rating: model.rating,
-      isHost: isHost,
     );
   }
 
@@ -449,10 +450,14 @@ class HostComponent extends StatelessWidget {
           : rating >= i + 1
               ? 'fill_star2'
               : 'unfill_star2';
-      result.add(SvgPicture.asset(
-        AssetUtil.getAssetPath(type: AssetType.icon, name: star),
-        // height: 16.r,
-        // width: 16.r,
+      result.add(Padding(
+
+        padding: EdgeInsets.only(right: 2.w),
+        child: SvgPicture.asset(
+          AssetUtil.getAssetPath(type: AssetType.icon, name: star),
+          height: 16.r,
+          width: 16.r,
+        ),
       ));
     }
     return result;
@@ -479,7 +484,7 @@ class HostComponent extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        nickname,
+                        "$nickname 님",
                         style: MITITextStyle.smBold
                             .copyWith(color: MITIColor.gray100),
                       ),
@@ -489,19 +494,17 @@ class HostComponent extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            ...getStar(rating.host_rating.average_rating ?? 0),
+                            ...getStar(rating.average_rating ?? 0),
                             SizedBox(width: 6.w),
                             Text(
-                              rating.host_rating.average_rating
-                                      ?.toStringAsFixed(1) ??
-                                  '0',
+                              rating.average_rating?.toStringAsFixed(1) ?? '0',
                               style: MITITextStyle.sm.copyWith(
                                 color: MITIColor.gray100,
                               ),
                             ),
                             SizedBox(width: 6.w),
                             Text(
-                              '리뷰 ${rating.host_rating.num_of_reviews}',
+                              '리뷰 ${rating.num_of_reviews}',
                               style: MITITextStyle.sm.copyWith(
                                   color: MITIColor.gray100,
                                   decoration: TextDecoration.underline,

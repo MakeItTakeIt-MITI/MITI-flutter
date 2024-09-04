@@ -229,7 +229,7 @@ class GameReviewParam extends Equatable {
       _$GameReviewParamFromJson(json);
 
   @override
-  List<Object?> get props => [rating, comment];
+  List<Object?> get props => [rating, comment, tags];
 
   @override
   bool? get stringify => true;

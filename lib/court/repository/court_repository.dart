@@ -27,6 +27,11 @@ abstract class CourtRepository {
     @Query('search') required String search,
     @Query('page') int? page,
   });
+
+  @GET('/courts/{courtId}')
+  Future<ResponseModel<CourtDetailModel>> getDetail({
+    @Path('courtId') required int courtId,
+  });
 }
 
 final courtPaginationRepositoryProvider =
@@ -56,8 +61,8 @@ final courtGamePaginationRepositoryProvider =
 });
 
 @RestApi(baseUrl: serverURL)
-abstract class CourtGamePaginationRepository
-    extends IBasePaginationRepository<GameListByDateModel, CourtPaginationParam> {
+abstract class CourtGamePaginationRepository extends IBasePaginationRepository<
+    GameListByDateModel, CourtPaginationParam> {
   factory CourtGamePaginationRepository(Dio dio) =
       _CourtGamePaginationRepository;
 

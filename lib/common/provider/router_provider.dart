@@ -10,6 +10,7 @@ import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/auth/view/phone_auth/phone_auth_info_screen.dart';
 import 'package:miti/auth/view/phone_auth/phone_auth_screen.dart';
 import 'package:miti/court/view/court_game_list_screen.dart';
+import 'package:miti/game/model/widget/user_reivew_short_info_model.dart';
 import 'package:miti/game/view/game_participation_screen.dart';
 import 'package:miti/game/view/game_refund_screen.dart';
 import 'package:miti/game/view/game_create_screen.dart';
@@ -37,7 +38,7 @@ import '../../auth/view/phone_auth/phone_auth_send_screen.dart';
 import '../../auth/view/signup/signup_screen.dart';
 import '../../auth/view/signup/signup_select_screen.dart';
 import '../../court/model/court_model.dart';
-import '../../court/view/court_search_screen.dart';
+import '../../court/view/court_detail_screen.dart';
 import '../../game/view/game_create_complete_screen.dart';
 import '../../default_screen.dart';
 import '../../court/view/court_map_screen.dart';
@@ -549,14 +550,19 @@ final routerProvider = Provider<GoRouter>((ref) {
                             builder: (context, state) {
                               final int gameId =
                                   int.parse(state.pathParameters['gameId']!);
-                              // final int ratingId = int.parse(
-                              //     state.uri.queryParameters['ratingId']!);
-                              int participationId = int.parse(state
-                                  .uri.queryParameters['participationId']!);
+                              int? participationId;
+                              if (state.uri.queryParameters
+                                  .containsKey('participationId')) {
+                                participationId = int.parse(state
+                                    .uri.queryParameters['participationId']!);
+                              }
+                              final model =
+                                  state.extra as UserReviewShortInfoModel;
 
                               return ReviewScreen(
                                 gameId: gameId,
                                 participationId: participationId,
+                                userInfoModel: model,
                                 // ratingId: ratingId,
                               );
                             },
@@ -685,17 +691,17 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                   path: '/court',
                   parentNavigatorKey: shellNavKey,
-                  name: CourtSearchScreen.routeName,
+                  name: CourtSearchListScreen.routeName,
                   redirect: (_, state) => provider.redirectLogic(state),
                   builder: (context, state) {
-                    return CourtSearchScreen(
-                      bottomIdx: 2,
+                    return CourtSearchListScreen(
+                      // bottomIdx: 2,
                     );
                   },
                   pageBuilder: (context, state) {
                     return NoTransitionPage(
-                        child: CourtSearchScreen(
-                      bottomIdx: 2,
+                        child: CourtSearchListScreen(
+                      // bottomIdx: 2,
                     ));
                   },
                   routes: [
@@ -846,43 +852,26 @@ final routerProvider = Provider<GoRouter>((ref) {
                           bottomIdx: bottomIdx,
                         );
                       },
-                      // pageBuilder: (context, state) {
-                      //   final extra = UserReviewType.stringToEnum(
-                      //       value: state.extra! as String);
-                      //   return NoTransitionPage(
-                      //       child: UserWrittenReviewScreen(
-                      //     type: extra,
-                      //   ));
-                      // },
                       routes: [
                         GoRoute(
                           path: ':reviewId',
                           parentNavigatorKey: rootNavKey,
                           name: ReviewDetailScreen.routeName,
                           builder: (_, state) {
-                            final extra = state.extra! as UserReviewType;
+                            log("AA ${state.pathParameters.containsKey('reviewId')}");
                             final int reviewId =
                                 int.parse(state.pathParameters['reviewId']!);
-                            final int bottomIdx = int.parse(
-                                state.uri.queryParameters['bottomIdx']!);
-
+                            int? participationId;
+                            if (state.uri.queryParameters
+                                .containsKey('participationId')) {
+                              participationId = int.parse(state
+                                  .uri.queryParameters['participationId']!);
+                            }
                             return ReviewDetailScreen(
                               reviewId: reviewId,
-                              reviewType: extra,
-                              bottomIdx: bottomIdx,
+                              participationId: participationId,
                             );
                           },
-                          // pageBuilder: (context, state) {
-                          //   final extra = state.extra! as UserReviewType;
-                          //
-                          //   final int reviewId =
-                          //       int.parse(state.pathParameters['reviewId']!);
-                          //   return NoTransitionPage(
-                          //       child: ReviewDetailScreen(
-                          //     reviewId: reviewId,
-                          //     reviewType: extra,
-                          //   ));
-                          // },
                         ),
                       ],
                     ),

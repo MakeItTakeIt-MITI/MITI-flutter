@@ -62,24 +62,6 @@ abstract class GameRepository {
   Future<ResponseModel<GameRevieweesModel>> getReviewees(
       {@Path() required int gameId});
 
-
-  /// 경기 게스트 참가자 리뷰 작성 API
-  @Headers({'token': 'true'})
-  @POST('/games/{gameId}/participations/{participationId}/reviews')
-  Future<ResponseModel<GameCreateReviewModel>> createGuestReview({
-    @Path() required int gameId,
-    @Path() required int participationId,
-    @Body() required GameReviewParam param,
-  });
-
-  /// 경기 호스트 리뷰 작성 API
-  @Headers({'token': 'true'})
-  @POST('/games/{gameId}/reviews')
-  Future<ResponseModel<GameCreateReviewModel>> createHostReview({
-    @Path() required int gameId,
-    @Body() required GameReviewParam param,
-  });
-
   @Headers({'token': 'true'})
   @DELETE('/games/{gameId}/participations/{participationId}')
   Future<ResponseModel<ParticipationModel>> cancelGame({
@@ -111,4 +93,28 @@ abstract class GameRepository {
   Future<ResponseModel<GameDetailModel>> cancelRecruitGame({
     @Path('gameId') required int gameId,
   });
+
+  ///*** 리뷰 관련 api ***
+  /// 경기 게스트 참가자 리뷰 작성 API
+  @Headers({'token': 'true'})
+  @POST('/games/{gameId}/participations/{participationId}/reviews')
+  Future<ResponseModel<GameCreateReviewModel>> createGuestReview({
+    @Path() required int gameId,
+    @Path() required int participationId,
+    @Body() required GameReviewParam param,
+  });
+
+  /// 경기 호스트 리뷰 작성 API
+  @Headers({'token': 'true'})
+  @POST('/games/{gameId}/reviews')
+  Future<ResponseModel<GameCreateReviewModel>> createHostReview({
+    @Path() required int gameId,
+    @Body() required GameReviewParam param,
+  });
+
+  /// 호스트 리뷰 상세 조회 API
+  @Headers({'token': 'true'})
+  @GET('/games/{gameId}/reviews/{reviewId}')
+  Future<ResponseModel<GameRevieweesModel>> getHostReview(
+      {@Path() required int gameId, @Path() required int reviewId});
 }

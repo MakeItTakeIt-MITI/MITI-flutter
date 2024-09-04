@@ -6,18 +6,21 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
+import 'package:miti/common/component/custom_time_picker.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/game/model/game_player_model.dart';
-import 'package:miti/game/provider/game_provider.dart';
+import 'package:miti/game/model/widget/user_reivew_short_info_model.dart';
+import 'package:miti/game/provider/game_provider.dart' hide Rating;
 import 'package:miti/game/view/review_form_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/util/util.dart';
 
 import '../../common/component/default_appbar.dart';
-import '../../common/component/default_layout.dart';
 import '../../common/model/entity_enum.dart';
+import '../../user/view/user_review_detail_screen.dart';
 import '../model/game_model.dart';
+import 'package:collection/collection.dart';
 
 class GameParticipationScreen extends StatefulWidget {
   final int gameId;
@@ -69,9 +72,9 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
                   final result =
                       ref.watch(gamePlayersProvider(gameId: widget.gameId));
                   if (result is LoadingModel) {
-                    return CircularProgressIndicator();
+                    return const CircularProgressIndicator();
                   } else if (result is ErrorModel) {
-                    return Column(
+                    return const Column(
                       children: [
                         Text('에러'),
                       ],
@@ -82,7 +85,7 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
                   final userId = ref.read(authProvider)?.id ?? 0;
 
                   /// 본인 리뷰 제거
-                  // model.participations.removeWhere((e) => e.user.id == userId);
+                  // model.participations.removeWhere((e) => e.id == userId);
 
                   return Column(
                     children: [
@@ -112,15 +115,21 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
 }
 
 class _PlayerComponent extends StatelessWidget {
+  final String nickname;
   final ParticipationStatus? participation_status;
   final int gameId;
   final int? participationId;
+  final Rating rating;
+  final List<ReviewerModel> reviews;
 
   const _PlayerComponent({
     super.key,
     this.participation_status,
     this.participationId,
     required this.gameId,
+    required this.nickname,
+    required this.rating,
+    required this.reviews,
   });
 
   factory _PlayerComponent.fromParticipationModel({
@@ -131,15 +140,21 @@ class _PlayerComponent extends StatelessWidget {
       participation_status: model.participation_status,
       gameId: gameId,
       participationId: model.id,
+      nickname: model.nickname,
+      rating: model.guest_rating,
+      reviews: model.guest_reviews,
     );
   }
 
   factory _PlayerComponent.fromHostModel({
-    required GamePlayerModel model,
+    required ReviewHostModel model,
     required int gameId,
   }) {
     return _PlayerComponent(
       gameId: gameId,
+      nickname: model.nickname,
+      rating: model.host_rating,
+      reviews: model.host_reviews,
     );
   }
 
@@ -186,11 +201,11 @@ class _PlayerComponent extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Text(
-                //   user.nickname,
-                //   style:
-                //       MITITextStyle.smBold.copyWith(color: MITIColor.gray100),
-                // ),
+                Text(
+                  nickname,
+                  style:
+                      MITITextStyle.smBold.copyWith(color: MITIColor.gray100),
+                ),
                 SizedBox(height: 4.h),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -199,21 +214,21 @@ class _PlayerComponent extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // ...getStar(user.rating.average_rating),
+                      ...getStar(rating.average_rating ?? 0),
                       SizedBox(width: 6.w),
-                      // Text(
-                      //   user.rating.average_rating.toStringAsFixed(1),
-                      //   style: MITITextStyle.sm.copyWith(
-                      //     color: MITIColor.gray100,
-                      //   ),
-                      // ),
+                      Text(
+                        (rating.average_rating ?? 0).toStringAsFixed(1),
+                        style: MITITextStyle.sm.copyWith(
+                          color: MITIColor.gray100,
+                        ),
+                      ),
                       SizedBox(width: 6.w),
-                      // Text(
-                      //   '리뷰 ${user.rating.num_of_reviews}',
-                      //   style: MITITextStyle.sm.copyWith(
-                      //     color: MITIColor.gray100,
-                      //   ),
-                      // ),
+                      Text(
+                        '리뷰 ${rating.num_of_reviews}',
+                        style: MITITextStyle.sm.copyWith(
+                          color: MITIColor.gray100,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -221,37 +236,67 @@ class _PlayerComponent extends StatelessWidget {
             ),
           ),
           // Spacer(),
-          TextButton(
-              onPressed: () {
-                Map<String, String> pathParameters = {
-                  'gameId': gameId.toString(),
-                };
-                // todo 쿼리 설정 필요
-                Map<String, String> queryParameters = {
-                  'participationId': participationId.toString()
-                };
+          Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              final userId = ref.watch(authProvider.select((user) => user?.id));
+              final valid =
+                  reviews.singleWhereOrNull((r) => r.reviewer == userId);
 
-                context.pushNamed(
-                  ReviewScreen.routeName,
-                  pathParameters: pathParameters,
-                  queryParameters: queryParameters,
-                );
-              },
-              style: TextButton.styleFrom(
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-                  minimumSize: Size(75.w, 30.h),
-                  fixedSize: Size(75.w, 30.h),
-                  maximumSize: Size(75.w, 30.h),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.r))),
-              child: Text(
-                "리뷰 쓰기",
-                style: MITITextStyle.smSemiBold.copyWith(
-                  color: MITIColor.gray800,
-                ),
-              ))
+              return TextButton(
+                  onPressed: () {
+                    Map<String, String> queryParameters = {};
+                    if (participationId != null) {
+                      queryParameters = {
+                        'participationId': participationId.toString()
+                      };
+                    }
+
+                    /// 리뷰 쓰기
+                    if (valid == null) {
+                      Map<String, String> pathParameters = {
+                        'gameId': gameId.toString(),
+                      };
+                      final model = UserReviewShortInfoModel(
+                          nickname: nickname, rating: rating);
+
+                      context.pushNamed(
+                        ReviewScreen.routeName,
+                        pathParameters: pathParameters,
+                        queryParameters: queryParameters,
+                        extra: model,
+                      );
+                    } else {
+                      /// 리뷰 보기
+                      Map<String, String> pathParameters = {
+                        'reviewId': valid.id.toString()
+                      };
+
+                      context.pushNamed(
+                        ReviewDetailScreen.routeName,
+                        pathParameters: pathParameters,
+                        queryParameters: queryParameters,
+                      );
+                    }
+                  },
+                  style: TextButton.styleFrom(
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      padding: EdgeInsets.symmetric(horizontal: 12.w),
+                      minimumSize: Size(75.w, 30.h),
+                      fixedSize: Size(75.w, 30.h),
+                      maximumSize: Size(75.w, 30.h),
+                      backgroundColor:
+                          valid == null ? MITIColor.primary : MITIColor.gray800,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.r))),
+                  child: Text(
+                    valid == null ? "리뷰 쓰기" : "리뷰 보기",
+                    style: MITITextStyle.smSemiBold.copyWith(
+                      color:
+                          valid == null ? MITIColor.gray800 : MITIColor.primary,
+                    ),
+                  ));
+            },
+          )
         ],
       ),
     );
@@ -259,7 +304,7 @@ class _PlayerComponent extends StatelessWidget {
 }
 
 class _HostReviewComponent extends StatelessWidget {
-  final GamePlayerModel host;
+  final ReviewHostModel host;
   final int gameId;
 
   const _HostReviewComponent({

@@ -6,7 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/auth/view/login_screen.dart';
-import 'package:miti/court/view/court_search_screen.dart';
+import 'package:miti/court/view/court_detail_screen.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../account/view/bank_transfer_screen.dart';
@@ -176,7 +176,7 @@ class _CourtComponent extends StatelessWidget {
                     };
 
                     context.pushNamed(
-                      CourtSearchScreen.routeName,
+                      CourtSearchListScreen.routeName,
                       queryParameters: queryParameters,
                     );
                   },

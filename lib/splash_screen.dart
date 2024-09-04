@@ -12,7 +12,7 @@ import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/common/provider/secure_storage_provider.dart';
 import 'package:miti/court/view/court_map_screen.dart';
-import 'package:miti/court/view/court_search_screen.dart';
+import 'package:miti/court/view/court_detail_screen.dart';
 import 'package:miti/notification_provider.dart';
 import 'package:miti/permission_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -72,8 +72,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => (CourtSearchScreen(
-                    bottomIdx: 3,
+                  builder: (context) => (CourtSearchListScreen(
                   )),
                 ),
               );
@@ -91,11 +90,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       debugPrint('notification payload: $payload');
     }
     log('알람 클릭');
-    final Map<String, String> queryParameters = {'bottomIdx': '3'};
+    final Map<String, String> pathParameters = {'courtId': '3'};
 
     shellNavKey.currentState!.context.goNamed(
-      CourtSearchScreen.routeName,
-      queryParameters: queryParameters,
+      CourtSearchListScreen.routeName,
+      pathParameters: pathParameters,
     );
 
     // context.goNamed(LoginScreen.routeName);

@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:math' hide log;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/common/component/custom_dialog.dart';
+import 'package:miti/common/component/form/keyboard_visibility_builder.dart';
 import 'package:miti/court/component/court_list_component.dart';
 import 'package:miti/game/error/game_error.dart';
 import 'package:miti/game/model/game_model.dart';
@@ -25,20 +27,23 @@ import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/provider/router_provider.dart';
 import '../../util/util.dart';
+import '../model/widget/user_reivew_short_info_model.dart';
 import 'game_detail_screen.dart';
 
 class ReviewScreen extends StatefulWidget {
   final int gameId;
 
   // final int ratingId;
-  final int participationId;
+  final int? participationId;
+  final UserReviewShortInfoModel userInfoModel;
 
   static String get routeName => 'reviewForm';
 
   const ReviewScreen({
     super.key,
     required this.gameId,
-    required this.participationId,
+    this.participationId,
+    required this.userInfoModel,
     // required this.ratingId,
   });
 
@@ -70,39 +75,47 @@ class _ReviewScreenState extends State<ReviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
+    // log("bottomPadding = $bottomPadding");
     return Scaffold(
       backgroundColor: MITIColor.gray750,
-      bottomNavigationBar: BottomButton(
-        button: Consumer(
-          builder: (BuildContext context, WidgetRef ref, Widget? child) {
-            final form = ref.watch(reviewFormProvider);
-            final valid = form.rating > 0 &&
-                form.comment.isNotEmpty &&
-                form.tags.length > 1;
-            log("valid  = $valid");
-            return TextButton(
-              onPressed: valid
-                  ? () async {
-                      final result = ref.read(
-                          ratingProvider(ratingId: widget.participationId));
-                      if (result is ResponseModel<UserReviewModel>) {
-                        final model = (result).data!;
-                        createReview(ref, context, model.nickname);
-                      } else {
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(bottom: bottomPadding),
+        child: BottomButton(
+          button: Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              final form = ref.watch(reviewFormProvider);
+              final valid = form.rating > 0 &&
+                  form.comment.isNotEmpty &&
+                  form.tags.length > 1;
+              // log("valid  = $valid");
+              return TextButton(
+                onPressed: valid
+                    ? () async {
                         createReview(ref, context, '닉네임');
+
+                        // if (widget.participationId != null) {
+                        //   final result = ref.read(
+                        //       ratingProvider(ratingId: widget.participationId!));
+                        //   if (result is ResponseModel<UserReviewModel>) {
+                        //     final model = (result).data!;
+                        //     createReview(ref, context, model.nickname);
+                        //   } else {
+                        //   }
+                        // }
                       }
-                    }
-                  : () {},
-              style: TextButton.styleFrom(
-                  backgroundColor:
-                      valid ? MITIColor.primary : MITIColor.gray500),
-              child: Text(
-                '작성 완료',
-                style: MITITextStyle.mdBold.copyWith(
-                    color: valid ? MITIColor.gray800 : MITIColor.gray50),
-              ),
-            );
-          },
+                    : () {},
+                style: TextButton.styleFrom(
+                    backgroundColor:
+                        valid ? MITIColor.primary : MITIColor.gray500),
+                child: Text(
+                  '작성 완료',
+                  style: MITITextStyle.mdBold.copyWith(
+                      color: valid ? MITIColor.gray800 : MITIColor.gray50),
+                ),
+              );
+            },
+          ),
         ),
       ),
       body: NestedScrollView(
@@ -117,14 +130,13 @@ class _ReviewScreenState extends State<ReviewScreen> {
           ];
         },
         body: CustomScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           slivers: [
             SliverToBoxAdapter(
               child: Column(
                 children: [
-                  _PlayerComponent(
-                    participationId: widget.participationId,
-                    ratingId: widget.participationId,
+                  UserShortInfoComponent.fromModel(
+                    model: widget.userInfoModel,
                   ),
                   getDivider(),
                   _RatingForm(
@@ -135,7 +147,10 @@ class _ReviewScreenState extends State<ReviewScreen> {
                     participationId: widget.participationId,
                   ),
                   getDivider(),
-                  _ReviewForm(),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: (200)),
+                    child: _ReviewForm(),
+                  ),
                 ],
               ),
             ),
@@ -209,11 +224,14 @@ class _ReviewForm extends ConsumerWidget {
           ),
           SizedBox(height: 20.r),
           Flexible(
-              child: MultiLineTextFormField(
-            onChanged: (val) {
-              ref.read(reviewFormProvider.notifier).updateComment(val);
-            },
-            hint: '리뷰를 작성해주세요.',
+              child: ConstrainedBox(
+            constraints: BoxConstraints.tight(Size(double.infinity, 100.h)),
+            child: MultiLineTextFormField(
+              onChanged: (val) {
+                ref.read(reviewFormProvider.notifier).updateComment(val);
+              },
+              hint: '리뷰를 작성해주세요.', context: context,
+            ),
           )),
           // Scrollbar(
           //   child: SingleChildScrollView(
@@ -269,10 +287,11 @@ class _ReviewForm extends ConsumerWidget {
 
 class MultiLineTextFormField extends StatefulWidget {
   final String hint;
-  final double height;
   final ValueChanged<String>? onChanged;
+  final BuildContext context;
 
-  const MultiLineTextFormField({super.key, this.onChanged, required this.hint, this.height = 100});
+  const MultiLineTextFormField(
+      {super.key, this.onChanged, required this.hint, required this.context});
 
   @override
   State<MultiLineTextFormField> createState() => _MultiLineTextFormFieldState();
@@ -280,89 +299,87 @@ class MultiLineTextFormField extends StatefulWidget {
 
 class _MultiLineTextFormFieldState extends State<MultiLineTextFormField> {
   late final TextEditingController _editTextController;
-
+  late final FocusNode _focusNode;
+  late final GlobalKey key;
   late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
+    key = GlobalKey();
     _editTextController = TextEditingController();
     _scrollController = ScrollController();
+    _focusNode = FocusNode()
+      ..addListener(() {
+        if (_focusNode.hasFocus) {
+          log("AAAA");
+          Scrollable.ensureVisible(widget.context,
+              alignment: 1,
+              duration: Duration(milliseconds: 300),
+              alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd);
+        }
+      });
   }
 
   @override
   void dispose() {
     _editTextController.dispose();
     _scrollController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      child: RawScrollbar(
-        thumbColor: MITIColor.gray500,
-        controller: _scrollController,
-        crossAxisMargin: 4.w,
-        thickness: 2.w,
-        radius: Radius.circular(100.r),
-        trackVisibility: true,
-        child: TextField(
-            scrollController: _scrollController,
-            // autofocus: true,
-            keyboardType: TextInputType.multiline,
-            maxLines: null,
-            autocorrect: true,
-            // expands: true,
-            style: MITITextStyle.sm150.copyWith(
-              color: MITIColor.gray100,
-            ),
-            textAlignVertical: TextAlignVertical.top,
-            onChanged: widget.onChanged,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.r),
-                borderSide: BorderSide.none,
+    return KeyboardVisibilityBuilder(
+      onVisibilityChange: (bool isKeyboardVisible) {
+        if(isKeyboardVisible && _focusNode.hasFocus){
+
+
+        }
+      },
+      child: Align(
+        child: RawScrollbar(
+          thumbColor: MITIColor.gray500,
+          controller: _scrollController,
+          crossAxisMargin: 4.w,
+          thickness: 2.w,
+          radius: Radius.circular(100.r),
+          trackVisibility: true,
+          child: TextField(
+              key: key,
+              focusNode: _focusNode,
+              scrollController: _scrollController,
+              // autofocus: true,
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
+              autocorrect: true,
+              expands: true,
+              style: MITITextStyle.sm150.copyWith(
+                color: MITIColor.gray100,
               ),
-              constraints: BoxConstraints(
-                minHeight: 68.h,
-                maxHeight: widget.height.h,
-              ),
-              hintText: widget.hint,
-              hintStyle: MITITextStyle.sm150.copyWith(color: MITIColor.gray500),
-              hintMaxLines: 10,
-              fillColor: MITIColor.gray700,
-              filled: true,
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-              // isDense: true,
-            )),
+              textAlignVertical: TextAlignVertical.top,
+              onChanged: widget.onChanged,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                  borderSide: BorderSide.none,
+                ),
+                // constraints: BoxConstraints(
+                //   minHeight: 68.h,
+                //   maxHeight: widget.height.h,
+                // ),
+                hintText: widget.hint,
+                hintStyle: MITITextStyle.sm150.copyWith(color: MITIColor.gray500),
+                hintMaxLines: 10,
+                fillColor: MITIColor.gray700,
+                filled: true,
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                // isDense: true,
+              )),
+        ),
       ),
-    );
-  }
-}
-
-class _PlayerComponent extends ConsumerWidget {
-  final int? participationId;
-  final int ratingId;
-
-  const _PlayerComponent(
-      {super.key, this.participationId, required this.ratingId});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final result = ref.watch(ratingProvider(ratingId: ratingId));
-    if (result is LoadingModel) {
-      return CircularProgressIndicator();
-    } else if (result is ErrorModel) {
-      GameError.fromModel(model: result)
-          .responseError(context, GameApiType.getReview, ref);
-      return Text('에러');
-    }
-    final model = (result as ResponseModel<UserReviewModel>).data!;
-    return HostComponent.fromModel(
-      model: model,
-      isHost: participationId == null,
     );
   }
 }

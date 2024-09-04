@@ -19,17 +19,15 @@ import '../../game/view/game_detail_screen.dart';
 import '../error/user_error.dart';
 
 class ReviewDetailScreen extends StatefulWidget {
-  final UserReviewType reviewType;
   final int reviewId;
-  final int bottomIdx;
+  final int? participationId;
 
   static String get routeName => 'reviewDetail';
 
   const ReviewDetailScreen({
     super.key,
     required this.reviewId,
-    required this.reviewType,
-    required this.bottomIdx,
+    this.participationId,
   });
 
   @override
@@ -60,17 +58,15 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultLayout(
-      bottomIdx: widget.bottomIdx,
-      scrollController: _scrollController,
+    return Scaffold(
       body: NestedScrollView(
         controller: _scrollController,
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
             DefaultAppBar(
-              title: widget.reviewType == UserReviewType.written
-                  ? '작성 리뷰'
-                  : '내 리뷰',
+              title: widget.participationId == null
+                  ? '호스트 리뷰'
+                  : '게스트 리뷰',
               isSliver: true,
             ),
           ];
@@ -80,44 +76,45 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
             SliverToBoxAdapter(
               child: Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  final result = ref.watch(reviewProvider(
-                      type: widget.reviewType, reviewId: widget.reviewId));
-                  if (result is LoadingModel) {
-                    return CircularProgressIndicator();
-                  } else if (result is ErrorModel) {
-                    final userApiType =
-                        UserReviewType.written == widget.reviewType
-                            ? UserApiType.writtenReviewDetail
-                            : UserApiType.receiveReviewDetail;
-                    UserError.fromModel(model: result)
-                        .responseError(context, userApiType, ref);
-                    return Text('에러');
-                  }
-                  if (widget.reviewType == UserReviewType.written) {
-                    final model =
-                        (result as ResponseModel<WrittenReviewDetailModel>)
-                            .data!;
-                    return Column(
-                      children: [
-                        HostComponent.fromModel(model: model.reviewee),
-                        getDivider(),
-                        GameReviewCard.fromModel(model: model.game),
-                        getDivider(),
-                        _ReviewComponent.fromWrittenModel(model: model),
-                      ],
-                    );
-                  } else {
-                    final model =
-                        (result as ResponseModel<ReceiveReviewDetailModel>)
-                            .data!;
-                    return Column(
-                      children: [
-                        GameReviewCard.fromModel(model: model.game),
-                        getDivider(),
-                        _ReviewComponent.fromReceiveModel(model: model),
-                      ],
-                    );
-                  }
+                  return Container();
+                  // final result = ref.watch(reviewProvider(
+                  //     type: widget.reviewType, reviewId: widget.reviewId));
+                  // if (result is LoadingModel) {
+                  //   return CircularProgressIndicator();
+                  // } else if (result is ErrorModel) {
+                  //   final userApiType =
+                  //       UserReviewType.written == widget.reviewType
+                  //           ? UserApiType.writtenReviewDetail
+                  //           : UserApiType.receiveReviewDetail;
+                  //   UserError.fromModel(model: result)
+                  //       .responseError(context, userApiType, ref);
+                  //   return Text('에러');
+                  // }
+                  // if (widget.reviewType == UserReviewType.written) {
+                  //   final model =
+                  //       (result as ResponseModel<WrittenReviewDetailModel>)
+                  //           .data!;
+                  //   return Column(
+                  //     children: [
+                  //       HostComponent.fromModel(model: model.reviewee),
+                  //       getDivider(),
+                  //       GameReviewCard.fromModel(model: model.game),
+                  //       getDivider(),
+                  //       _ReviewComponent.fromWrittenModel(model: model),
+                  //     ],
+                  //   );
+                  // } else {
+                  //   final model =
+                  //       (result as ResponseModel<ReceiveReviewDetailModel>)
+                  //           .data!;
+                  //   return Column(
+                  //     children: [
+                  //       GameReviewCard.fromModel(model: model.game),
+                  //       getDivider(),
+                  //       _ReviewComponent.fromReceiveModel(model: model),
+                  //     ],
+                  //   );
+                  // }
                 },
               ),
             )

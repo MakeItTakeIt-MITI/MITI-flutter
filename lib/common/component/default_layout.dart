@@ -6,7 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../court/view/court_map_screen.dart';
-import '../../court/view/court_search_screen.dart';
+import '../../court/view/court_detail_screen.dart';
 import '../../default_screen.dart';
 import '../../game/view/game_screen.dart';
 import '../../menu/view/menu_screen.dart';
@@ -54,7 +54,7 @@ class _DefaultLayoutState extends State<DefaultLayout> {
             } else if (page == 1) {
               context.goNamed(GameScreen.routeName);
             } else if (page == 2) {
-              context.goNamed(CourtSearchScreen.routeName);
+              context.goNamed(CourtSearchListScreen.routeName);
             } else {
               context.goNamed(MenuBody.routeName);
             }

@@ -105,6 +105,7 @@ class _GameScreenState extends ConsumerState<GameScreen>
             headerSliverBuilder:
                 (BuildContext context, bool innerBoxIsScrolled) {
               return [
+                // DefaultAppBar(isSliver: true, title: '타이틀',),
                 SliverPersistentHeader(
                   delegate: _SliverAppBarDelegate(TabBar(
                     indicatorWeight: 1.w,
@@ -144,10 +145,10 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   final TabBar _tabBar;
 
   @override
-  double get minExtent => _tabBar.preferredSize.height;
+  double get minExtent => 44.h;
 
   @override
-  double get maxExtent => _tabBar.preferredSize.height;
+  double get maxExtent => 44.h;
 
   @override
   Widget build(

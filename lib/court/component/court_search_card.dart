@@ -44,7 +44,7 @@ class ResultCard extends StatelessWidget {
         padding: EdgeInsets.all(16.r),
         decoration: BoxDecoration(
             color: MITIColor.gray700,
-            borderRadius: BorderRadius.circular(8.r),
+            borderRadius: BorderRadius.circular(12.r),
             border: Border.all(color: MITIColor.gray600)),
         child: Row(
           children: [
@@ -54,32 +54,32 @@ class ResultCard extends StatelessWidget {
                 children: [
                   Text(
                     name,
-                    style: MITITextStyle.courtNameCardStyle.copyWith(
+                    style: MITITextStyle.mdBold.copyWith(
                       color: MITIColor.gray100,
                     ),
                   ),
                   SizedBox(height: 4.h),
                   Text(
                     address,
-                    style: MITITextStyle.courtAddressCardStyle.copyWith(
+                    style: MITITextStyle.xxsm.copyWith(
                       color: MITIColor.gray400,
                     ),
                   ),
                 ],
               ),
             ),
-            if (!isShare)
-              SvgPicture.asset(
-                'assets/images/icon/chevron_right.svg',
-                height: 14.h,
-                width: 7.w,
-              ),
-            if (isShare)
-              SvgPicture.asset(
-                'assets/images/icon/share.svg',
-                height: 30.h,
-                width: 30.w,
-              ),
+            // if (!isShare)
+            //   SvgPicture.asset(
+            //     'assets/images/icon/chevron_right.svg',
+            //     height: 14.h,
+            //     width: 7.w,
+            //   ),
+            // if (isShare)
+            //   SvgPicture.asset(
+            //     'assets/images/icon/share.svg',
+            //     height: 30.h,
+            //     width: 30.w,
+            //   ),
           ],
         ),
       ),

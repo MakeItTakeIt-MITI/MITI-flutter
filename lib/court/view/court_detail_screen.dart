@@ -26,20 +26,18 @@ import '../../common/component/default_appbar.dart';
 import '../component/court_search_card.dart';
 import '../model/court_model.dart';
 
-class CourtSearchScreen extends ConsumerStatefulWidget {
-  static String get routeName => 'courtSearch';
-  final int bottomIdx;
+class CourtSearchListScreen extends ConsumerStatefulWidget {
+  static String get routeName => 'courtDetail';
 
-  const CourtSearchScreen({
+  const CourtSearchListScreen({
     super.key,
-    required this.bottomIdx,
   });
 
   @override
-  ConsumerState<CourtSearchScreen> createState() => _CourtSearchScreenState();
+  ConsumerState<CourtSearchListScreen> createState() => _CourtSearchScreenState();
 }
 
-class _CourtSearchScreenState extends ConsumerState<CourtSearchScreen> {
+class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
   late final ScrollController controller;
 
   @override
@@ -132,13 +130,13 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          '검색 결과가 없습니다.',
-          style: MITITextStyle.pageMainTextStyle,
+          '조회된 경기장이 없습니다.',
+          style: MITITextStyle.xxl140.copyWith(color: Colors.white),
         ),
         SizedBox(height: 20.h),
         Text(
-          '다른 검색어로 경기장을 찾아보세요!',
-          style: MITITextStyle.pageSubTextStyle,
+          '검색어와 필터를 변경해 다른 경기를 찾아보세요!',
+          style: MITITextStyle.sm.copyWith(color: MITIColor.gray300),
         )
       ],
     );
@@ -182,7 +180,8 @@ class _SearchComponent extends StatelessWidget {
                   filled: true,
                   constraints:
                       BoxConstraints.loose(Size(double.infinity, 100.h)),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16.r),
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 16.r, vertical: 8.h),
                   border: OutlineInputBorder(
                       borderSide: BorderSide.none,
                       borderRadius: BorderRadius.circular(100.r)),
@@ -230,7 +229,8 @@ class _SearchComponent extends StatelessWidget {
   }
 
   void changeDropButton(String? val, WidgetRef ref) {
-    final district = DistrictType.stringToEnum(value: val!);
+    final district =
+        val == '전체' ? null : DistrictType.stringToEnum(value: val!);
     final form = ref
         .read(courtSearchProvider.notifier)
         .update(district: district, isAll: district == null);
