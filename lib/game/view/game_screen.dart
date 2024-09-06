@@ -117,9 +117,15 @@ class _GameScreenState extends ConsumerState<GameScreen>
                     onTap: (idx) {
                       tabController.animateTo(idx);
                     },
-                    tabs: const [
-                      Tab(child: Text('호스트로 참여한 경기')),
-                      Tab(child: Text('게스트로 참여한 경기')),
+                    tabs: [
+                      Tab(
+                        child: Text('호스트로 참여한 경기'),
+                        height: 44.h,
+                      ),
+                      Tab(
+                        child: Text('게스트로 참여한 경기'),
+                        height: 44.h,
+                      ),
                     ],
                   )),
                   pinned: true,

@@ -79,25 +79,6 @@ abstract class UserRepository {
   });
 }
 
-final userHostingPRepositoryProvider = Provider<UserHostingPRepository>((ref) {
-  final dio = ref.watch(dioProvider);
-  return UserHostingPRepository(dio);
-});
-
-@RestApi(baseUrl: serverURL)
-abstract class UserHostingPRepository
-    extends IBasePaginationRepository<GameListByDateModel, UserGameParam> {
-  factory UserHostingPRepository(Dio dio) = _UserHostingPRepository;
-
-  @override
-  @Headers({'token': 'true'})
-  @GET('/users/{userId}/hostings')
-  Future<ResponseModel<PaginationModel<GameListByDateModel>>> paginate({
-    @Queries() required PaginationParam paginationParams,
-    @Queries() UserGameParam? param,
-    @Path('userId') int? path,
-  });
-}
 
 final userParticipationPRepositoryProvider =
     Provider<UserParticipationPRepository>((ref) {
@@ -160,6 +141,28 @@ abstract class UserReceiveReviewsPRepository
   Future<ResponseModel<PaginationModel<ReceiveReviewModel>>> paginate({
     @Queries() required PaginationParam paginationParams,
     @Queries() UserReviewParam? param,
+    @Path('userId') int? path,
+  });
+}
+
+
+
+final userHostingPRepositoryProvider = Provider<UserHostingPRepository>((ref) {
+  final dio = ref.watch(dioProvider);
+  return UserHostingPRepository(dio);
+});
+
+@RestApi(baseUrl: serverURL)
+abstract class UserHostingPRepository
+    extends IBasePaginationRepository<GameListByDateModel, UserGameParam> {
+  factory UserHostingPRepository(Dio dio) = _UserHostingPRepository;
+
+  @override
+  @Headers({'token': 'true'})
+  @GET('/users/{userId}/hosted-games')
+  Future<ResponseModel<PaginationModel<GameListByDateModel>>> paginate({
+    @Queries() required PaginationParam paginationParams,
+    @Queries() UserGameParam? param,
     @Path('userId') int? path,
   });
 }

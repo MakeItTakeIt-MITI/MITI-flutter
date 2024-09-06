@@ -571,7 +571,7 @@ class CourtCard extends StatelessWidget {
   final String enddate;
   final String endtime;
   final String fee;
-  final CourtModel court;
+  final CourtModel? court;
   final int num_of_participations;
   final int max_invitation;
 
@@ -606,6 +606,25 @@ class CourtCard extends StatelessWidget {
       num_of_participations: model.num_of_participations,
       max_invitation: model.max_invitation,
       id: model.id,
+    );
+  }
+
+  factory CourtCard.fromSoonestGameModel({required GameHostModel model}) {
+    final fee = model.fee == 0
+        ? '무료'
+        : "₩${NumberFormat.decimalPattern().format(model.fee)}";
+    return CourtCard(
+      game_status: model.game_status,
+      title: model.title,
+      startdate: model.startdate,
+      starttime: model.starttime,
+      enddate: model.enddate,
+      endtime: model.endtime,
+      fee: fee,
+      num_of_participations: model.num_of_participations,
+      max_invitation: model.max_invitation,
+      id: model.id,
+      court: null,
     );
   }
 
@@ -694,13 +713,13 @@ class CourtCard extends StatelessWidget {
                               NLatLng? myPosition;
                               double? distance;
                               String formatDistance = ' m';
-                              if (position != null) {
+                              if (position != null && court != null) {
                                 myPosition = NLatLng(
                                     position.latitude, position.longitude);
 
                                 distance = myPosition.distanceTo(NLatLng(
-                                    double.parse(court.latitude),
-                                    double.parse(court.longitude)));
+                                    double.parse(court!.latitude),
+                                    double.parse(court!.longitude)));
 
                                 if (distance > 1000) {
                                   distance /= 1000;

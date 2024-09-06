@@ -10,7 +10,7 @@ import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/view/user_info_screen.dart';
 import 'package:miti/util/util.dart';
 import 'court/view/court_map_screen.dart';
-import 'court/view/court_detail_screen.dart';
+import 'court/view/court_search_screen.dart';
 import 'game/view/game_screen.dart';
 import 'menu/view/menu_screen.dart';
 

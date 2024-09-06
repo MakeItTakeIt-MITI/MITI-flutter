@@ -12,7 +12,7 @@ import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/common/provider/secure_storage_provider.dart';
 import 'package:miti/court/view/court_map_screen.dart';
-import 'package:miti/court/view/court_detail_screen.dart';
+import 'package:miti/court/view/court_search_screen.dart';
 import 'package:miti/notification_provider.dart';
 import 'package:miti/permission_screen.dart';
 import 'package:permission_handler/permission_handler.dart';

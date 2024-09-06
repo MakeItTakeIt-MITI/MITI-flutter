@@ -1,243 +1,341 @@
-import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:miti/common/component/custom_drop_down_button.dart';
+import 'package:miti/account/error/account_error.dart';
 import 'package:miti/common/component/default_layout.dart';
 import 'package:miti/common/component/dispose_sliver_pagination_list_view.dart';
 import 'package:miti/common/model/default_model.dart';
-import 'package:miti/common/model/entity_enum.dart';
-import 'package:miti/common/model/model_id.dart';
 import 'package:miti/common/param/pagination_param.dart';
+import 'package:miti/court/component/court_search_card.dart';
+import 'package:miti/court/model/court_model.dart';
 import 'package:miti/court/param/court_pagination_param.dart';
 import 'package:miti/court/provider/court_pagination_provider.dart';
 import 'package:miti/court/provider/court_provider.dart';
-import 'package:miti/court/provider/widget/court_search_provider.dart';
-import 'package:miti/court/view/court_game_list_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../common/component/default_appbar.dart';
-import '../component/court_search_card.dart';
-import '../model/court_model.dart';
+import '../../common/model/model_id.dart';
+import '../../game/component/game_list_component.dart';
+import '../../game/model/game_model.dart';
+import '../../util/util.dart';
+import 'court_game_list_screen.dart';
+import 'court_map_screen.dart';
 
-class CourtSearchListScreen extends ConsumerStatefulWidget {
+class CourtDetailScreen extends ConsumerStatefulWidget {
   static String get routeName => 'courtDetail';
+  final CourtSearchModel model;
+  final int courtId;
 
-  const CourtSearchListScreen({
+  const CourtDetailScreen({
     super.key,
+    required this.courtId,
+    required this.model,
   });
 
   @override
-  ConsumerState<CourtSearchListScreen> createState() => _CourtSearchScreenState();
+  ConsumerState<CourtDetailScreen> createState() => _CourtGameListScreenState();
 }
 
-class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
-  late final ScrollController controller;
+class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
+  late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
-    controller = ScrollController();
+    _scrollController = ScrollController();
   }
 
-  Future<void> refresh() async {
-    final form = ref.read(courtSearchProvider);
-    ref.read(courtPageProvider(PaginationStateParam()).notifier).paginate(
-        paginationParams: const PaginationParam(page: 1),
-        param: form,
-        forceRefetch: true);
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return NestedScrollView(
-        headerSliverBuilder: ((BuildContext context, bool innerBoxIsScrolled) {
+    return Scaffold(
+      backgroundColor: MITIColor.gray750,
+      body: NestedScrollView(
+        controller: _scrollController,
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
-            const DefaultAppBar(
+            DefaultAppBar(
+              title: widget.model.name,
+              backgroundColor: MITIColor.gray800,
               isSliver: true,
-              title: '경기장 조회',
-            ),
-          ];
-        }),
-        body: RefreshIndicator(
-          onRefresh: refresh,
-          child: CustomScrollView(
-            controller: controller,
-            slivers: [
-              SliverPadding(
-                padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 24.h),
-                sliver: SliverMainAxisGroup(slivers: [
-                  SliverToBoxAdapter(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Flexible(child: _SearchComponent()),
-                        SizedBox(height: 20.h),
-                      ],
+              actions: [
+                Padding(
+                  padding: EdgeInsets.only(right: 13.w),
+                  child: GestureDetector(
+                    onTap: () {
+                      Share.share("share");
+                    },
+                    child: SvgPicture.asset(
+                      AssetUtil.getAssetPath(
+                        type: AssetType.icon,
+                        name: 'share',
+                      ),
+                      height: 24.r,
+                      width: 24.r,
+                      colorFilter: const ColorFilter.mode(
+                        MITIColor.gray100,
+                        BlendMode.srcIn,
+                      ),
                     ),
                   ),
-                  Consumer(
-                    builder:
-                        (BuildContext context, WidgetRef ref, Widget? child) {
-                      final form = ref.watch(courtSearchProvider);
-
-                      return DisposeSliverPaginationListView(
-                        provider: courtPageProvider(PaginationStateParam()),
-                        itemBuilder:
-                            (BuildContext context, int index, Base model) {
-                          model as CourtSearchModel;
-                          return ResultCard.fromModel(
-                            model: model,
-                            onTap: () {
-                              onTap(model, context);
-                            },
-                          );
-                        },
-                        param: form,
-                        skeleton: Container(),
-                        controller: controller,
-                        emptyWidget: getEmptyWidget(),
-                      );
-                    },
+                ),
+              ],
+            )
+          ];
+        },
+        body: CustomScrollView(
+          slivers: [
+            SliverMainAxisGroup(slivers: [
+              SliverToBoxAdapter(
+                child: _CourtMapComponent(
+                  latLng: NLatLng(
+                    double.parse(widget.model.latitude),
+                    double.parse(widget.model.longitude),
                   ),
-                ]),
+                ),
               ),
-            ],
-          ),
-        ));
-  }
-
-  void onTap(CourtSearchModel model, BuildContext context) {
-    Map<String, String> pathParameters = {'courtId': model.id.toString()};
-    final Map<String, String> queryParameters = {'bottomIdx': '3'};
-    final extra = model;
-    context.pushNamed(
-      CourtGameListScreen.routeName,
-      pathParameters: pathParameters,
-      extra: extra,
-      queryParameters: queryParameters,
+              getDivider(),
+              _CourtInfoComponent(
+                courtId: widget.courtId,
+              ),
+              getDivider(),
+              SoonestGamesComponent(
+                courtId: widget.courtId,
+              ),
+            ]),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget getEmptyWidget() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          '조회된 경기장이 없습니다.',
-          style: MITITextStyle.xxl140.copyWith(color: Colors.white),
-        ),
-        SizedBox(height: 20.h),
-        Text(
-          '검색어와 필터를 변경해 다른 경기를 찾아보세요!',
-          style: MITITextStyle.sm.copyWith(color: MITIColor.gray300),
-        )
-      ],
+  SliverToBoxAdapter getDivider() {
+    return SliverToBoxAdapter(
+      child: Container(
+        height: 4.h,
+        color: MITIColor.gray800,
+      ),
     );
   }
 }
 
-class _SearchComponent extends StatelessWidget {
-  final items = [
-    '서울',
-    '경기',
-    '인천',
-    '부산',
-    '대구',
-    '광주',
-    '울산',
-    '세종',
-    '강원',
-    '충북',
-    '충남',
-    '전북',
-    '전남',
-    '경북',
-    '경남',
-    '제주',
-    '대전',
-    '전체',
-  ];
+class _CourtMapComponent extends StatefulWidget {
+  final NLatLng latLng;
 
-  _SearchComponent({super.key});
+  const _CourtMapComponent({super.key, required this.latLng});
+
+  @override
+  State<_CourtMapComponent> createState() => _CourtMapComponentState();
+}
+
+class _CourtMapComponentState extends State<_CourtMapComponent> {
+  late final NaverMapController _naverMapController;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Consumer(
-          builder: (BuildContext context, WidgetRef ref, Widget? child) {
-            // final form = ref.watch(courtSearchProvider);
-            return Expanded(
-              child: TextFormField(
-                decoration: InputDecoration(
-                  filled: true,
-                  constraints:
-                      BoxConstraints.loose(Size(double.infinity, 100.h)),
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 16.r, vertical: 8.h),
-                  border: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.circular(100.r)),
-                  hintText: '경기장 (주소/경기장 명)을 검색해주세요',
-                  hintStyle: MITITextStyle.xxsmSemiBold.copyWith(
-                    height: 1,
-                    color: MITIColor.gray500,
-                  ),
-                  fillColor: MITIColor.gray700,
-                  isDense: true,
-                ),
-                style: MITITextStyle.xxsmSemiBold.copyWith(
-                  color: MITIColor.gray100,
-                  height: 1,
-                ),
-                onChanged: (val) {
-                  final form = ref
-                      .read(courtSearchProvider.notifier)
-                      .update(search: val);
-                  ref
-                      .read(courtPageProvider(PaginationStateParam()).notifier)
-                      .updateDebounce(param: form);
-                },
-                onFieldSubmitted: (val) {
-                  // ref.read(courtSearchProvider.notifier).search(page: 1);
-                },
+    return Padding(
+      padding: EdgeInsets.all(13.r),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20.r),
+        child: SizedBox(
+          height: 200.h,
+          child: NaverMap(
+            options: NaverMapViewOptions(
+              initialCameraPosition: NCameraPosition(
+                target: widget.latLng,
+                zoom: 15,
               ),
-            );
-          },
+              logoClickEnable: false,
+            ),
+            onMapReady: (controller) async {
+              _naverMapController = controller;
+              final icon = await NOverlayImage.fromWidget(
+                  widget: Icon(
+                    Icons.location_on_rounded,
+                    color: MITIColor.primary,
+                  ),
+                  size: Size(32.w, 40.h),
+                  context: context);
+              await _naverMapController.addOverlay(
+                  NMarker(id: '1', position: widget.latLng, icon: icon));
+            },
+          ),
         ),
-        SizedBox(width: 8.w),
-        Consumer(
-          builder: (BuildContext context, WidgetRef ref, Widget? child) {
-            return CustomDropDownButton(
-              initValue: '전체',
-              items: items,
-              onChanged: (val) {
-                changeDropButton(val, ref);
+      ),
+    );
+  }
+}
+
+class _CourtInfoComponent extends ConsumerWidget {
+  final int courtId;
+
+  const _CourtInfoComponent({
+    super.key,
+    required this.courtId,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final result = ref.watch(courtDetailProvider(courtId: courtId));
+    if (result is LoadingModel) {
+      return SliverToBoxAdapter(
+        child: CircularProgressIndicator(),
+      );
+    } else if (result is ErrorModel) {
+      return SliverToBoxAdapter(
+        child: Text("Error"),
+      );
+    }
+    final model = (result as ResponseModel<CourtDetailModel>).data!;
+    return SliverToBoxAdapter(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 24.h),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              model.name,
+              style: MITITextStyle.lgBold.copyWith(color: MITIColor.gray100),
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              "${model.address} ${model.address_detail}",
+              style: MITITextStyle.lgBold.copyWith(
+                color: MITIColor.gray400,
+              ),
+            ),
+            SizedBox(height: 20.h),
+            if (model.info != null)
+              Text(
+                model.info!,
+                style: MITITextStyle.lgBold.copyWith(
+                  color: MITIColor.gray100,
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SoonestGamesComponent extends StatelessWidget {
+  final int courtId;
+
+  const SoonestGamesComponent({super.key, required this.courtId});
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Container(
+        padding:
+            EdgeInsets.only(left: 21.w, right: 21.w, top: 24.h, bottom: 20.h),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "이 경기장에 생성된 경기",
+                  style: MITITextStyle.lgBold.copyWith(
+                    color: MITIColor.gray100,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    pushGameList(context);
+                  },
+                  child: Row(
+                    children: [
+                      Text(
+                        '더보기',
+                        style: MITITextStyle.xxxsmLight.copyWith(
+                          color: MITIColor.gray100,
+                        ),
+                      ),
+                      Icon(
+                        Icons.keyboard_arrow_right_rounded,
+                        color: MITIColor.gray500,
+                        size: 12.r,
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+            SizedBox(height: 20.h),
+            Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                final result = ref.watch(courtDetailProvider(courtId: courtId));
+                if (result is LoadingModel) {
+                  return const CircularProgressIndicator();
+                } else if (result is ErrorModel) {
+                  return const Text("Error");
+                }
+                final model = (result as ResponseModel<CourtDetailModel>).data!;
+
+                return Column(
+                  children: [
+                    ListView.separated(
+                      itemBuilder: (_, idx) {
+                        // model.soonest_games.
+
+                        return CourtCard.fromSoonestGameModel(
+                            model: model.soonest_games[idx]);
+                      },
+                      separatorBuilder: (_, idx) => SizedBox(
+                        height: 12.h,
+                      ),
+                      itemCount: model.soonest_games.length,
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                    ),
+                    SizedBox(height: 20.h),
+                    TextButton(
+                      onPressed: () {
+                        pushGameList(context);
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: MITIColor.gray750,
+                        shape: RoundedRectangleBorder(
+                            side: const BorderSide(
+                              color: MITIColor.gray400,
+                            ),
+                            borderRadius: BorderRadius.circular(8.r)),
+                      ),
+                      child: Text(
+                        "경기 더보기",
+                        style: MITITextStyle.md.copyWith(
+                          color: MITIColor.gray100,
+                        ),
+                      ),
+                    )
+                  ],
+                );
               },
-            );
-          },
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
-  void changeDropButton(String? val, WidgetRef ref) {
-    final district =
-        val == '전체' ? null : DistrictType.stringToEnum(value: val!);
-    final form = ref
-        .read(courtSearchProvider.notifier)
-        .update(district: district, isAll: district == null);
-    ref.read(dropDownValueProvider.notifier).update((state) => val);
-    ref.read(courtPageProvider(PaginationStateParam()).notifier).paginate(
-        paginationParams: const PaginationParam(page: 1),
-        forceRefetch: true,
-        param: form);
+  void pushGameList(BuildContext context) {
+    Map<String, String> pathParameters = {'courtId': courtId.toString()};
+    context.pushNamed(CourtGameListScreen.routeName,
+        pathParameters: pathParameters);
   }
 }

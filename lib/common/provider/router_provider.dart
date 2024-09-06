@@ -9,6 +9,7 @@ import 'package:miti/auth/view/find_info/find_password_screen.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/auth/view/phone_auth/phone_auth_info_screen.dart';
 import 'package:miti/auth/view/phone_auth/phone_auth_screen.dart';
+import 'package:miti/court/view/court_detail_screen.dart';
 import 'package:miti/court/view/court_game_list_screen.dart';
 import 'package:miti/game/model/widget/user_reivew_short_info_model.dart';
 import 'package:miti/game/view/game_participation_screen.dart';
@@ -38,7 +39,7 @@ import '../../auth/view/phone_auth/phone_auth_send_screen.dart';
 import '../../auth/view/signup/signup_screen.dart';
 import '../../auth/view/signup/signup_select_screen.dart';
 import '../../court/model/court_model.dart';
-import '../../court/view/court_detail_screen.dart';
+import '../../court/view/court_search_screen.dart';
 import '../../game/view/game_create_complete_screen.dart';
 import '../../default_screen.dart';
 import '../../court/view/court_map_screen.dart';
@@ -695,14 +696,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                   redirect: (_, state) => provider.redirectLogic(state),
                   builder: (context, state) {
                     return CourtSearchListScreen(
-                      // bottomIdx: 2,
-                    );
+                        // bottomIdx: 2,
+                        );
                   },
                   pageBuilder: (context, state) {
                     return NoTransitionPage(
                         child: CourtSearchListScreen(
-                      // bottomIdx: 2,
-                    ));
+                            // bottomIdx: 2,
+                            ));
                   },
                   routes: [
                     GoRoute(
@@ -915,23 +916,34 @@ final routerProvider = Provider<GoRouter>((ref) {
                       // },
                     ),
                     GoRoute(
-                      path: ':courtId',
-                      parentNavigatorKey: rootNavKey,
-                      name: CourtGameListScreen.routeName,
-                      builder: (context, state) {
-                        final int courtId =
-                            int.parse(state.pathParameters['courtId']!);
-                        final CourtSearchModel extra =
-                            state.extra! as CourtSearchModel;
-                        final int bottomIdx =
-                            int.parse(state.uri.queryParameters['bottomIdx']!);
-                        return CourtGameListScreen(
-                          courtId: courtId,
-                          model: extra,
-                          bottomIdx: bottomIdx,
-                        );
-                      },
-                    ),
+                        path: ':courtId',
+                        parentNavigatorKey: rootNavKey,
+                        name: CourtDetailScreen.routeName,
+                        builder: (context, state) {
+                          final int courtId =
+                              int.parse(state.pathParameters['courtId']!);
+                          final CourtSearchModel extra =
+                              state.extra! as CourtSearchModel;
+                          return CourtDetailScreen(
+                            courtId: courtId,
+                            model: extra,
+                          );
+                        },
+                        routes: [
+                          GoRoute(
+                            path: 'gameList',
+                            parentNavigatorKey: rootNavKey,
+                            name: CourtGameListScreen.routeName,
+                            builder: (context, state) {
+                              final int courtId =
+                                  int.parse(state.pathParameters['courtId']!);
+
+                              return CourtGameListScreen(
+                                courtId: courtId,
+                              );
+                            },
+                          ),
+                        ]),
                   ]),
               GoRoute(
                 path: '/menu',

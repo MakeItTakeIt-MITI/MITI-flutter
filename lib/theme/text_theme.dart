@@ -30,6 +30,12 @@ class MITITextStyle {
     fontWeight: FontWeight.w500,
   );
 
+  static final TextStyle lgBold = TextStyle(
+    fontSize: 18.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.bold,
+  );
+
   static final TextStyle mdBold = TextStyle(
     fontSize: 16.sp,
     fontFamily: 'Pretendard',
