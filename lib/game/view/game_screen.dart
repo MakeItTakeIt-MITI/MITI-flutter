@@ -72,6 +72,7 @@ class _GameScreenState extends ConsumerState<GameScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButtonLocation: Flo,
       floatingActionButton: GestureDetector(
         onTap: () => context.pushNamed(GameCreateScreen.routeName),
         child: Container(

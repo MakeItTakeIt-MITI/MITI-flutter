@@ -34,6 +34,8 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
     log('context.canPop() = ${context.canPop()}');
     if (isSliver) {
       return SliverAppBar(
+        toolbarHeight: 44.h,
+        leadingWidth: 24.r + 13.w,
         title: Text(
           title ?? '',
           style: MITITextStyle.mdBold.copyWith(
@@ -50,12 +52,26 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
               )
             : null,
         centerTitle: true,
+
         leading: context.canPop()
-            ? IconButton(
-                onPressed: () => context.pop(),
-                icon: SvgPicture.asset(
-                  AssetUtil.getAssetPath(
-                      type: AssetType.icon, name: leadingIcon),
+            ? Padding(
+                padding: EdgeInsets.only(left: 13.w),
+                child: IconButton(
+                  constraints: BoxConstraints.tight(Size(24.r, 24.r)),
+                  padding: EdgeInsets.zero,
+                  onPressed: () => context.pop(),
+                  style: IconButton.styleFrom(
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                  icon: SvgPicture.asset(
+                    AssetUtil.getAssetPath(
+                      type: AssetType.icon,
+                      name: leadingIcon,
+                    ),
+                    height: 24.r,
+                    width: 24.r,
+                  ),
                 ),
               )
             : null,
@@ -65,10 +81,12 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
       );
     }
     return AppBar(
+      toolbarHeight: 44.h,
+      leadingWidth: 24.r + 13.w,
       shape: hasBorder
           ? const Border(
-        bottom: BorderSide(color: MITIColor.gray600),
-      )
+              bottom: BorderSide(color: MITIColor.gray600),
+            )
           : null,
       title: Text(
         title ?? '',
@@ -82,10 +100,24 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
       surfaceTintColor: backgroundColor ?? MITIColor.gray800,
       centerTitle: true,
       leading: context.canPop()
-          ? IconButton(
-              onPressed: () => context.pop(),
-              icon: SvgPicture.asset(
-                AssetUtil.getAssetPath(type: AssetType.icon, name: leadingIcon),
+          ? Padding(
+              padding: EdgeInsets.only(left: 13.w),
+              child: IconButton(
+                constraints: BoxConstraints.tight(Size(24.r, 24.r)),
+                padding: EdgeInsets.zero,
+                onPressed: () => context.pop(),
+                style: IconButton.styleFrom(
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                ),
+                icon: SvgPicture.asset(
+                  AssetUtil.getAssetPath(
+                    type: AssetType.icon,
+                    name: leadingIcon,
+                  ),
+                  height: 24.r,
+                  width: 24.r,
+                ),
               ),
             )
           : null,

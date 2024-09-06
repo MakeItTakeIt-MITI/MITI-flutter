@@ -16,6 +16,7 @@ import 'package:miti/court/model/court_model.dart';
 import 'package:miti/court/param/court_pagination_param.dart';
 import 'package:miti/court/provider/court_pagination_provider.dart';
 import 'package:miti/court/provider/court_provider.dart';
+import 'package:miti/game/view/game_create_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:share_plus/share_plus.dart';
@@ -70,6 +71,7 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
               title: widget.model.name,
               backgroundColor: MITIColor.gray800,
               isSliver: true,
+              hasBorder: false,
               actions: [
                 Padding(
                   padding: EdgeInsets.only(right: 13.w),
@@ -157,17 +159,15 @@ class _CourtMapComponentState extends State<_CourtMapComponent> {
                 target: widget.latLng,
                 zoom: 15,
               ),
+              locale: const Locale('ko'),
               logoClickEnable: false,
             ),
             onMapReady: (controller) async {
               _naverMapController = controller;
-              final icon = await NOverlayImage.fromWidget(
-                  widget: Icon(
-                    Icons.location_on_rounded,
-                    color: MITIColor.primary,
-                  ),
-                  size: Size(32.w, 40.h),
-                  context: context);
+              final icon = NOverlayImage.fromAssetImage(
+                AssetUtil.getAssetPath(
+                    type: AssetType.icon, name: 'location', extension: 'png'),
+              );
               await _naverMapController.addOverlay(
                   NMarker(id: '1', position: widget.latLng, icon: icon));
             },
@@ -212,7 +212,7 @@ class _CourtInfoComponent extends ConsumerWidget {
             SizedBox(height: 8.h),
             Text(
               "${model.address} ${model.address_detail}",
-              style: MITITextStyle.lgBold.copyWith(
+              style: MITITextStyle.sm.copyWith(
                 color: MITIColor.gray400,
               ),
             ),
@@ -220,7 +220,7 @@ class _CourtInfoComponent extends ConsumerWidget {
             if (model.info != null)
               Text(
                 model.info!,
-                style: MITITextStyle.lgBold.copyWith(
+                style: MITITextStyle.sm150.copyWith(
                   color: MITIColor.gray100,
                 ),
               ),
@@ -285,6 +285,48 @@ class SoonestGamesComponent extends StatelessWidget {
                   return const Text("Error");
                 }
                 final model = (result as ResponseModel<CourtDetailModel>).data!;
+                if (model.soonest_games.isEmpty) {
+                  return Column(
+                    children: [
+                      SizedBox(height: 80.h),
+                      Text(
+                        "아직 생성된 경기가 없습니다.",
+                        style:
+                            MITITextStyle.md.copyWith(color: MITIColor.gray300),
+                      ),
+                      SizedBox(height: 20.h),
+                      GestureDetector(
+                        onTap: () {
+                          context.pushNamed(GameCreateScreen.routeName);
+                        },
+                        child: Container(
+                          padding: EdgeInsets.only(
+                              left: 12.w, right: 16.w, top: 6.h, bottom: 6.h),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50.r),
+                            color: MITIColor.primary,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.add,
+                                color: MITIColor.gray800,
+                              ),
+                              Text(
+                                '경기 생성하기',
+                                style: MITITextStyle.md.copyWith(
+                                  color: MITIColor.gray800,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  );
+                }
 
                 return Column(
                   children: [
