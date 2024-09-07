@@ -72,7 +72,6 @@ class _GameScreenState extends ConsumerState<GameScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButtonLocation: Flo,
       floatingActionButton: GestureDetector(
         onTap: () => context.pushNamed(GameCreateScreen.routeName),
         child: Container(
@@ -103,6 +102,8 @@ class _GameScreenState extends ConsumerState<GameScreen>
       body: SafeArea(
         child: NestedScrollView(
             // controller: controller[1],
+            physics: const NeverScrollableScrollPhysics(),
+
             headerSliverBuilder:
                 (BuildContext context, bool innerBoxIsScrolled) {
               return [
@@ -134,10 +135,10 @@ class _GameScreenState extends ConsumerState<GameScreen>
               ];
             },
             body: TabBarView(controller: tabController, children: const [
-              GameHostScreen(
+              GameMyParticipationScreen(
                 type: UserGameType.host,
               ),
-              GameHostScreen(
+              GameMyParticipationScreen(
                 type: UserGameType.participation,
               )
             ])),

@@ -54,8 +54,7 @@ class UserModel extends IModelWithId {
   final String? name;
   final String? birthday;
   final String? phone;
-  final AuthType? oauth;
-  final AccountModel account;
+  final AuthType signup_method;
   final RatingModel rating;
 
   UserModel({
@@ -65,8 +64,7 @@ class UserModel extends IModelWithId {
     required this.name,
     required this.birthday,
     required this.phone,
-    required this.oauth,
-    required this.account,
+    required this.signup_method,
     required this.rating,
   });
 
@@ -80,8 +78,7 @@ class UserModel extends IModelWithId {
     String? name,
     String? birthday,
     String? phone,
-    AuthType? oauth,
-    AccountModel? account,
+    AuthType? signup_method,
     RatingModel? rating,
   }) {
     return UserModel(
@@ -91,8 +88,7 @@ class UserModel extends IModelWithId {
       name: name ?? this.name,
       birthday: birthday ?? this.birthday,
       phone: phone ?? this.phone,
-      oauth: oauth ?? this.oauth,
-      account: account ?? this.account,
+      signup_method: signup_method ?? this.signup_method,
       rating: rating ?? this.rating,
     );
   }

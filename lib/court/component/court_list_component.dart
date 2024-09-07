@@ -160,7 +160,7 @@ class CourtListComponent extends StatelessWidget {
                             }
                           : () {},
                       style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
+                          backgroundColor: WidgetStateProperty.all(
                               selected != null
                                   ? MITIColor.primary
                                   : MITIColor.gray500)),

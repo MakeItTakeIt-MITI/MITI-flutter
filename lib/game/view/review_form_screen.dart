@@ -89,10 +89,12 @@ class _ReviewScreenState extends State<ReviewScreen> {
                   form.comment.isNotEmpty &&
                   form.tags.length > 1;
               // log("valid  = $valid");
+
               return TextButton(
                 onPressed: valid
                     ? () async {
-                        createReview(ref, context, '닉네임');
+                        createReview(
+                            ref, context, widget.userInfoModel.nickname);
 
                         // if (widget.participationId != null) {
                         //   final result = ref.read(
@@ -164,11 +166,11 @@ class _ReviewScreenState extends State<ReviewScreen> {
       WidgetRef ref, BuildContext context, String nickname) async {
     BaseModel result;
     if (widget.participationId != null) {
-      result = await ref.read(guestReviewProvider(
+      result = await ref.read(createGuestReviewProvider(
               gameId: widget.gameId, participationId: widget.participationId!)
           .future);
     } else {
-      result = await ref.read(hostReviewProvider(
+      result = await ref.read(createHostReviewProvider(
         gameId: widget.gameId,
       ).future);
     }
@@ -181,25 +183,27 @@ class _ReviewScreenState extends State<ReviewScreen> {
             .responseError(context, gameApiType, ref);
       }
     } else {
+      ref
+          .read(gamePlayersProvider(gameId: widget.gameId).notifier)
+          .getPlayers(gameId: widget.gameId);
       if (context.mounted) {
-        await ref
-            .read(gamePlayersProvider(gameId: widget.gameId).notifier)
-            .getPlayers(gameId: widget.gameId);
-        final extra = CustomDialog(
-          title: '리뷰 작성 완료',
-          content: '$nickname님의 리뷰를 작성하였습니다.',
-          onPressed: () {
-            Map<String, String> pathParameters = {
-              'gameId': widget.gameId.toString()
-            };
-
-            context.goNamed(
-              GameParticipationScreen.routeName,
-              pathParameters: pathParameters,
-            );
-          },
-        );
-        context.pushNamed(DialogPage.routeName, extra: extra);
+        showModalBottomSheet(
+            context: context,
+            isDismissible: false,
+            enableDrag: false,
+            builder: (context) {
+              return BottomDialog(
+                title: '리뷰 작성 완료',
+                content: '$nickname 님의 리뷰를 작성하였습니다.',
+                btn: TextButton(
+                  onPressed: () {
+                    context.pop();
+                    context.pop();
+                  },
+                  child: const Text("확인"),
+                ),
+              );
+            });
       }
     }
   }
@@ -230,7 +234,8 @@ class _ReviewForm extends ConsumerWidget {
               onChanged: (val) {
                 ref.read(reviewFormProvider.notifier).updateComment(val);
               },
-              hint: '리뷰를 작성해주세요.', context: context,
+              hint: '리뷰를 작성해주세요.',
+              context: context,
             ),
           )),
           // Scrollbar(
@@ -333,10 +338,7 @@ class _MultiLineTextFormFieldState extends State<MultiLineTextFormField> {
   Widget build(BuildContext context) {
     return KeyboardVisibilityBuilder(
       onVisibilityChange: (bool isKeyboardVisible) {
-        if(isKeyboardVisible && _focusNode.hasFocus){
-
-
-        }
+        if (isKeyboardVisible && _focusNode.hasFocus) {}
       },
       child: Align(
         child: RawScrollbar(
@@ -370,7 +372,8 @@ class _MultiLineTextFormFieldState extends State<MultiLineTextFormField> {
                 //   maxHeight: widget.height.h,
                 // ),
                 hintText: widget.hint,
-                hintStyle: MITITextStyle.sm150.copyWith(color: MITIColor.gray500),
+                hintStyle:
+                    MITITextStyle.sm150.copyWith(color: MITIColor.gray500),
                 hintMaxLines: 10,
                 fillColor: MITIColor.gray700,
                 filled: true,
@@ -507,7 +510,7 @@ class _CommentForm extends ConsumerWidget {
                       final tags = ref.watch(
                           reviewFormProvider.select((form) => form.tags));
 
-                      return _ReviewChip(
+                      return ReviewChip(
                           selected: tags.contains(e),
                           onTap: () {
                             ref.read(reviewFormProvider.notifier).updateChip(e);
@@ -578,12 +581,12 @@ class _CommentForm extends ConsumerWidget {
   }
 }
 
-class _ReviewChip extends StatelessWidget {
+class ReviewChip extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
   final String title;
 
-  const _ReviewChip(
+  const ReviewChip(
       {super.key,
       required this.selected,
       required this.onTap,

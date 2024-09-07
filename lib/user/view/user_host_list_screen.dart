@@ -22,20 +22,20 @@ import '../../game/model/game_model.dart';
 import '../../theme/text_theme.dart';
 import '../param/user_profile_param.dart';
 
-class GameHostScreen extends ConsumerStatefulWidget {
-  static String get routeName => 'host';
+class GameMyParticipationScreen extends ConsumerStatefulWidget {
+  static String get routeName => 'gameMyParticipation';
   final UserGameType type;
 
-  const GameHostScreen({
+  const GameMyParticipationScreen({
     super.key,
     required this.type,
   });
 
   @override
-  ConsumerState<GameHostScreen> createState() => _GameHostScreenState();
+  ConsumerState<GameMyParticipationScreen> createState() => _GameHostScreenState();
 }
 
-class _GameHostScreenState extends ConsumerState<GameHostScreen> {
+class _GameHostScreenState extends ConsumerState<GameMyParticipationScreen> {
   final items = [
     '모집 중',
     '모집 완료',
@@ -96,68 +96,60 @@ class _GameHostScreenState extends ConsumerState<GameHostScreen> {
   Widget build(BuildContext context) {
     final id = ref.watch(authProvider)!.id!;
 
-    return NestedScrollView(
-      controller: _scrollController,
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return [];
-      },
-      body: RefreshIndicator(
-        onRefresh: refresh,
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.only(right: 21.w, top: 20.h),
-                child: Row(
-                  children: [
-                    const Spacer(),
-                    CustomDropDownButton(
-                      initValue: '전체',
-                      onChanged: (value) {
-                        changeDropButton(value, id);
-                      },
-                      items: items,
-                    )
-                  ],
-                ),
+    return RefreshIndicator(
+      onRefresh: refresh,
+      child: CustomScrollView(
+        controller: _scrollController,
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.only(right: 21.w, top: 20.h),
+              child: Row(
+                children: [
+                  const Spacer(),
+                  CustomDropDownButton(
+                    initValue: '전체',
+                    onChanged: (value) {
+                      changeDropButton(value, id);
+                    },
+                    items: items,
+                  )
+                ],
               ),
             ),
-            Consumer(
-              builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                final gameStatus = getStatus(ref.watch(dropDownValueProvider));
-                final provider = widget.type == UserGameType.host
-                    ? userHostingPProvider(PaginationStateParam(path: id))
-                        as AutoDisposeStateNotifierProvider<
-                            PaginationProvider<Base, DefaultParam,
-                                IBasePaginationRepository<Base, DefaultParam>>,
-                            BaseModel>
-                    : userParticipationPProvider(
-                        PaginationStateParam(path: id));
-                return SliverPadding(
-                  padding:
-                      EdgeInsets.only(right: 21.w, left: 21.w, bottom: 20.h),
-                  sliver: DisposeSliverPaginationListView(
-                    provider: provider,
-                    itemBuilder:
-                        (BuildContext context, int index, Base pModel) {
-                      final model = pModel as GameListByDateModel;
-                      return GameCardByDate.fromModel(
-                        model: model,
-                      );
-                    },
-                    skeleton: Container(),
-                    param: UserGameParam(
-                      game_status: gameStatus,
-                    ),
-                    controller: _scrollController,
-                    emptyWidget: getEmptyWidget(widget.type),
-                    separateSize: 0,
+          ),
+          Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              final gameStatus = getStatus(ref.watch(dropDownValueProvider));
+              final provider = widget.type == UserGameType.host
+                  ? userHostingPProvider(PaginationStateParam(path: id))
+                      as AutoDisposeStateNotifierProvider<
+                          PaginationProvider<Base, DefaultParam,
+                              IBasePaginationRepository<Base, DefaultParam>>,
+                          BaseModel>
+                  : userParticipationPProvider(PaginationStateParam(path: id));
+              return SliverPadding(
+                padding: EdgeInsets.only(right: 21.w, left: 21.w, bottom: 20.h),
+                sliver: DisposeSliverPaginationListView(
+                  provider: provider,
+                  itemBuilder: (BuildContext context, int index, Base pModel) {
+                    final model = pModel as GameListByDateModel;
+                    return GameCardByDate.fromModel(
+                      model: model,
+                    );
+                  },
+                  skeleton: Container(),
+                  param: UserGameParam(
+                    game_status: gameStatus,
                   ),
-                );
-              },
-            ),
-          ],
-        ),
+                  controller: _scrollController,
+                  emptyWidget: getEmptyWidget(widget.type),
+                  separateSize: 0,
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

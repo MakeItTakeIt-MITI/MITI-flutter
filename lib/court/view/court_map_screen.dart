@@ -1128,15 +1128,15 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
                         ref.read(gameFilterProvider.notifier).clear();
                       },
                       style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
+                          backgroundColor: WidgetStateProperty.all(
                             MITIColor.gray500,
                           ),
                           minimumSize:
-                              MaterialStateProperty.all(Size(98.w, 48.h)),
+                              WidgetStateProperty.all(Size(98.w, 48.h)),
                           maximumSize:
-                              MaterialStateProperty.all(Size(98.w, 48.h)),
+                              WidgetStateProperty.all(Size(98.w, 48.h)),
                           fixedSize:
-                              MaterialStateProperty.all(Size(98.w, 48.h))),
+                              WidgetStateProperty.all(Size(98.w, 48.h))),
                       child: Text(
                         "초기화",
                         style:
@@ -1152,11 +1152,11 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
                       },
                       style: ButtonStyle(
                           minimumSize:
-                              MaterialStateProperty.all(Size(223.w, 48.h)),
+                              WidgetStateProperty.all(Size(223.w, 48.h)),
                           maximumSize:
-                              MaterialStateProperty.all(Size(223.w, 48.h)),
+                              WidgetStateProperty.all(Size(223.w, 48.h)),
                           fixedSize:
-                              MaterialStateProperty.all(Size(223.w, 48.h))),
+                              WidgetStateProperty.all(Size(223.w, 48.h))),
                       child: const Text(
                         "적용하기",
                       )),

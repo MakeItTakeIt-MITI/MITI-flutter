@@ -253,25 +253,47 @@ class SoonestGamesComponent extends StatelessWidget {
                     color: MITIColor.gray100,
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    pushGameList(context);
-                  },
-                  child: Row(
-                    children: [
-                      Text(
-                        '더보기',
-                        style: MITITextStyle.xxxsmLight.copyWith(
-                          color: MITIColor.gray100,
-                        ),
+                Consumer(
+                  builder:
+                      (BuildContext context, WidgetRef ref, Widget? child) {
+                    final result =
+                        ref.watch(courtDetailProvider(courtId: courtId));
+                    if (result is LoadingModel) {
+                      return const CircularProgressIndicator();
+                    } else if (result is ErrorModel) {
+                      return const Text("Error");
+                    }
+                    final model =
+                        (result as ResponseModel<CourtDetailModel>).data!;
+                    if (model.soonest_games.isEmpty) {
+                      return Container();
+                    }
+                    return GestureDetector(
+                      onTap: () {
+                        pushGameList(context);
+                      },
+                      child: Row(
+                        children: [
+                          Text(
+                            '더보기',
+                            style: MITITextStyle.xxsmLight.copyWith(
+                              color: MITIColor.gray100,
+                            ),
+                          ),
+                          SvgPicture.asset(
+                            AssetUtil.getAssetPath(
+                              type: AssetType.icon,
+                              name: 'chevron_right',
+                            ),
+                            colorFilter: const ColorFilter.mode(
+                              MITIColor.gray400,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                        ],
                       ),
-                      Icon(
-                        Icons.keyboard_arrow_right_rounded,
-                        color: MITIColor.gray500,
-                        size: 12.r,
-                      )
-                    ],
-                  ),
+                    );
+                  },
                 )
               ],
             ),
@@ -328,12 +350,18 @@ class SoonestGamesComponent extends StatelessWidget {
                   );
                 }
 
+                final modelMap = ref
+                    .read(courtDetailProvider(courtId: courtId).notifier)
+                    .groupAndSortByStartDate();
+
                 return Column(
                   children: [
+                    // ListView.separated(
+                    //     itemBuilder: (_, idx) {},
+                    //     separatorBuilder: (_, idx) {},
+                    //     itemCount: itemCount),
                     ListView.separated(
                       itemBuilder: (_, idx) {
-                        // model.soonest_games.
-
                         return CourtCard.fromSoonestGameModel(
                             model: model.soonest_games[idx]);
                       },

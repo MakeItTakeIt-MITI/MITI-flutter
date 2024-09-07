@@ -30,7 +30,7 @@ import '../../account/model/account_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../court/view/court_map_screen.dart';
 import '../../default_screen.dart';
-import '../../menu/view/menu_screen.dart';
+import '../../user/view/profile_screen.dart';
 import '../../user/model/review_model.dart';
 import '../../user/view/user_info_screen.dart';
 import '../../util/util.dart';
@@ -202,7 +202,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
                                     },
                                     style: ButtonStyle(
                                         backgroundColor:
-                                            MaterialStateProperty.all(
+                                            WidgetStateProperty.all(
                                                 MITIColor.gray800)),
                                     child: Text(
                                       "취소하기",
@@ -220,7 +220,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
                   });
             },
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(MITIColor.gray700),
+              backgroundColor: WidgetStateProperty.all(MITIColor.gray700),
             ),
             child: Text(
               "경기 취소",

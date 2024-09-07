@@ -412,7 +412,7 @@ class _V2DateFormState extends State<V2DateForm> {
                                             : null,
                                         style: ButtonStyle(
                                             backgroundColor:
-                                                MaterialStateProperty.all(valid
+                                                WidgetStateProperty.all(valid
                                                     ? MITIColor.primary
                                                     : MITIColor.gray500)),
                                         child: Text(

@@ -12,7 +12,7 @@ import 'package:miti/util/util.dart';
 import 'court/view/court_map_screen.dart';
 import 'court/view/court_search_screen.dart';
 import 'game/view/game_screen.dart';
-import 'menu/view/menu_screen.dart';
+import 'user/view/profile_screen.dart';
 
 final contextProvider = StateProvider<BuildContext?>((ref) => null);
 
@@ -84,8 +84,6 @@ class _DefaultShellScreenState extends ConsumerState<DefaultShellScreen> {
                 //     duration: const Duration(milliseconds: 500),
                 //     curve: Curves.easeInOut);
               } else {
-
-
                 context.goNamed(CourtSearchListScreen.routeName);
               }
             } else {
@@ -96,7 +94,7 @@ class _DefaultShellScreenState extends ConsumerState<DefaultShellScreen> {
                 //     duration: const Duration(milliseconds: 500),
                 //     curve: Curves.easeInOut);
               } else {
-                context.goNamed(MenuBody.routeName);
+                context.goNamed(ProfileBody.routeName);
               }
             }
           },
@@ -157,7 +155,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
             onTap: () {
               onTap(3);
             },
-            label: '내 정보',
+            label: '마이페이지',
             selected: index == 3,
             iconName: index == 3 ? 'profile' : 'profile',
           ),

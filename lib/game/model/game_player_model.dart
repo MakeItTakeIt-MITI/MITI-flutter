@@ -23,6 +23,8 @@ class GameRevieweesModel {
 
 @JsonSerializable()
 class GameParticipationModel extends IModelWithId {
+  @JsonKey(name: 'user_id')
+  final int userId;
   final String nickname;
   final ParticipationStatus participation_status;
   final Rating guest_rating;
@@ -30,6 +32,7 @@ class GameParticipationModel extends IModelWithId {
 
   GameParticipationModel({
     required super.id,
+    required this.userId,
     required this.nickname,
     required this.participation_status,
     required this.guest_rating,
@@ -42,11 +45,14 @@ class GameParticipationModel extends IModelWithId {
 
 @JsonSerializable()
 class ReviewHostModel {
+  @JsonKey(name: 'user_id')
+  final int userId;
   final String nickname;
   final Rating host_rating;
   final List<ReviewerModel> host_reviews;
 
   ReviewHostModel({
+    required this.userId,
     required this.nickname,
     required this.host_rating,
     required this.host_reviews,

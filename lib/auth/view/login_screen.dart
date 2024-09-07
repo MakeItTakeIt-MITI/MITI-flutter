@@ -229,7 +229,7 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
           TextButton(
             onPressed: () => login(),
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(
+              backgroundColor: WidgetStateProperty.all(
                 ref.watch(loginFormProvider.notifier).isValid()
                     ? MITIColor.primary
                     : MITIColor.gray500,

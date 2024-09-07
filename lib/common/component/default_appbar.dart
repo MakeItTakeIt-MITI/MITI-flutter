@@ -43,7 +43,9 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
         backgroundColor: backgroundColor ?? MITIColor.gray800,
-
+        floating: false, // AppBar가 떠 있지 않게 설정
+        expandedHeight: null, // 확장되지 않도록 설정
+        flexibleSpace: null,  // 유연한 공간을 설정하지 않음
         /// 앱바 pinned 시 surface 컬러
         surfaceTintColor: backgroundColor ?? MITIColor.gray800,
         shape: hasBorder

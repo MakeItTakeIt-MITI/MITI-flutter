@@ -60,6 +60,7 @@ abstract class GameRepository {
   Future<ResponseModel<GamePaymentModel>> getPayment(
       {@Path() required int gameId});
 
+  /// 경기 피리뷰자 목록 조회 API
   @Headers({'token': 'true'})
   @GET('/games/{gameId}/reviewees')
   Future<ResponseModel<GameRevieweesModel>> getReviewees(
@@ -115,11 +116,17 @@ abstract class GameRepository {
     @Body() required GameReviewParam param,
   });
 
+  /// 게스트 리뷰 상세 조회 API
+  @Headers({'token': 'true'})
+  @GET('/games/{gameId}/participations/{participationId}/reviews/{reviewId}')
+  Future<ResponseModel<ReviewDetailModel>> getGuestReview(
+      {@Path() required int gameId,
+      @Path() required int participationId,
+      @Path() required int reviewId});
+
   /// 호스트 리뷰 상세 조회 API
   @Headers({'token': 'true'})
   @GET('/games/{gameId}/reviews/{reviewId}')
-  Future<ResponseModel<GameRevieweesModel>> getHostReview(
+  Future<ResponseModel<ReviewDetailModel>> getHostReview(
       {@Path() required int gameId, @Path() required int reviewId});
 }
-
-

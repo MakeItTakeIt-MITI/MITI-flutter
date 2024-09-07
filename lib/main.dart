@@ -287,16 +287,16 @@ class _MyAppState extends ConsumerState<MyApp> {
               ),
               textButtonTheme: TextButtonThemeData(
                 style: ButtonStyle(
-                    textStyle: MaterialStateProperty.all(
+                    textStyle: WidgetStateProperty.all(
                       MITITextStyle.mdBold.copyWith(
                         color: MITIColor.gray800,
                       ),
                     ),
                     foregroundColor:
-                        MaterialStateProperty.all(MITIColor.gray800),
+                        WidgetStateProperty.all(MITIColor.gray800),
                     backgroundColor:
-                        MaterialStateProperty.all(MITIColor.primary),
-                    shape: MaterialStateProperty.all(
+                        WidgetStateProperty.all(MITIColor.primary),
+                    shape: WidgetStateProperty.all(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
                           8.r,
@@ -304,9 +304,9 @@ class _MyAppState extends ConsumerState<MyApp> {
                       ),
                     ),
                     minimumSize:
-                        MaterialStateProperty.all(Size(double.infinity, 48.h)),
+                        WidgetStateProperty.all(Size(double.infinity, 48.h)),
                     maximumSize:
-                        MaterialStateProperty.all(Size(double.infinity, 48.h))),
+                        WidgetStateProperty.all(Size(double.infinity, 48.h))),
               )),
           routerConfig: router,
         );

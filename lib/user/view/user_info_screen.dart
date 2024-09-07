@@ -231,11 +231,11 @@ class _UserInfoCard extends ConsumerWidget {
                       style: MITITextStyle.plainTextSStyle
                           .copyWith(color: const Color(0xFF333333)),
                     ),
-                    Text(
-                      '₩ ${NumberUtil.format(model.account.balance.toString())}',
-                      style: MITITextStyle.nicknameCardStyle
-                          .copyWith(color: const Color(0xFF333333)),
-                    ),
+                    // Text(
+                    //   '₩ ${NumberUtil.format(model.account.balance.toString())}',
+                    //   style: MITITextStyle.nicknameCardStyle
+                    //       .copyWith(color: const Color(0xFF333333)),
+                    // ),
                   ],
                 ),
                 SizedBox(height: 12.h),
@@ -251,17 +251,17 @@ class _UserInfoCard extends ConsumerWidget {
                       ),
                     ),
                     onPressed: () {
-                      Map<String, String> pathParameters = {
-                        'accountId': model.account.id.toString()
-                      };
-                      final Map<String, String> queryParameters = {
-                        'bottomIdx': '2'
-                      };
-                      context.pushNamed(
-                        BankTransferFormScreen.routeName,
-                        pathParameters: pathParameters,
-                        queryParameters: queryParameters,
-                      );
+                      // Map<String, String> pathParameters = {
+                      //   'accountId': model.account.id.toString()
+                      // };
+                      // final Map<String, String> queryParameters = {
+                      //   'bottomIdx': '2'
+                      // };
+                      // context.pushNamed(
+                      //   BankTransferFormScreen.routeName,
+                      //   pathParameters: pathParameters,
+                      //   queryParameters: queryParameters,
+                      // );
                     },
                     child: Text(
                       '송금하기',

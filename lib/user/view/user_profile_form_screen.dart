@@ -246,7 +246,7 @@ class _ProfileFormComponentState extends ConsumerState<_ProfileFormComponent> {
             ),
           ),
         ),
-        if (model.oauth == null)
+        // if (model.oauth == null)
           Column(
             children: [
               SizedBox(height: 30.h),
@@ -384,7 +384,7 @@ class _ProfileFormComponentState extends ConsumerState<_ProfileFormComponent> {
             ],
           ),
         const Spacer(),
-        if (model.oauth == null)
+        // if (model.oauth == null)
           TextButton(
               onPressed: valid
                   ? () async {

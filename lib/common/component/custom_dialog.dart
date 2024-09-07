@@ -91,23 +91,21 @@ class BottomDialog extends StatelessWidget {
       {super.key,
       required this.title,
       required this.content,
-      required this.btn,  this.hasPop = false});
+      required this.btn,
+      this.hasPop = false});
 
-  Widget popButton(BuildContext context){
+  Widget popButton(BuildContext context) {
     return Align(
         alignment: Alignment.topRight,
         child: IconButton(
             onPressed: () => context.pop(),
             style: ButtonStyle(
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-
-                padding: MaterialStateProperty.all(EdgeInsets.zero)),
-            constraints: BoxConstraints.tight(
-                Size(24.r, 24.r)),
+                padding: WidgetStateProperty.all(EdgeInsets.zero)),
+            constraints: BoxConstraints.tight(Size(24.r, 24.r)),
             icon: const Icon(
               Icons.close,
               color: MITIColor.white,
-
             )));
   }
 
@@ -124,8 +122,7 @@ class BottomDialog extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if(hasPop)
-          popButton(context),
+          if (hasPop) popButton(context),
           Text(
             title,
             style: MITITextStyle.mdBold.copyWith(

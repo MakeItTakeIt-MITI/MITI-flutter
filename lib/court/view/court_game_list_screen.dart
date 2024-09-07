@@ -30,7 +30,11 @@ class _CourtGameListScreenState extends State<CourtGameListScreen> {
     super.initState();
     _scrollController = ScrollController();
   }
-
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,6 +48,7 @@ class _CourtGameListScreenState extends State<CourtGameListScreen> {
             ];
           },
           body: CustomScrollView(
+            controller: _scrollController,
             slivers: [
               SliverPadding(
                 sliver: Consumer(builder:

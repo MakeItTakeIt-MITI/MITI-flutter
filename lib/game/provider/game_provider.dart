@@ -277,8 +277,8 @@ class Rating extends _$Rating {
 }
 
 @riverpod
-Future<BaseModel> guestReview(
-  GuestReviewRef ref, {
+Future<BaseModel> createGuestReview(
+  CreateGuestReviewRef ref, {
   required int gameId,
   required int participationId,
 }) async {
@@ -300,8 +300,8 @@ Future<BaseModel> guestReview(
 }
 
 @riverpod
-Future<BaseModel> hostReview(
-  HostReviewRef ref, {
+Future<BaseModel> createHostReview(
+  CreateHostReviewRef ref, {
   required int gameId,
 }) async {
   final repository = ref.watch(gameRepositoryProvider);
@@ -364,4 +364,58 @@ Future<BaseModel> cancelRecruitGame(CancelRecruitGameRef ref,
         'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
     return error;
   });
+}
+
+@riverpod
+class ReviewDetail extends _$ReviewDetail {
+  @override
+  BaseModel build(
+      {required int gameId, int? participationId, required int reviewId}) {
+    if (participationId != null) {
+      getGuestReview(
+          gameId: gameId, reviewId: reviewId, participationId: participationId);
+    } else {
+      getHostReview(gameId: gameId, reviewId: reviewId);
+    }
+
+    return LoadingModel();
+  }
+
+  void getHostReview({required int gameId, required int reviewId}) {
+    final repository = ref.watch(gameRepositoryProvider);
+    repository
+        .getHostReview(gameId: gameId, reviewId: reviewId)
+        .then<BaseModel>((value) {
+      logger.i(value);
+      state = value;
+      return value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      return error;
+    });
+  }
+
+  void getGuestReview(
+      {required int gameId,
+      required int participationId,
+      required int reviewId}) {
+    final repository = ref.watch(gameRepositoryProvider);
+    repository
+        .getGuestReview(
+            gameId: gameId,
+            reviewId: reviewId,
+            participationId: participationId)
+        .then<BaseModel>((value) {
+      logger.i(value);
+      state = value;
+      return value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      return error;
+    });
+  }
 }

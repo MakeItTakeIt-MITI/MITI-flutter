@@ -85,23 +85,27 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
                   final userId = ref.read(authProvider)?.id ?? 0;
 
                   /// 본인 리뷰 제거
-                  // model.participations.removeWhere((e) => e.id == userId);
+                  model.participations.removeWhere((e) => e.userId == userId);
 
                   return Column(
                     children: [
-                      // if (model.host != null && model.host?.id != userId)
-                      _HostReviewComponent(
-                        host: model.host!,
-                        gameId: widget.gameId,
-                      ),
-                      Container(
-                        color: MITIColor.gray800,
-                        height: 4.h,
-                      ),
-                      _GuestReviewComponent(
-                        participated_users: model.participations,
-                        gameId: widget.gameId,
-                      ),
+                      if (model.host != null && model.host?.userId != userId)
+                        _HostReviewComponent(
+                          host: model.host!,
+                          gameId: widget.gameId,
+                        ),
+                      if ((model.host != null &&
+                              model.host?.userId != userId) &&
+                          model.participations.isNotEmpty)
+                        Container(
+                          color: MITIColor.gray800,
+                          height: 4.h,
+                        ),
+                      if (model.participations.isNotEmpty)
+                        _GuestReviewComponent(
+                          participated_users: model.participations,
+                          gameId: widget.gameId,
+                        ),
                     ],
                   );
                 },
@@ -268,7 +272,8 @@ class _PlayerComponent extends StatelessWidget {
                     } else {
                       /// 리뷰 보기
                       Map<String, String> pathParameters = {
-                        'reviewId': valid.id.toString()
+                        'reviewId': valid.id.toString(),
+                        'gameId': gameId.toString(),
                       };
 
                       context.pushNamed(
@@ -376,7 +381,6 @@ class _GuestReviewComponent extends StatelessWidget {
                   return _PlayerComponent.fromParticipationModel(
                     model: participated_users[idx],
                     gameId: gameId,
-                    // participationId: participationId,
                   );
                 },
                 separatorBuilder: (_, idx) {

@@ -58,6 +58,7 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
   @override
   Widget build(BuildContext context) {
     return NestedScrollView(
+        physics: const NeverScrollableScrollPhysics(),
         headerSliverBuilder: ((BuildContext context, bool innerBoxIsScrolled) {
           return [
             const DefaultAppBar(
@@ -72,7 +73,7 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
             controller: controller,
             slivers: [
               SliverPadding(
-                padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 24.h),
+                padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
                 sliver: SliverMainAxisGroup(slivers: [
                   SliverToBoxAdapter(
                     child: Column(

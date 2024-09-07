@@ -46,7 +46,7 @@ import '../../court/view/court_map_screen.dart';
 import '../../game/view/game_screen.dart';
 import '../../kakaopay/view/approval_screen.dart';
 import '../../kakaopay/view/payment_screen.dart';
-import '../../menu/view/menu_screen.dart';
+import '../../user/view/profile_screen.dart';
 import '../../permission_screen.dart';
 import '../../splash_screen.dart';
 import '../../support/view/support_detail_screen.dart';
@@ -255,7 +255,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                       //               },
                       //               style: ButtonStyle(
                       //                   backgroundColor:
-                      //                       MaterialStateProperty.all(
+                      //                       WidgetStateProperty.all(
                       //                           MITIColor.gray600)),
                       //               child: Text(
                       //                 '취소하기',
@@ -439,35 +439,23 @@ final routerProvider = Provider<GoRouter>((ref) {
                       // },
                     ),
                     GoRoute(
-                      path: 'host',
+                      path: 'myParticipation',
                       parentNavigatorKey: rootNavKey,
-                      name: GameHostScreen.routeName,
-                      // redirect: (_, state) => provider.redirectLogic(state),
+                      name: GameMyParticipationScreen.routeName,
                       builder: (context, state) {
                         UserGameType extra = state.extra as UserGameType;
-                        return GameHostScreen(
+                        return GameMyParticipationScreen(
                           type: extra,
                         );
                       },
-                      // pageBuilder: (context, state) {
-                      //   UserGameType extra = state.extra as UserGameType;
-                      //   return NoTransitionPage(
-                      //       child: GameHostScreen(
-                      //     type: extra,
-                      //   ));
-                      // },
                     ),
                     GoRoute(
                         path: 'create',
                         parentNavigatorKey: rootNavKey,
                         name: GameCreateScreen.routeName,
-                        // redirect: (_, state) => provider.redirectLogic(state),
                         builder: (context, state) {
                           return const GameCreateScreen();
                         },
-                        // pageBuilder: (context, state) {
-                        //   return NoTransitionPage(child: GameCreateScreen());
-                        // },
                         routes: [
                           GoRoute(
                             path: ':gameId/complete',
@@ -475,7 +463,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                             name: GameCompleteScreen.routeName,
                             builder: (context, state) {
                               final extra = state.extra as GameCompleteType;
-
                               final int gameId =
                                   int.parse(state.pathParameters['gameId']!);
                               return GameCompleteScreen(
@@ -483,14 +470,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 type: extra,
                               );
                             },
-                            // pageBuilder: (context, state) {
-                            //   final int gameId =
-                            //       int.parse(state.pathParameters['gameId']!);
-                            //   return NoTransitionPage(
-                            //       child: GameCreateCompleteScreen(
-                            //     gameId: gameId,
-                            //   ));
-                            // },
+
                           ),
                         ]),
                     GoRoute(
@@ -504,14 +484,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                             gameId: gameId,
                           );
                         },
-                        // pageBuilder: (context, state) {
-                        //   final int gameId =
-                        //       int.parse(state.pathParameters['gameId']!);
-                        //   return NoTransitionPage(
-                        //       child: GameDetailScreen(
-                        //     gameId: gameId,
-                        //   ));
-                        // },
                         routes: [
                           GoRoute(
                             path: 'players',
@@ -526,21 +498,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 gameId: gameId,
                               );
                             },
-                            // pageBuilder: (context, state) {
-                            //   final int gameId =
-                            //       int.parse(state.pathParameters['gameId']!);
-                            //   int? participationId;
-                            //   if (state.uri.queryParameters
-                            //       .containsKey('participationId')) {
-                            //     participationId = int.parse(state
-                            //         .uri.queryParameters['participationId']!);
-                            //   }
-                            //   return NoTransitionPage(
-                            //       child: GameParticipationScreen(
-                            //     gameId: gameId,
-                            //     participationId: participationId,
-                            //   ));
-                            // },
                           ),
                           GoRoute(
                             path: 'review',
@@ -567,24 +524,27 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 // ratingId: ratingId,
                               );
                             },
-                            // pageBuilder: (context, state) {
-                            //   final int gameId =
-                            //       int.parse(state.pathParameters['gameId']!);
-                            //   final int ratingId = int.parse(
-                            //       state.uri.queryParameters['ratingId']!);
-                            //   int? participationId;
-                            //   if (state.uri.queryParameters
-                            //       .containsKey('participationId')) {
-                            //     participationId = int.parse(state
-                            //         .uri.queryParameters['participationId']!);
-                            //   }
-                            //   return NoTransitionPage(
-                            //       child: ReviewScreen(
-                            //     gameId: gameId,
-                            //     participationId: participationId,
-                            //     ratingId: ratingId,
-                            //   ));
-                            // },
+                          ),
+                          GoRoute(
+                            path: ':reviewId',
+                            parentNavigatorKey: rootNavKey,
+                            name: ReviewDetailScreen.routeName,
+                            builder: (_, state) {
+                              final int reviewId =
+                              int.parse(state.pathParameters['reviewId']!);
+                              int? participationId;
+                              final int gameId =
+                              int.parse(state.pathParameters['gameId']!);
+                              if (state.uri.queryParameters
+                                  .containsKey('participationId')) {
+                                participationId = int.parse(state
+                                    .uri.queryParameters['participationId']!);
+                              }
+                              return ReviewDetailScreen(
+                                reviewId: reviewId,
+                                participationId: participationId, gameId: gameId,
+                              );
+                            },
                           ),
                           GoRoute(
                             path: 'cancel/:participationId',
@@ -854,26 +814,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                         );
                       },
                       routes: [
-                        GoRoute(
-                          path: ':reviewId',
-                          parentNavigatorKey: rootNavKey,
-                          name: ReviewDetailScreen.routeName,
-                          builder: (_, state) {
-                            log("AA ${state.pathParameters.containsKey('reviewId')}");
-                            final int reviewId =
-                                int.parse(state.pathParameters['reviewId']!);
-                            int? participationId;
-                            if (state.uri.queryParameters
-                                .containsKey('participationId')) {
-                              participationId = int.parse(state
-                                  .uri.queryParameters['participationId']!);
-                            }
-                            return ReviewDetailScreen(
-                              reviewId: reviewId,
-                              participationId: participationId,
-                            );
-                          },
-                        ),
+
                       ],
                     ),
                     GoRoute(
@@ -949,12 +890,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: '/menu',
                 parentNavigatorKey: shellNavKey,
                 redirect: (_, state) => provider.redirectLogic(state),
-                name: MenuBody.routeName,
+                name: ProfileBody.routeName,
                 builder: (context, state) {
-                  return MenuBody();
+                  return ProfileBody();
                 },
                 pageBuilder: (context, state) {
-                  return NoTransitionPage(child: MenuBody());
+                  return NoTransitionPage(child: ProfileBody());
                 },
                 routes: [
                   GoRoute(

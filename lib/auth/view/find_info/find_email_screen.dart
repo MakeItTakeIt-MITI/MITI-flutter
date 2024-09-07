@@ -202,7 +202,7 @@ class _EmailComponent extends StatelessWidget {
 
                   return TextButton(
                       style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
+                          backgroundColor: WidgetStateProperty.all(
                         MITIColor.gray700,
                       )),
                       onPressed: () {

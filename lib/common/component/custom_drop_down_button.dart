@@ -106,7 +106,7 @@ class _CustomDropDownButtonState extends ConsumerState<CustomDropDownButton> {
                 borderRadius: BorderRadius.circular(12.r),
                 color: MITIColor.gray750)),
         menuItemStyleData: MenuItemStyleData(
-          overlayColor: MaterialStateProperty.all(const Color(0xFF404040)),
+          overlayColor: WidgetStateProperty.all(const Color(0xFF404040)),
           height: 24.h,
           padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
         ),
