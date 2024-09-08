@@ -203,11 +203,11 @@ class GameUpdateParam extends Equatable {
 class GameReviewParam extends Equatable {
   final int rating;
   final List<PlayerReviewTagType> tags;
-  final String comment;
+  final String? comment;
 
   const GameReviewParam({
     required this.rating,
-    required this.comment,
+    this.comment,
     required this.tags,
   });
 

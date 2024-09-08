@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -25,6 +27,7 @@ import '../../game/view/game_detail_screen.dart';
 import '../error/user_error.dart';
 
 class ReviewDetailScreen extends StatefulWidget {
+  final String revieweeNickname;
   final int gameId;
   final int reviewId;
   final int? participationId;
@@ -36,6 +39,7 @@ class ReviewDetailScreen extends StatefulWidget {
     required this.reviewId,
     this.participationId,
     required this.gameId,
+    required this.revieweeNickname,
   });
 
   @override
@@ -72,10 +76,13 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
       body: NestedScrollView(
         controller: _scrollController,
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          final nickname = widget.revieweeNickname.length > 6
+              ? '${widget.revieweeNickname.substring(0, 6)}...'
+              : widget.revieweeNickname;
           return [
-            const DefaultAppBar(
+            DefaultAppBar(
               backgroundColor: MITIColor.gray750,
-              title: '내가 작성한 리뷰 상세 내용',
+              title: '$nickname님에게 남긴 리뷰',
               isSliver: true,
             ),
           ];
@@ -108,9 +115,6 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                   return Column(
                     children: [
                       _UserInfoComponent(
-                        type: widget.participationId == null
-                            ? ReviewType.host
-                            : ReviewType.guest,
                         nickname: model.reviewer,
                       ),
                       getDivider(),
@@ -130,22 +134,19 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
 }
 
 class _UserInfoComponent extends StatelessWidget {
-  final ReviewType type;
   final String nickname;
 
-  const _UserInfoComponent(
-      {super.key, required this.type, required this.nickname});
+  const _UserInfoComponent({super.key, required this.nickname});
 
   @override
   Widget build(BuildContext context) {
-    final participationType = type == ReviewType.guest ? '게스트' : '호스트';
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 28.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            participationType,
+            '리뷰 작성자',
             style: MITITextStyle.mdBold.copyWith(color: MITIColor.gray100),
           ),
           SizedBox(height: 20.h),
@@ -257,7 +258,7 @@ class _GameInfoComponent extends StatelessWidget {
 class _ReviewInfoComponent extends StatelessWidget {
   final int rating;
   final List<PlayerReviewTagType> tags;
-  final String comment;
+  final String? comment;
 
   const _ReviewInfoComponent(
       {super.key,
@@ -327,7 +328,8 @@ class _ReviewInfoComponent extends StatelessWidget {
           ),
           SizedBox(height: 12.h),
           Wrap(
-            spacing: 12.w,
+            spacing: 12.r,
+            runSpacing: 12.r,
             children: [
               ...tags.map(
                 (t) => ReviewChip(selected: true, onTap: () {}, title: t.name),
@@ -335,23 +337,26 @@ class _ReviewInfoComponent extends StatelessWidget {
             ],
           ),
           SizedBox(height: 20.h),
-          Text(
-            '한줄평',
-            style: MITITextStyle.smSemiBold.copyWith(color: MITIColor.gray200),
-          ),
-          SizedBox(height: 12.h),
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12.r),
-                color: MITIColor.gray700),
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-            child: Text(
-              comment,
-              style: MITITextStyle.sm150.copyWith(
-                color: MITIColor.gray100,
-              ),
+          if (comment != null && comment!.isNotEmpty)
+            Text(
+              '한줄평',
+              style:
+                  MITITextStyle.smSemiBold.copyWith(color: MITIColor.gray200),
             ),
-          )
+          if (comment != null && comment!.isNotEmpty) SizedBox(height: 12.h),
+          if (comment != null && comment!.isNotEmpty)
+            Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12.r),
+                  color: MITIColor.gray700),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              child: Text(
+                comment!,
+                style: MITITextStyle.sm150.copyWith(
+                  color: MITIColor.gray100,
+                ),
+              ),
+            )
         ],
       ),
     );

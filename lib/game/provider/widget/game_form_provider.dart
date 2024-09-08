@@ -260,7 +260,7 @@ class ReviewForm extends _$ReviewForm {
 
   bool valid() {
     log('state.rating = ${state.rating}');
-    log('state.comment.isNotEmpty = ${state.comment.isNotEmpty}');
-    return state.comment.isNotEmpty && state.tags.length > 1;
+    // log('state.comment.isNotEmpty = ${state.comment.isNotEmpty}');
+    return state.tags.length > 1;
   }
 }

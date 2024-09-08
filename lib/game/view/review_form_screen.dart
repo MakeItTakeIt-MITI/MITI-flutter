@@ -85,9 +85,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
           button: Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
               final form = ref.watch(reviewFormProvider);
-              final valid = form.rating > 0 &&
-                  form.comment.isNotEmpty &&
-                  form.tags.length > 1;
+              final valid = form.rating > 0 && form.tags.length > 1;
               // log("valid  = $valid");
 
               return TextButton(
@@ -491,7 +489,7 @@ class _CommentForm extends ConsumerWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             '어떤 점이 좋았나요?',
@@ -518,30 +516,8 @@ class _CommentForm extends ConsumerWidget {
                           title: e.name);
                     },
                   ))
-
-              // _ReviewChip(
-              //   selected: true,
-              //   onTap: () {},
-              //   title: '득점 능력',
-              // ),
-              // _ReviewChip(
-              //   selected: false,
-              //   onTap: () {},
-              //   title: '득점 능력',
-              // )
             ],
           ),
-          // ListView.separated(
-          //     physics: const NeverScrollableScrollPhysics(),
-          //     padding: EdgeInsets.zero,
-          //     shrinkWrap: true,
-          //     itemBuilder: (_, idx) {
-          //       return getComments(idx, comments[idx]);
-          //     },
-          //     separatorBuilder: (_, idx) {
-          //       return SizedBox(height: 3.h);
-          //     },
-          //     itemCount: comments.length),
         ],
       ),
     );
@@ -597,7 +573,8 @@ class ReviewChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 14.w),
+        height: 34.h,
+        padding: EdgeInsets.symmetric(horizontal: 14.w),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(100.r),
           gradient: selected
@@ -610,18 +587,18 @@ class ReviewChip extends StatelessWidget {
                     ])
               : null,
           color: selected ? null : MITIColor.gray800,
-          // border: selected
-          //     ? Border.all(
-          //         color: MITIColor.primary,
-          //       )
-          //     : null
-          // color: selected ?
         ),
-        child: Text(
-          title,
-          style: MITITextStyle.smSemiBold.copyWith(
-            color: selected ? MITIColor.gray800 : MITIColor.gray300,
-          ),
+        // alignment: Alignment(0,0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              title,
+              style: MITITextStyle.smSemiBold.copyWith(
+                color: selected ? MITIColor.gray800 : MITIColor.gray300,
+              ),
+            ),
+          ],
         ),
       ),
     );

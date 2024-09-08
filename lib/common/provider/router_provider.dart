@@ -47,6 +47,7 @@ import '../../court/view/court_map_screen.dart';
 import '../../game/view/game_screen.dart';
 import '../../kakaopay/view/approval_screen.dart';
 import '../../kakaopay/view/payment_screen.dart';
+import '../../review/view/review_list_screen.dart';
 import '../../user/view/profile_screen.dart';
 import '../../permission_screen.dart';
 import '../../splash_screen.dart';
@@ -486,41 +487,50 @@ final routerProvider = Provider<GoRouter>((ref) {
                         },
                         routes: [
                           GoRoute(
-                            path: 'players',
-                            parentNavigatorKey: rootNavKey,
-                            name: GameParticipationScreen.routeName,
-                            // redirect: (_, state) =>
-                            //     provider.redirectLogic(state),
-                            builder: (context, state) {
-                              final int gameId =
-                                  int.parse(state.pathParameters['gameId']!);
-                              return GameParticipationScreen(
-                                gameId: gameId,
-                              );
-                            },
-                          ),
+                              path: 'players',
+                              parentNavigatorKey: rootNavKey,
+                              name: GameParticipationScreen.routeName,
+                              builder: (context, state) {
+                                final int gameId =
+                                    int.parse(state.pathParameters['gameId']!);
+                                return GameParticipationScreen(
+                                  gameId: gameId,
+                                );
+                              },
+                              routes: [
+                                GoRoute(
+                                  path: 'reviewList',
+                                  parentNavigatorKey: rootNavKey,
+                                  name: ReviewListScreen.routeName,
+                                  builder: (context, state) {
+                                    final int gameId = int.parse(
+                                        state.pathParameters['gameId']!);
+                                    int? participationId;
+                                    if (state.uri.queryParameters
+                                        .containsKey('participationId')) {
+                                      participationId = int.parse(state.uri
+                                          .queryParameters['participationId']!);
+                                    }
+
+                                    return ReviewListScreen(
+                                      gameId: gameId,
+                                      participationId: participationId,
+                                      // ratingId: ratingId,
+                                    );
+                                  },
+                                ),
+                              ]),
                           GoRoute(
                               path: 'paymentInfo',
                               parentNavigatorKey: rootNavKey,
                               name: GamePaymentScreen.routeName,
-                              // redirect: (_, state) =>
-                              //     provider.redirectLogic(state),
                               builder: (context, state) {
                                 final int gameId =
-                                int.parse(state.pathParameters['gameId']!);
+                                    int.parse(state.pathParameters['gameId']!);
                                 return GamePaymentScreen(
                                   gameId: gameId,
                                 );
                               },
-                              // pageBuilder: (context, state) {
-                              //   final int gameId =
-                              //       int.parse(state.pathParameters['gameId']!);
-                              //
-                              //   return NoTransitionPage(
-                              //       child: GamePaymentScreen(
-                              //     gameId: gameId,
-                              //   ));
-                              // },
                               routes: [
                                 GoRoute(
                                   path: 'payment',
@@ -536,21 +546,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                                       redirectUrl: redirectUrl,
                                     );
                                   },
-                                  // pageBuilder: (context, state) {
-                                  //   final int gameId = int.parse(
-                                  //       state.pathParameters['gameId']!);
-                                  //   final String redirectUrl = state
-                                  //       .uri.queryParameters['redirectUrl']!;
-                                  //
-                                  //   return NoTransitionPage(
-                                  //       child: PaymentScreen(
-                                  //     gameId: gameId,
-                                  //     redirectUrl: redirectUrl,
-                                  //   ));
-                                  // },
                                 ),
                               ]),
-
                           GoRoute(
                             path: 'review',
                             parentNavigatorKey: rootNavKey,
@@ -592,10 +589,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 participationId = int.parse(state
                                     .uri.queryParameters['participationId']!);
                               }
+                              final revieweeNickname = state.uri.queryParameters['revieweeNickname']!;
                               return ReviewDetailScreen(
                                 reviewId: reviewId,
                                 participationId: participationId,
-                                gameId: gameId,
+                                gameId: gameId, revieweeNickname: revieweeNickname,
                               );
                             },
                           ),
@@ -803,7 +801,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                       //   return NoTransitionPage(child: UserProfileFormScreen());
                       // },
                     ),
-
                     GoRoute(
                         path: ':courtId',
                         parentNavigatorKey: rootNavKey,

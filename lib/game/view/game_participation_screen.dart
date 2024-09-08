@@ -12,6 +12,7 @@ import 'package:miti/game/model/game_player_model.dart';
 import 'package:miti/game/model/widget/user_reivew_short_info_model.dart';
 import 'package:miti/game/provider/game_provider.dart' hide Rating;
 import 'package:miti/game/view/review_form_screen.dart';
+import 'package:miti/review/view/review_list_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/util/util.dart';
@@ -270,17 +271,32 @@ class _PlayerComponent extends StatelessWidget {
                         extra: model,
                       );
                     } else {
-                      /// 리뷰 보기
+                      /// 리뷰 내역 보기
+                      Map<String, String> queryParameters = {};
+                      if (participationId != null) {
+                        queryParameters = {
+                          'participationId': participationId.toString()
+                        };
+                      }
                       Map<String, String> pathParameters = {
-                        'reviewId': valid.id.toString(),
                         'gameId': gameId.toString(),
                       };
 
                       context.pushNamed(
-                        ReviewDetailScreen.routeName,
-                        pathParameters: pathParameters,
+                        ReviewListScreen.routeName,
                         queryParameters: queryParameters,
+                        pathParameters: pathParameters,
                       );
+                      // Map<String, String> pathParameters = {
+                      //   'reviewId': valid.id.toString(),
+                      //   'gameId': gameId.toString(),
+                      // };
+                      //
+                      // context.pushNamed(
+                      //   ReviewDetailScreen.routeName,
+                      //   pathParameters: pathParameters,
+                      //   queryParameters: queryParameters,
+                      // );
                     }
                   },
                   style: TextButton.styleFrom(
