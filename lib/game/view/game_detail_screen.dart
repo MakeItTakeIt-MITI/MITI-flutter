@@ -856,7 +856,7 @@ class SummaryComponent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (gameStatus != null) GameStateLabel(gameStatus: gameStatus!),
-          if (bankStatus != null) SettlementLabel(bankType: bankStatus!),
+          if (bankStatus != null) SettlementLabel(settlementType: bankStatus!),
           SizedBox(height: 12.h),
           Text(
             title,

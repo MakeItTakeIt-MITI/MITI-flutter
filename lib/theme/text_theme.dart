@@ -147,7 +147,11 @@ class MITITextStyle {
     height: 1.4,
     fontWeight: FontWeight.w500,
   );
-
+  static final TextStyle xxxsm = TextStyle(
+    fontSize: 10.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w500,
+  );
   static final TextStyle xxxsmLight = TextStyle(
     fontSize: 10.sp,
     fontFamily: 'Pretendard',

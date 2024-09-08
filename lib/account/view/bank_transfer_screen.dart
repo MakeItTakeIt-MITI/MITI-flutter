@@ -51,7 +51,7 @@ class _BankTransferScreenState extends ConsumerState<BankTransferScreen> {
 
   Future<void> refresh() async {
     final userId = ref.read(authProvider)!.id!;
-    final value = ref.read(dropDownValueProvider);
+    final value = ref.read(dropDownValueProvider(DropButtonType.transfer));
     final status = getStatus(value!);
     log('status = ${status}');
     final provider =
@@ -106,6 +106,7 @@ class _BankTransferScreenState extends ConsumerState<BankTransferScreen> {
                               changeDropButton(value, ref);
                             },
                             items: items,
+                            type: DropButtonType.transfer,
                           );
                         },
                       )
@@ -152,7 +153,7 @@ class _BankTransferScreenState extends ConsumerState<BankTransferScreen> {
 
   void changeDropButton(String? value, WidgetRef ref) {
     final userId = ref.read(authProvider)!.id!;
-    ref.read(dropDownValueProvider.notifier).update((state) => value);
+    ref.read(dropDownValueProvider(DropButtonType.transfer).notifier).update((state) => value);
     final status = getStatus(value!);
     log('status = ${status}');
     final provider =
@@ -207,7 +208,7 @@ class BankTransferCard extends ConsumerWidget {
   factory BankTransferCard.fromModel({required TransferModel model}) {
     return BankTransferCard(
       amount: NumberUtil.format(model.amount.toString()),
-      account_bank: model.accountBank,
+      account_bank: model.accountBank.displayName,
       account_holder: model.accountHolder,
       account_number: model.accountNumber,
       status: model.transferStatus,
@@ -256,7 +257,7 @@ class BankTransferCard extends ConsumerWidget {
                       )
                     ],
                   ),
-                  BankLabel(transferType: status),
+                  TransferLabel(transferType: status),
                 ],
               ),
               SizedBox(height: 20.h),

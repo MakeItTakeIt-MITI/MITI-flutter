@@ -74,7 +74,7 @@ class _GameHostScreenState extends ConsumerState<GameMyParticipationScreen> {
 
   Future<void> refresh() async {
     final id = ref.read(authProvider)!.id!;
-    final gameStatus = getStatus(ref.read(dropDownValueProvider));
+    final gameStatus = getStatus(ref.read(dropDownValueProvider(DropButtonType.game)));
     final provider = widget.type == UserGameType.host
         ? userHostingPProvider(PaginationStateParam(path: id))
         : userParticipationPProvider(PaginationStateParam(path: id))
@@ -113,6 +113,7 @@ class _GameHostScreenState extends ConsumerState<GameMyParticipationScreen> {
                       changeDropButton(value, id);
                     },
                     items: items,
+                    type: DropButtonType.game,
                   )
                 ],
               ),
@@ -120,7 +121,7 @@ class _GameHostScreenState extends ConsumerState<GameMyParticipationScreen> {
           ),
           Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              final gameStatus = getStatus(ref.watch(dropDownValueProvider));
+              final gameStatus = getStatus(ref.watch(dropDownValueProvider(DropButtonType.game)));
               final provider = widget.type == UserGameType.host
                   ? userHostingPProvider(PaginationStateParam(path: id))
                       as AutoDisposeStateNotifierProvider<
@@ -181,7 +182,7 @@ class _GameHostScreenState extends ConsumerState<GameMyParticipationScreen> {
   }
 
   void changeDropButton(String? value, int id) {
-    ref.read(dropDownValueProvider.notifier).update((state) => value);
+    ref.read(dropDownValueProvider(DropButtonType.game).notifier).update((state) => value);
     final gameStatus = getStatus(value!);
     final provider = widget.type == UserGameType.host
         ? userHostingPProvider(PaginationStateParam(path: id))

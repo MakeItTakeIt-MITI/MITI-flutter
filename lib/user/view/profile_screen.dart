@@ -326,8 +326,13 @@ class _ReviewComponent extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _ReviewCard(type: ReviewType.guest, rating: model.guest_rating),
-              _ReviewCard(type: ReviewType.host, rating: model.host_rating),
+              Expanded(
+                  child: _ReviewCard(
+                      type: ReviewType.guest, rating: model.guest_rating)),
+              SizedBox(width: 9.w),
+              Expanded(
+                  child: _ReviewCard(
+                      type: ReviewType.host, rating: model.host_rating)),
             ],
           )
         ],
@@ -351,10 +356,10 @@ class _ReviewCard extends StatelessWidget {
         flag = decimalPoint != 0;
       }
       final String star = flag
-          ? 'Star_half_v2'
+          ? 'star_s_half'
           : rating >= i + 1
-              ? 'fill_star2'
-              : 'unfill_star2';
+              ? 'star_s_full'
+              : 'star_s_empty';
       result.add(SvgPicture.asset(
         AssetUtil.getAssetPath(type: AssetType.icon, name: star),
         height: 16.r,

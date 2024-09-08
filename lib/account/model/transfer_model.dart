@@ -9,7 +9,7 @@ part 'transfer_model.g.dart';
 class TransferModel extends IModelWithId {
   final int amount;
   @JsonKey(name: 'account_bank')
-  final String accountBank;
+  final BankType accountBank;
   @JsonKey(name: 'account_holder')
   final String accountHolder;
   @JsonKey(name: 'account_number')

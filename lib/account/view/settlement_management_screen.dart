@@ -10,6 +10,7 @@ import 'package:miti/common/component/sliver_delegate.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:miti/util/util.dart';
 
 import '../../auth/provider/auth_provider.dart';
 import '../../common/component/dispose_sliver_pagination_list_view.dart';
@@ -271,10 +272,22 @@ class _AccountInfo extends ConsumerWidget {
                       (BuildContext context, WidgetRef ref, Widget? child) {
                     return Row(
                       children: [
-                        Text(
-                          '100,000',
-                          style: MITITextStyle.xxl
-                              .copyWith(color: MITIColor.gray100),
+                        Consumer(
+                          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                            final result = ref.watch(accountProvider);
+                            if(result is LoadingModel){
+                              return CircularProgressIndicator();
+                            }else if(result is ErrorModel){
+                              return Text("error");
+                            }
+                            final model= (result as ResponseModel<AccountDetailModel>).data!;
+                            final amount = NumberUtil.format(model.requestableTransferAmount.toString());
+                            return Text(
+                              amount,
+                              style: MITITextStyle.xxl
+                                  .copyWith(color: MITIColor.gray100),
+                            );
+                          },
                         ),
                         SizedBox(width: 8.w),
                         Text(

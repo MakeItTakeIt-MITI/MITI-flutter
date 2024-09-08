@@ -172,7 +172,7 @@ class SettlementCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SettlementLabel(bankType: status),
+              SettlementLabel(settlementType: status),
               Row(
                 // crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -371,7 +371,7 @@ class _ParticipationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fee = NumberUtil.format(model.fee.toString());
-    final bankType =
+    final settlementType =
         model.is_settled ? SettlementType.completed : SettlementType.waiting;
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -381,7 +381,7 @@ class _ParticipationCard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          SettlementLabel(bankType: bankType),
+          SettlementLabel(settlementType: settlementType),
           const Spacer(),
           Text(
             model.nickname,

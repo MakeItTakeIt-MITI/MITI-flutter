@@ -68,7 +68,8 @@ class _UserWrittenReviewScreenState
 
   Future<void> refresh() async {
     final id = ref.read(authProvider)!.id!;
-    final reviewType = getReviewType(ref.read(dropDownValueProvider));
+    final reviewType =
+        getReviewType(ref.read(dropDownValueProvider(DropButtonType.review)));
     final provider = widget.type == UserReviewType.written
         ? userWrittenReviewsPProvider(PaginationStateParam(path: id))
         : userReceiveReviewsPProvider(PaginationStateParam(path: id))
@@ -126,6 +127,7 @@ class _UserWrittenReviewScreenState
                             changeDropButton(value, id);
                           },
                           items: items,
+                          type: DropButtonType.review,
                         )
                       ],
                     ),
@@ -134,8 +136,8 @@ class _UserWrittenReviewScreenState
                 Consumer(
                   builder:
                       (BuildContext context, WidgetRef ref, Widget? child) {
-                    final reviewType =
-                        getReviewType(ref.watch(dropDownValueProvider));
+                    final reviewType = getReviewType(ref
+                        .watch(dropDownValueProvider(DropButtonType.review)));
                     final provider = widget.type == UserReviewType.written
                         ? userWrittenReviewsPProvider(
                             PaginationStateParam(
@@ -183,7 +185,9 @@ class _UserWrittenReviewScreenState
   }
 
   void changeDropButton(String? value, int id) {
-    ref.read(dropDownValueProvider.notifier).update((state) => value);
+    ref
+        .read(dropDownValueProvider(DropButtonType.review).notifier)
+        .update((state) => value);
     final reviewType = getReviewType(value);
     final provider = widget.type == UserReviewType.written
         ? userWrittenReviewsPProvider(PaginationStateParam(path: id))

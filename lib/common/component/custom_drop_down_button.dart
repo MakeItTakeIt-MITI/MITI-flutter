@@ -5,7 +5,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
-final dropDownValueProvider = StateProvider.autoDispose<String?>((ref) => null);
+enum DropButtonType {
+  district,
+  game,
+  review,
+  transfer,
+  settlement,
+}
+
+final dropDownValueProvider = StateProvider.family
+    .autoDispose<String?, DropButtonType>((ref, type) => null);
 
 class CustomDropDownButton extends ConsumerStatefulWidget {
   final List<String> items;
@@ -16,8 +25,9 @@ class CustomDropDownButton extends ConsumerStatefulWidget {
   final double? radius;
   final double? padding;
   final TextStyle? textStyle;
+  final DropButtonType type;
 
-  const CustomDropDownButton({
+  const CustomDropDownButton( {
     super.key,
     required this.items,
     required this.onChanged,
@@ -27,6 +37,7 @@ class CustomDropDownButton extends ConsumerStatefulWidget {
     this.radius,
     this.padding,
     this.textStyle,
+    required this.type,
   });
 
   @override
@@ -42,14 +53,14 @@ class _CustomDropDownButtonState extends ConsumerState<CustomDropDownButton> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       ref
-          .read(dropDownValueProvider.notifier)
+          .read(dropDownValueProvider(widget.type).notifier)
           .update((state) => widget.initValue);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    selectedValue = ref.watch(dropDownValueProvider);
+    selectedValue = ref.watch(dropDownValueProvider(widget.type));
     return DropdownButtonHideUnderline(
       child: DropdownButton2<String>(
         // isDense: true,

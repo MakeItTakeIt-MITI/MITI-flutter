@@ -56,7 +56,7 @@ class _SettlementListScreenState extends ConsumerState<SettlementListScreen> {
 
   Future<void> refresh() async {
     final userId = ref.read(authProvider)!.id!;
-    final value = ref.read(dropDownValueProvider);
+    final value = ref.read(dropDownValueProvider(DropButtonType.settlement));
     final status = getStatus(value!);
     log('status = ${status}');
 
@@ -112,6 +112,7 @@ class _SettlementListScreenState extends ConsumerState<SettlementListScreen> {
                               changeDropButton(value, ref);
                             },
                             items: items,
+                            type: DropButtonType.settlement,
                           );
                         },
                       )
@@ -160,7 +161,9 @@ class _SettlementListScreenState extends ConsumerState<SettlementListScreen> {
 
   void changeDropButton(String? value, WidgetRef ref) {
     final userId = ref.read(authProvider)!.id!;
-    ref.read(dropDownValueProvider.notifier).update((state) => value);
+    ref
+        .read(dropDownValueProvider(DropButtonType.settlement).notifier)
+        .update((state) => value);
     final status = getStatus(value!);
     log('status = ${status}');
     final provider = settlementPageProvider(PaginationStateParam(path: userId));
@@ -269,7 +272,7 @@ class SettlementCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                SettlementLabel(bankType: status),
+                SettlementLabel(settlementType: status),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [

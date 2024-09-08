@@ -88,29 +88,38 @@ class ReviewLabel extends StatelessWidget {
 }
 
 class SettlementLabel extends StatelessWidget {
-  final SettlementType bankType;
+  final SettlementType settlementType;
 
-  const SettlementLabel({super.key, required this.bankType});
+  const SettlementLabel({super.key, required this.settlementType});
 
   @override
   Widget build(BuildContext context) {
     late Color textColor;
 
-    switch (bankType) {
+    switch (settlementType) {
+      /// 정산 완료
       case SettlementType.completed:
         textColor = const Color(0xFF58CDFF);
         break;
+
+      /// 정산 대기중
       case SettlementType.waiting:
         textColor = MITIColor.gray200;
         break;
+
+      /// 부분 정산 완료
       case SettlementType.partiallyCompleted:
         textColor = const Color(0xFFFFDC62);
         break;
+
+      /// 정산 취소
       case SettlementType.canceled:
-        textColor = const Color(0xFFFFDC62);
+        textColor = const Color(0xFFEE5F8A);
         break;
+
+      /// 정산 정지
       case SettlementType.suspended:
-        textColor = const Color(0xFFFFDC62);
+        textColor = const Color(0xFFEE5F8A);
         break;
     }
     return Container(
@@ -120,7 +129,7 @@ class SettlementLabel extends StatelessWidget {
       ),
       padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 4.h),
       child: Text(
-        bankType.name,
+        settlementType.name,
         style: MITITextStyle.tagStyle.copyWith(
           color: textColor,
         ),
@@ -129,10 +138,10 @@ class SettlementLabel extends StatelessWidget {
   }
 }
 
-class BankLabel extends StatelessWidget {
+class TransferLabel extends StatelessWidget {
   final TransferType transferType;
 
-  const BankLabel({super.key, required this.transferType});
+  const TransferLabel({super.key, required this.transferType});
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +155,7 @@ class BankLabel extends StatelessWidget {
         textColor = MITIColor.gray200;
         break;
       case TransferType.declined:
-        textColor = MITIColor.gray200;
+        textColor = const Color(0xFFEE5F8A);
         break;
     }
     return Container(

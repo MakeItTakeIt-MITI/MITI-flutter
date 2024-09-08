@@ -56,6 +56,7 @@ class CustomTextFormField extends StatelessWidget {
   final TextStyle? textStyle;
   final TextStyle? labelTextStyle;
   final Color? borderColor;
+  final VoidCallback? onTap;
 
   const CustomTextFormField({
     super.key,
@@ -81,6 +82,7 @@ class CustomTextFormField extends StatelessWidget {
     this.labelTextStyle,
     this.borderColor,
     this.prefix,
+    this.onTap,
   });
 
   @override
@@ -98,6 +100,7 @@ class CustomTextFormField extends StatelessWidget {
           ),
         if (label != null) SizedBox(height: 8.h),
         TextFormField(
+          onTap: onTap,
           initialValue: initialValue,
           focusNode: focusNode,
           controller: textEditingController,
