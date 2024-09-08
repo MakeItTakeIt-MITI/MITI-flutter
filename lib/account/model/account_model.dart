@@ -11,6 +11,8 @@ part 'account_model.g.dart';
 class SettlementModel extends IModelWithId {
   final int amount;
   final int commission;
+  @JsonKey(name: 'settlement_amount')
+  final int settlementAmount;
   final SettlementType status;
   final ReviewGameModel game;
 
@@ -18,6 +20,7 @@ class SettlementModel extends IModelWithId {
     required super.id,
     required this.amount,
     required this.commission,
+    required this.settlementAmount,
     required this.status,
     required this.game,
   });
@@ -26,23 +29,62 @@ class SettlementModel extends IModelWithId {
       _$SettlementModelFromJson(json);
 }
 
+/*
+        "id": 21,
+        "status": "completed",
+        "amount": 10000,
+        "commission": 250,
+        "settlement_amount": 9750,
+        "expected_settlement_amount": 9750,
+        "game": {
+            "id": 25692,
+            "game_status": "completed",
+            "title": "KHU MITI 픽업게임",
+            "startdate": "2024-09-04",
+            "starttime": "20:00:00",
+            "enddate": "2024-09-04",
+            "endtime": "20:10:00",
+            "max_invitation": 12,
+            "min_invitation": 1,
+            "fee": 10000,
+            "court": {
+                "id": 24,
+                "address": "서울 동대문구 경희대로 1 (회기동)",
+                "address_detail": "miti at ku",
+                "latitude": "37.5917474794325",
+                "longitude": "127.052102908464"
+            }
+        },
+        "participations": [
+            {
+                "nickname": "testuser4",
+                "fee": 10000,
+                "is_settled": true
+            }
+        ]
+
+ */
 @JsonSerializable()
 class SettlementDetailModel extends IModelWithId {
+  final SettlementType status;
   final int amount;
   final int commission;
-  final SettlementType status;
-  final GameSettlementModel game;
-  final int final_settlement_amount;
+  @JsonKey(name: 'settlement_amount')
+  final int settlementAmount;
+  @JsonKey(name: 'expected_settlement_amount')
+  final int expectedSettlementAmount;
+  final ReviewGameModel game;
   final List<ParticipationModel> participations;
 
   SettlementDetailModel({
     required super.id,
-    required this.amount,
     required this.status,
+    required this.amount,
+    required this.commission,
+    required this.settlementAmount,
+    required this.expectedSettlementAmount,
     required this.game,
     required this.participations,
-    required this.commission,
-    required this.final_settlement_amount,
   });
 
   factory SettlementDetailModel.fromJson(Map<String, dynamic> json) =>
@@ -50,13 +92,12 @@ class SettlementDetailModel extends IModelWithId {
 }
 
 @JsonSerializable()
-class ParticipationModel extends IModelWithId {
-  final int nickname;
+class ParticipationModel {
+  final String nickname;
   final int fee;
   final bool is_settled;
 
   ParticipationModel({
-    required super.id,
     required this.nickname,
     required this.fee,
     required this.is_settled,
@@ -113,15 +154,14 @@ class GameSettlementModel extends IModelWithId {
 @JsonSerializable()
 class AccountModel extends IModelWithId {
   final int balance;
-  final int point;
-  final AccountType account_type;
+  @JsonKey(name: "account_type")
+  final AccountType accountType;
   final AccountStatus status;
 
   AccountModel({
     required super.id,
     required this.balance,
-    required this.point,
-    required this.account_type,
+    required this.accountType,
     required this.status,
   });
 
@@ -131,17 +171,18 @@ class AccountModel extends IModelWithId {
 
 @JsonSerializable()
 class AccountDetailModel extends AccountModel {
-  final int accumulated_requested_amount;
-  final int requestable_transfer_amount;
+  @JsonKey(name: "transfer_requested_amount")
+  final int transferRequestedAmount;
+  @JsonKey(name: "requestable_transfer_amount")
+  final int requestableTransferAmount;
 
   AccountDetailModel({
     required super.id,
     required super.balance,
-    required super.point,
-    required super.account_type,
+    required super.accountType,
     required super.status,
-    required this.accumulated_requested_amount,
-    required this.requestable_transfer_amount,
+    required this.transferRequestedAmount,
+    required this.requestableTransferAmount,
   });
 
   factory AccountDetailModel.fromJson(Map<String, dynamic> json) =>

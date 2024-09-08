@@ -9,7 +9,7 @@ import '../../common/repository/base_pagination_repository.dart';
 import '../../dio/dio_interceptor.dart';
 import '../../dio/provider/dio_provider.dart';
 import '../model/account_model.dart';
-import '../model/bank_model.dart';
+import '../model/transfer_model.dart';
 import '../param/account_param.dart';
 
 part 'account_repository.g.dart';
@@ -51,29 +51,29 @@ final bankTransferPaginationRepositoryProvider =
 
 @RestApi(baseUrl: serverURL)
 abstract class BankTransferPaginationRepository
-    extends IBasePaginationRepository<BankModel, BankTransferPaginationParam> {
+    extends IBasePaginationRepository<TransferModel, BankTransferPaginationParam> {
   factory BankTransferPaginationRepository(Dio dio) =
       _BankTransferPaginationRepository;
 
   @override
   @Headers({'token': 'true'})
-  @GET('/users/{userId}/accounts/bank-transfers')
-  Future<ResponseModel<PaginationModel<BankModel>>> paginate({
+  @GET('/users/{userId}/accounts/transfer-requests')
+  Future<ResponseModel<PaginationModel<TransferModel>>> paginate({
     @Queries() required PaginationParam paginationParams,
     @Queries() BankTransferPaginationParam? param,
     @Path('userId') int? path,
   });
 
   @Headers({'token': 'true'})
-  @POST('/users/{userId}/accounts/bank-transfers')
-  Future<ResponseModel<BankModel>> requestTransfer({
+  @POST('/users/{userId}/accounts/transfer-requests')
+  Future<ResponseModel<TransferModel>> requestTransfer({
     @Path('userId') required int userId,
     @Body() required BankTransferParam param,
   });
 
   @Headers({'token': 'true'})
-  @GET('/accounts/{accountId}')
+  @GET('/users/{userId}/accounts')
   Future<ResponseModel<AccountDetailModel>> getAccountInfo({
-    @Path('accountId') required int accountId,
+    @Path('userId') required int userId,
   });
 }

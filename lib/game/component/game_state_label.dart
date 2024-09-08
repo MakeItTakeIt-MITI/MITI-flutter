@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../common/model/entity_enum.dart';
@@ -93,29 +94,31 @@ class SettlementLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    late Color backgroundColor;
     late Color textColor;
 
     switch (bankType) {
       case SettlementType.completed:
-        backgroundColor = const Color(0xFFDBFFDF);
-        textColor = const Color(0xFF33FF00);
+        textColor = const Color(0xFF58CDFF);
         break;
       case SettlementType.waiting:
-        backgroundColor = const Color(0xFFFFC0C0);
-        textColor = const Color(0xFFFF0000);
+        textColor = MITIColor.gray200;
         break;
-      case SettlementType.partial_completed:
-        backgroundColor = const Color(0xFFC0DDFF);
-        textColor = const Color(0xFF0019FF);
+      case SettlementType.partiallyCompleted:
+        textColor = const Color(0xFFFFDC62);
+        break;
+      case SettlementType.canceled:
+        textColor = const Color(0xFFFFDC62);
+        break;
+      case SettlementType.suspended:
+        textColor = const Color(0xFFFFDC62);
         break;
     }
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(2.r),
-        color: backgroundColor,
+        borderRadius: BorderRadius.circular(20.r),
+        color: MITIColor.gray600,
       ),
-      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 4.h),
       child: Text(
         bankType.name,
         style: MITITextStyle.tagStyle.copyWith(
@@ -127,33 +130,33 @@ class SettlementLabel extends StatelessWidget {
 }
 
 class BankLabel extends StatelessWidget {
-  final BankType bankType;
+  final TransferType transferType;
 
-  const BankLabel({super.key, required this.bankType});
+  const BankLabel({super.key, required this.transferType});
 
   @override
   Widget build(BuildContext context) {
-    late Color backgroundColor;
     late Color textColor;
 
-    switch (bankType) {
-      case BankType.completed:
-        backgroundColor = const Color(0xFFDBFFDF);
-        textColor = const Color(0xFF33FF00);
+    switch (transferType) {
+      case TransferType.completed:
+        textColor = const Color(0xFF58CDFF);
         break;
-      case BankType.waiting:
-        backgroundColor = const Color(0xFFC0DDFF);
-        textColor = const Color(0xFF0019FF);
+      case TransferType.waiting:
+        textColor = MITIColor.gray200;
+        break;
+      case TransferType.declined:
+        textColor = MITIColor.gray200;
         break;
     }
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(2.r),
-        color: backgroundColor,
+        borderRadius: BorderRadius.circular(20.r),
+        color: MITIColor.gray600,
       ),
-      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 4.h),
       child: Text(
-        bankType.name,
+        transferType.name,
         style: MITITextStyle.tagStyle.copyWith(
           color: textColor,
         ),

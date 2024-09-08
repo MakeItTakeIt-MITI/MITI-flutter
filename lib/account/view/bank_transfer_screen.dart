@@ -7,6 +7,7 @@ import 'package:miti/account/param/account_param.dart';
 import 'package:miti/account/provider/account_pagination_provider.dart';
 import 'package:miti/court/component/court_list_component.dart';
 import 'package:miti/game/component/game_state_label.dart';
+import 'package:miti/theme/color_theme.dart';
 
 import '../../auth/provider/auth_provider.dart';
 import '../../common/component/custom_drop_down_button.dart';
@@ -18,7 +19,7 @@ import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
 import '../../theme/text_theme.dart';
 import '../../util/util.dart';
-import '../model/bank_model.dart';
+import '../model/transfer_model.dart';
 
 class BankTransferScreen extends ConsumerStatefulWidget {
   static String get routeName => 'bankTransfer';
@@ -120,8 +121,8 @@ class _BankTransferScreenState extends ConsumerState<BankTransferScreen> {
                           PaginationStateParam(path: userId)),
                       itemBuilder:
                           (BuildContext context, int index, Base pModel) {
-                        final model = pModel as BankModel;
-                        return _BankTransferCard.fromModel(
+                        final model = pModel as TransferModel;
+                        return BankTransferCard.fromModel(
                           model: model,
                         );
                       },
@@ -138,12 +139,12 @@ class _BankTransferScreenState extends ConsumerState<BankTransferScreen> {
     );
   }
 
-  BankType? getStatus(String? value) {
+  TransferType? getStatus(String? value) {
     switch (value) {
       case '대기중':
-        return BankType.waiting;
+        return TransferType.waiting;
       case '송금 완료':
-        return BankType.completed;
+        return TransferType.completed;
       default:
         return null;
     }
@@ -184,16 +185,16 @@ class _BankTransferScreenState extends ConsumerState<BankTransferScreen> {
   }
 }
 
-class _BankTransferCard extends ConsumerWidget {
+class BankTransferCard extends ConsumerWidget {
   final int id;
   final String amount;
   final String account_bank;
   final String account_holder;
   final String account_number;
-  final BankType status;
+  final TransferType status;
   final String created_at;
 
-  const _BankTransferCard(
+  const BankTransferCard(
       {super.key,
       required this.id,
       required this.amount,
@@ -203,14 +204,14 @@ class _BankTransferCard extends ConsumerWidget {
       required this.status,
       required this.created_at});
 
-  factory _BankTransferCard.fromModel({required BankModel model}) {
-    return _BankTransferCard(
+  factory BankTransferCard.fromModel({required TransferModel model}) {
+    return BankTransferCard(
       amount: NumberUtil.format(model.amount.toString()),
-      account_bank: model.account_bank,
-      account_holder: model.account_holder,
-      account_number: model.account_number,
-      status: model.status,
-      created_at: DateTimeUtil.parseMd(dateTime: model.created_at),
+      account_bank: model.accountBank,
+      account_holder: model.accountHolder,
+      account_number: model.accountNumber,
+      status: model.transferStatus,
+      created_at: DateTimeUtil.parseMd(dateTime: model.createdAt),
       id: model.id,
     );
   }
@@ -228,53 +229,53 @@ class _BankTransferCard extends ConsumerWidget {
         }
       },
       child: Container(
-        decoration: BoxDecoration(
-          border: Border.symmetric(
-            horizontal:
-                BorderSide(color: const Color(0xFFE8E8E8), width: 0.5.w),
-          ),
-        ),
+        decoration: const BoxDecoration(color: MITIColor.gray750),
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
+          padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 24.h),
           child: Column(
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    width: 58.w,
-                    child: Text(
-                      created_at,
-                      style: MITITextStyle.dropdownChoicesStyle.copyWith(
-                        color: const Color(0xff999999),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '$amount원',
+                        style: MITITextStyle.lgBold.copyWith(
+                          color: MITIColor.gray100,
+                        ),
                       ),
-                    ),
+                      SizedBox(height: 12.h),
+                      Text(
+                        created_at,
+                        style: MITITextStyle.sm.copyWith(
+                          color: MITIColor.gray400,
+                        ),
+                      )
+                    ],
                   ),
-                  SizedBox(
-                    width: 130.w,
-                    child: Text(
-                      '₩ $amount',
-                      style: MITITextStyle.feeStyle.copyWith(
-                        color: const Color(0xff4065f6),
-                      ),
-                    ),
-                  ),
-                  BankLabel(
-                    bankType: status,
-                  ),
+                  BankLabel(transferType: status),
                 ],
               ),
-              if (selected == id) SizedBox(height: 20.h),
-              if (selected == id)
-                Column(
+              SizedBox(height: 20.h),
+              Container(
+                decoration: BoxDecoration(
+                  color: MITIColor.gray700,
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                padding: EdgeInsets.all(20.r),
+                child: Column(
                   children: [
                     getInfo('예금주', account_holder),
-                    SizedBox(height: 8.h),
-                    getInfo('입금 은행', account_bank),
-                    SizedBox(height: 8.h),
-                    getInfo('계좌번호', account_number),
+                    SizedBox(height: 10.h),
+                    getInfo('수령 은행', account_bank),
+                    SizedBox(height: 10.h),
+                    getInfo('수령 계좌', account_number),
                   ],
-                )
+                ),
+              ),
             ],
           ),
         ),
@@ -288,14 +289,14 @@ class _BankTransferCard extends ConsumerWidget {
       children: [
         Text(
           title,
-          style: MITITextStyle.plainTextMStyle.copyWith(
-            color: const Color(0xff666666),
+          style: MITITextStyle.xxsmLight.copyWith(
+            color: MITIColor.gray400,
           ),
         ),
         Text(
           content,
-          style: MITITextStyle.plainTextMStyle.copyWith(
-            color: const Color(0xff333333),
+          style: MITITextStyle.xxsm.copyWith(
+            color: MITIColor.gray300,
           ),
         ),
       ],

@@ -13,6 +13,7 @@ import '../../auth/provider/auth_provider.dart';
 import '../../common/component/custom_drop_down_button.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/component/dispose_sliver_pagination_list_view.dart';
+import '../../common/component/sliver_delegate.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
@@ -103,13 +104,13 @@ class _GameScreenState extends ConsumerState<GameScreen>
         child: NestedScrollView(
             // controller: controller[1],
             physics: const NeverScrollableScrollPhysics(),
-
             headerSliverBuilder:
                 (BuildContext context, bool innerBoxIsScrolled) {
               return [
                 // DefaultAppBar(isSliver: true, title: '타이틀',),
                 SliverPersistentHeader(
-                  delegate: _SliverAppBarDelegate(TabBar(
+                  delegate: SliverAppBarDelegate(
+                      child: TabBar(
                     indicatorWeight: 1.w,
                     unselectedLabelColor: MITIColor.gray500,
                     indicatorSize: TabBarIndicatorSize.tab,
@@ -147,25 +148,3 @@ class _GameScreenState extends ConsumerState<GameScreen>
   }
 }
 
-class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
-  _SliverAppBarDelegate(this._tabBar);
-
-  final TabBar _tabBar;
-
-  @override
-  double get minExtent => 44.h;
-
-  @override
-  double get maxExtent => 44.h;
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return _tabBar;
-  }
-
-  @override
-  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
-    return false;
-  }
-}

@@ -79,6 +79,9 @@ dependencies:
 
   marquee: ^2.2.3
   disable_battery_optimization: ^1.1.1
+
+  showcaseview: ^3.0.0
+
 dependency_overrides:
   fading_edge_scrollview: ^4.1.1
 

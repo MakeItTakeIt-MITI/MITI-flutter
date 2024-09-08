@@ -93,24 +93,30 @@ enum ItemType {
 
 enum SettlementType {
   @JsonValue('waiting')
-  waiting('대기중'),
-  @JsonValue('partial_completed')
-  partial_completed('부분 정산'),
+  waiting('정산 대기중'),
+  @JsonValue('partially_completed')
+  partiallyCompleted('부분 정산 완료'),
   @JsonValue('completed')
-  completed('정산 완료');
+  completed('정산 완료'),
+  @JsonValue('suspended')
+  suspended('정산 정지'),
+  @JsonValue('canceled')
+  canceled('정산 취소');
 
   const SettlementType(this.name);
 
   final String name;
 }
 
-enum BankType {
+enum TransferType {
   @JsonValue('waiting')
-  waiting('대기중'),
+  waiting('이체 대기중'),
+  @JsonValue('waiting')
+  declined('이체 거부됨'),
   @JsonValue('completed')
-  completed('정산 완료');
+  completed('이체 완료');
 
-  const BankType(this.name);
+  const TransferType(this.name);
 
   final String name;
 }

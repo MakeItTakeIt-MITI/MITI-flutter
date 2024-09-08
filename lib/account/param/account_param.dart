@@ -25,7 +25,7 @@ class SettlementPaginationParam extends DefaultParam {
 
 @JsonSerializable()
 class BankTransferPaginationParam extends DefaultParam {
-  final BankType? status;
+  final TransferType? status;
 
   BankTransferPaginationParam({
     this.status,

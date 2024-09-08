@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miti/account/view/settlement_management_screen.dart';
 import 'package:miti/auth/view/find_info/find_password_screen.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/auth/view/phone_auth/phone_auth_info_screen.dart';
@@ -470,7 +471,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 type: extra,
                               );
                             },
-
                           ),
                         ]),
                     GoRoute(
@@ -500,82 +500,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                             },
                           ),
                           GoRoute(
-                            path: 'review',
-                            parentNavigatorKey: rootNavKey,
-                            name: ReviewScreen.routeName,
-                            // redirect: (_, state) =>
-                            //     provider.redirectLogic(state),
-                            builder: (context, state) {
-                              final int gameId =
-                                  int.parse(state.pathParameters['gameId']!);
-                              int? participationId;
-                              if (state.uri.queryParameters
-                                  .containsKey('participationId')) {
-                                participationId = int.parse(state
-                                    .uri.queryParameters['participationId']!);
-                              }
-                              final model =
-                                  state.extra as UserReviewShortInfoModel;
-
-                              return ReviewScreen(
-                                gameId: gameId,
-                                participationId: participationId,
-                                userInfoModel: model,
-                                // ratingId: ratingId,
-                              );
-                            },
-                          ),
-                          GoRoute(
-                            path: ':reviewId',
-                            parentNavigatorKey: rootNavKey,
-                            name: ReviewDetailScreen.routeName,
-                            builder: (_, state) {
-                              final int reviewId =
-                              int.parse(state.pathParameters['reviewId']!);
-                              int? participationId;
-                              final int gameId =
-                              int.parse(state.pathParameters['gameId']!);
-                              if (state.uri.queryParameters
-                                  .containsKey('participationId')) {
-                                participationId = int.parse(state
-                                    .uri.queryParameters['participationId']!);
-                              }
-                              return ReviewDetailScreen(
-                                reviewId: reviewId,
-                                participationId: participationId, gameId: gameId,
-                              );
-                            },
-                          ),
-                          GoRoute(
-                            path: 'cancel/:participationId',
-                            parentNavigatorKey: rootNavKey,
-                            name: GameRefundScreen.routeName,
-                            // redirect: (_, state) =>
-                            //     provider.redirectLogic(state),
-                            builder: (context, state) {
-                              final int gameId =
-                                  int.parse(state.pathParameters['gameId']!);
-                              final int participationId = int.parse(
-                                  state.pathParameters['participationId']!);
-
-                              return GameRefundScreen(
-                                gameId: gameId,
-                                participationId: participationId,
-                              );
-                            },
-                            // pageBuilder: (context, state) {
-                            //   final int gameId =
-                            //       int.parse(state.pathParameters['gameId']!);
-                            //   final int participationId = int.parse(
-                            //       state.pathParameters['participationId']!);
-                            //   return NoTransitionPage(
-                            //       child: GameRefundScreen(
-                            //     gameId: gameId,
-                            //     participationId: participationId,
-                            //   ));
-                            // },
-                          ),
-                          GoRoute(
                               path: 'paymentInfo',
                               parentNavigatorKey: rootNavKey,
                               name: GamePaymentScreen.routeName,
@@ -583,7 +507,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                               //     provider.redirectLogic(state),
                               builder: (context, state) {
                                 final int gameId =
-                                    int.parse(state.pathParameters['gameId']!);
+                                int.parse(state.pathParameters['gameId']!);
                                 return GamePaymentScreen(
                                   gameId: gameId,
                                 );
@@ -626,6 +550,71 @@ final routerProvider = Provider<GoRouter>((ref) {
                                   // },
                                 ),
                               ]),
+
+                          GoRoute(
+                            path: 'review',
+                            parentNavigatorKey: rootNavKey,
+                            name: ReviewScreen.routeName,
+                            // redirect: (_, state) =>
+                            //     provider.redirectLogic(state),
+                            builder: (context, state) {
+                              final int gameId =
+                                  int.parse(state.pathParameters['gameId']!);
+                              int? participationId;
+                              if (state.uri.queryParameters
+                                  .containsKey('participationId')) {
+                                participationId = int.parse(state
+                                    .uri.queryParameters['participationId']!);
+                              }
+                              final model =
+                                  state.extra as UserReviewShortInfoModel;
+
+                              return ReviewScreen(
+                                gameId: gameId,
+                                participationId: participationId,
+                                userInfoModel: model,
+                                // ratingId: ratingId,
+                              );
+                            },
+                          ),
+                          GoRoute(
+                            path: ':reviewId',
+                            parentNavigatorKey: rootNavKey,
+                            name: ReviewDetailScreen.routeName,
+                            builder: (_, state) {
+                              final int reviewId =
+                                  int.parse(state.pathParameters['reviewId']!);
+                              int? participationId;
+                              final int gameId =
+                                  int.parse(state.pathParameters['gameId']!);
+                              if (state.uri.queryParameters
+                                  .containsKey('participationId')) {
+                                participationId = int.parse(state
+                                    .uri.queryParameters['participationId']!);
+                              }
+                              return ReviewDetailScreen(
+                                reviewId: reviewId,
+                                participationId: participationId,
+                                gameId: gameId,
+                              );
+                            },
+                          ),
+                          GoRoute(
+                            path: 'cancel/:participationId',
+                            parentNavigatorKey: rootNavKey,
+                            name: GameRefundScreen.routeName,
+                            builder: (context, state) {
+                              final int gameId =
+                                  int.parse(state.pathParameters['gameId']!);
+                              final int participationId = int.parse(
+                                  state.pathParameters['participationId']!);
+
+                              return GameRefundScreen(
+                                gameId: gameId,
+                                participationId: participationId,
+                              );
+                            },
+                          ),
                           GoRoute(
                             path: 'update',
                             parentNavigatorKey: rootNavKey,
@@ -755,9 +744,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                           bottomIdx: bottomIdx,
                         );
                       },
-                      // pageBuilder: (context, state) {
-                      //   return NoTransitionPage(child: BankTransferScreen());
-                      // },
                     ),
                     GoRoute(
                         path: 'settlements',
@@ -770,10 +756,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                             bottomIdx: bottomIdx,
                           );
                         },
-                        // pageBuilder: (context, state) {
-                        //   return NoTransitionPage(
-                        //       child: SettlementListScreen());
-                        // },
                         routes: [
                           GoRoute(
                             path: ':settlementId',
@@ -782,21 +764,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                             builder: (context, state) {
                               final int settlementId = int.parse(
                                   state.pathParameters['settlementId']!);
-                              final int bottomIdx = int.parse(
-                                  state.uri.queryParameters['bottomIdx']!);
+
                               return SettlementDetailScreen(
                                 settlementId: settlementId,
-                                bottomIdx: bottomIdx,
                               );
                             },
-                            // pageBuilder: (context, state) {
-                            //   final int settlementId = int.parse(
-                            //       state.pathParameters['settlementId']!);
-                            //   return NoTransitionPage(
-                            //       child: SettlementDetailScreen(
-                            //     settlementId: settlementId,
-                            //   ));
-                            // },
                           ),
                         ]),
                     GoRoute(
@@ -813,9 +785,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                           bottomIdx: bottomIdx,
                         );
                       },
-                      routes: [
-
-                      ],
+                      routes: [],
                     ),
                     GoRoute(
                       path: 'profileForm',
@@ -833,29 +803,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                       //   return NoTransitionPage(child: UserProfileFormScreen());
                       // },
                     ),
-                    GoRoute(
-                      path: ':accountId/transferForm',
-                      parentNavigatorKey: rootNavKey,
-                      name: BankTransferFormScreen.routeName,
-                      builder: (context, state) {
-                        final int accountId =
-                            int.parse(state.pathParameters['accountId']!);
-                        final int bottomIdx =
-                            int.parse(state.uri.queryParameters['bottomIdx']!);
-                        return BankTransferFormScreen(
-                          accountId: accountId,
-                          bottomIdx: bottomIdx,
-                        );
-                      },
-                      // pageBuilder: (context, state) {
-                      //   final int accountId =
-                      //       int.parse(state.pathParameters['accountId']!);
-                      //   return NoTransitionPage(
-                      //       child: BankTransferFormScreen(
-                      //     accountId: accountId,
-                      //   ));
-                      // },
-                    ),
+
                     GoRoute(
                         path: ':courtId',
                         parentNavigatorKey: rootNavKey,
@@ -892,12 +840,28 @@ final routerProvider = Provider<GoRouter>((ref) {
                 redirect: (_, state) => provider.redirectLogic(state),
                 name: ProfileBody.routeName,
                 builder: (context, state) {
-                  return ProfileBody();
+                  return const ProfileBody();
                 },
                 pageBuilder: (context, state) {
-                  return NoTransitionPage(child: ProfileBody());
+                  return const NoTransitionPage(child: ProfileBody());
                 },
                 routes: [
+                  GoRoute(
+                    path: 'settlementManagement',
+                    parentNavigatorKey: rootNavKey,
+                    name: SettlementManagementScreen.routeName,
+                    builder: (context, state) {
+                      return const SettlementManagementScreen();
+                    },
+                  ),
+                  GoRoute(
+                    path: 'transferForm',
+                    parentNavigatorKey: rootNavKey,
+                    name: BankTransferFormScreen.routeName,
+                    builder: (context, state) {
+                      return const BankTransferFormScreen();
+                    },
+                  ),
                   GoRoute(
                     path: 'faq',
                     parentNavigatorKey: rootNavKey,

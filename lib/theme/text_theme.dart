@@ -23,6 +23,12 @@ class MITITextStyle {
     fontWeight: FontWeight.w700,
     letterSpacing: -20.sp * 0.02,
   );
+  static final TextStyle xlLight = TextStyle(
+    fontSize: 20.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w300,
+    letterSpacing: -20.sp * 0.02,
+  );
 
   static final TextStyle lg = TextStyle(
     fontSize: 18.sp,
@@ -47,6 +53,14 @@ class MITITextStyle {
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w500,
     letterSpacing: -16.sp * 0.02,
+  );
+
+  static final TextStyle mdSemiBold150 = TextStyle(
+    fontSize: 16.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w600,
+    letterSpacing: -16.sp * 0.02,
+    height: 1.5,
   );
 
   static final TextStyle mdLight = TextStyle(

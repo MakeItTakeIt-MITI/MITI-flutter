@@ -148,7 +148,8 @@ class _PaginationListViewState<T extends Base>
         );
       },
       separatorBuilder: (_, index) {
-        return SizedBox(
+        return Container(
+          color: Colors.transparent,
           height: widget.separateSize.h,
           width: widget.separateSize.w,
         );

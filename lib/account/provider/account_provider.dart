@@ -35,14 +35,15 @@ class Settlement extends _$Settlement {
 @riverpod
 class Account extends _$Account {
   @override
-  BaseModel build({required int accountId}) {
-    getAccountInfo(accountId: accountId);
+  BaseModel build() {
+    getAccountInfo();
     return LoadingModel();
   }
 
-  void getAccountInfo({required int accountId}) {
+  void getAccountInfo() {
     final repository = ref.watch(bankTransferPaginationRepositoryProvider);
-    repository.getAccountInfo(accountId: accountId).then((value) {
+    final userId = ref.read(authProvider)!.id!;
+    repository.getAccountInfo(userId: userId).then((value) {
       logger.i(value);
       state = value;
     }).catchError((e) {

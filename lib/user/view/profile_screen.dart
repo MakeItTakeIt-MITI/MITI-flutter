@@ -10,8 +10,10 @@ import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/court/view/court_search_screen.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 import '../../account/view/bank_transfer_screen.dart';
+import '../../account/view/settlement_management_screen.dart';
 import '../../account/view/settlement_screen.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/model/entity_enum.dart';
@@ -111,30 +113,90 @@ class _MenuComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Map<String, List<_MenuItem>> gameMenu = getMyPageMenu(context);
+    final menu = gameMenu.keys.toList();
     return Padding(
       padding:
           EdgeInsets.only(left: 21.w, right: 21.w, top: 24.h, bottom: 32.h),
       child: Column(
         children: [
-          // ListView.separated(
-          //     shrinkWrap: true,
-          //     physics: const NeverScrollableScrollPhysics(),
-          //     itemBuilder: (_, idx) {},
-          //     separatorBuilder: (_, idx) => SizedBox(height: 20.h),
-          //     itemCount: 4),
-          _Menu(
-            title: '경기 관련 정보',
-            items: [
-              _MenuItem(
-                onTap: () {},
-                title: '내가 작성한 리뷰',
-                option: getOption('게스트'),
-              ),
-            ],
-          ),
+          ListView.separated(
+              padding: EdgeInsets.zero,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (_, idx) {
+                final items = gameMenu[menu[idx]]!;
+                return _Menu(title: menu[idx], items: items);
+              },
+              separatorBuilder: (_, idx) => SizedBox(height: 20.h),
+              itemCount: menu.length),
         ],
       ),
     );
+  }
+
+  Map<String, List<_MenuItem>> getMyPageMenu(BuildContext context) {
+    final Map<String, List<_MenuItem>> gameMenu = {
+      '경기 관련 정보': [
+        _MenuItem(
+          onTap: () {},
+          title: '내가 작성한 리뷰',
+        ),
+        _MenuItem(
+          onTap: () {},
+          title: '나를 평가한 리뷰',
+        ),
+        _MenuItem(
+          onTap: () {},
+          title: '결제 내역 확인',
+          option: getOption('게스트'),
+        ),
+        _MenuItem(
+          onTap: () => context.pushNamed(SettlementManagementScreen.routeName),
+          title: '정산 관리',
+          option: getOption('호스트'),
+        ),
+      ],
+      '계정 설정': [
+        _MenuItem(
+          onTap: () {},
+          title: '프로필 수정',
+        ),
+        _MenuItem(
+          onTap: () {},
+          title: '내 정보 수정',
+        ),
+        _MenuItem(
+          onTap: () {},
+          title: '알림 설정',
+        ),
+      ],
+      '고객센터': [
+        _MenuItem(
+          onTap: () {},
+          title: '자주 묻는 질문',
+        ),
+        _MenuItem(
+          onTap: () {},
+          title: '문의하기',
+        ),
+        _MenuItem(
+          onTap: () {},
+          title: '서비스 이용 안내',
+        ),
+      ],
+      '기타': [
+        _MenuItem(
+          onTap: () {},
+          title: '약관 및 정책',
+        ),
+        _MenuItem(
+          onTap: () {},
+          title: '앱 정보',
+        ),
+      ],
+    };
+    return gameMenu;
   }
 
   Container getOption(String title) {
@@ -346,109 +408,46 @@ class OverlayTooltipDemo extends StatefulWidget {
 }
 
 class _OverlayTooltipDemoState extends State<OverlayTooltipDemo> {
-  late final GlobalKey _globalKey;
-  OverlayEntry? _overlayEntry;
-
   @override
   void initState() {
     super.initState();
-    _globalKey = GlobalKey();
-  }
-
-  // Create the overlay entry (pop-up content)
-  OverlayEntry _createOverlayEntry() {
-    final renderBox =
-        _globalKey.currentContext!.findRenderObject() as RenderBox;
-    final position = renderBox.localToGlobal(Offset.zero);
-
-    return OverlayEntry(
-      builder: (context) => Positioned(
-        top: position.dy - 100,
-        right: position.dx - 250,
-        width: 250,
-        child: Material(
-          color: Colors.transparent,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 10,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '게스트 리뷰',
-                    style: MITITextStyle.xxsmBold
-                        .copyWith(color: MITIColor.gray700),
-                  ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    '게스트로 참여한 경기에서 다른 게스트 및 호스트 모두에게 받은 평점의 평균이에요.',
-                    style: MITITextStyle.xxxsm140
-                        .copyWith(color: MITIColor.gray700),
-                  ),
-                  SizedBox(height: 12.h),
-                  Text(
-                    '호스트 리뷰',
-                    style: MITITextStyle.xxsmBold
-                        .copyWith(color: MITIColor.gray700),
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    '호스트로 주최하여 참여한 경기에서\n게스트들에게 받은 평점의 평균이에요.',
-                    style: MITITextStyle.xxxsm140
-                        .copyWith(color: MITIColor.gray700),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Method to show the overlay
-  void _showOverlay() {
-    _overlayEntry = _createOverlayEntry();
-    Overlay.of(context).insert(_overlayEntry!);
-  }
-
-  // Method to hide the overlay
-  void _removeOverlay() {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
-  }
-
-  @override
-  void dispose() {
-    _removeOverlay();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(
-      message: "FSDAFSADFDSAFSADFASDFSADF",
-      child: GestureDetector(
-        key: _globalKey,
-        onTap: () {
-          // if (_overlayEntry == null) {
-          //   _showOverlay();
-          // } else {
-          //   _removeOverlay();
-          // }
-        },
+    return Center(
+      child: Tooltip(
+        triggerMode: TooltipTriggerMode.tap,
+        richMessage: TextSpan(children: [
+          TextSpan(
+            text: '게스트 리뷰\n',
+            style: MITITextStyle.xxsmBold.copyWith(color: MITIColor.gray700),
+          ),
+          // SizedBox(height: 4.h),
+          TextSpan(
+            text: '게스트로 참여한 경기에서 다른 게스트 및 호스트 모두에게 받은 평점의 평균이에요.\n',
+            style: MITITextStyle.xxxsm140.copyWith(color: MITIColor.gray700),
+          ),
+          // SizedBox(height: 12.h),
+          TextSpan(
+            text: '호스트 리뷰\n',
+            style: MITITextStyle.xxsmBold.copyWith(color: MITIColor.gray700),
+          ),
+          // SizedBox(height: 5),
+          TextSpan(
+            text: '호스트로 주최하여 참여한 경기에서\n게스트들에게 받은 평점의 평균이에요.',
+            style: MITITextStyle.xxxsm140.copyWith(color: MITIColor.gray700),
+          ),
+        ]),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        margin: EdgeInsets.only(left: 90.w, right: 50.w),
+        padding: EdgeInsets.all(8.0),
+        preferBelow: true,
+        verticalOffset: -90,
+        showDuration: const Duration(seconds: 2),
         child: Icon(
           Icons.help_outline,
           size: 24.r,
@@ -456,7 +455,6 @@ class _OverlayTooltipDemoState extends State<OverlayTooltipDemo> {
         ),
       ),
     );
-    ;
   }
 }
 
@@ -514,7 +512,7 @@ class _ProfileComponent extends ConsumerWidget {
             ),
           ),
           SvgPicture.asset(
-            AssetUtil.getAssetPath(type: AssetType.icon, name: 'user_thum'),
+            AssetUtil.getAssetPath(type: AssetType.icon, name: 'user_thum2'),
             width: 60.r,
             height: 60.r,
           )

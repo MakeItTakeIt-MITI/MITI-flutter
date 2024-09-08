@@ -278,11 +278,8 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
           Text(
             widget.label,
             style: widget.labelTextStyle ??
-                TextStyle(
-                  color: const Color(0xFF1C1C1C),
-                  fontWeight: FontWeight.w400,
-                  fontSize: 12.sp,
-                  letterSpacing: -0.25.sp,
+                MITITextStyle.sm.copyWith(
+                  color: MITIColor.gray300,
                 ),
           ),
         if (widget.label.isNotEmpty) SizedBox(height: 8.h),

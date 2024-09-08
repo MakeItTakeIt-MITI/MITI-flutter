@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miti/support/provider/widget/support_form_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../account/model/bank_model.dart';
+import '../../account/model/transfer_model.dart';
 import '../../account/param/account_param.dart';
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';

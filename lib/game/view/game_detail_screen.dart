@@ -713,29 +713,29 @@ class SummaryComponent extends StatelessWidget {
     );
   }
 
-  factory SummaryComponent.fromSettlementModel(
-      {required SettlementDetailModel model}) {
-    final game = model.game;
-    final startDate = game.startdate.replaceAll('-', '. ');
-    final endDate = game.startdate.replaceAll('-', '. ');
-
-    final time =
-        '${game.starttime.substring(0, 5)} ~ ${game.endtime.substring(0, 5)}';
-    final gameDate = startDate == endDate
-        ? '$startDate $time'
-        : '$startDate ${game.starttime.substring(0, 5)} ~ $endDate ${game.endtime.substring(0, 5)}';
-    final address = '${game.court.address} ${game.court.address_detail ?? ''}';
-    return SummaryComponent(
-      bankStatus: model.status,
-      title: game.title,
-      gameDate: gameDate,
-      address: address,
-      fee: NumberUtil.format(game.fee.toString()),
-      max_invitation: game.max_invitation,
-      num_of_confirmed_participations: game.num_of_confirmed_participations,
-      duration: '',
-    );
-  }
+  // factory SummaryComponent.fromSettlementModel(
+  //     {required SettlementDetailModel model}) {
+  //   final game = model.game;
+  //   final startDate = game.startdate.replaceAll('-', '. ');
+  //   final endDate = game.startdate.replaceAll('-', '. ');
+  //
+  //   final time =
+  //       '${game.starttime.substring(0, 5)} ~ ${game.endtime.substring(0, 5)}';
+  //   final gameDate = startDate == endDate
+  //       ? '$startDate $time'
+  //       : '$startDate ${game.starttime.substring(0, 5)} ~ $endDate ${game.endtime.substring(0, 5)}';
+  //   final address = '${game.court.address} ${game.court.address_detail ?? ''}';
+  //   return SummaryComponent(
+  //     bankStatus: model.status,
+  //     title: game.title,
+  //     gameDate: gameDate,
+  //     address: address,
+  //     fee: NumberUtil.format(game.fee.toString()),
+  //     max_invitation: game.max_invitation,
+  //     num_of_confirmed_participations: game.num_of_confirmed_participations,
+  //     duration: '',
+  //   );
+  // }
 
   Row gameInfoComponent({required String title, required String svgPath}) {
     return Row(children: [

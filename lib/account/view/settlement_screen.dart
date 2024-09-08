@@ -6,12 +6,14 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:miti/account/model/account_model.dart';
 import 'package:miti/account/provider/account_pagination_provider.dart';
 import 'package:miti/account/view/settlement_detail_screen.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/common/component/dispose_sliver_pagination_list_view.dart';
 import 'package:miti/common/model/entity_enum.dart';
+import 'package:miti/theme/color_theme.dart';
 
 import '../../common/component/custom_drop_down_button.dart';
 import '../../common/component/default_appbar.dart';
@@ -57,6 +59,7 @@ class _SettlementListScreenState extends ConsumerState<SettlementListScreen> {
     final value = ref.read(dropDownValueProvider);
     final status = getStatus(value!);
     log('status = ${status}');
+
     final provider = settlementPageProvider(PaginationStateParam(path: userId));
     ref.read(provider.notifier).paginate(
           path: userId,
@@ -128,7 +131,6 @@ class _SettlementListScreenState extends ConsumerState<SettlementListScreen> {
 
                         return SettlementCard.fromModel(
                           model: model,
-                          bottomIdx: widget.bottomIdx,
                         );
                       },
                       skeleton: Container(),
@@ -150,7 +152,7 @@ class _SettlementListScreenState extends ConsumerState<SettlementListScreen> {
       case '정산 완료':
         return SettlementType.completed;
       case '부분 정산':
-        return SettlementType.partial_completed;
+        return SettlementType.partiallyCompleted;
       default:
         return null;
     }
@@ -197,7 +199,6 @@ class SettlementCard extends StatelessWidget {
   final String address;
   final String fee;
   final SettlementType status;
-  final int bottomIdx;
 
   const SettlementCard({
     super.key,
@@ -207,97 +208,117 @@ class SettlementCard extends StatelessWidget {
     required this.id,
     required this.fee,
     required this.status,
-    required this.bottomIdx,
   });
 
   factory SettlementCard.fromModel({
     required SettlementModel model,
-    required int bottomIdx,
   }) {
     final game = model.game;
-    final datetime =
-        '${game.startdate.replaceAll('-', '.')} ${game.starttime.substring(0, 5)} ~ ${game.enddate.replaceAll('-', '.')} ${game.endtime.substring(0, 5)}';
+
+    final st = DateTime.parse(game.startdate);
+    final et = DateTime.parse(game.startdate);
+    final fe = DateFormat('yyyy년 MM월 dd일 (E)', 'ko');
+
+    final startDate = fe.format(st);
+    final endDate = fe.format(et);
+    final period = game.startdate == game.enddate
+        ? "$startDate ${game.starttime.substring(0, 5)}~${game.endtime.substring(0, 5)}"
+        : "$startDate ${game.starttime.substring(0, 5)} ~\n$endDate ${game.endtime.substring(0, 5)}";
     return SettlementCard(
       title: game.title,
-      datetime: datetime,
+      datetime: period,
       address: '${game.court.address} ${game.court.address_detail ?? ''}',
       id: model.id,
-      fee: NumberUtil.format(game.fee.toString()),
+      fee: game.fee == 0 ? '무료' : NumberUtil.format(game.fee.toString()),
       status: model.status,
-      bottomIdx: bottomIdx,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 14.w),
-      child: InkWell(
-        onTap: () {
-          Map<String, String> pathParameters = {'settlementId': id.toString()};
-          final Map<String, String> queryParameters = {
-            'bottomIdx': bottomIdx.toString()
-          };
-          context.pushNamed(
-            SettlementDetailScreen.routeName,
-            pathParameters: pathParameters,
-            queryParameters: queryParameters,
-          );
-        },
-        child: Container(
-          padding: EdgeInsets.all(12.r),
-          decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFFE8E8E8)),
-            borderRadius: BorderRadius.circular(8.r),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SettlementLabel(
-                bankType: status,
+    return InkWell(
+      onTap: () {
+        Map<String, String> pathParameters = {'settlementId': id.toString()};
+
+        context.pushNamed(
+          SettlementDetailScreen.routeName,
+          pathParameters: pathParameters,
+        );
+      },
+      child: Container(
+        padding:
+            EdgeInsets.only(left: 21.w, right: 21.w, top: 20.h, bottom: 24.h),
+        color: MITIColor.gray750,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: MITITextStyle.mdSemiBold150.copyWith(
+                color: MITIColor.gray100,
               ),
-              SizedBox(height: 7.h),
-              Text(
-                title,
-                style: MITITextStyle.gameTitleMainStyle.copyWith(
-                  color: const Color(0xff333333),
-                ),
-              ),
-              SizedBox(height: 7.h),
-              Text(
-                datetime,
-                style: MITITextStyle.gameTimeCardMStyle.copyWith(
-                  color: const Color(0xff999999),
-                ),
-              ),
-              SizedBox(height: 2.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    flex: 3,
-                    child: Text(
-                      address,
-                      style: MITITextStyle.gameTimeCardMStyle.copyWith(
-                        color: const Color(0xff999999),
-                      ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            SizedBox(height: 20.h),
+            settlementInfo(datetime),
+            SizedBox(height: 8.h),
+            settlementInfo(address),
+            SizedBox(height: 28.h),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                SettlementLabel(bankType: status),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '현재까지 정산된 금액',
+                      style:
+                          MITITextStyle.xxsm.copyWith(color: MITIColor.gray100),
                     ),
-                  ),
-                  Flexible(
-                    flex: 1,
-                    child: Text(
-                      '₩ $fee',
-                      style: MITITextStyle.feeStyle.copyWith(
-                        color: const Color(0xff4065f6),
-                      ),
+                    SizedBox(height: 8.h),
+                    Row(
+                      children: [
+                        Text(
+                          fee,
+                          style: MITITextStyle.xl.copyWith(
+                            color: MITIColor.gray100,
+                          ),
+                        ),
+                        SizedBox(width: 2.w),
+                        Text(
+                          '원',
+                          style: MITITextStyle.xlLight.copyWith(
+                            color: MITIColor.gray100,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                  ],
+                ),
+              ],
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  Row settlementInfo(String desc) {
+    return Row(
+      children: [
+        Text(
+          '-',
+          style: MITITextStyle.xxsmLight.copyWith(color: MITIColor.gray400),
+        ),
+        SizedBox(width: 8.w),
+        Text(
+          desc,
+          style: MITITextStyle.xxsmLight.copyWith(color: MITIColor.gray400),
+        ),
+      ],
     );
   }
 }
