@@ -16,7 +16,8 @@ import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../game/model/game_model.dart';
 import '../../game/view/review_form_screen.dart';
-import '../../user/view/user_review_detail_screen.dart';
+import '../../user/model/review_model.dart';
+import '../../user/view/review_detail_screen.dart';
 import '../../util/util.dart';
 
 class ReviewListScreen extends StatelessWidget {
@@ -93,7 +94,7 @@ class ReviewListScreen extends StatelessWidget {
 
                   return SliverList.separated(
                     itemBuilder: (_, idx) {
-                      return _ReviewCard.fromModel(
+                      return ReviewCard.fromHistoryModel(
                         model: model.reviews[idx],
                         onTap: () {
                           Map<String, String> queryParameters = {
@@ -129,36 +130,46 @@ class ReviewListScreen extends StatelessWidget {
   }
 }
 
-class _ReviewCard extends StatelessWidget {
+class ReviewCard extends StatelessWidget {
   final int id;
-  final UserInfoModel reviewee;
-  final UserInfoModel reviewer;
   final int rating;
+  final String nickname;
   final List<PlayerReviewTagType> tags;
   final String? comment;
   final VoidCallback onTap;
 
-  const _ReviewCard(
+  const ReviewCard(
       {super.key,
       required this.id,
-      required this.reviewee,
-      required this.reviewer,
       required this.rating,
       required this.tags,
       this.comment,
-      required this.onTap});
+      required this.onTap,
+      required this.nickname});
 
-  factory _ReviewCard.fromModel(
+  factory ReviewCard.fromHistoryModel(
       {required ReviewHistoryModel model, required VoidCallback onTap}) {
     final tags = model.tags.length > 2 ? model.tags.sublist(0, 2) : model.tags;
 
-    return _ReviewCard(
+    return ReviewCard(
       id: model.id,
-      reviewee: model.reviewee,
-      reviewer: model.reviewer,
       rating: model.rating,
       tags: tags,
       onTap: onTap,
+      nickname: model.reviewer.nickname,
+    );
+  }
+
+  factory ReviewCard.fromWrittenModel(
+      {required WrittenReviewModel model, required VoidCallback onTap}) {
+    final tags = model.tags.length > 2 ? model.tags.sublist(0, 2) : model.tags;
+
+    return ReviewCard(
+      id: model.id,
+      rating: model.rating,
+      tags: tags,
+      onTap: onTap,
+      nickname: model.reviewee,
     );
   }
 
@@ -186,7 +197,6 @@ class _ReviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log("comment = $comment");
     final reviewChips = tags.map(
       (t) => Padding(
         padding: EdgeInsets.only(right: 8.w),
@@ -210,7 +220,7 @@ class _ReviewCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        "${reviewer.nickname} 님",
+                        "$nickname 님",
                         style: MITITextStyle.smBold
                             .copyWith(color: MITIColor.gray100),
                       )

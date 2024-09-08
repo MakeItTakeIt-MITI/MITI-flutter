@@ -34,28 +34,58 @@ enum UserReviewType {
 }
 
 @Riverpod(keepAlive: false)
-class Review extends _$Review {
+class MyReview extends _$MyReview {
   @override
-  BaseModel build({required UserReviewType type, required int reviewId}) {
-    getReviews(type: type, reviewId: reviewId);
+  BaseModel build(
+      {required UserReviewType userReviewType,
+      required int reviewId,
+      required ReviewType reviewType}) {
+    getReview(
+      userReviewType: userReviewType,
+      reviewId: reviewId,
+      reviewType: reviewType,
+    );
     return LoadingModel();
   }
 
-  void getReviews({
-    required UserReviewType type,
+  void getReview({
+    required UserReviewType userReviewType,
     required int reviewId,
+    required ReviewType reviewType,
   }) async {
     state = LoadingModel();
     final repository = ref.watch(userRepositoryProvider);
+    final review =
+        reviewType == ReviewType.guest ? 'guest-reviews' : 'host-reviews';
     final id = ref.read(authProvider)!.id!;
-    switch (type) {
+    switch (userReviewType) {
       case UserReviewType.written:
-        state =
-            await repository.getWrittenReview(userId: id, reviewId: reviewId);
+        repository
+            .getWrittenReview(
+                userId: id, reviewId: reviewId, reviewType: review)
+            .then((value) {
+          logger.i(value);
+          state = value;
+        }).catchError((e) {
+          final error = ErrorModel.respToError(e);
+          logger.e(
+              'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+          state = error;
+        });
         break;
       default:
-        state =
-            await repository.getReceiveReview(userId: id, reviewId: reviewId);
+        repository
+            .getReceiveReview(
+                userId: id, reviewId: reviewId, reviewType: review)
+            .then((value) {
+          logger.i(value);
+          state = value;
+        }).catchError((e) {
+          final error = ErrorModel.respToError(e);
+          logger.e(
+              'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+          state = error;
+        });
         break;
     }
   }

@@ -80,6 +80,10 @@ enum ReviewType {
 
   final String displayName;
   final String value;
+
+  static ReviewType stringToEnum({required String value}) {
+    return ReviewType.values.firstWhere((e) => e.value == value);
+  }
 }
 
 @JsonEnum(valueField: 'value')

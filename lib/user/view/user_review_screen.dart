@@ -156,17 +156,18 @@ class _UserWrittenReviewScreenState
                             (BuildContext context, int index, Base pModel) {
                           if (widget.type == UserReviewType.written) {
                             pModel as WrittenReviewModel;
-                            return ReviewCard.fromWrittenModel(
-                              model: pModel,
-                              bottomIdx: widget.bottomIdx,
-                            );
+                            // return ReviewCard.fromWrittenModel(
+                            //   model: pModel,
+                            //   bottomIdx: widget.bottomIdx,
+                            // );
                           } else {
                             pModel as ReceiveReviewModel;
-                            return ReviewCard.fromReceiveModel(
-                              model: pModel,
-                              bottomIdx: widget.bottomIdx,
-                            );
+                            // return ReviewCard.fromReceiveModel(
+                            //   model: pModel,
+                            //   bottomIdx: widget.bottomIdx,
+                            // );
                           }
+                          return Container();
                         },
                         skeleton: Container(),
                         param: UserReviewParam(

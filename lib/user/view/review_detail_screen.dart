@@ -114,13 +114,14 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
 
                   return Column(
                     children: [
-                      _UserInfoComponent(
+                      UserInfoComponent(
                         nickname: model.reviewer,
+                        title: '리뷰 작성자',
                       ),
                       getDivider(),
-                      _GameInfoComponent.fromModel(model: model.game),
+                      GameInfoComponent.fromModel(model: model.game),
                       getDivider(),
-                      _ReviewInfoComponent.fromModel(model: model),
+                      ReviewInfoComponent.fromModel(model: model),
                     ],
                   );
                 },
@@ -133,10 +134,12 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
   }
 }
 
-class _UserInfoComponent extends StatelessWidget {
+class UserInfoComponent extends StatelessWidget {
+  final String title;
   final String nickname;
 
-  const _UserInfoComponent({super.key, required this.nickname});
+  const UserInfoComponent(
+      {super.key, required this.nickname, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +149,7 @@ class _UserInfoComponent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            '리뷰 작성자',
+            title,
             style: MITITextStyle.mdBold.copyWith(color: MITIColor.gray100),
           ),
           SizedBox(height: 20.h),
@@ -159,7 +162,7 @@ class _UserInfoComponent extends StatelessWidget {
               ),
               SizedBox(width: 12.w),
               Text(
-                nickname,
+                '$nickname 님',
                 style: MITITextStyle.smBold.copyWith(color: MITIColor.gray100),
               )
             ],
@@ -170,20 +173,20 @@ class _UserInfoComponent extends StatelessWidget {
   }
 }
 
-class _GameInfoComponent extends StatelessWidget {
+class GameInfoComponent extends StatelessWidget {
   final String title;
   final String period;
   final String address;
   final String fee;
 
-  const _GameInfoComponent(
+  const GameInfoComponent(
       {super.key,
       required this.title,
       required this.period,
       required this.address,
       required this.fee});
 
-  factory _GameInfoComponent.fromModel({required ReviewGameModel model}) {
+  factory GameInfoComponent.fromModel({required ReviewGameModel model}) {
     final st = DateTime.parse(model.startdate);
     final et = DateTime.parse(model.startdate);
     final fe = DateFormat('yyyy년 MM월 dd일 (E)', 'ko');
@@ -194,7 +197,7 @@ class _GameInfoComponent extends StatelessWidget {
         ? "$startDate ${model.starttime.substring(0, 5)}~${model.endtime.substring(0, 5)}"
         : "$startDate ${model.starttime.substring(0, 5)} ~\n$endDate ${model.endtime.substring(0, 5)}";
 
-    return _GameInfoComponent(
+    return GameInfoComponent(
       title: model.title,
       period: period,
       address: model.court.address + (" ${model.court.address_detail}" ?? ''),
@@ -255,19 +258,19 @@ class _GameInfoComponent extends StatelessWidget {
   }
 }
 
-class _ReviewInfoComponent extends StatelessWidget {
+class ReviewInfoComponent extends StatelessWidget {
   final int rating;
   final List<PlayerReviewTagType> tags;
   final String? comment;
 
-  const _ReviewInfoComponent(
+  const ReviewInfoComponent(
       {super.key,
       required this.rating,
       required this.tags,
       required this.comment});
 
-  factory _ReviewInfoComponent.fromModel({required ReviewDetailModel model}) {
-    return _ReviewInfoComponent(
+  factory ReviewInfoComponent.fromModel({required ReviewDetailModel model}) {
+    return ReviewInfoComponent(
       rating: model.rating,
       tags: model.tags,
       comment: model.comment,

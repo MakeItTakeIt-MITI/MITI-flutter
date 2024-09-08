@@ -26,7 +26,7 @@ import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/view/user_delete_screen.dart';
 import 'package:miti/user/view/user_profile_form_screen.dart';
-import 'package:miti/user/view/user_review_detail_screen.dart';
+import 'package:miti/user/view/review_detail_screen.dart';
 
 import '../../account/view/bank_transfer_form_screen.dart';
 import '../../account/view/bank_transfer_screen.dart';
@@ -47,7 +47,10 @@ import '../../court/view/court_map_screen.dart';
 import '../../game/view/game_screen.dart';
 import '../../kakaopay/view/approval_screen.dart';
 import '../../kakaopay/view/payment_screen.dart';
+import '../../review/view/my_review_detail_screen.dart';
+import '../../review/view/receive_review_list_screen.dart';
 import '../../review/view/review_list_screen.dart';
+import '../../review/view/written_review_list_screen.dart';
 import '../../user/view/profile_screen.dart';
 import '../../permission_screen.dart';
 import '../../splash_screen.dart';
@@ -589,11 +592,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 participationId = int.parse(state
                                     .uri.queryParameters['participationId']!);
                               }
-                              final revieweeNickname = state.uri.queryParameters['revieweeNickname']!;
+                              final revieweeNickname = state
+                                  .uri.queryParameters['revieweeNickname']!;
                               return ReviewDetailScreen(
                                 reviewId: reviewId,
                                 participationId: participationId,
-                                gameId: gameId, revieweeNickname: revieweeNickname,
+                                gameId: gameId,
+                                revieweeNickname: revieweeNickname,
                               );
                             },
                           ),
@@ -870,9 +875,40 @@ final routerProvider = Provider<GoRouter>((ref) {
                         bottomIdx: bottomIdx,
                       );
                     },
-                    // pageBuilder: (context, state) {
-                    //   return NoTransitionPage(child: FAQScreen());
-                    // },
+                  ),
+                  GoRoute(
+                    path: 'receiveReviewList',
+                    parentNavigatorKey: rootNavKey,
+                    name: ReceiveReviewListScreen.routeName,
+                    builder: (context, state) {
+                      return const ReceiveReviewListScreen();
+                    },
+                  ),
+                  GoRoute(
+                    path: 'writtenReviewList',
+                    parentNavigatorKey: rootNavKey,
+                    name: WrittenReviewListScreen.routeName,
+                    builder: (context, state) {
+                      return const WrittenReviewListScreen();
+                    },
+                  ),
+                  GoRoute(
+                    path: 'myReviewDetail/:reviewId',
+                    parentNavigatorKey: rootNavKey,
+                    name: MyReviewDetailScreen.routeName,
+                    builder: (context, state) {
+                      final int reviewId =
+                          int.parse(state.pathParameters['reviewId']!);
+                      final userReviewType = UserReviewType.stringToEnum(
+                          value: state.uri.queryParameters['userReviewType']!);
+                      final reviewType = ReviewType.stringToEnum(
+                          value: state.uri.queryParameters['reviewType']!);
+                      return MyReviewDetailScreen(
+                        userReviewType: userReviewType,
+                        reviewId: reviewId,
+                        reviewType: reviewType,
+                      );
+                    },
                   ),
                 ],
               ),

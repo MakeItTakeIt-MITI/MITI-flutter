@@ -49,36 +49,21 @@ abstract class UserRepository {
   });
 
   @Headers({'token': 'true'})
-  @GET('/users/{userId}/my-reviews')
-  Future<ResponseModel<PaginationModel<WrittenReviewModel>>> getWrittenReviews({
+  @GET('/users/{userId}/written-reviews/{reviewType}/{reviewId}')
+  Future<ResponseModel<MyWrittenReviewDetailModel>> getWrittenReview({
     @Path() required int userId,
-    @Queries() required PaginationParam paginationParam,
-    @Query('review_type') ReviewType? reviewType,
-  });
-
-  @Headers({'token': 'true'})
-  @GET('/users/{userId}/my-reviews/{reviewId}')
-  Future<ResponseModel<WrittenReviewDetailModel>> getWrittenReview({
-    @Path() required int userId,
+    @Path() required String reviewType,
     @Path() required int reviewId,
   });
 
   @Headers({'token': 'true'})
-  @GET('/users/{userId}/reviews')
-  Future<ResponseModel<PaginationModel<ReceiveReviewModel>>> getReceiveReviews({
+  @GET('/users/{userId}/received-reviews/{reviewType}/{reviewId}')
+  Future<ResponseModel<MyReceiveReviewDetailModel>> getReceiveReview({
     @Path() required int userId,
-    @Queries() required PaginationParam paginationParam,
-    @Query('review_type') ReviewType? reviewType,
-  });
-
-  @Headers({'token': 'true'})
-  @GET('/users/{userId}/reviews/{reviewId}')
-  Future<ResponseModel<ReceiveReviewDetailModel>> getReceiveReview({
-    @Path() required int userId,
+    @Path() required String reviewType,
     @Path() required int reviewId,
   });
 }
-
 
 final userParticipationPRepositoryProvider =
     Provider<UserParticipationPRepository>((ref) {
@@ -115,7 +100,7 @@ abstract class UserWrittenReviewsPRepository
 
   @override
   @Headers({'token': 'true'})
-  @GET('/users/{userId}/my-reviews')
+  @GET('/users/{userId}/written-reviews')
   Future<ResponseModel<PaginationModel<WrittenReviewModel>>> paginate({
     @Queries() required PaginationParam paginationParams,
     @Queries() UserReviewParam? param,
@@ -137,15 +122,13 @@ abstract class UserReceiveReviewsPRepository
 
   @override
   @Headers({'token': 'true'})
-  @GET('/users/{userId}/reviews')
+  @GET('/users/{userId}/received-reviews')
   Future<ResponseModel<PaginationModel<ReceiveReviewModel>>> paginate({
     @Queries() required PaginationParam paginationParams,
     @Queries() UserReviewParam? param,
     @Path('userId') int? path,
   });
 }
-
-
 
 final userHostingPRepositoryProvider = Provider<UserHostingPRepository>((ref) {
   final dio = ref.watch(dioProvider);

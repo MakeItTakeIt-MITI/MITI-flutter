@@ -19,7 +19,7 @@ import 'package:miti/util/util.dart';
 
 import '../../common/component/default_appbar.dart';
 import '../../common/model/entity_enum.dart';
-import '../../user/view/user_review_detail_screen.dart';
+import '../../user/view/review_detail_screen.dart';
 import '../model/game_model.dart';
 import 'package:collection/collection.dart';
 

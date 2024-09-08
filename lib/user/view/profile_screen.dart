@@ -18,6 +18,8 @@ import '../../common/component/default_appbar.dart';
 import '../../common/model/entity_enum.dart';
 import '../../game/model/game_model.dart';
 import '../../game/view/game_create_screen.dart';
+import '../../review/view/receive_review_list_screen.dart';
+import '../../review/view/written_review_list_screen.dart';
 import '../../support/view/faq_screen.dart';
 import '../../support/view/support_screen.dart';
 import '../../theme/color_theme.dart';
@@ -138,11 +140,11 @@ class _MenuComponent extends StatelessWidget {
     final Map<String, List<_MenuItem>> gameMenu = {
       '경기 관련 정보': [
         _MenuItem(
-          onTap: () {},
+          onTap: () => context.pushNamed(WrittenReviewListScreen.routeName),
           title: '내가 작성한 리뷰',
         ),
         _MenuItem(
-          onTap: () {},
+          onTap: () => context.pushNamed(ReceiveReviewListScreen.routeName),
           title: '나를 평가한 리뷰',
         ),
         _MenuItem(
