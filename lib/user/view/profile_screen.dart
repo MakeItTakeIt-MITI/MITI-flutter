@@ -10,7 +10,6 @@ import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/court/view/court_search_screen.dart';
 import 'package:miti/theme/text_theme.dart';
-import 'package:showcaseview/showcaseview.dart';
 
 import '../../account/view/bank_transfer_screen.dart';
 import '../../account/view/settlement_management_screen.dart';
