@@ -129,7 +129,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
             }
             result as ResponseModel<GameDetailModel>;
             final model = result.data!;
-            log('model is_host ${model.is_host} model.is_participated = ${model.is_participated}');
+            // log('model is_host ${model.is_host} model.is_participated = ${model.is_participated}');
             participationId = model.participation?.id;
             return CustomScrollView(
               slivers: [
@@ -143,7 +143,23 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
                             getDivider(),
                             ParticipationComponent.fromModel(model: model),
                             getDivider(),
-                            // UserShortInfoComponent.fromModel(model: model.host),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                SizedBox(height: 20.h),
+                                Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 21.w),
+                                  child: Text(
+                                    '호스트 소개',
+                                    style: MITITextStyle.mdBold
+                                        .copyWith(color: MITIColor.gray100),
+                                  ),
+                                ),
+                                UserShortInfoComponent.fromHostModel(
+                                    model: model.host),
+                              ],
+                            ),
                             getDivider(),
                             InfoComponent(
                               info: model.info,
@@ -270,17 +286,14 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
         style: buttonTextStyle,
       ),
     );
-    final cancelDisableButton = TextButton(
-      onPressed: () {},
-      style: TextButton.styleFrom(
-        fixedSize: Size(double.infinity, 48.h),
-        backgroundColor: const Color(0xFFE8E8E8),
-      ),
-      child: Text(
-        '참여 취소하기',
-        style: buttonTextStyle.copyWith(
-          color: const Color(0xff969696),
-          height: 1,
+    final cancelDisableButton = Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 17.h),
+        child: Text(
+          '경기 시간 2시간 이내에는 참여 취소가 불가능합니다.',
+          style: MITITextStyle.sm.copyWith(
+            color: MITIColor.gray50,
+          ),
         ),
       ),
     );
@@ -437,6 +450,14 @@ class UserShortInfoComponent extends StatelessWidget {
     );
   }
 
+  factory UserShortInfoComponent.fromHostModel(
+      {required UserReviewModel model}) {
+    return UserShortInfoComponent(
+      nickname: model.nickname,
+      rating: model.rating.host_rating,
+    );
+  }
+
   List<Widget> getStar(double rating) {
     List<Widget> result = [];
     for (int i = 0; i < 5; i++) {
@@ -451,7 +472,6 @@ class UserShortInfoComponent extends StatelessWidget {
               ? 'fill_star2'
               : 'unfill_star2';
       result.add(Padding(
-
         padding: EdgeInsets.only(right: 2.w),
         child: SvgPicture.asset(
           AssetUtil.getAssetPath(type: AssetType.icon, name: star),
@@ -821,9 +841,11 @@ class SummaryComponent extends StatelessWidget {
                                           context, GameApiType.free, ref);
                                 } else {
                                   context.pop();
-                                  FlashUtil.showFlash(
-                                      context, "무료 경기로 전환되었습니다.");
-                                  // todo
+                                  Future.delayed(
+                                      const Duration(milliseconds: 100), () {
+                                    FlashUtil.showFlash(
+                                        context, '무료 경기로 전환되었습니다.');
+                                  });
                                 }
                               }
                             },

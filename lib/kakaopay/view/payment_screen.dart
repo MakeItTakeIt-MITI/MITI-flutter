@@ -13,6 +13,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../common/model/default_model.dart';
+import '../../game/view/game_create_complete_screen.dart';
 import '../model/pay_model.dart';
 import 'approval_screen.dart';
 
@@ -60,7 +61,13 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                   PayError.fromModel(model: result)
                       .responseError(context, PayApiType.approval, ref);
                 } else if (result is ResponseModel<PayApprovalModel>) {
-                  context.goNamed(KakaoPayApprovalScreen.routeName);
+                  Map<String, String> pathParameters = {'gameId': widget.gameId.toString()};
+                  const GameCompleteType extra = GameCompleteType.payment;
+                  context.pushNamed(
+                    GameCompleteScreen.routeName,
+                    pathParameters: pathParameters,
+                    extra: extra,
+                  );
                 }
               }
 

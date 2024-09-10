@@ -1,23 +1,54 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miti/dio/provider/dio_provider.dart';
+import 'package:miti/notification/model/notice_model.dart';
 import 'package:retrofit/http.dart';
 import 'package:dio/dio.dart' hide Headers;
 
+import '../../common/model/default_model.dart';
+import '../../common/param/pagination_param.dart';
+import '../../common/repository/base_pagination_repository.dart';
 import '../../dio/dio_interceptor.dart';
+import '../../user/param/user_profile_param.dart';
+import '../model/push_model.dart';
 import '../param/notification_param.dart';
 
 part 'notification_repository.g.dart';
 
-final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {
+final noticePRepositoryProvider = Provider<NoticePRepository>((ref) {
   final dio = ref.watch(dioProvider);
-  final repository = NotificationRepository(dio);
-  return repository;
+  return NoticePRepository(dio);
 });
 
 @RestApi(baseUrl: serverURL)
-abstract class NotificationRepository {
-  factory NotificationRepository(Dio dio) = _NotificationRepository;
+abstract class NoticePRepository
+    extends IBasePaginationRepository<NoticeModel, NotificationParam> {
+  factory NoticePRepository(Dio dio) = _NoticePRepository;
 
-  @POST('/notifications/send-test-notification')
-  Future<void> testNotification({@Body() required NotificationParam param});
+  @override
+  @GET('/notifications')
+  Future<ResponseModel<PaginationModel<NoticeModel>>> paginate({
+    @Queries() required PaginationParam paginationParams,
+    @Queries() NotificationParam? param,
+    @Path('userId') int? path,
+  });
+}
+
+final pushPRepositoryProvider = Provider<PushPRepository>((ref) {
+  final dio = ref.watch(dioProvider);
+  return PushPRepository(dio);
+});
+
+@RestApi(baseUrl: serverURL)
+abstract class PushPRepository
+    extends IBasePaginationRepository<PushModel, NotificationParam> {
+  factory PushPRepository(Dio dio) = _PushPRepository;
+
+  @override
+  @Headers({'token': 'true'})
+  @GET('/users/{userId}/push-notifications')
+  Future<ResponseModel<PaginationModel<PushModel>>> paginate({
+    @Queries() required PaginationParam paginationParams,
+    @Queries() NotificationParam? param,
+    @Path('userId') int? path,
+  });
 }

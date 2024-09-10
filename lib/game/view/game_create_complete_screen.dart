@@ -174,7 +174,7 @@ class GameCompleteScreen extends StatelessWidget {
                   child: const Text('경기 상세 정보 보기'),
                 ),
               ),
-              SizedBox(height: 39.h),
+              SizedBox(height: 20.h),
             ],
           ),
         ),

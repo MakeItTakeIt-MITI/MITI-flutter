@@ -16,6 +16,7 @@ import 'package:miti/account/provider/widget/transfer_form_provider.dart';
 import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
 import 'package:miti/common/model/default_model.dart';
+import 'package:miti/common/provider/widget/form_provider.dart';
 import 'package:miti/court/component/court_list_component.dart';
 import 'package:miti/game/view/game_refund_screen.dart';
 import 'package:miti/theme/color_theme.dart';
@@ -170,7 +171,7 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
             label: '예금주',
             textStyle: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
             focusNode: widget.focusNodes[0],
-            onTap: (){
+            onTap: () {
               FocusScope.of(context).requestFocus(widget.focusNodes[0]);
             },
             onNext: () {
@@ -204,16 +205,13 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
                       ),
                       backgroundColor: MITIColor.gray800,
                       builder: (context) {
-                        log('52.h = ${52.h}');
-                        log('52.w = ${52.w}');
-                        log('52.r = ${52.r}');
-
                         final bankCards = BankType.values
                             .map((b) => GestureDetector(
                                   onTap: () {
+                                    FocusScope.of(context).unfocus();
                                     ref
                                         .read(transferFormProvider.notifier)
-                                        .update(account_bank: b.name);
+                                        .update(account_bank: b.displayName);
                                     context.pop();
                                   },
                                   child: BankCard(
@@ -306,7 +304,7 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
             key: widget.globalKeys[1],
             hintText: '이체할 계좌번호를 입력해 주세요.',
             hintTextStyle: MITITextStyle.sm.copyWith(color: MITIColor.gray500),
-            onTap: (){
+            onTap: () {
               FocusScope.of(context).requestFocus(widget.focusNodes[1]);
             },
             label: '계좌번호',
@@ -354,8 +352,7 @@ class _TransferAmountForm extends ConsumerWidget {
 
     final model = (result as ResponseModel<AccountDetailModel>).data!;
 
-    final interactionDesc =
-        ref.watch(formDescProvider(InputFormType.passwordCode));
+    final interaction = ref.watch(formInfoProvider(InputFormType.amount));
     final amount =
         NumberUtil.format(model.requestableTransferAmount.toString());
     return Container(
@@ -389,7 +386,7 @@ class _TransferAmountForm extends ConsumerWidget {
             hintText: '0',
             hintTextStyle: MITITextStyle.sm.copyWith(color: MITIColor.gray500),
             focusNode: focusNode,
-            onTap: (){
+            onTap: () {
               FocusScope.of(context).requestFocus(focusNode);
             },
             textStyle: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
@@ -408,21 +405,24 @@ class _TransferAmountForm extends ConsumerWidget {
               ref.read(transferFormProvider.notifier).update(amount: amount);
               if (amount > model.requestableTransferAmount) {
                 ref
-                    .read(formDescProvider(InputFormType.passwordCode).notifier)
-                    .update((state) => InteractionDesc(
-                        isSuccess: false, desc: '이체 가능한 금액을 초과하였습니다.'));
+                    .read(formInfoProvider(InputFormType.amount).notifier)
+                    .update(
+                        interactionDesc: InteractionDesc(
+                            isSuccess: false, desc: '이체 가능한 금액을 초과하였습니다.'),
+                        borderColor: MITIColor.error);
               } else {
                 ref
-                    .read(formDescProvider(InputFormType.passwordCode).notifier)
-                    .update((state) => null);
+                    .read(formInfoProvider(InputFormType.amount).notifier)
+
+                    .reset();
               }
             },
-            // borderColor: MITIColor.error,
+            borderColor: interaction.borderColor,
             suffixIcon: Text(
               '원',
               style: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
             ),
-            interactionDesc: interactionDesc,
+            interactionDesc: interaction.interactionDesc,
           ),
         ],
       ),

@@ -100,7 +100,7 @@ class InfoBody extends ConsumerWidget {
                 //     0, 'plain title', 'plain body', notificationDetails,
                 //     payload: 'item x');
 
-                ref.read(testNotificationProvider.future);
+                // ref.read(testNotificationProvider.future);
               },
               child: Text('노티'),
             ),

@@ -95,6 +95,7 @@ class MyReceiveReviewDetailModel extends MyReviewDetailBaseModel {
 @JsonSerializable()
 class ReceiveReviewModel extends ReviewBaseModel {
   final String reviewer;
+  final GameReviewBaseModel game;
 
   const ReceiveReviewModel({
     required super.id,
@@ -103,9 +104,32 @@ class ReceiveReviewModel extends ReviewBaseModel {
     required super.comment,
     required super.review_type,
     required super.tags,
+    required this.game,
   });
 
   factory ReceiveReviewModel.fromJson(Map<String, dynamic> json) =>
       _$ReceiveReviewModelFromJson(json);
 }
 
+@JsonSerializable()
+class GameReviewBaseModel extends IModelWithId {
+  final GameStatus game_status;
+  final String title;
+  final String startdate;
+  final String starttime;
+  final String enddate;
+  final String endtime;
+
+  GameReviewBaseModel({
+    required super.id,
+    required this.title,
+    required this.game_status,
+    required this.startdate,
+    required this.starttime,
+    required this.enddate,
+    required this.endtime,
+  });
+
+  factory GameReviewBaseModel.fromJson(Map<String, dynamic> json) =>
+      _$GameReviewBaseModelFromJson(json);
+}

@@ -43,6 +43,8 @@ class UserNicknameForm extends _$UserNicknameForm {
 
 @riverpod
 class UserPasswordForm extends _$UserPasswordForm {
+  bool valid = false;
+
   @override
   UserPasswordParam build() {
     return UserPasswordParam(
@@ -53,19 +55,26 @@ class UserPasswordForm extends _$UserPasswordForm {
   }
 
   void update({
-    String? password,
     String? new_password,
+    String? new_password_check,
     String? password_update_token,
   }) {
     state = state.copyWith(
-      new_password_check: password,
-      new_password: new_password,
+      new_password_check: new_password,
+      new_password: new_password_check,
       password_update_token: password_update_token,
     );
+    valid = validForm();
+  }
+
+  bool getValid(){
+    return valid;
   }
 
   bool validForm() {
-    if (state.new_password_check != null && state.new_password != null) {
+    if (state.new_password_check != null &&
+        state.new_password != null &&
+        state.password_update_token != null) {
       return ValidRegExp.userPassword(state.new_password_check!) &&
           ValidRegExp.userPassword(state.new_password!) &&
           state.new_password! == state.new_password_check!;

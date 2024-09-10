@@ -41,6 +41,8 @@ abstract class UserRepository {
     @Body() required UserNicknameParam param,
   });
 
+
+
   // @Headers({'token': 'true'})
   @PATCH('/users/{userId}/update-password')
   Future<ResponseModel<UserNicknameModel>> updatePassword({

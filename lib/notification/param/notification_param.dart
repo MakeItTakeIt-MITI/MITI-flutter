@@ -5,15 +5,12 @@ import '../../common/param/pagination_param.dart';
 part 'notification_param.g.dart';
 @JsonSerializable()
 class NotificationParam extends DefaultParam {
-  @JsonKey(name: 'fcm_token')
-  final String fcmToken;
 
-  NotificationParam({
-    required this.fcmToken,
-  });
+
+  NotificationParam();
 
   @override
-  List<Object?> get props => [fcmToken];
+  List<Object?> get props => [];
 
   Map<String, dynamic> toJson() => _$NotificationParamToJson(this);
 }

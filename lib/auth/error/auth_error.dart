@@ -679,50 +679,16 @@ class AuthError extends ErrorBase {
 
   /// 비밀번호 재설정용 토큰 발급 API
   void _tokenForPassword(BuildContext context, WidgetRef ref) {
-    if (this.status_code == BadRequest && this.error_code == 420) {
-      /// 요청 유효시간 초과
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '토큰 발급 실패',
-            content: '요청 유효 시간이 지났습니다.\n다시 시도해 주세요.',
+    if ((this.status_code == BadRequest && this.error_code == 101) ||
+        (this.status_code == UnAuthorized && this.error_code == 140)) {
+      ref.read(formInfoProvider(InputFormType.updateToken).notifier).update(
+            borderColor: MITIColor.error,
+            interactionDesc: InteractionDesc(
+              isSuccess: false,
+              desc: "비밀번호가 일치하지 않습니다.",
+            ),
           );
-        },
-      );
-    } else if (this.status_code == BadRequest && this.error_code == 560) {
-      /// 잘못된 인증 요청
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '토큰 발급 실패',
-            content: '잘못된 요청입니다.',
-          );
-        },
-      );
-    } else if (this.status_code == BadRequest && this.error_code == 561) {
-      /// 인증 미완료 요청
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '토큰 발급 실패',
-            content: '인증되지 않은 사용자입니다.',
-          );
-        },
-      );
-    } else if (this.status_code == NotFound && this.error_code == 460) {
-      /// SMS 인증 조회 실패
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '토큰 발급 실패',
-            content: '다시 시도해주세요.',
-          );
-        },
-      );
+    } else if (this.status_code == Forbidden && this.error_code == 440) {
     } else {
       /// 서버 오류
       showDialog(

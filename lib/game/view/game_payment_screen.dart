@@ -179,11 +179,6 @@ class GamePaymentScreen extends StatelessWidget {
               pathParameters: pathParameters,
               extra: extra,
             );
-            // final pathParameters = {'gameId': gameId.toString()};
-            // context.goNamed(
-            //   GameDetailScreen.routeName,
-            //   pathParameters: pathParameters,
-            // );
             break;
         }
       }

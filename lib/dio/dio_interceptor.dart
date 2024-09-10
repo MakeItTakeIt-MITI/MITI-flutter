@@ -71,8 +71,8 @@ class CustomDioInterceptor extends Interceptor {
       'auth/login/apple',
       '/auth/login/email',
       'auth/verify-code',
+      '/auth/password-authentication'
     ];
-
     log('err.message ${err.message} , err.error = ${err.error}, err.type = ${err.type}');
     final noneAUth = noneAuthUrl.contains(err.requestOptions.uri.path);
 

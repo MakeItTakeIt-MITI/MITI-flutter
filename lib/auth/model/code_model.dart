@@ -2,7 +2,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 import '../../common/model/entity_enum.dart';
 
-
 part 'code_model.g.dart';
 
 // @JsonSerializable()
@@ -49,19 +48,46 @@ class ResponseCodeModel {
       _$ResponseCodeModelFromJson(json);
 }
 
-
 @JsonSerializable()
-class SendCodeModel {
+class UpdateTokenBaseModel {
   final String phone;
   final PhoneAuthType purpose;
+
+  UpdateTokenBaseModel({
+    required this.phone,
+    required this.purpose,
+  });
+
+  factory UpdateTokenBaseModel.fromJson(Map<String, dynamic> json) =>
+      _$UpdateTokenBaseModelFromJson(json);
+}
+
+@JsonSerializable()
+class SendCodeModel extends UpdateTokenBaseModel {
   final String authentication_token;
 
   SendCodeModel({
-    required this.phone,
-    required this.purpose,
+    required super.phone,
+    required super.purpose,
     required this.authentication_token,
   });
 
   factory SendCodeModel.fromJson(Map<String, dynamic> json) =>
       _$SendCodeModelFromJson(json);
+}
+
+@JsonSerializable()
+class UpdateTokenModel extends UpdateTokenBaseModel {
+  final int id;
+  final String password_update_token;
+
+  UpdateTokenModel({
+    required this.id,
+    required super.phone,
+    required super.purpose,
+    required this.password_update_token,
+  });
+
+  factory UpdateTokenModel.fromJson(Map<String, dynamic> json) =>
+      _$UpdateTokenModelFromJson(json);
 }

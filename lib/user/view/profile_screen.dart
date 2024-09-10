@@ -10,6 +10,7 @@ import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/court/view/court_search_screen.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:miti/user/view/user_profile_update_screen.dart';
 
 import '../../account/view/bank_transfer_screen.dart';
 import '../../account/view/settlement_management_screen.dart';
@@ -164,7 +165,7 @@ class _MenuComponent extends StatelessWidget {
           title: '프로필 수정',
         ),
         _MenuItem(
-          onTap: () {},
+          onTap: () => context.pushNamed(UserProfileUpdateScreen.routeName),
           title: '내 정보 수정',
         ),
         _MenuItem(
@@ -376,12 +377,14 @@ class _ReviewCard extends StatelessWidget {
     final title = type == ReviewType.guest ? '게스트' : '호스트';
     final add = rating.num_of_reviews != 0 ? '+' : '';
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 20.h),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12.r),
         color: MITIColor.gray750,
       ),
+      height: 82.h,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
             '$title 리뷰 (${rating.num_of_reviews}$add)',
@@ -390,18 +393,26 @@ class _ReviewCard extends StatelessWidget {
             ),
           ),
           SizedBox(height: 12.h),
-          Row(
-            children: [
-              ...getStar(rating.average_rating ?? 0),
-              SizedBox(width: 8.w),
-              Text(
-                "${rating.average_rating ?? 0}",
-                style: MITITextStyle.lg.copyWith(
-                  color: MITIColor.gray100,
-                ),
-              )
-            ],
-          )
+          if (rating.num_of_reviews != 0)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ...getStar(rating.average_rating ?? 0),
+                SizedBox(width: 8.w),
+                Text(
+                  "${rating.average_rating ?? 0}",
+                  style: MITITextStyle.lg.copyWith(
+                    color: MITIColor.gray100,
+                  ),
+                )
+              ],
+            )
+          else
+            Text(
+              '아직 작성된 리뷰가 없어요',
+              style:
+                  MITITextStyle.xxsmLight150.copyWith(color: MITIColor.gray400),
+            )
         ],
       ),
     );

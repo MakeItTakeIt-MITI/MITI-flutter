@@ -109,7 +109,7 @@ class SettlementCard extends StatelessWidget {
   final String title;
   final String datetime;
   final String address;
-  final String fee;
+  final String expected_settlement_amount;
   final SettlementType status;
 
   const SettlementCard({
@@ -118,7 +118,7 @@ class SettlementCard extends StatelessWidget {
     required this.datetime,
     required this.address,
     required this.id,
-    required this.fee,
+    required this.expected_settlement_amount,
     required this.status,
   });
 
@@ -141,7 +141,9 @@ class SettlementCard extends StatelessWidget {
       datetime: period,
       address: '${game.court.address} ${game.court.address_detail ?? ''}',
       id: model.id,
-      fee: game.fee == 0 ? '무료' : NumberUtil.format(game.fee.toString()),
+      expected_settlement_amount: model.expectedSettlementAmount == 0
+          ? '무료'
+          : NumberUtil.format(model.expectedSettlementAmount.toString()),
       status: model.status,
     );
   }
@@ -183,7 +185,7 @@ class SettlementCard extends StatelessWidget {
                   ),
                   SizedBox(width: 8.w),
                   Text(
-                    '$fee 원',
+                    '$expected_settlement_amount 원',
                     style: MITITextStyle.xl.copyWith(
                       color: MITIColor.gray100,
                     ),

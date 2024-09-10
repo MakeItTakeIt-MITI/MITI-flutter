@@ -101,9 +101,8 @@ class ReviewListScreen extends StatelessWidget {
                             'revieweeNickname': model.reviewee_nickname
                           };
                           if (participationId != null) {
-                            queryParameters = {
-                              'participationId': participationId.toString()
-                            };
+                            queryParameters['participationId'] =
+                                participationId.toString();
                           }
 
                           Map<String, String> pathParameters = {

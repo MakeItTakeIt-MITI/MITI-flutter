@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart' hide Headers;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miti/auth/param/phone_verify_param.dart';
+import 'package:miti/auth/param/update_token_param.dart';
 import 'package:retrofit/http.dart';
 
 import '../../common/model/default_model.dart';
@@ -98,4 +99,9 @@ abstract class AuthRepository {
   @POST('/auth/email-duplication-check')
   Future<ResponseModel<SignUpCheckModel>> duplicateCheckEmail(
       {@Body() required EmailCheckParam param});
+
+  @Headers({'token': 'true'})
+  @POST('/auth/password-authentication')
+  Future<ResponseModel<UpdateTokenModel>> getUpdateToken(
+      {@Body() required UpdateTokenParam param});
 }

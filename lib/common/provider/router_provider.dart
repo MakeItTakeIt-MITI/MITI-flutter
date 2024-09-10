@@ -60,6 +60,7 @@ import '../../user/provider/user_provider.dart';
 import '../../user/view/user_delete_success_screen.dart';
 import '../../user/view/user_host_list_screen.dart';
 import '../../user/view/user_info_screen.dart';
+import '../../user/view/user_profile_update_screen.dart';
 import '../../user/view/user_review_screen.dart';
 import '../component/custom_dialog.dart';
 import '../error/view/error_screen.dart';
@@ -791,22 +792,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                       routes: [],
                     ),
                     GoRoute(
-                      path: 'profileForm',
-                      parentNavigatorKey: rootNavKey,
-                      name: UserProfileFormScreen.routeName,
-                      builder: (context, state) {
-                        final int bottomIdx =
-                            int.parse(state.uri.queryParameters['bottomIdx']!);
-
-                        return UserProfileFormScreen(
-                          bottomIdx: bottomIdx,
-                        );
-                      },
-                      // pageBuilder: (context, state) {
-                      //   return NoTransitionPage(child: UserProfileFormScreen());
-                      // },
-                    ),
-                    GoRoute(
                         path: ':courtId',
                         parentNavigatorKey: rootNavKey,
                         name: CourtDetailScreen.routeName,
@@ -848,6 +833,24 @@ final routerProvider = Provider<GoRouter>((ref) {
                   return const NoTransitionPage(child: ProfileBody());
                 },
                 routes: [
+                  GoRoute(
+                      path: 'profileUpdate',
+                      parentNavigatorKey: rootNavKey,
+                      name: UserProfileUpdateScreen.routeName,
+                      builder: (context, state) {
+                        return const UserProfileUpdateScreen();
+                      },
+                      routes: [
+                        GoRoute(
+                          path: 'profileForm',
+                          parentNavigatorKey: rootNavKey,
+                          name: UserProfileFormScreen.routeName,
+                          builder: (context, state) {
+                            return const UserProfileFormScreen();
+                          },
+                        ),
+                      ]),
+
                   GoRoute(
                     path: 'settlementManagement',
                     parentNavigatorKey: rootNavKey,

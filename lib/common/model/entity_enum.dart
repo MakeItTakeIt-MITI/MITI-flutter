@@ -266,6 +266,8 @@ enum InputFormType {
   signup,
   find_email,
   password_update,
+  updateToken,
+  amount,
 }
 
 enum PasswordFormType { password, passwordCheck, newPassword, newPasswordCheck }
@@ -278,56 +280,63 @@ enum PaymentMethodType {
 enum BankType {
   @JsonValue("KOOKMIN")
   KOOKMIN("KB국민"),
+  @JsonValue("NONGHYEOP")
+  NONGHYEOP("NH농협"),
   @JsonValue("SHINHAN")
   SHINHAN("신한"),
   @JsonValue("WOORI")
   WOORI("우리"),
-  @JsonValue("SHINHYEOP")
-  SHINHYEOP("신협"),
-  @JsonValue("IBK")
-  IBK("IBK기업"),
-  @JsonValue("SAEMAUL")
-  SAEMAUL("새마을금고"),
-  @JsonValue("NONGHYEOP")
-  NONGHYEOP("NH농협"),
-  @JsonValue("SC")
-  SC("SC제일"),
-  @JsonValue("KYONGNAMBANK")
-  KYONGNAMBANK("경남"),
   @JsonValue("DAEGUBANK")
   DAEGUBANK("대구"),
-  @JsonValue("GWANGJUBANK")
-  GWANGJUBANK("광주"),
-  @JsonValue("BUSANBANK")
-  BUSANBANK("부산"),
-  @JsonValue("CITI")
-  CITI("씨티"),
-  @JsonValue("SUHYEOP")
-  SUHYEOP("수협"),
-  @JsonValue("KDBBANK")
-  KDBBANK("KDB산업"),
-  @JsonValue("JEONBUKBANK")
-  JEONBUKBANK("전북"),
-  @JsonValue("POST")
-  POST("우체국"),
+  @JsonValue("IBK")
+  IBK("IBK기업"),
   @JsonValue("HANA")
   HANA("하나"),
-  @JsonValue("KBANK")
-  KBANK("케이뱅크"),
+  @JsonValue("KYONGNAMBANK")
+  KYONGNAMBANK("경남"),
+  @JsonValue("BUSANBANK")
+  BUSANBANK("부산"),
   @JsonValue("TOSSBANK")
   TOSSBANK("토스뱅크"),
+  @JsonValue("GWANGJUBANK")
+  GWANGJUBANK("광주"),
+  @JsonValue("SC")
+  SC("SC제일"),
+  @JsonValue("JEONBUKBANK")
+  JEONBUKBANK("전북"),
   @JsonValue("KAKAOBANK")
   KAKAOBANK("카카오뱅크"),
+  @JsonValue("KDBBANK")
+  KDBBANK("KDB산업"),
+  @JsonValue("POST")
+  POST("우체국"),
+  @JsonValue("SAEMAUL")
+  SAEMAUL("새마을"),
+  @JsonValue("SHINHYEOP")
+  SHINHYEOP("신협"),
+  @JsonValue("CITI")
+  CITI("씨티"),
+  @JsonValue("KBANK")
+  KBANK("케이뱅크"),
+  @JsonValue("SUHYEOP")
+  SUHYEOP("수협"),
   @JsonValue("SANLIM")
   SANLIM("산림조합"),
+  @JsonValue("NH_INVESTMENT_AND_SECURITIES")
+  NH_INVESTMENT_AND_SECURITIES("NH투자증권"),
   @JsonValue("KOREA_INVESTMENT_AND_SECURITIES")
   KOREA_INVESTMENT_AND_SECURITIES("한국투자증권"),
   @JsonValue("KB_SECURITIES")
-  KB_SECURITIES("KB증권"),
-  @JsonValue("NH_INVESTMENT_AND_SECURITIES")
-  NH_INVESTMENT_AND_SECURITIES("NH투자증권");
+  KB_SECURITIES("KB증권");
 
   final String displayName;
 
   const BankType(this.displayName);
+}
+
+enum PushNotificationType {
+  game_status_changed,
+  new_participation,
+  game_fee_changed,
+  general
 }
