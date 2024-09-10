@@ -85,7 +85,7 @@ class _ReceiveReviewListScreenState
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '아직 평가한 내용이 없습니다.',
+                        '아직 평가 받은 내용이 없습니다.',
                         style: MITITextStyle.xxl140.copyWith(
                           color: Colors.white,
                         ),

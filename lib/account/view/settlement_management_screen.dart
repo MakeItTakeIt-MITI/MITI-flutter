@@ -64,6 +64,7 @@ class _SettlementManagementScreenState extends State<SettlementManagementScreen>
                     SliverAppBarDelegate(child: _AccountInfo(), height: 100),
                 pinned: true,
               ),
+
               SliverPersistentHeader(
                 delegate: SliverAppBarDelegate(
                     child: Container(

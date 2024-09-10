@@ -161,7 +161,9 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
         children: [
           Text(
             '이체하실 계좌 정보',
-            style: MITITextStyle.mdBold.copyWith(color: MITIColor.gray100),
+            style: MITITextStyle.mdBold.copyWith(
+              color: MITIColor.gray100,
+            ),
           ),
           SizedBox(height: 20.h),
           CustomTextFormField(
@@ -413,7 +415,6 @@ class _TransferAmountForm extends ConsumerWidget {
               } else {
                 ref
                     .read(formInfoProvider(InputFormType.amount).notifier)
-
                     .reset();
               }
             },

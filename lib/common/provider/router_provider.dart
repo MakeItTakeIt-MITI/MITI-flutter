@@ -20,6 +20,7 @@ import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/game/view/game_payment_screen.dart';
 import 'package:miti/game/view/game_update_screen.dart';
 import 'package:miti/game/view/review_form_screen.dart';
+import 'package:miti/notification/view/notification_screen.dart';
 import 'package:miti/support/view/faq_screen.dart';
 import 'package:miti/support/view/support_form_screen.dart';
 import 'package:miti/theme/color_theme.dart';
@@ -834,6 +835,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                 },
                 routes: [
                   GoRoute(
+                    path: 'notification',
+                    parentNavigatorKey: rootNavKey,
+                    name: NotificationScreen.routeName,
+                    builder: (context, state) {
+                      return const NotificationScreen();
+                    },
+                  ),
+                  GoRoute(
                       path: 'profileUpdate',
                       parentNavigatorKey: rootNavKey,
                       name: UserProfileUpdateScreen.routeName,
@@ -850,7 +859,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                           },
                         ),
                       ]),
-
                   GoRoute(
                     path: 'settlementManagement',
                     parentNavigatorKey: rootNavKey,

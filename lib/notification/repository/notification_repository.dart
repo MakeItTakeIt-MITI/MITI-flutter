@@ -31,6 +31,11 @@ abstract class NoticePRepository
     @Queries() NotificationParam? param,
     @Path('userId') int? path,
   });
+
+  @GET('/notifications/{notificationId}')
+  Future<ResponseModel<NoticeDetailModel>> get({
+    @Path() required int notificationId,
+  });
 }
 
 final pushPRepositoryProvider = Provider<PushPRepository>((ref) {
@@ -50,5 +55,25 @@ abstract class PushPRepository
     @Queries() required PaginationParam paginationParams,
     @Queries() NotificationParam? param,
     @Path('userId') int? path,
+  });
+
+  @Headers({'token': 'true'})
+  @GET('/users/{userId}/push-notifications/setting')
+  Future<ResponseModel<PushAllowModel>> getSetting({
+    @Path() required int userId,
+  });
+
+  @Headers({'token': 'true'})
+  @PATCH('/users/{userId}/push-notifications/setting/on')
+  Future<ResponseModel<PushAllowModel>> allowPush({
+    @Path() required int userId,
+    @Queries() required PushAllowModel topic,
+  });
+
+  @Headers({'token': 'true'})
+  @PATCH('/users/{userId}/push-notifications/setting/off')
+  Future<ResponseModel<PushAllowModel>> disallowPush({
+    @Path() required int userId,
+    @Queries() required PushAllowModel topic,
   });
 }

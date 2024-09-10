@@ -10,7 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/model/default_model.dart';
-import 'package:miti/notification/provider/notification_provider.dart';
+import 'package:miti/notification/provider/notification_pagination_provider.dart';
 import 'package:miti/notification_provider.dart';
 import 'package:miti/support/view/support_screen.dart';
 import 'package:miti/theme/text_theme.dart';

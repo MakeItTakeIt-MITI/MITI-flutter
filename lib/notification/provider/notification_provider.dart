@@ -1,63 +1,88 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:miti/common/model/default_model.dart';
+import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/notification/repository/notification_repository.dart';
-import 'package:miti/notification_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../common/logger/custom_logger.dart';
-import '../../common/param/pagination_param.dart';
-import '../../common/provider/pagination_provider.dart';
-import '../../user/param/user_profile_param.dart';
-import '../model/notice_model.dart';
+import '../../common/model/default_model.dart';
 import '../model/push_model.dart';
-import '../param/notification_param.dart';
 
-final noticePProvider = StateNotifierProvider.family.autoDispose<
-    NoticePageStateNotifier,
-    BaseModel,
-    PaginationStateParam<NotificationParam>>((ref, param) {
-  final repository = ref.watch(noticePRepositoryProvider);
-  return NoticePageStateNotifier(
-    repository: repository,
-    pageParams: const PaginationParam(
-      page: 1,
-    ),
-    param: param.param,
-    path: param.path,
-  );
-});
+part 'notification_provider.g.dart';
 
-class NoticePageStateNotifier extends PaginationProvider<NoticeModel,
-    NotificationParam, NoticePRepository> {
-  NoticePageStateNotifier({
-    required super.repository,
-    required super.pageParams,
-    super.param,
-    super.path,
-  });
+@Riverpod(keepAlive: false)
+class Notice extends _$Notice {
+  @override
+  BaseModel build({required int notificationId}) {
+    get(notificationId: notificationId);
+    return LoadingModel();
+  }
+
+  Future<void> get({required int notificationId}) async {
+    state = LoadingModel();
+    final repository = ref.watch(noticePRepositoryProvider);
+    repository.get(notificationId: notificationId).then((value) {
+      logger.i(value);
+      state = value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state = error;
+    });
+  }
 }
 
-final pushPProvider = StateNotifierProvider.family.autoDispose<
-    PushPageStateNotifier,
-    BaseModel,
-    PaginationStateParam<NotificationParam>>((ref, param) {
-  final repository = ref.watch(pushPRepositoryProvider);
-  return PushPageStateNotifier(
-    repository: repository,
-    pageParams: const PaginationParam(
-      page: 1,
-    ),
-    param: param.param,
-    path: param.path,
-  );
-});
+@Riverpod(keepAlive: false)
+class PushSetting extends _$PushSetting {
+  @override
+  BaseModel build({required int notificationId}) {
+    return LoadingModel();
+  }
 
-class PushPageStateNotifier
-    extends PaginationProvider<PushModel, NotificationParam, PushPRepository> {
-  PushPageStateNotifier({
-    required super.repository,
-    required super.pageParams,
-    super.param,
-    super.path,
-  });
+  Future<void> get({required int notificationId}) async {
+    state = LoadingModel();
+    final repository = ref.watch(pushPRepositoryProvider);
+    final userId = ref.read(authProvider)!.id!;
+    repository.getSetting(userId: userId).then((value) {
+      logger.i(value);
+      state = value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state = error;
+    });
+  }
+}
+
+@riverpod
+Future<BaseModel> pushStatusUpdate(PushStatusUpdateRef ref,
+    {required bool isOn, required PushAllowModel push}) async {
+  final repository = ref.watch(pushPRepositoryProvider);
+  final userId = ref.read(authProvider)!.id!;
+  if (isOn) {
+    return await repository
+        .allowPush(topic: push, userId: userId)
+        .then<BaseModel>((value) {
+      logger.i(value);
+
+      return value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      return error;
+    });
+  } else {
+    return await repository
+        .disallowPush(topic: push, userId: userId)
+        .then<BaseModel>((value) {
+      logger.i(value);
+      return value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      return error;
+    });
+  }
 }

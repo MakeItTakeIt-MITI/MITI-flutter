@@ -9,6 +9,7 @@ import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/court/view/court_search_screen.dart';
+import 'package:miti/notification/view/notification_screen.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/view/user_profile_update_screen.dart';
 
@@ -59,7 +60,9 @@ class _ProfileBodyState extends State<ProfileBody> {
                 child: Padding(
                   padding: EdgeInsets.only(right: 13.w),
                   child: GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      context.pushNamed(NotificationScreen.routeName);
+                    },
                     child: Badge(
                       backgroundColor: MITIColor.primary,
                       // alignment: const Alignment(1,-1),

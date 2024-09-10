@@ -157,7 +157,7 @@ class _CourtMapComponentState extends State<_CourtMapComponent> {
             options: NaverMapViewOptions(
               initialCameraPosition: NCameraPosition(
                 target: widget.latLng,
-                zoom: 15,
+                zoom: 13,
               ),
               locale: const Locale('ko'),
               logoClickEnable: false,

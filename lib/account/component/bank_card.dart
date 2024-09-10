@@ -9,14 +9,14 @@ import '../../util/util.dart';
 
 class BankCard extends StatelessWidget {
   final BankType bank;
+
   const BankCard({super.key, required this.bank});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 76.w,
-      padding:
-      EdgeInsets.symmetric(vertical: 8.h),
+      padding: EdgeInsets.symmetric(vertical: 8.h),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8.r),
         color: MITIColor.gray750,
@@ -27,8 +27,7 @@ class BankCard extends StatelessWidget {
         children: [
           SvgPicture.asset(
             AssetUtil.getAssetPath(
-                type: AssetType.logo,
-                name: 'bank/${bank.displayName}'),
+                type: AssetType.logo, name: 'bank/${bank.displayName}'),
             height: 20.h,
           ),
           SizedBox(height: 4.h),
