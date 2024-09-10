@@ -4,14 +4,23 @@ import 'package:miti/common/model/model_id.dart';
 
 part 'push_model.g.dart';
 
-@JsonSerializable(
-  genericArgumentFactories: true,
-)
-class PushModel<T> extends IModelWithId {
-  final String topic;
+@JsonSerializable()
+class PushDataModel {
+  @JsonKey(name: 'game_id')
+  final String gameId;
+
+  PushDataModel({required this.gameId});
+
+  factory PushDataModel.fromJson(Map<String, dynamic> json) =>
+      _$PushDataModelFromJson(json);
+}
+
+@JsonSerializable()
+class PushModel extends IModelWithId {
+  final PushNotificationTopicType topic;
   final String title;
   final String body;
-  final T data;
+  final PushDataModel data;
   @JsonKey(name: 'is_read')
   final bool isRead;
   @JsonKey(name: 'created_at')
@@ -27,16 +36,14 @@ class PushModel<T> extends IModelWithId {
     required this.isRead,
   });
 
-  factory PushModel.fromJson(
-      Map<String, dynamic> json, T Function(Object? json) fromJsonT) {
-    return _$PushModelFromJson(json, fromJsonT);
-  }
+  factory PushModel.fromJson(Map<String, dynamic> json) =>
+      _$PushModelFromJson(json);
 }
 
 @JsonSerializable()
 class PushAllowModel {
   @JsonKey(name: 'allowed_topic')
-  final List<PushNotificationType> allowedTopic;
+  final List<PushNotificationTopicType> allowedTopic;
 
   PushAllowModel({
     required this.allowedTopic,

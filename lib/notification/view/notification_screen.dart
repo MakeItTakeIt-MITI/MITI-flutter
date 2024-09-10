@@ -1,134 +1,231 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/component/dispose_sliver_pagination_list_view.dart';
+import 'package:miti/common/component/sliver_delegate.dart';
 import 'package:miti/common/param/pagination_param.dart';
 import 'package:miti/notification/param/notification_param.dart';
 import 'package:miti/notification/provider/notification_pagination_provider.dart';
+import 'package:miti/notification/provider/widget/unconfirmed_provider.dart';
 import 'package:miti/notification/repository/notification_repository.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
+import '../../common/component/custom_dialog.dart';
+import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
+import '../../common/provider/router_provider.dart';
 import '../model/notice_model.dart';
+import '../model/push_model.dart';
 
-class NotificationScreen extends StatefulWidget {
+class NotificationScreen extends ConsumerStatefulWidget {
   static String get routeName => 'notification';
 
   const NotificationScreen({super.key});
 
   @override
-  State<NotificationScreen> createState() => _NotificationScreenState();
+  ConsumerState<NotificationScreen> createState() => _NotificationScreenState();
 }
 
-class _NotificationScreenState extends State<NotificationScreen>
+class _NotificationScreenState extends ConsumerState<NotificationScreen>
     with SingleTickerProviderStateMixin {
+  bool isNotification = true;
+
   late final ScrollController scrollController;
-  late final TabController tabController;
 
   @override
   void initState() {
     super.initState();
     scrollController = ScrollController();
-    tabController = TabController(length: 2, vsync: this);
   }
 
   @override
   void dispose() {
     scrollController.dispose();
-    tabController.dispose();
     super.dispose();
+  }
+
+  void refreshPush(int userId) {
+    final provider = pushPProvider(PaginationStateParam(path: userId));
+    ref.read(provider.notifier).paginate(
+          path: userId,
+          forceRefetch: true,
+          param: NotificationParam(),
+          paginationParams: const PaginationParam(page: 1),
+        );
+  }
+
+  void refreshNotice() {
+    final provider = noticePProvider(PaginationStateParam());
+    ref.read(provider.notifier).paginate(
+          forceRefetch: true,
+          param: NotificationParam(),
+          paginationParams: const PaginationParam(page: 1),
+        );
+  }
+
+  Widget getNotificationBody(WidgetRef ref) {
+    final userId = ref.watch(authProvider)!.id!;
+    if (isNotification) {
+      return RefreshIndicator(
+        onRefresh: () async {
+          refreshPush(userId);
+        },
+        child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            controller: scrollController,
+            slivers: [
+              DisposeSliverPaginationListView(
+                provider: pushPProvider(
+                  PaginationStateParam(path: userId),
+                ),
+                itemBuilder: (BuildContext context, int index, Base pModel) {
+                  final model = (pModel as PushModel);
+                  return PushCard.fromModel(model: model);
+                },
+                separateSize: 0,
+                skeleton: Container(),
+                controller: scrollController,
+                emptyWidget: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '활동 알림이 아직 없습니다.',
+                      style: MITITextStyle.xxl140.copyWith(color: Colors.white),
+                    ),
+                    SizedBox(height: 20.h),
+                    Text(
+                      '경기에 참여하시고 활동 알림을 받아보세요',
+                      style:
+                          MITITextStyle.sm.copyWith(color: MITIColor.gray300),
+                    ),
+                  ],
+                ),
+              ),
+            ]),
+      );
+    }
+    return RefreshIndicator(
+      onRefresh: () async {
+        refreshNotice();
+      },
+      child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          controller: scrollController,
+          slivers: [
+            DisposeSliverPaginationListView(
+              provider: noticePProvider(
+                PaginationStateParam(),
+              ),
+              itemBuilder: (BuildContext context, int index, Base pModel) {
+                final model = (pModel as NoticeModel);
+                return NotificationCard.fromModel(model: model);
+              },
+              separateSize: 0,
+              skeleton: Container(),
+              controller: scrollController,
+              emptyWidget: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '공지사항이 없습니다.',
+                    style: MITITextStyle.xxl140.copyWith(color: Colors.white),
+                  ),
+                  SizedBox(height: 20.h),
+                  Text(
+                    '빠르게 개선해 업데이트 되도록 노력할게요!',
+                    style: MITITextStyle.sm.copyWith(color: MITIColor.gray300),
+                  ),
+                ],
+              ),
+            ),
+          ]),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: NestedScrollView(
-          headerSliverBuilder: (_, __) {
-            return [
-              const DefaultAppBar(
-                title: '알림',
-                isSliver: true,
-                hasBorder: false,
-                backgroundColor: MITIColor.gray800,
-              )
-            ];
-          },
-          body: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 21.w, vertical: 12.h),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _TabBar(
-                        title: '활동 알림',
-                        isSelected: true,
-                        onTap: () {
-                        },
-                      ),
-                      SizedBox(
-                        width: 12.w,
-                      ),
-                      _TabBar(
-                        title: '공지 사항',
-                        isSelected: false,
-                        onTap: () {},
-                      ),
-                    ],
+        physics: const NeverScrollableScrollPhysics(),
+        headerSliverBuilder: (_, __) {
+          return [
+            const DefaultAppBar(
+              title: '알림',
+              isSliver: true,
+              hasBorder: false,
+              backgroundColor: MITIColor.gray800,
+            ),
+            SliverPersistentHeader(
+                pinned: true,
+                delegate: SliverAppBarDelegate(
+                  height: 54.h,
+                  child: Container(
+                    color: MITIColor.gray800,
+                    height: 54.h,
+                    padding: EdgeInsets.symmetric(horizontal: 21.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Consumer(
+                              builder: (BuildContext context, WidgetRef ref,
+                                  Widget? child) {
+                                final unconfirmed =
+                                    ref.watch(unconfirmedProvider);
+                                return _TabBar(
+                                  title: '활동 알림',
+                                  isSelected: isNotification,
+                                  onTap: () {
+                                    setState(() {
+                                      isNotification = true;
+                                    });
+                                  },
+                                  unconfirmed: unconfirmed,
+                                );
+                              },
+                            ),
+                            SizedBox(
+                              width: 12.w,
+                            ),
+                            _TabBar(
+                              title: '공지 사항',
+                              isSelected: !isNotification,
+                              onTap: () {
+                                setState(() {
+                                  isNotification = false;
+                                });
+                              },
+                              unconfirmed: false,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ),
-              SliverFillRemaining(
-                child: TabBarView(
-                    // physics: NeverScrollableScrollPhysics(),
-                    controller: tabController,
-                    children: [
-                      CustomScrollView(slivers: [
-                        DisposeSliverPaginationListView(
-                          provider: noticePProvider(
-                            PaginationStateParam(),
-                          ),
-                          itemBuilder:
-                              (BuildContext context, int index, Base pModel) {
-                            final model = (pModel as NoticeModel);
-                            return NotificationCard.fromModel(model: model);
-                          },
-                          separateSize: 0,
-                          skeleton: Container(),
-                          controller: scrollController,
-                          emptyWidget: Container(),
-                        ),
-                      ]),
-                      CustomScrollView(slivers: [
-                        DisposeSliverPaginationListView(
-                          provider: noticePProvider(
-                            PaginationStateParam(),
-                          ),
-                          itemBuilder:
-                              (BuildContext context, int index, Base pModel) {
-                            final model = (pModel as NoticeModel);
-                            return Container();
-                          },
-                          separateSize: 0,
-                          skeleton: Container(),
-                          controller: scrollController,
-                          emptyWidget: Container(),
-                        ),
-                      ]),
-                    ]),
-              ),
-            ],
-          )),
+                ))
+          ];
+        },
+        body: getNotificationBody(ref),
+      ),
     );
   }
 }
 
 class _TabBar extends StatelessWidget {
   final String title;
+  final bool unconfirmed;
   final bool isSelected;
   final VoidCallback onTap;
 
@@ -137,6 +234,7 @@ class _TabBar extends StatelessWidget {
     required this.title,
     required this.isSelected,
     required this.onTap,
+    required this.unconfirmed,
   });
 
   @override
@@ -148,7 +246,10 @@ class _TabBar extends StatelessWidget {
         children: [
           Badge(
             alignment: Alignment.topRight,
-            backgroundColor: MITIColor.primary,
+            smallSize: 4.r,
+            largeSize: 4.r,
+            backgroundColor:
+                unconfirmed ? MITIColor.primary : MITIColor.gray800,
             child: SizedBox(
               height: 6.h,
               width: 60.w,
@@ -168,6 +269,136 @@ class _TabBar extends StatelessWidget {
             ),
             height: 2.r,
             width: 60.w,
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class PushCard extends ConsumerStatefulWidget {
+  final PushNotificationTopicType topic;
+  final String title;
+  final String body;
+  final PushDataModel data;
+  final bool isRead;
+  final String createdAt;
+
+  const PushCard({
+    super.key,
+    required this.topic,
+    required this.title,
+    required this.body,
+    required this.data,
+    required this.isRead,
+    required this.createdAt,
+  });
+
+  factory PushCard.fromModel({required PushModel model}) {
+    return PushCard(
+      topic: model.topic,
+      title: model.title,
+      body: model.body,
+      data: model.data,
+      isRead: true,
+      createdAt: formatDateTime(model.createdAt),
+    );
+  }
+
+  static String formatDateTime(String inputDateTime) {
+    // 입력된 날짜를 DateTime 객체로 파싱
+    DateTime parsedDate = DateTime.parse(inputDateTime);
+
+    // 현재 시간 가져오기
+    DateTime now = DateTime.now();
+
+    // 두 시간 차이를 계산
+    Duration difference = now.difference(parsedDate);
+
+    // 1시간 이내인 경우
+    if (difference.inHours < 1) {
+      return "${difference.inMinutes}분 전";
+    }
+    // 24시간 이내인 경우
+    else if (difference.inHours < 24) {
+      return "${difference.inHours}시간 전";
+    }
+    // 24시간 이상인 경우
+    else {
+      // 일 단위로 계산
+      return "${difference.inDays}일 전";
+    }
+  }
+
+  @override
+  ConsumerState<PushCard> createState() => _PushCardState();
+}
+
+class _PushCardState extends ConsumerState<PushCard> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((p) {
+      if (!widget.isRead) {
+        ref.read(unconfirmedProvider.notifier).update((s) => !widget.isRead);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
+      decoration: BoxDecoration(
+        color: widget.isRead ? MITIColor.gray800 : MITIColor.gray700,
+        border: const Border(
+          bottom: BorderSide(color: MITIColor.gray700),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                widget.topic.displayName,
+                style: MITITextStyle.xxsmLight.copyWith(
+                  color: MITIColor.gray300,
+                ),
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.createdAt,
+                    style: MITITextStyle.xxsmLight.copyWith(
+                      color: MITIColor.gray300,
+                    ),
+                  ),
+                  Visibility(
+                    visible: false,
+                    child: Row(
+                      children: [
+                        SizedBox(width: 4.w),
+                         Badge(
+                          smallSize: 4.r,
+                          largeSize: 4.r,
+                          backgroundColor: MITIColor.primary,
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+          SizedBox(height: 16.h),
+          Text(
+            widget.title,
+            style: MITITextStyle.smSemiBold.copyWith(
+              color: MITIColor.gray200,
+            ),
           )
         ],
       ),
@@ -199,33 +430,38 @@ class NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: MITIColor.gray700),
+    return GestureDetector(
+      onTap: () {
+
+      },
+      child: Container(
+        decoration: const BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: MITIColor.gray700),
+          ),
         ),
-      ),
-      padding: EdgeInsets.symmetric(
-        horizontal: 21.w,
-        vertical: 20.h,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            title,
-            style: MITITextStyle.smSemiBold.copyWith(
-              color: MITIColor.gray200,
+        padding: EdgeInsets.symmetric(
+          horizontal: 21.w,
+          vertical: 20.h,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              title,
+              style: MITITextStyle.smSemiBold.copyWith(
+                color: MITIColor.gray200,
+              ),
             ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            date,
-            style: MITITextStyle.smSemiBold.copyWith(
-              color: MITIColor.gray200,
+            SizedBox(height: 8.h),
+            Text(
+              date,
+              style: MITITextStyle.xxsmLight.copyWith(
+                color: MITIColor.gray300,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

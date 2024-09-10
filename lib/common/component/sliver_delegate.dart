@@ -21,6 +21,6 @@ class SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   bool shouldRebuild(SliverAppBarDelegate oldDelegate) {
-    return false;
+    return true;
   }
 }

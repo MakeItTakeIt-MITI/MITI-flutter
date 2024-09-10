@@ -9,6 +9,7 @@ import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/court/view/court_search_screen.dart';
+import 'package:miti/notification/provider/widget/unconfirmed_provider.dart';
 import 'package:miti/notification/view/notification_screen.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/view/user_profile_update_screen.dart';
@@ -20,6 +21,7 @@ import '../../common/component/default_appbar.dart';
 import '../../common/model/entity_enum.dart';
 import '../../game/model/game_model.dart';
 import '../../game/view/game_create_screen.dart';
+import '../../notification/view/notification_setting_screen.dart';
 import '../../review/view/receive_review_list_screen.dart';
 import '../../review/view/written_review_list_screen.dart';
 import '../../support/view/faq_screen.dart';
@@ -56,35 +58,37 @@ class _ProfileBodyState extends State<ProfileBody> {
             hasBorder: false,
             actions: [
               //todo 뱃지 위치 적용 필요
-              Align(
-                child: Padding(
-                  padding: EdgeInsets.only(right: 13.w),
-                  child: GestureDetector(
-                    onTap: () {
-                      context.pushNamed(NotificationScreen.routeName);
-                    },
-                    child: Badge(
-                      backgroundColor: MITIColor.primary,
-                      // alignment: const Alignment(1,-1),
-                      offset: Offset(10, 0),
-                      padding: EdgeInsets.all(2.4),
-                      smallSize: 4.r,
-                      largeSize: 4.r,
-                      child: SvgPicture.asset(
-                        AssetUtil.getAssetPath(
-                          type: AssetType.icon,
-                          name: 'alram',
-                        ),
-                        height: 24.r,
-                        width: 24.r,
-                        colorFilter: const ColorFilter.mode(
-                          MITIColor.gray100,
-                          BlendMode.srcIn,
+              Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  final unconfirmed = ref.watch(unconfirmedProvider);
+                  return Padding(
+                    padding: EdgeInsets.only(right: 13.w),
+                    child: GestureDetector(
+                      onTap: () {
+                        context.pushNamed(NotificationScreen.routeName);
+                      },
+                      child: Badge(
+                        backgroundColor:
+                            unconfirmed ? MITIColor.primary : MITIColor.gray800,
+                        // alignment: const Alignment(1,-1),
+                        smallSize: 4.r,
+                        largeSize: 4.r,
+                        child: SvgPicture.asset(
+                          AssetUtil.getAssetPath(
+                            type: AssetType.icon,
+                            name: 'alram',
+                          ),
+                          height: 24.r,
+                          width: 24.r,
+                          colorFilter: const ColorFilter.mode(
+                            MITIColor.gray100,
+                            BlendMode.srcIn,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             ],
           ),
@@ -172,7 +176,7 @@ class _MenuComponent extends StatelessWidget {
           title: '내 정보 수정',
         ),
         _MenuItem(
-          onTap: () {},
+          onTap: () => context.pushNamed(NotificationSettingScreen.routeName),
           title: '알림 설정',
         ),
       ],

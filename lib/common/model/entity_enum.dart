@@ -334,9 +334,17 @@ enum BankType {
   const BankType(this.displayName);
 }
 
-enum PushNotificationType {
-  game_status_changed,
-  new_participation,
-  game_fee_changed,
-  general
+enum PushNotificationTopicType {
+  general('일반 알림'),
+  game_status_changed('경기 상태 변경'),
+  new_participation('새로운 참가 알림'),
+  game_fee_changed('경기 참가비 변경'),
+  host_report_reportee('호스트 신고 알림 to 호스트'),
+  host_report_reporter('호스트 신고 알림 to 신고 사용자'),
+  host_report_dismissed_reportee('호스트 신고 기각 알림 to 호스트'),
+  host_report_dismissed_reporter('호스트 신고 기각 알림 to 신고 사용자');
+
+  const PushNotificationTopicType(this.displayName);
+
+  final String displayName;
 }

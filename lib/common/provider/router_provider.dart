@@ -48,6 +48,7 @@ import '../../court/view/court_map_screen.dart';
 import '../../game/view/game_screen.dart';
 import '../../kakaopay/view/approval_screen.dart';
 import '../../kakaopay/view/payment_screen.dart';
+import '../../notification/view/notification_setting_screen.dart';
 import '../../review/view/my_review_detail_screen.dart';
 import '../../review/view/receive_review_list_screen.dart';
 import '../../review/view/review_list_screen.dart';
@@ -102,63 +103,39 @@ final routerProvider = Provider<GoRouter>((ref) {
           path: '/splash',
           parentNavigatorKey: rootNavKey,
           name: SplashScreen.routeName,
-
           builder: (context, state) {
             return SplashScreen();
           },
-
-          // pageBuilder: (context, state) {
-          //   return NoTransitionPage(child: SplashScreen());
-          // },
         ),
         GoRoute(
             path: '/login',
             parentNavigatorKey: rootNavKey,
             name: LoginScreen.routeName,
             builder: (_, state) => const LoginScreen(),
-            // pageBuilder: (context, state) {
-            //   return const NoTransitionPage(child: LoginScreen());
-            // },
             routes: [
               GoRoute(
                 path: 'oauthError',
                 parentNavigatorKey: rootNavKey,
                 name: OauthErrorScreen.routeName,
                 builder: (_, state) => const OauthErrorScreen(),
-                // pageBuilder: (context, state) {
-                //   return const NoTransitionPage(
-                //       child: OauthErrorScreen());
-                // },
               ),
               GoRoute(
                 path: 'completeResetPassword',
                 parentNavigatorKey: rootNavKey,
                 name: CompleteRestPasswordScreen.routeName,
                 builder: (_, state) => const CompleteRestPasswordScreen(),
-                // pageBuilder: (context, state) {
-                //   return const NoTransitionPage(
-                //       child: CompleteRestPasswordScreen());
-                // },
               ),
               GoRoute(
                 path: 'phoneSuccess',
                 parentNavigatorKey: rootNavKey,
                 name: PhoneAuthSuccess.routeName,
                 builder: (_, state) => const PhoneAuthSuccess(),
-                // pageBuilder: (context, state) {
-                //   return const NoTransitionPage(
-                //       child: PhoneAuthSuccess());
-                // },
               ),
               GoRoute(
                 path: 'phoneSend',
                 parentNavigatorKey: rootNavKey,
                 name: PhoneAuthSendScreen.routeName,
                 builder: (_, state) => const PhoneAuthSendScreen(),
-                // pageBuilder: (context, state) {
-                //   return const NoTransitionPage(
-                //       child: PhoneAuthSendScreen());
-                // },
               ),
               GoRoute(
                   path: 'findInfo',
@@ -167,9 +144,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                   builder: (_, state) {
                     return FindInfoScreen();
                   },
-                  // pageBuilder: (context, state) {
-                  //   return NoTransitionPage(child: FindInfoScreen());
-                  // },
                   routes: [
                     GoRoute(
                       path: 'findEmail',
@@ -217,10 +191,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                           userId: userId,
                         );
                       },
-                      // pageBuilder: (context, state) {
-                      //   return NoTransitionPage(
-                      //       child: ResetPasswordScreen());
-                      // },
                     ),
                   ]),
               GoRoute(
@@ -228,10 +198,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                   parentNavigatorKey: rootNavKey,
                   name: SignUpSelectScreen.routeName,
                   builder: (_, state) => const SignUpSelectScreen(),
-                  // pageBuilder: (context, state) {
-                  //   return const NoTransitionPage(
-                  //       child: SignUpSelectScreen());
-                  // },
                   routes: [
                     GoRoute(
                       path: 'signUp',
@@ -310,11 +276,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                           type: extra,
                         );
                       },
-                      routes: [],
-                      // pageBuilder: (context, state) {
-                      //   return const NoTransitionPage(
-                      //       child: SignUpScreen());
-                      // },
                     ),
                   ]),
               GoRoute(
@@ -328,15 +289,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                   // },
                   routes: [
                     GoRoute(
-                        path: 'phoneAuthInfo',
-                        parentNavigatorKey: rootNavKey,
-                        name: PhoneAuthInfoScreen.routeName,
-                        builder: (_, state) => const PhoneAuthInfoScreen(),
-                        // pageBuilder: (context, state) {
-                        //   return const NoTransitionPage(
-                        //       child: PhoneAuthInfoScreen());
-                        // },
-                        routes: []),
+                      path: 'phoneAuthInfo',
+                      parentNavigatorKey: rootNavKey,
+                      name: PhoneAuthInfoScreen.routeName,
+                      builder: (_, state) => const PhoneAuthInfoScreen(),
+                    ),
                   ]),
             ]),
         GoRoute(
@@ -349,17 +306,11 @@ final routerProvider = Provider<GoRouter>((ref) {
               errorType: extra,
             );
           },
-          // pageBuilder: (context, state) {
-          //   return NoTransitionPage(child: SplashScreen());
-          // },
         ),
         GoRoute(
             path: '/dialog',
             parentNavigatorKey: rootNavKey,
             name: DialogPage.routeName,
-            // builder: (context, state) {
-            //   return SplashScreen();
-            // },
             pageBuilder: (context, state) {
               final Widget child = state.extra as Widget;
               return DialogPage(
@@ -374,9 +325,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           builder: (context, state) {
             return PermissionScreen();
           },
-          // pageBuilder: (context, state) {
-          //   return NoTransitionPage(child: PermissionScreen());
-          // },
         ),
         ShellRoute(
             navigatorKey: shellNavKey,
@@ -414,9 +362,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                         bottomIdx: bottomIdx,
                       );
                     },
-                    // pageBuilder: (context, state) {
-                    //   return NoTransitionPage(child: UserDeleteSuccessScreen());
-                    // },
                   ),
                 ],
               ),
@@ -436,14 +381,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                       path: 'approval',
                       parentNavigatorKey: rootNavKey,
                       name: KakaoPayApprovalScreen.routeName,
-                      // redirect: (_, state) => provider.redirectLogic(state),
                       builder: (context, state) {
                         return KakaoPayApprovalScreen();
                       },
-                      // pageBuilder: (context, state) {
-                      //   return NoTransitionPage(
-                      //       child: KakaoPayApprovalScreen());
-                      // },
                     ),
                     GoRoute(
                       path: 'myParticipation',
@@ -840,6 +780,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                     name: NotificationScreen.routeName,
                     builder: (context, state) {
                       return const NotificationScreen();
+                    },
+                  ),
+                  GoRoute(
+                    path: 'notificationSetting',
+                    parentNavigatorKey: rootNavKey,
+                    name: NotificationSettingScreen.routeName,
+                    builder: (context, state) {
+                      return const NotificationSettingScreen();
                     },
                   ),
                   GoRoute(
