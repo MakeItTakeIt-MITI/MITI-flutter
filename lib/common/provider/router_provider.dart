@@ -1,9 +1,6 @@
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/account/view/settlement_management_screen.dart';
 import 'package:miti/auth/view/find_info/find_password_screen.dart';
@@ -23,8 +20,6 @@ import 'package:miti/game/view/review_form_screen.dart';
 import 'package:miti/notification/view/notification_screen.dart';
 import 'package:miti/support/view/faq_screen.dart';
 import 'package:miti/support/view/support_form_screen.dart';
-import 'package:miti/theme/color_theme.dart';
-import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/view/user_delete_screen.dart';
 import 'package:miti/user/view/user_profile_form_screen.dart';
 import 'package:miti/user/view/review_detail_screen.dart';
@@ -603,14 +598,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 gameId: gameId,
                               );
                             },
-                            // pageBuilder: (context, state) {
-                            //   final int gameId =
-                            //       int.parse(state.pathParameters['gameId']!);
-                            //   return NoTransitionPage(
-                            //       child: GameUpdateScreen(
-                            //     gameId: gameId,
-                            //   ));
-                            // },
                           ),
                         ]),
                   ]),
@@ -620,15 +607,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                   name: CourtSearchListScreen.routeName,
                   redirect: (_, state) => provider.redirectLogic(state),
                   builder: (context, state) {
-                    return CourtSearchListScreen(
-                        // bottomIdx: 2,
-                        );
+                    return const CourtSearchListScreen();
                   },
                   pageBuilder: (context, state) {
-                    return NoTransitionPage(
-                        child: CourtSearchListScreen(
-                            // bottomIdx: 2,
-                            ));
+                    return const NoTransitionPage(
+                        child: CourtSearchListScreen());
                   },
                   routes: [
                     GoRoute(
@@ -642,26 +625,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                           bottomIdx: bottomIdx,
                         );
                       },
-                      // pageBuilder: (context, state) {
-                      //   return NoTransitionPage(child: UserDeleteScreen());
-                      // },
                     ),
                     GoRoute(
                         path: 'support',
                         parentNavigatorKey: rootNavKey,
                         name: SupportScreen.routeName,
-                        // redirect: (_, state) => provider.redirectLogic(state),
                         builder: (context, state) {
-                          final int bottomIdx = int.parse(
-                              state.uri.queryParameters['bottomIdx']!);
-
-                          return SupportScreen(
-                            bottomIdx: bottomIdx,
-                          );
+                          return const SupportScreen();
                         },
-                        // pageBuilder: (context, state) {
-                        //   return NoTransitionPage(child: SupportScreen());
-                        // },
                         routes: [
                           GoRoute(
                             path: 'form',
@@ -670,11 +641,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                             // redirect: (_, state) =>
                             //     provider.redirectLogic(state),
                             builder: (context, state) {
-                              final int bottomIdx = int.parse(
-                                  state.uri.queryParameters['bottomIdx']!);
-                              return SupportFormScreen(
-                                bottomIdx: bottomIdx,
-                              );
+                              return SupportFormScreen();
                             },
                             // pageBuilder: (context, state) {
                             //   return NoTransitionPage(
@@ -685,26 +652,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                             path: ':questionId',
                             parentNavigatorKey: rootNavKey,
                             name: SupportDetailScreen.routeName,
-                            // redirect: (_, state) =>
-                            //     provider.redirectLogic(state),
                             builder: (context, state) {
                               final int questionId = int.parse(
                                   state.pathParameters['questionId']!);
-                              final int bottomIdx = int.parse(
-                                  state.uri.queryParameters['bottomIdx']!);
                               return SupportDetailScreen(
                                 questionId: questionId,
-                                bottomIdx: bottomIdx,
                               );
                             },
-                            // pageBuilder: (context, state) {
-                            //   final int questionId = int.parse(
-                            //       state.pathParameters['questionId']!);
-                            //   return NoTransitionPage(
-                            //       child: SupportDetailScreen(
-                            //     questionId: questionId,
-                            //   ));
-                            // },
                           ),
                         ]),
                     GoRoute(

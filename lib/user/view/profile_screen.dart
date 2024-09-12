@@ -187,7 +187,7 @@ class _MenuComponent extends StatelessWidget {
           title: '자주 묻는 질문',
         ),
         _MenuItem(
-          onTap: () {},
+          onTap: () => context.pushNamed(SupportScreen.routeName),
           title: '문의하기',
         ),
         _MenuItem(
@@ -515,7 +515,8 @@ class _ProfileComponent extends ConsumerWidget {
                 ),
                 SizedBox(height: 16.h),
                 GestureDetector(
-                  onTap: () => context.pushNamed(NicknameUpdateScreen.routeName),
+                  onTap: () =>
+                      context.pushNamed(NicknameUpdateScreen.routeName),
                   child: Container(
                     padding:
                         EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),

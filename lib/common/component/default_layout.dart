@@ -67,19 +67,22 @@ class _DefaultLayoutState extends State<DefaultLayout> {
 
 class BottomButton extends StatelessWidget {
   final Widget button;
+  final bool hasBorder;
 
-  const BottomButton({super.key, required this.button});
+  const BottomButton({super.key, required this.button, this.hasBorder = true});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(
-            color: MITIColor.gray600,
-            width: 1.h,
-          ),
-        ),
+        border: hasBorder
+            ? Border(
+                top: BorderSide(
+                  color: MITIColor.gray600,
+                  width: 1.h,
+                ),
+              )
+            : null,
       ),
       padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 18.h),
       child: Column(

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/support/provider/widget/support_form_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -39,10 +40,8 @@ class SupportPageStateNotifier
   });
 }
 
-final faqProvider = StateNotifierProvider.family.autoDispose<
-    FAQStateNotifier,
-    BaseModel,
-    PaginationStateParam<SupportParam>>((ref, param) {
+final faqProvider = StateNotifierProvider.family.autoDispose<FAQStateNotifier,
+    BaseModel, PaginationStateParam<SupportParam>>((ref, param) {
   final repository = ref.watch(faqRepositoryProvider);
   return FAQStateNotifier(
     repository: repository,
@@ -68,10 +67,17 @@ class FAQStateNotifier
 Future<BaseModel> supportCreate(SupportCreateRef ref) async {
   final repository = ref.watch(supportPRepositoryProvider);
   final param = ref.watch(supportFormProvider);
-  return await repository.createSupport(param: param).then<BaseModel>((value) {
+  final userId = ref.read(authProvider)!.id!;
+  return await repository
+      .createSupport(param: param, userId: userId)
+      .then<BaseModel>((value) {
     logger.i(value);
-    ref.read(supportPageProvider(PaginationStateParam()).notifier).paginate(
-        paginationParams: const PaginationParam(page: 1), forceRefetch: true);
+    ref
+        .read(supportPageProvider(PaginationStateParam(path: userId)).notifier)
+        .paginate(
+            paginationParams: const PaginationParam(page: 1),
+            path: userId,
+            forceRefetch: true);
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
@@ -91,7 +97,10 @@ class Question extends _$Question {
 
   void getQuestion({required int questionId}) {
     final repository = ref.watch(supportPRepositoryProvider);
-    repository.getQuestion(questionId: questionId).then((value) {
+    final userId = ref.read(authProvider)!.id!;
+    repository
+        .getQuestion(questionId: questionId, userId: userId)
+        .then((value) {
       logger.i(value);
       state = value;
     }).catchError((e) {
