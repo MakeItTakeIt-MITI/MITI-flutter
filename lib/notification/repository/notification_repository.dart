@@ -11,6 +11,7 @@ import '../../dio/dio_interceptor.dart';
 import '../../user/param/user_profile_param.dart';
 import '../model/push_model.dart';
 import '../param/notification_param.dart';
+import '../param/push_setting_param.dart';
 
 part 'notification_repository.g.dart';
 
@@ -67,13 +68,13 @@ abstract class PushPRepository
   @PATCH('/users/{userId}/push-notifications/setting/on')
   Future<ResponseModel<PushAllowModel>> allowPush({
     @Path() required int userId,
-    @Queries() required PushAllowModel topic,
+    @Queries() required PushSettingParam? topic,
   });
 
   @Headers({'token': 'true'})
   @PATCH('/users/{userId}/push-notifications/setting/off')
   Future<ResponseModel<PushAllowModel>> disallowPush({
     @Path() required int userId,
-    @Queries() required PushAllowModel topic,
+    @Queries() required PushSettingParam? topic,
   });
 }

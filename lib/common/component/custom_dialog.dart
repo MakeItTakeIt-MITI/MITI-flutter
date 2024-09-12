@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class CustomDialog extends StatelessWidget {
   final String title;
@@ -144,6 +145,78 @@ class BottomDialog extends StatelessWidget {
               height: 21.h,
             )
         ],
+      ),
+    );
+  }
+}
+
+class PermissionDialog extends StatelessWidget {
+  final String title;
+
+  const PermissionDialog({super.key, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.center,
+      child: Container(
+        width: 333.w,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20.r),
+          color: MITIColor.gray800,
+        ),
+        padding:
+            EdgeInsets.only(left: 20.w, right: 20.w, top: 28.h, bottom: 20.h),
+        child: Material(
+          color: Colors.transparent,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                title,
+                style: MITITextStyle.mdBold150.copyWith(
+                  color: MITIColor.gray100,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 28.h),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => context.pop(),
+                      style: TextButton.styleFrom(
+                          backgroundColor: MITIColor.gray700),
+                      child: Text(
+                        '확인',
+                        style: MITITextStyle.mdSemiBold.copyWith(
+                          color: MITIColor.primary,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () async {
+                        await openAppSettings();
+                        context.pop();
+                      },
+                      child: Text(
+                        '설정',
+                        style: MITITextStyle.mdSemiBold.copyWith(
+                          color: MITIColor.gray800,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
       ),
     );
   }

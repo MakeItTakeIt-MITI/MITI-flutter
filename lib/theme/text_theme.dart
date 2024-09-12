@@ -47,11 +47,24 @@ class MITITextStyle {
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w700,
   );
+  static final TextStyle mdBold150 = TextStyle(
+    fontSize: 16.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w700,
+    height: 1.5,
+  );
 
   static final TextStyle md = TextStyle(
     fontSize: 16.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w500,
+    letterSpacing: -16.sp * 0.02,
+  );
+
+  static final TextStyle mdSemiBold = TextStyle(
+    fontSize: 16.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w600,
     letterSpacing: -16.sp * 0.02,
   );
 

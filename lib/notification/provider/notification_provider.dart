@@ -1,9 +1,11 @@
 import 'package:miti/auth/provider/auth_provider.dart';
+import 'package:miti/notification/param/push_setting_param.dart';
 import 'package:miti/notification/repository/notification_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
+import '../../common/model/entity_enum.dart';
 import '../model/push_model.dart';
 
 part 'notification_provider.g.dart';
@@ -31,15 +33,15 @@ class Notice extends _$Notice {
   }
 }
 
-@Riverpod(keepAlive: false)
+@Riverpod(keepAlive: true)
 class PushSetting extends _$PushSetting {
   @override
-  BaseModel build({required int notificationId}) {
+  BaseModel build() {
+    get();
     return LoadingModel();
   }
 
-  Future<void> get({required int notificationId}) async {
-    state = LoadingModel();
+  Future<void> get() async {
     final repository = ref.watch(pushPRepositoryProvider);
     final userId = ref.read(authProvider)!.id!;
     repository.getSetting(userId: userId).then((value) {
@@ -52,19 +54,51 @@ class PushSetting extends _$PushSetting {
       state = error;
     });
   }
+
+  void update({required PushAllowModel model}) {
+    final uState = (state as ResponseModel<PushAllowModel>);
+    state = ResponseModel(
+        status_code: uState.status_code, message: uState.message, data: model);
+  }
+}
+
+PushAllowModel optimisticSetting(
+    {required PushAllowModel model,
+    required bool isOn,
+    PushNotificationTopicType? topic}) {
+  List<PushNotificationTopicType> topics = model.allowedTopic;
+  if (isOn) {
+    if (topic == null) {
+      topics =
+          PushNotificationTopicType.values.where((p) => p.canSetting).toList();
+    } else {
+      topics.add(topic);
+    }
+  } else {
+    if (topic == null) {
+      topics = [];
+    } else {
+      topics.remove(topic);
+    }
+  }
+  return PushAllowModel(allowedTopic: topics);
 }
 
 @riverpod
 Future<BaseModel> pushStatusUpdate(PushStatusUpdateRef ref,
-    {required bool isOn, required PushAllowModel push}) async {
+    {required bool isOn, PushSettingParam? push}) async {
+  final baseModel = ref.read(pushSettingProvider);
+  final model = (baseModel as ResponseModel<PushAllowModel>).data!;
+
   final repository = ref.watch(pushPRepositoryProvider);
   final userId = ref.read(authProvider)!.id!;
+
   if (isOn) {
     return await repository
         .allowPush(topic: push, userId: userId)
         .then<BaseModel>((value) {
       logger.i(value);
-
+      // ref.read(pushSettingProvider.notifier).get();
       return value;
     }).catchError((e) {
       final error = ErrorModel.respToError(e);
@@ -77,6 +111,7 @@ Future<BaseModel> pushStatusUpdate(PushStatusUpdateRef ref,
         .disallowPush(topic: push, userId: userId)
         .then<BaseModel>((value) {
       logger.i(value);
+      // ref.read(pushSettingProvider.notifier).get();
       return value;
     }).catchError((e) {
       final error = ErrorModel.respToError(e);

@@ -6,10 +6,13 @@ part 'push_model.g.dart';
 
 @JsonSerializable()
 class PushDataModel {
-  @JsonKey(name: 'game_id')
-  final String gameId;
+  final String id;
+  final PushNotificationTopicType topic;
 
-  PushDataModel({required this.gameId});
+  PushDataModel({
+    required this.id,
+    required this.topic,
+  });
 
   factory PushDataModel.fromJson(Map<String, dynamic> json) =>
       _$PushDataModelFromJson(json);
@@ -53,4 +56,5 @@ class PushAllowModel {
       _$PushAllowModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$PushAllowModelToJson(this);
+
 }
