@@ -8,7 +8,7 @@ part 'user_profile_param.g.dart';
 
 @JsonSerializable()
 class UserNicknameParam {
-  final String? nickname;
+  final String nickname;
 
   UserNicknameParam({
     required this.nickname,

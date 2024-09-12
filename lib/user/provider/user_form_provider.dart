@@ -10,7 +10,7 @@ class UserNicknameForm extends _$UserNicknameForm {
   @override
   UserNicknameParam build() {
     return UserNicknameParam(
-      nickname: null,
+      nickname: '',
     );
   }
 
@@ -23,22 +23,9 @@ class UserNicknameForm extends _$UserNicknameForm {
   }
 
   bool validNickname() {
-    if (state.nickname != null) {
-      return ValidRegExp.userNickname(state.nickname!);
-    } else {
-      return false;
-    }
+    return ValidRegExp.userNickname(state.nickname);
   }
 
-// bool validForm() {
-//   if (state.password != null && state.new_password != null && state.new_password_check != null) {
-//     return ValidRegExp.userPassword(state.password!) &&
-//         ValidRegExp.userPassword(state.new_password!) &&
-//         ValidRegExp.userPassword(state.new_password_check!) &&
-//         state.new_password! == state.new_password_check!;
-//   }
-//   return false;
-// }
 }
 
 @riverpod
@@ -67,7 +54,7 @@ class UserPasswordForm extends _$UserPasswordForm {
     valid = validForm();
   }
 
-  bool getValid(){
+  bool getValid() {
     return valid;
   }
 

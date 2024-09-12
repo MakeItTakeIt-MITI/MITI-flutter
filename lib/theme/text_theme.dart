@@ -25,6 +25,15 @@ class MITITextStyle {
     letterSpacing: -0.02,
     height: 1,
   );
+
+  static final TextStyle xl150 = TextStyle(
+    fontSize: 20.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w700,
+    letterSpacing: -0.02,
+    height: 1.5,
+  );
+
   static final TextStyle xlLight = TextStyle(
     fontSize: 20.sp,
     fontFamily: 'Pretendard',

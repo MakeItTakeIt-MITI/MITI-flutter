@@ -24,6 +24,7 @@ import 'package:miti/theme/text_theme.dart';
 import 'package:miti/util/util.dart';
 
 import '../../auth/view/signup/signup_screen.dart';
+import '../../common/view/operation_term_screen.dart';
 import '../../kakaopay/view/approval_screen.dart';
 import '../../kakaopay/view/payment_screen.dart';
 import '../error/game_error.dart';

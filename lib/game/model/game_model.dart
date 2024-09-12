@@ -6,6 +6,7 @@ import 'package:miti/user/model/review_model.dart';
 import '../../auth/model/code_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
+import '../../user/model/user_model.dart';
 
 part 'game_model.g.dart';
 
@@ -228,19 +229,7 @@ class ParticipationModel extends IModelWithId {
       _$ParticipationModelFromJson(json);
 }
 
-@JsonSerializable()
-class UserInfoModel {
-  final String email;
-  final String nickname;
 
-  UserInfoModel({
-    required this.email,
-    required this.nickname,
-  });
-
-  factory UserInfoModel.fromJson(Map<String, dynamic> json) =>
-      _$UserInfoModelFromJson(json);
-}
 
 @JsonSerializable()
 class GameDetailModel extends IModelWithId {

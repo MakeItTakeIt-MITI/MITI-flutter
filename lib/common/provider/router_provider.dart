@@ -53,6 +53,7 @@ import '../../review/view/my_review_detail_screen.dart';
 import '../../review/view/receive_review_list_screen.dart';
 import '../../review/view/review_list_screen.dart';
 import '../../review/view/written_review_list_screen.dart';
+import '../../user/view/nickname_update_screen.dart';
 import '../../user/view/profile_screen.dart';
 import '../../permission_screen.dart';
 import '../../splash_screen.dart';
@@ -774,6 +775,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                   return const NoTransitionPage(child: ProfileBody());
                 },
                 routes: [
+                  GoRoute(
+                    path: 'nicknameUpdate',
+                    parentNavigatorKey: rootNavKey,
+                    name: NicknameUpdateScreen.routeName,
+                    builder: (context, state) {
+                      return const NicknameUpdateScreen();
+                    },
+                  ),
                   GoRoute(
                     path: 'notification',
                     parentNavigatorKey: rootNavKey,

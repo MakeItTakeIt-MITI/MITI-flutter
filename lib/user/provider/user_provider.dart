@@ -153,7 +153,7 @@ Future<BaseModel> updateNickname(UpdateNicknameRef ref) async {
 
     // final model = (result as ResponseModel<UserModel>).data!;
 
-    ref.read(userInfoProvider.notifier).updateNickname(param.nickname!);
+    ref.read(userInfoProvider.notifier).updateNickname(param.nickname);
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);

@@ -8,45 +8,6 @@ import '../../game/model/game_model.dart';
 
 part 'user_model.g.dart';
 
-class UserInfoModel extends LoginModel {
-  final String? birthday;
-  final String name;
-  final String phone;
-
-  UserInfoModel({
-    required super.id,
-    required super.email,
-    required super.nickname,
-    required super.token,
-    required super.signup_method,
-    required this.birthday,
-    required this.name,
-    required this.phone,
-  });
-
-  UserInfoModel copyWith(
-    int? id,
-    String? email,
-    String? nickname,
-    AuthType? signup_method,
-    TokenModel? token,
-    String? birthday,
-    String? name,
-    String? phone,
-  ) {
-    return UserInfoModel(
-      id: id ?? this.id,
-      email: email ?? this.email,
-      nickname: nickname ?? this.nickname,
-      token: token ?? this.token,
-      birthday: birthday ?? this.birthday,
-      name: name ?? this.name,
-      phone: phone ?? this.phone,
-      signup_method: signup_method ?? this.signup_method,
-    );
-  }
-}
-
 @JsonSerializable()
 class UserModel extends IModelWithId {
   final String email;
@@ -94,6 +55,20 @@ class UserModel extends IModelWithId {
   }
 }
 
+
+@JsonSerializable()
+class UserInfoModel {
+  final String email;
+  final String nickname;
+
+  UserInfoModel({
+    required this.email,
+    required this.nickname,
+  });
+
+  factory UserInfoModel.fromJson(Map<String, dynamic> json) =>
+      _$UserInfoModelFromJson(json);
+}
 @JsonSerializable()
 class UserNicknameModel extends IModelWithId {
   final String email;

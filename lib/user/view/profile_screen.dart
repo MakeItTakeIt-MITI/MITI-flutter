@@ -12,6 +12,7 @@ import 'package:miti/court/view/court_search_screen.dart';
 import 'package:miti/notification/provider/widget/unconfirmed_provider.dart';
 import 'package:miti/notification/view/notification_screen.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:miti/user/view/nickname_update_screen.dart';
 import 'package:miti/user/view/user_profile_update_screen.dart';
 
 import '../../account/view/bank_transfer_screen.dart';
@@ -168,7 +169,7 @@ class _MenuComponent extends StatelessWidget {
       ],
       '계정 설정': [
         _MenuItem(
-          onTap: () {},
+          onTap: () => context.pushNamed(NicknameUpdateScreen.routeName),
           title: '프로필 수정',
         ),
         _MenuItem(
@@ -514,7 +515,7 @@ class _ProfileComponent extends ConsumerWidget {
                 ),
                 SizedBox(height: 16.h),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () => context.pushNamed(NicknameUpdateScreen.routeName),
                   child: Container(
                     padding:
                         EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),

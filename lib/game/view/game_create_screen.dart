@@ -29,6 +29,7 @@ import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/custom_time_picker.dart';
 import '../../common/provider/router_provider.dart';
+import '../../common/view/operation_term_screen.dart';
 import '../../court/component/court_list_component.dart';
 import '../../util/util.dart';
 import '../component/game_recent_component.dart';
@@ -1332,67 +1333,6 @@ class AgreeTermComponent extends ConsumerWidget {
               separatorBuilder: (context, idx) => SizedBox(height: 16.h),
               itemCount: 2),
         ],
-      ),
-    );
-  }
-}
-
-class OperationTermScreen extends StatelessWidget {
-  final String title;
-  final String desc;
-  final VoidCallback onPressed;
-
-  const OperationTermScreen(
-      {super.key,
-      required this.title,
-      required this.desc,
-      required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog.fullscreen(
-      backgroundColor: MITIColor.gray800,
-      child: Scaffold(
-        backgroundColor: MITIColor.gray800,
-        appBar: const DefaultAppBar(
-          hasBorder: false,
-          leadingIcon: "remove",
-        ),
-        body: Padding(
-          padding:
-              EdgeInsets.only(top: 20.h, left: 21.w, right: 21.w, bottom: 20.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                title,
-                style: MITITextStyle.xxl140.copyWith(
-                  color: MITIColor.white,
-                ),
-              ),
-              SizedBox(height: 12.h),
-              Expanded(
-                child: Scrollbar(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Text(
-                          desc,
-                          style: MITITextStyle.xxsmLight150.copyWith(
-                            color: MITIColor.gray200,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 67.h),
-              TextButton(onPressed: onPressed, child: const Text("확인")),
-              SizedBox(height: 21.h),
-            ],
-          ),
-        ),
       ),
     );
   }

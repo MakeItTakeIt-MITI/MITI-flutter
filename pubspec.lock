@@ -226,10 +226,10 @@ packages:
     dependency: transitive
     description:
       name: dart_style
-      sha256: "99e066ce75c89d6b29903d788a7bb9369cf754f7b24bf70bf4b6d6d6b26853b9"
+      sha256: "7856d364b589d1f08986e140938578ed36ed948581fbc3bc9aef1805039ac5ab"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.6"
+    version: "2.3.7"
   dbus:
     dependency: transitive
     description:
@@ -1062,10 +1062,10 @@ packages:
     dependency: transitive
     description:
       name: permission_handler_platform_interface
-      sha256: fe0ffe274d665be8e34f9c59705441a7d248edebbe5d9e3ec2665f88b79358ea
+      sha256: e9c8eadee926c4532d0305dff94b85bf961f16759c3af791486613152af4b4f9
       url: "https://pub.dev"
     source: hosted
-    version: "4.2.2"
+    version: "4.2.3"
   permission_handler_windows:
     dependency: transitive
     description:
@@ -1142,10 +1142,10 @@ packages:
     dependency: "direct main"
     description:
       name: retrofit
-      sha256: f00d9b02c7d6c091c2b3347d8ed5f982cfa976e532c2567ed203608ee0edb50a
+      sha256: "3c9885ef3dbc5dc4b3fb0a40c972ab52e4dad04d52dac9bba24dfa76cf100451"
       url: "https://pub.dev"
     source: hosted
-    version: "4.4.0"
+    version: "4.4.1"
   retrofit_generator:
     dependency: "direct dev"
     description:

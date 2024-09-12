@@ -35,13 +35,11 @@ abstract class UserRepository {
   Future<ResponseModel<UserModel>> deleteUser({@Path() required int userId});
 
   @Headers({'token': 'true'})
-  @PATCH('/users/{userId}/update-nickname')
-  Future<ResponseModel<UserNicknameModel>> updateNickname({
+  @PATCH('/users/{userId}/update-profile')
+  Future<ResponseModel<UserInfoModel>> updateNickname({
     @Path() required int userId,
     @Body() required UserNicknameParam param,
   });
-
-
 
   // @Headers({'token': 'true'})
   @PATCH('/users/{userId}/update-password')

@@ -26,7 +26,7 @@ class UserProfileUpdateScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: DefaultAppBar(
+      appBar: const DefaultAppBar(
         title: '내 정보 수정',
         backgroundColor: MITIColor.gray800,
         hasBorder: false,

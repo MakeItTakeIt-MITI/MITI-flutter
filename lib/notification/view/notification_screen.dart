@@ -21,8 +21,10 @@ import '../../common/component/custom_dialog.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
 import '../../common/provider/router_provider.dart';
+import '../../game/view/game_create_screen.dart';
 import '../model/notice_model.dart';
 import '../model/push_model.dart';
+import 'notification_detail_screen.dart';
 
 class NotificationScreen extends ConsumerStatefulWidget {
   static String get routeName => 'notification';
@@ -381,7 +383,7 @@ class _PushCardState extends ConsumerState<PushCard> {
                     child: Row(
                       children: [
                         SizedBox(width: 4.w),
-                         Badge(
+                        Badge(
                           smallSize: 4.r,
                           largeSize: 4.r,
                           backgroundColor: MITIColor.primary,
@@ -432,7 +434,14 @@ class NotificationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-
+        showDialog(
+            context: context,
+            barrierColor: MITIColor.gray800,
+            builder: (context) {
+              return NotificationDetailScreen(
+                notificationId: id,
+              );
+            });
       },
       child: Container(
         decoration: const BoxDecoration(

@@ -1,15 +1,14 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:miti/common/model/model_id.dart';
 import 'package:miti/game/model/game_review_model.dart';
-
 import '../../common/model/entity_enum.dart';
-import '../../game/model/game_model.dart';
+import '../../user/model/user_model.dart';
 
 part 'review_model.g.dart';
 
 @JsonSerializable()
 class ReviewListModel {
   final String reviewee_nickname;
+
   // final Rating guest_rating;
   final List<ReviewHistoryModel> reviews;
 

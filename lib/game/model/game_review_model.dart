@@ -1,8 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:miti/common/model/model_id.dart';
-import 'package:miti/game/model/game_model.dart';
-
-import '../../common/model/entity_enum.dart';
+import 'package:miti/common/model/entity_enum.dart';
+import '../../user/model/user_model.dart';
 import '../param/game_param.dart';
 
 part 'game_review_model.g.dart';
