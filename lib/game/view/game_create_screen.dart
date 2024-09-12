@@ -1387,7 +1387,7 @@ class OperationTermScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 39.h),
+              SizedBox(height: 67.h),
               TextButton(onPressed: onPressed, child: const Text("확인")),
               SizedBox(height: 21.h),
             ],

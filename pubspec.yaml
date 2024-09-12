@@ -80,7 +80,7 @@ dependencies:
   marquee: ^2.2.3
 
   flutter_switch: ^0.3.2
-
+  expandable: ^5.0.1
 
 dependency_overrides:
   fading_edge_scrollview: ^4.1.1

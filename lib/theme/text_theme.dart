@@ -7,45 +7,51 @@ class MITITextStyle {
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w700,
     height: 1.4,
-    letterSpacing: -24.sp * 0.02,
+    letterSpacing: -0.02,
   );
 
   static final TextStyle xxl = TextStyle(
     fontSize: 24.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w700,
-    letterSpacing: -24.sp * 0.02,
+    letterSpacing: -0.02,
+    height: 1,
   );
 
   static final TextStyle xl = TextStyle(
     fontSize: 20.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w700,
-    letterSpacing: -20.sp * 0.02,
+    letterSpacing: -0.02,
+    height: 1,
   );
   static final TextStyle xlLight = TextStyle(
     fontSize: 20.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w300,
-    letterSpacing: -20.sp * 0.02,
+    letterSpacing: -0.02,
+    height: 1,
   );
 
   static final TextStyle lg = TextStyle(
     fontSize: 18.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w500,
+    height: 1,
   );
 
   static final TextStyle lgBold = TextStyle(
     fontSize: 18.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.bold,
+    height: 1,
   );
 
   static final TextStyle mdBold = TextStyle(
     fontSize: 16.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w700,
+    height: 1,
   );
   static final TextStyle mdBold150 = TextStyle(
     fontSize: 16.sp,
@@ -56,23 +62,25 @@ class MITITextStyle {
 
   static final TextStyle md = TextStyle(
     fontSize: 16.sp,
-    fontFamily: 'Pretendard',
+    fontFamily: 'Pretender',
     fontWeight: FontWeight.w500,
-    letterSpacing: -16.sp * 0.02,
+    letterSpacing: -0.02,
+    height: 1,
   );
 
   static final TextStyle mdSemiBold = TextStyle(
     fontSize: 16.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w600,
-    letterSpacing: -16.sp * 0.02,
+    letterSpacing: -0.02,
+    height: 1,
   );
 
   static final TextStyle mdSemiBold150 = TextStyle(
     fontSize: 16.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w600,
-    letterSpacing: -16.sp * 0.02,
+    letterSpacing: -0.02,
     height: 1.5,
   );
 
@@ -80,7 +88,8 @@ class MITITextStyle {
     fontSize: 16.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w300,
-    letterSpacing: -16.sp * 0.02,
+    letterSpacing: -0.02,
+    height: 1,
   );
 
   static final TextStyle sm150 = TextStyle(
@@ -88,28 +97,31 @@ class MITITextStyle {
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w400,
     height: 1.5,
-    letterSpacing: -14.sp * 0.02,
+    letterSpacing: -0.02,
   );
 
   static final TextStyle sm = TextStyle(
     fontSize: 14.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w400,
-    letterSpacing: -14.sp * 0.02,
+    letterSpacing: -0.02,
+    height: 1,
   );
 
   static final TextStyle smSemiBold = TextStyle(
     fontSize: 14.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w600,
-    letterSpacing: -14.sp * 0.02,
+    letterSpacing: -0.02,
+    height: 1,
   );
 
   static final TextStyle smBold = TextStyle(
     fontSize: 14.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.bold,
-    letterSpacing: -14.sp * 0.02,
+    letterSpacing: -0.02,
+    height: 1,
   );
 
   static final TextStyle xxsm = TextStyle(
@@ -145,13 +157,14 @@ class MITITextStyle {
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w300,
     height: 1.5,
-    letterSpacing: -12.sp * 0.02,
+    letterSpacing: -0.02,
   );
 
   static final TextStyle xxxsmBold = TextStyle(
     fontSize: 10.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.bold,
+    height: 1,
   );
 
   static final TextStyle xxxsm140 = TextStyle(
@@ -164,11 +177,14 @@ class MITITextStyle {
     fontSize: 10.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w500,
+    height: 1,
   );
+
   static final TextStyle xxxsmLight = TextStyle(
     fontSize: 10.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w300,
+    height: 1,
   );
 
   static final TextStyle gameTitleMainStyle = TextStyle(

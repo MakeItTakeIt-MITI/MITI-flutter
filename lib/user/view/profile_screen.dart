@@ -182,7 +182,7 @@ class _MenuComponent extends StatelessWidget {
       ],
       '고객센터': [
         _MenuItem(
-          onTap: () {},
+          onTap: () => context.pushNamed(FAQScreen.routeName),
           title: '자주 묻는 질문',
         ),
         _MenuItem(

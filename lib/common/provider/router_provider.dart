@@ -828,11 +828,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                     parentNavigatorKey: rootNavKey,
                     name: FAQScreen.routeName,
                     builder: (context, state) {
-                      final int bottomIdx =
-                          int.parse(state.uri.queryParameters['bottomIdx']!);
-                      return FAQScreen(
-                        bottomIdx: bottomIdx,
-                      );
+                      return const FAQScreen();
                     },
                   ),
                   GoRoute(

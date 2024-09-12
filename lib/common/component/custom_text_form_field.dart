@@ -49,41 +49,42 @@ class CustomTextFormField extends StatelessWidget {
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
   final InteractionDesc? interactionDesc;
-  final bool showAutoComplete;
   final TextAlign textAlign;
   final bool enabled;
   final TextStyle? hintTextStyle;
   final TextStyle? textStyle;
   final TextStyle? labelTextStyle;
   final Color? borderColor;
+  final BorderRadius? borderRadius;
   final VoidCallback? onTap;
+  final double height;
 
-  const CustomTextFormField({
-    super.key,
-    required this.hintText,
-    this.textInputAction,
-    this.label,
-    this.suffixIcon,
-    this.obscureText = false,
-    this.validator,
-    this.textEditingController,
-    this.focusNode,
-    this.onChanged,
-    this.onNext,
-    this.keyboardType,
-    this.inputFormatters,
-    this.interactionDesc,
-    this.showAutoComplete = false,
-    this.textAlign = TextAlign.start,
-    this.enabled = true,
-    this.initialValue,
-    this.hintTextStyle,
-    this.textStyle,
-    this.labelTextStyle,
-    this.borderColor,
-    this.prefix,
-    this.onTap,
-  });
+  const CustomTextFormField(
+      {super.key,
+      required this.hintText,
+      this.textInputAction,
+      this.label,
+      this.suffixIcon,
+      this.obscureText = false,
+      this.validator,
+      this.textEditingController,
+      this.focusNode,
+      this.onChanged,
+      this.onNext,
+      this.keyboardType,
+      this.inputFormatters,
+      this.interactionDesc,
+      this.textAlign = TextAlign.start,
+      this.enabled = true,
+      this.initialValue,
+      this.hintTextStyle,
+      this.textStyle,
+      this.labelTextStyle,
+      this.borderColor,
+      this.prefix,
+      this.onTap,
+      this.borderRadius,
+      this.height = 48});
 
   @override
   Widget build(BuildContext context) {
@@ -116,31 +117,22 @@ class CustomTextFormField extends StatelessWidget {
                 color: MITIColor.gray100,
               ),
           decoration: InputDecoration(
-            // contentPadding: EdgeInsets.symmetric(horizontal: 20.w),
-            // isDense: false,
-            // isCollapsed:true,
-
-            constraints: BoxConstraints(maxHeight: 48.h, minHeight: 48.h),
+            constraints:
+                BoxConstraints(maxHeight: height.h, minHeight: height.h),
             focusedBorder: OutlineInputBorder(
-              borderRadius: showAutoComplete
-                  ? BorderRadius.vertical(top: Radius.circular(8.r))
-                  : BorderRadius.circular(8.r),
+              borderRadius: borderRadius ?? BorderRadius.circular(8.r),
               borderSide: borderColor == null
                   ? BorderSide.none
                   : BorderSide(color: borderColor!),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: showAutoComplete
-                  ? BorderRadius.vertical(top: Radius.circular(8.r))
-                  : BorderRadius.circular(8.r),
+              borderRadius: borderRadius ?? BorderRadius.circular(8.r),
               borderSide: borderColor == null
                   ? BorderSide.none
                   : BorderSide(color: borderColor!),
             ),
             border: OutlineInputBorder(
-              borderRadius: showAutoComplete
-                  ? BorderRadius.vertical(top: Radius.circular(8.r))
-                  : BorderRadius.circular(8.r),
+              borderRadius: borderRadius ?? BorderRadius.circular(8.r),
               borderSide: borderColor == null
                   ? BorderSide.none
                   : BorderSide(color: borderColor!),
