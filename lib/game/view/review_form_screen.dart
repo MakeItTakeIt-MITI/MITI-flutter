@@ -492,7 +492,7 @@ class _CommentForm extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '어떤 점이 좋았나요?',
+            '어떤 점이 좋았나요? (최소 2개)',
             style: MITITextStyle.mdBold.copyWith(
               color: MITIColor.gray100,
             ),

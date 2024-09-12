@@ -30,6 +30,7 @@ import '../../account/model/account_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../court/view/court_map_screen.dart';
 import '../../default_screen.dart';
+import '../../report/view/report_list_screen.dart';
 import '../../user/view/profile_screen.dart';
 import '../../user/model/review_model.dart';
 import '../../user/view/user_info_screen.dart';
@@ -329,7 +330,34 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
       child: const Text('리뷰 작성하기'),
     );
     final reportButton = TextButton(
-        onPressed: () {},
+        onPressed: () {
+          showModalBottomSheet(
+              context: context,
+              builder: (_) {
+                return BottomDialog(
+                  title: '경기 신고하기',
+                  content: '‘${model.title}’ 경기를 신고하시겠습니까?',
+                  btn: TextButton(
+                    style:
+                        TextButton.styleFrom(backgroundColor: MITIColor.error),
+                    onPressed: () {
+                      Map<String, String> pathParameters = {
+                        'gameId': model.id.toString()
+                      };
+                      context.pushNamed(
+                        ReportListScreen.routeName,
+                        pathParameters: pathParameters,
+                      );
+                    },
+                    child: Text(
+                      "신고하기",
+                      style: MITITextStyle.mdBold
+                          .copyWith(color: MITIColor.gray100),
+                    ),
+                  ),
+                );
+              });
+        },
         style: TextButton.styleFrom(
           fixedSize: Size(98.w, 48.h),
           maximumSize: Size(98.w, 48.h),

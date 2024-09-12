@@ -349,3 +349,26 @@ enum PushNotificationTopicType {
   final String displayName;
   final bool canSetting;
 }
+
+enum ReportType {
+  game_hosting_report('경기 주최자 부정 사용 신고'),
+  etc('기타 신고');
+
+  const ReportType(
+    this.displayName,
+  );
+
+  final String displayName;
+}
+
+enum ReportSubType {
+  intentional_cheating('허위 경기 운영'),
+  incorrect_information('부정확한 경기 정보'),
+  etc('기타 신고 사유');
+
+  const ReportSubType(
+    this.displayName,
+  );
+
+  final String displayName;
+}

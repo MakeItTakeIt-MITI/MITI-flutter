@@ -49,6 +49,8 @@ import '../../game/view/game_screen.dart';
 import '../../kakaopay/view/approval_screen.dart';
 import '../../kakaopay/view/payment_screen.dart';
 import '../../notification/view/notification_setting_screen.dart';
+import '../../report/view/report_form_screen.dart';
+import '../../report/view/report_list_screen.dart';
 import '../../review/view/my_review_detail_screen.dart';
 import '../../review/view/receive_review_list_screen.dart';
 import '../../review/view/review_list_screen.dart';
@@ -432,6 +434,34 @@ final routerProvider = Provider<GoRouter>((ref) {
                           );
                         },
                         routes: [
+                          GoRoute(
+                              path: 'report',
+                              parentNavigatorKey: rootNavKey,
+                              name: ReportListScreen.routeName,
+                              builder: (context, state) {
+                                final int gameId =
+                                    int.parse(state.pathParameters['gameId']!);
+                                return ReportListScreen(
+                                  gameId: gameId,
+                                );
+                              },
+                              routes: [
+                                GoRoute(
+                                  path: ':reportId',
+                                  parentNavigatorKey: rootNavKey,
+                                  name: ReportFormScreen.routeName,
+                                  builder: (context, state) {
+                                    final int gameId = int.parse(
+                                        state.pathParameters['gameId']!);
+                                    final int reportId = int.parse(
+                                        state.pathParameters['reportId']!);
+                                    return ReportFormScreen(
+                                      gameId: gameId,
+                                      reportId: reportId,
+                                    );
+                                  },
+                                ),
+                              ]),
                           GoRoute(
                               path: 'players',
                               parentNavigatorKey: rootNavKey,
