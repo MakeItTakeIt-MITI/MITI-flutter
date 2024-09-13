@@ -45,7 +45,8 @@ class UserPasswordParam {
     return UserPasswordParam(
       new_password_check: new_password_check ?? this.new_password_check,
       new_password: new_password ?? this.new_password,
-      password_update_token: password_update_token ?? this.password_update_token,
+      password_update_token:
+          password_update_token ?? this.password_update_token,
     );
   }
 
@@ -83,6 +84,20 @@ class UserReviewParam extends DefaultParam {
 
   @override
   Map<String, dynamic> toJson() => _$UserReviewParamToJson(this);
+
+  @override
+  bool? get stringify => true;
+}
+
+@JsonSerializable()
+class UserPaymentParam extends DefaultParam {
+  UserPaymentParam();
+
+  @override
+  List<Object?> get props => [];
+
+  @override
+  Map<String, dynamic> toJson() => _$UserPaymentParamToJson(this);
 
   @override
   bool? get stringify => true;

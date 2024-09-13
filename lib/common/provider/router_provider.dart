@@ -21,6 +21,7 @@ import 'package:miti/notification/view/notification_screen.dart';
 import 'package:miti/support/view/faq_screen.dart';
 import 'package:miti/support/view/support_form_screen.dart';
 import 'package:miti/user/view/user_delete_screen.dart';
+import 'package:miti/user/view/user_payment_screen.dart';
 import 'package:miti/user/view/user_profile_form_screen.dart';
 import 'package:miti/user/view/review_detail_screen.dart';
 
@@ -765,6 +766,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                     name: NicknameUpdateScreen.routeName,
                     builder: (context, state) {
                       return const NicknameUpdateScreen();
+                    },
+                  ),
+                  GoRoute(
+                    path: 'myPayment',
+                    parentNavigatorKey: rootNavKey,
+                    name: UserPaymentScreen.routeName,
+                    builder: (context, state) {
+                      return const UserPaymentScreen();
                     },
                   ),
                   GoRoute(

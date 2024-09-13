@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:miti/user/model/my_payment_model.dart';
 
 import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
@@ -7,7 +8,6 @@ import '../../game/model/game_model.dart';
 import '../model/review_model.dart';
 import '../param/user_profile_param.dart';
 import '../repository/user_repository.dart';
-
 
 final userHostingPProvider = StateNotifierProvider.family.autoDispose<
     UserHostingPageStateNotifier,
@@ -24,8 +24,8 @@ final userHostingPProvider = StateNotifierProvider.family.autoDispose<
   );
 });
 
-class UserHostingPageStateNotifier extends PaginationProvider<GameListByDateModel,
-    UserGameParam, UserHostingPRepository> {
+class UserHostingPageStateNotifier extends PaginationProvider<
+    GameListByDateModel, UserGameParam, UserHostingPRepository> {
   UserHostingPageStateNotifier({
     required super.repository,
     required super.pageParams,
@@ -33,7 +33,6 @@ class UserHostingPageStateNotifier extends PaginationProvider<GameListByDateMode
     super.path,
   });
 }
-
 
 final userParticipationPProvider = StateNotifierProvider.family.autoDispose<
     UserParticipationPageStateNotifier,
@@ -50,8 +49,8 @@ final userParticipationPProvider = StateNotifierProvider.family.autoDispose<
   );
 });
 
-class UserParticipationPageStateNotifier extends PaginationProvider<GameListByDateModel,
-    UserGameParam, UserParticipationPRepository> {
+class UserParticipationPageStateNotifier extends PaginationProvider<
+    GameListByDateModel, UserGameParam, UserParticipationPRepository> {
   UserParticipationPageStateNotifier({
     required super.repository,
     required super.pageParams,
@@ -75,8 +74,8 @@ final userWrittenReviewsPProvider = StateNotifierProvider.family.autoDispose<
   );
 });
 
-class UserWrittenReviewsPageStateNotifier extends PaginationProvider<WrittenReviewModel,
-    UserReviewParam, UserWrittenReviewsPRepository> {
+class UserWrittenReviewsPageStateNotifier extends PaginationProvider<
+    WrittenReviewModel, UserReviewParam, UserWrittenReviewsPRepository> {
   UserWrittenReviewsPageStateNotifier({
     required super.repository,
     required super.pageParams,
@@ -84,7 +83,6 @@ class UserWrittenReviewsPageStateNotifier extends PaginationProvider<WrittenRevi
     super.path,
   });
 }
-
 
 final userReceiveReviewsPProvider = StateNotifierProvider.family.autoDispose<
     UserReceiveReviewsPageStateNotifier,
@@ -101,9 +99,34 @@ final userReceiveReviewsPProvider = StateNotifierProvider.family.autoDispose<
   );
 });
 
-class UserReceiveReviewsPageStateNotifier extends PaginationProvider<ReceiveReviewModel,
-    UserReviewParam, UserReceiveReviewsPRepository> {
+class UserReceiveReviewsPageStateNotifier extends PaginationProvider<
+    ReceiveReviewModel, UserReviewParam, UserReceiveReviewsPRepository> {
   UserReceiveReviewsPageStateNotifier({
+    required super.repository,
+    required super.pageParams,
+    super.param,
+    super.path,
+  });
+}
+
+final userPaymentPProvider = StateNotifierProvider.family.autoDispose<
+    UserPaymentPageStateNotifier,
+    BaseModel,
+    PaginationStateParam<UserPaymentParam>>((ref, param) {
+  final repository = ref.watch(userPaymentPRepositoryProvider);
+  return UserPaymentPageStateNotifier(
+    repository: repository,
+    pageParams: const PaginationParam(
+      page: 1,
+    ),
+    param: param.param,
+    path: param.path,
+  );
+});
+
+class UserPaymentPageStateNotifier extends PaginationProvider<MyPaymentModel,
+    UserPaymentParam, UserPaymentPRepository> {
+  UserPaymentPageStateNotifier({
     required super.repository,
     required super.pageParams,
     super.param,

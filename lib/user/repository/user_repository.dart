@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart' hide Headers;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:miti/user/model/my_payment_model.dart';
 import 'package:miti/user/model/review_model.dart';
 import 'package:miti/user/model/user_model.dart';
 import 'package:miti/user/param/user_profile_param.dart';
@@ -146,6 +147,26 @@ abstract class UserHostingPRepository
   Future<ResponseModel<PaginationModel<GameListByDateModel>>> paginate({
     @Queries() required PaginationParam paginationParams,
     @Queries() UserGameParam? param,
+    @Path('userId') int? path,
+  });
+}
+
+final userPaymentPRepositoryProvider = Provider<UserPaymentPRepository>((ref) {
+  final dio = ref.watch(dioProvider);
+  return UserPaymentPRepository(dio);
+});
+
+@RestApi(baseUrl: serverURL)
+abstract class UserPaymentPRepository
+    extends IBasePaginationRepository<MyPaymentModel, UserPaymentParam> {
+  factory UserPaymentPRepository(Dio dio) = _UserPaymentPRepository;
+
+  @override
+  @Headers({'token': 'true'})
+  @GET('/users/{userId}/payment-results')
+  Future<ResponseModel<PaginationModel<MyPaymentModel>>> paginate({
+    @Queries() required PaginationParam paginationParams,
+    @Queries() UserPaymentParam? param,
     @Path('userId') int? path,
   });
 }

@@ -13,6 +13,7 @@ import 'package:miti/notification/provider/widget/unconfirmed_provider.dart';
 import 'package:miti/notification/view/notification_screen.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/view/nickname_update_screen.dart';
+import 'package:miti/user/view/user_payment_screen.dart';
 import 'package:miti/user/view/user_profile_update_screen.dart';
 
 import '../../account/view/bank_transfer_screen.dart';
@@ -157,7 +158,7 @@ class _MenuComponent extends StatelessWidget {
           title: '나를 평가한 리뷰',
         ),
         _MenuItem(
-          onTap: () {},
+          onTap: () => context.pushNamed(UserPaymentScreen.routeName),
           title: '결제 내역 확인',
           option: getOption('게스트'),
         ),

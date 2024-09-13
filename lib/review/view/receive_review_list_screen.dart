@@ -80,6 +80,7 @@ class _ReceiveReviewListScreenState
                 controller: _scrollController,
                 separateSize: 8,
                 emptyWidget: Container(
+
                   color: MITIColor.gray750,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
