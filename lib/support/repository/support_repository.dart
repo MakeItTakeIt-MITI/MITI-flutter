@@ -45,25 +45,29 @@ abstract class SupportPRepository
   Future<ResponseModel<QuestionModel>> getQuestion({
     @Path() required int questionId,
     @Path() required int userId,
-
   });
-}
 
-final faqRepositoryProvider = Provider<FAQRepository>((ref) {
-  final dio = ref.watch(dioProvider);
-  return FAQRepository(dio);
-});
-
-@RestApi(baseUrl: serverURL)
-abstract class FAQRepository
-    extends IBasePaginationRepository<FAQModel, SupportParam> {
-  factory FAQRepository(Dio dio) = _FAQRepository;
-
-  @override
   @GET('/support/faq')
-  Future<ResponseModel<PaginationModel<FAQModel>>> paginate({
-    @Queries() required PaginationParam paginationParams,
-    @Queries() SupportParam? param,
-    @Path('userId') int? path,
+  Future<ResponseListModel<FAQModel>> getFAQ({
+    @Query('search') String? search,
   });
 }
+//
+// final faqRepositoryProvider = Provider<FAQRepository>((ref) {
+//   final dio = ref.watch(dioProvider);
+//   return FAQRepository(dio);
+// });
+//
+// @RestApi(baseUrl: serverURL)
+// abstract class FAQRepository
+//     extends IBasePaginationRepository<FAQModel, SupportParam> {
+//   factory FAQRepository(Dio dio) = _FAQRepository;
+//
+//   @override
+//   @GET('/support/faq')
+//   Future<ResponseModel<PaginationModel<FAQModel>>> paginate({
+//     @Queries() required PaginationParam paginationParams,
+//     @Queries() SupportParam? param,
+//     @Path('userId') int? path,
+//   });
+// }

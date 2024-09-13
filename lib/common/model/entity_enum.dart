@@ -372,3 +372,18 @@ enum ReportSubType {
 
   final String displayName;
 }
+
+enum FAQType {
+  all('전체'),
+  game('경기'),
+  settlement('정산'),
+  review('리뷰'),
+  report('신고'),
+  etc('기타');
+
+  const FAQType(
+    this.displayName,
+  );
+
+  final String displayName;
+}

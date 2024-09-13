@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/support/provider/widget/support_form_provider.dart';
@@ -33,29 +36,6 @@ final supportPageProvider = StateNotifierProvider.family.autoDispose<
 class SupportPageStateNotifier
     extends PaginationProvider<SupportModel, SupportParam, SupportPRepository> {
   SupportPageStateNotifier({
-    required super.repository,
-    required super.pageParams,
-    super.param,
-    super.path,
-  });
-}
-
-final faqProvider = StateNotifierProvider.family.autoDispose<FAQStateNotifier,
-    BaseModel, PaginationStateParam<SupportParam>>((ref, param) {
-  final repository = ref.watch(faqRepositoryProvider);
-  return FAQStateNotifier(
-    repository: repository,
-    pageParams: const PaginationParam(
-      page: 1,
-    ),
-    param: param.param,
-    path: param.path,
-  );
-});
-
-class FAQStateNotifier
-    extends PaginationProvider<FAQModel, SupportParam, FAQRepository> {
-  FAQStateNotifier({
     required super.repository,
     required super.pageParams,
     super.param,
@@ -101,6 +81,40 @@ class Question extends _$Question {
     repository
         .getQuestion(questionId: questionId, userId: userId)
         .then((value) {
+      logger.i(value);
+      state = value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state = error;
+    });
+  }
+}
+
+@riverpod
+class FAQ extends _$FAQ {
+  final searchDebounce = Debouncer(const Duration(milliseconds: 300),
+      initialValue: FAQParam(search: ''), checkEquality: false);
+
+  @override
+  BaseModel build() {
+    searchDebounce.values.listen((FAQParam state) {
+      log('throttle!!');
+      get(search: state.search);
+    });
+    get();
+
+    return LoadingModel();
+  }
+
+  void updateDebounce({required FAQParam param}) {
+    searchDebounce.setValue(param);
+  }
+
+  void get({String? search}) {
+    final repository = ref.watch(supportPRepositoryProvider);
+    repository.getFAQ(search: search).then((value) {
       logger.i(value);
       state = value;
     }).catchError((e) {

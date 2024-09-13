@@ -1,11 +1,15 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
-import 'package:miti/court/component/court_list_component.dart';
+import 'package:miti/common/model/default_model.dart';
+import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/support/model/support_model.dart';
+import 'package:miti/support/provider/support_provider.dart';
+import 'package:miti/support/provider/widget/support_form_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/util/util.dart';
 import 'package:expandable/expandable.dart';
@@ -24,6 +28,8 @@ class FAQScreen extends StatefulWidget {
 }
 
 class _FAQScreenState extends State<FAQScreen> {
+  List<FAQType> faqCategories = FAQType.values;
+
   late final ScrollController _scrollController;
 
   @override
@@ -40,15 +46,6 @@ class _FAQScreenState extends State<FAQScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> categories = [
-      '전체',
-      '경기',
-      '정산',
-      '리뷰',
-      '신고',
-      '기타',
-    ];
-
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -62,7 +59,7 @@ class _FAQScreenState extends State<FAQScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Padding(
-                padding: EdgeInsets.only(top: 20.h, bottom: 60.h),
+                padding: EdgeInsets.only(top: 20.h, bottom: 20.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -73,117 +70,166 @@ class _FAQScreenState extends State<FAQScreen> {
                       ),
                     ),
                     SizedBox(height: 20.h),
-                    CustomTextFormField(
-                      height: 40,
-                      hintText: '궁금한 내용을 검색해보세요.',
-                      borderRadius: BorderRadius.circular(12.r),
-                      textStyle:
-                          MITITextStyle.sm.copyWith(color: MITIColor.gray100),
-                      hintTextStyle:
-                          MITITextStyle.sm.copyWith(color: MITIColor.gray600),
-                      suffixIcon: SvgPicture.asset(
-                        AssetUtil.getAssetPath(
-                          type: AssetType.icon,
-                          name: 'search',
+                    Consumer(
+                      builder:
+                          (BuildContext context, WidgetRef ref, Widget? child) {
+                        return CustomTextFormField(
+                          height: 40,
+                          hintText: '궁금한 내용을 검색해보세요.',
+                          borderRadius: BorderRadius.circular(12.r),
+                          textStyle: MITITextStyle.sm
+                              .copyWith(color: MITIColor.gray100),
+                          hintTextStyle: MITITextStyle.sm
+                              .copyWith(color: MITIColor.gray600),
+                          suffixIcon: SvgPicture.asset(
+                            AssetUtil.getAssetPath(
+                              type: AssetType.icon,
+                              name: 'search',
+                            ),
+                          ),
+                          onChanged: (v) {
+                            log("search = $v");
+                            final param = ref
+                                .read(fAQSearchFormProvider.notifier)
+                                .update(search: v);
+                            final result = ref
+                                .read(fAQProvider.notifier)
+                                .updateDebounce(param: param);
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  final selectCategory = ref.watch(faqCategoryProvider);
+                  final result = ref.watch(fAQProvider);
+                  if (result is LoadingModel) {
+                    return const CircularProgressIndicator();
+                  } else if (result is ErrorModel) {
+                    return Text('error');
+                  }
+                  final modelList =
+                      (result as ResponseListModel<FAQModel>).data!.where((f) {
+                    if (selectCategory == FAQType.all) {
+                      return true;
+                    } else if (f.category == selectCategory) {
+                      return true;
+                    }
+                    return false;
+                  }).toList();
+
+                  final form = ref.watch(fAQSearchFormProvider);
+                  /// 검색 결과가 없을 때
+                  if (modelList.isEmpty) {
+                    return Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "검색 결과가 없습니다.",
+                            style: MITITextStyle.xxl140.copyWith(
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(height: 20.h),
+                          Text(
+                            '다른 키워드로 다시 검색해 보세요.',
+                            style: MITITextStyle.sm.copyWith(
+                              color: MITIColor.gray300,
+                            ),
+                          )
+                        ],
+                      ),
+                    );
+                  }else if(form.search.isNotEmpty){
+                    return Expanded(
+                      child: SingleChildScrollView(
+                        child: ListView.separated(
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (_, idx) {
+                            return _FAQComponent.fromModel(
+                                model: modelList[idx]);
+                          },
+                          separatorBuilder: (_, idx) {
+                            return Container();
+                          },
+                          shrinkWrap: true,
+                          itemCount: modelList.length,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-
-              /// 검색 결과가 없을 때
-              Expanded(
-                child: Column(
-                  children: [
-                    Text(
-                      "검색 결과가 없습니다.",
-                      style: MITITextStyle.xxl140.copyWith(
-                        color: Colors.white,
-                      ),
-                    ),
-                    SizedBox(height: 20.h),
-                    Text(
-                      '다른 키워드로 다시 검색해 보세요.',
-                      style: MITITextStyle.sm.copyWith(
-                        color: MITIColor.gray300,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                height: 16.sp,
-                alignment: Alignment.centerLeft,
-                child: ListView.separated(
-                    padding: EdgeInsets.symmetric(horizontal: 8.w),
-                    scrollDirection: Axis.horizontal,
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemBuilder: (_, idx) {
-                      return GestureDetector(
-                        onTap: () {},
-                        child: Text(
-                          categories[idx],
-                          style: MITITextStyle.mdBold.copyWith(
-                            color:
-                                false ? MITIColor.primary : MITIColor.gray500,
+                    );
+                  }
+                  return Expanded(
+                    child: Column(
+                      children: [
+                        SizedBox(height: 40.h),
+                        Container(
+                          height: 16.sp,
+                          alignment: Alignment.centerLeft,
+                          child: ListView.separated(
+                              padding: EdgeInsets.symmetric(horizontal: 8.w),
+                              scrollDirection: Axis.horizontal,
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemBuilder: (_, idx) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    ref
+                                        .read(faqCategoryProvider.notifier)
+                                        .update((f) => faqCategories[idx]);
+                                  },
+                                  child: Text(
+                                    faqCategories[idx].displayName,
+                                    style: MITITextStyle.mdBold.copyWith(
+                                      color:
+                                          selectCategory == faqCategories[idx]
+                                              ? MITIColor.primary
+                                              : MITIColor.gray500,
+                                    ),
+                                  ),
+                                );
+                              },
+                              separatorBuilder: (_, __) => SizedBox(
+                                    width: 20.w,
+                                  ),
+                              itemCount: faqCategories.length),
+                        ),
+                        SizedBox(height: 20.h),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: ListView.separated(
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemBuilder: (_, idx) {
+                                return _FAQComponent.fromModel(
+                                    model: modelList[idx]);
+                              },
+                              separatorBuilder: (_, idx) {
+                                return Container();
+                              },
+                              shrinkWrap: true,
+                              itemCount: modelList.length,
+                            ),
                           ),
                         ),
-                      );
-                    },
-                    separatorBuilder: (_, __) => SizedBox(
-                          width: 20.w,
-                        ),
-                    itemCount: categories.length),
+                      ],
+                    ),
+                  );
+                },
               ),
-
-              // CustomScrollView(
-              //   slivers: [
-              //     SliverPadding(
-              //       padding: EdgeInsets.all(12.r),
-              //       sliver: DisposeSliverPaginationListView(
-              //           provider: faqProvider(PaginationStateParam()),
-              //           itemBuilder: (BuildContext context, int index, Base pModel) {
-              //             final model = pModel as FAQModel;
-              //
-              //             return _FAQComponent.fromModel(
-              //               model: model,
-              //             );
-              //           },
-              //           skeleton: Container(),
-              //           controller: _scrollController,
-              //           emptyWidget: getEmptyWidget()),
-              //     ),
-              //   ],
-              // )
             ],
           ),
         ),
       ),
     );
   }
-
-  Widget getEmptyWidget() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          '송금 내역이 없습니다.',
-          style: MITITextStyle.pageMainTextStyle,
-        ),
-        SizedBox(height: 20.h),
-        Text(
-          '송금 요청을 통해 정산금을 받아보세요!',
-          style: MITITextStyle.pageSubTextStyle,
-        )
-      ],
-    );
-  }
 }
 
 class _FAQComponent extends ConsumerWidget {
   final int id;
+  final FAQType category;
   final String title;
   final String content;
   final DateTime created_at;
@@ -191,6 +237,7 @@ class _FAQComponent extends ConsumerWidget {
 
   const _FAQComponent(
       {super.key,
+      required this.category,
       required this.title,
       required this.content,
       required this.created_at,
@@ -204,6 +251,7 @@ class _FAQComponent extends ConsumerWidget {
       created_at: model.created_at,
       modified_at: model.modified_at,
       id: model.id,
+      category: model.category,
     );
   }
 
@@ -228,9 +276,10 @@ class _FAQComponent extends ConsumerWidget {
           header: Align(
             alignment: const Alignment(-1, 0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  '어쩌구저쩌구인 경우에는 어떻게 하나요?어쩌구저쩌구인 경우에는 어떻게 하나요?어쩌구저쩌구인 경우에는 어떻게 하나요?',
+                  title,
                   style: MITITextStyle.md.copyWith(
                     color: MITIColor.gray50,
                   ),
@@ -242,28 +291,18 @@ class _FAQComponent extends ConsumerWidget {
           expanded: ExpandableButton(
             theme: const ExpandableThemeData(useInkWell: false),
             child: Container(
+              width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20.r),
                 color: MITIColor.gray750,
               ),
               margin: EdgeInsets.only(top: 20.h),
               padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
-              child: Column(
-                children: [
-                  Text(
-                    title,
-                    style: MITITextStyle.sm150.copyWith(
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(height: 12.h),
-                  Text(
-                    content,
-                    style: MITITextStyle.sm150.copyWith(
-                      color: MITIColor.gray300,
-                    ),
-                  ),
-                ],
+              child: Text(
+                content,
+                style: MITITextStyle.sm150.copyWith(
+                  color: MITIColor.gray300,
+                ),
               ),
             ),
           ),

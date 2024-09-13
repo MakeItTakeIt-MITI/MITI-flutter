@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
 
 part 'support_model.g.dart';
@@ -27,6 +28,7 @@ class SupportModel extends IModelWithId {
 class QuestionModel extends SupportModel {
   final String content;
   final List<AnswerModel> answers;
+
   QuestionModel({
     required super.id,
     required super.title,
@@ -60,6 +62,7 @@ class AnswerModel extends IModelWithId {
 
 @JsonSerializable()
 class FAQModel extends IModelWithId {
+  final FAQType category;
   final String title;
   final String content;
   final DateTime created_at;
@@ -67,6 +70,7 @@ class FAQModel extends IModelWithId {
 
   FAQModel({
     required super.id,
+    required this.category,
     required this.title,
     required this.created_at,
     required this.modified_at,

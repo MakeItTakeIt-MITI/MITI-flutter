@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/common/component/custom_dialog.dart';
+import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/kakaopay/error/pay_error.dart';
 import 'package:miti/kakaopay/provider/pay_provider.dart';
@@ -61,7 +62,12 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                   PayError.fromModel(model: result)
                       .responseError(context, PayApiType.approval, ref);
                 } else if (result is ResponseModel<PayApprovalModel>) {
-                  Map<String, String> pathParameters = {'gameId': widget.gameId.toString()};
+                  ref
+                      .read(gameDetailProvider(gameId: widget.gameId).notifier)
+                      .get(gameId: widget.gameId);
+                  Map<String, String> pathParameters = {
+                    'gameId': widget.gameId.toString()
+                  };
                   const GameCompleteType extra = GameCompleteType.payment;
                   context.pushNamed(
                     GameCompleteScreen.routeName,
@@ -70,7 +76,6 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                   );
                 }
               }
-
 
               return NavigationDecision.prevent;
             } else if (request.url.startsWith(
