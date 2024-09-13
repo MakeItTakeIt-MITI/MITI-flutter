@@ -9,6 +9,7 @@ import '../../common/repository/base_pagination_repository.dart';
 import '../../dio/dio_interceptor.dart';
 import '../../dio/provider/dio_provider.dart';
 import '../../user/param/user_profile_param.dart';
+import '../param/report_param.dart';
 
 part 'report_repository.g.dart';
 
@@ -29,4 +30,11 @@ abstract class ReportRepository {
   @GET('/reports/report-reasons/{reportId}')
   Future<ResponseModel<ReportDetailModel>> getDetail(
       {@Path() required int reportId});
+
+  @Headers({'token': 'true'})
+  @POST('/games/{gameId}/reports')
+  Future<ResponseModel<CreateReportModel>> report({
+    @Path() required int gameId,
+    @Body() required ReportParam param,
+  });
 }

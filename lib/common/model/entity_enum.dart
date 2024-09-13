@@ -365,12 +365,12 @@ enum ReportType {
   final String displayName;
 }
 
-enum ReportSubType {
+enum HostReportCategoryType {
   intentional_cheating('허위 경기 운영'),
   incorrect_information('부정확한 경기 정보'),
   etc('기타 신고 사유');
 
-  const ReportSubType(
+  const HostReportCategoryType(
     this.displayName,
   );
 
@@ -414,6 +414,19 @@ enum PaymentResultType {
   canceled('결제 취소');
 
   const PaymentResultType(
+    this.displayName,
+  );
+
+  final String displayName;
+}
+
+enum ReportStatusType {
+  waiting('대기중'),
+  evidence_requested('관련 자료 요청 상태'),
+  dismissed('기각'),
+  given_penalty('처분');
+
+  const ReportStatusType(
     this.displayName,
   );
 

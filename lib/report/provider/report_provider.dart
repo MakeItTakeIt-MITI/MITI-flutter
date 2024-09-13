@@ -1,6 +1,7 @@
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/notification/param/push_setting_param.dart';
 import 'package:miti/notification/repository/notification_repository.dart';
+import 'package:miti/report/provider/widget/report_form_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../common/logger/custom_logger.dart';
@@ -54,4 +55,25 @@ class ReportDetail extends _$ReportDetail {
       state = error;
     });
   }
+}
+
+@riverpod
+Future<BaseModel> createReport(CreateReportRef ref,
+    {required int gameId, required HostReportCategoryType category}) async {
+  final param = ref.read(reportFormProvider(category: category));
+  return await ref
+      .watch(reportRepositoryProvider)
+      .report(
+        gameId: gameId,
+        param: param,
+      )
+      .then<BaseModel>((value) {
+    logger.i('create report !');
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
 }

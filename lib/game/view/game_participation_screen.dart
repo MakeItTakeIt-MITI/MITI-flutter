@@ -303,8 +303,7 @@ class _PlayerComponent extends StatelessWidget {
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       padding: EdgeInsets.symmetric(horizontal: 12.w),
                       minimumSize: Size(75.w, 30.h),
-                      fixedSize: Size(75.w, 30.h),
-                      maximumSize: Size(75.w, 30.h),
+                      maximumSize: Size(90.w, 30.h),
                       backgroundColor:
                           valid == null ? MITIColor.primary : MITIColor.gray800,
                       shape: RoundedRectangleBorder(

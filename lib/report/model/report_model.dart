@@ -7,7 +7,7 @@ part 'report_model.g.dart';
 @JsonSerializable()
 class ReportModel extends IModelWithId {
   final ReportType category;
-  final ReportSubType subcategory;
+  final HostReportCategoryType subcategory;
 
   ReportModel({
     required super.id,
@@ -18,7 +18,6 @@ class ReportModel extends IModelWithId {
   factory ReportModel.fromJson(Map<String, dynamic> json) =>
       _$ReportModelFromJson(json);
 }
-
 
 @JsonSerializable()
 class ReportDetailModel extends ReportModel {
@@ -35,3 +34,26 @@ class ReportDetailModel extends ReportModel {
       _$ReportDetailModelFromJson(json);
 }
 
+@JsonSerializable()
+class CreateReportModel extends IModelWithId {
+
+  final int reportee;
+  final int game;
+  final HostReportCategoryType category;
+  final String content;
+  final ReportStatusType report_status;
+  final String created_at;
+
+  CreateReportModel({
+    required super.id,
+    required this.category,
+    required this.content,
+    required this.reportee,
+    required this.game,
+    required this.report_status,
+    required this.created_at,
+  });
+
+  factory CreateReportModel.fromJson(Map<String, dynamic> json) =>
+      _$CreateReportModelFromJson(json);
+}

@@ -60,9 +60,11 @@ class ReportListScreen extends StatelessWidget {
                               'gameId': gameId.toString(),
                               'reportId': modelList[idx].id.toString()
                             };
+
                             context.pushNamed(
                               ReportFormScreen.routeName,
                               pathParameters: pathParameters,
+                              extra: modelList[idx].subcategory,
                             );
                           },
                         ),
@@ -80,7 +82,7 @@ class ReportListScreen extends StatelessWidget {
 class ReportCard extends StatelessWidget {
   final int id;
   final ReportType category;
-  final ReportSubType subcategory;
+  final HostReportCategoryType subcategory;
   final VoidCallback onTap;
 
   const ReportCard(

@@ -344,6 +344,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
                       Map<String, String> pathParameters = {
                         'gameId': model.id.toString()
                       };
+                      context.pop();
                       context.pushNamed(
                         ReportListScreen.routeName,
                         pathParameters: pathParameters,

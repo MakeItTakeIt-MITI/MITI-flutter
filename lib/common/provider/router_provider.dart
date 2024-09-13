@@ -451,9 +451,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                                         state.pathParameters['gameId']!);
                                     final int reportId = int.parse(
                                         state.pathParameters['reportId']!);
+                                    final type =
+                                        state.extra as HostReportCategoryType;
                                     return ReportFormScreen(
                                       gameId: gameId,
                                       reportId: reportId,
+                                      type: type,
                                     );
                                   },
                                 ),
