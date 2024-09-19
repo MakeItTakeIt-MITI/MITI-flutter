@@ -147,26 +147,47 @@ class UserError extends ErrorBase {
           );
         },
       );
-    } else if (this.status_code == Forbidden && this.error_code == 940) {
+    } else if (this.status_code == Forbidden && this.error_code == 440) {
       /// 완료되지 않은 경기 존재
-      final extra = CustomDialog(
-        title: '회원탈퇴 실패',
-        content: '완료되지 않은 경기가 있습니다.\n경기 진행을 완료한 뒤에 회원 탈퇴를 진행해주세요.',
-        onPressed: () {
-          context.pop();
-        },
-      );
-      context.pushNamed(DialogPage.routeName, extra: extra);
-    } else if (this.status_code == Forbidden && this.error_code == 941) {
+      showModalBottomSheet(
+          context: context,
+          builder: (_) {
+            return BottomDialog(
+              title: '회원탈퇴 실패',
+              content:
+                  '경기 진행이 끝나지 않은 경기가 있습니다.\n경기 진행이 모두 끝난 이후에 회원 탈퇴를 진행해 주세요.',
+              btn: Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  return TextButton(
+                    onPressed: () => context.pop(),
+                    child: const Text(
+                      "확인",
+                    ),
+                  );
+                },
+              ),
+            );
+          });
+    } else if (this.status_code == Forbidden && this.error_code == 441) {
       /// 완료되지 않은 참가 존재
-      final extra = CustomDialog(
-        title: '회원탈퇴 실패',
-        content: '완료되지 않은 참가 경기가 있습니다.\n경기 진행을 완료한 뒤에 회원 탈퇴를 진행해주세요.',
-        onPressed: () {
-          context.pop();
-        },
-      );
-      context.pushNamed(DialogPage.routeName, extra: extra);
+      showModalBottomSheet(
+          context: context,
+          builder: (_) {
+            return BottomDialog(
+              title: '회원탈퇴 실패',
+              content: '완료되지 않은 참가 경기가 있습니다.\n경기 진행을 완료한 뒤에 회원 탈퇴를 진행해주세요.',
+              btn: Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  return TextButton(
+                    onPressed: () => context.pop(),
+                    child: const Text(
+                      "확인",
+                    ),
+                  );
+                },
+              ),
+            );
+          });
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 사용자 정보 조회 실패
       const extra = ErrorScreenType.notFound;

@@ -299,8 +299,7 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
                       fontSize: 16.sp,
                     ),
                 decoration: InputDecoration(
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
                     constraints:
                         BoxConstraints.loose(Size(double.infinity, 58.h)),
                     border: OutlineInputBorder(

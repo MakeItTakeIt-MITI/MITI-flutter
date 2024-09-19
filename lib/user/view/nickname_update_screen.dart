@@ -32,8 +32,14 @@ class NicknameUpdateScreen extends StatelessWidget {
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 21.w),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(height: 88.h),
+              SizedBox(height: 40.h),
+              Text(
+                '변경하고 싶은 닉네임을 입력해 주세요.',
+                style: MITITextStyle.mdBold.copyWith(color: MITIColor.gray100),
+              ),
+              SizedBox(height: 40.h),
               Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   return CustomTextFormField(

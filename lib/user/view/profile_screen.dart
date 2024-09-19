@@ -11,6 +11,7 @@ import 'package:miti/common/model/default_model.dart';
 import 'package:miti/court/view/court_search_screen.dart';
 import 'package:miti/notification/provider/widget/unconfirmed_provider.dart';
 import 'package:miti/notification/view/notification_screen.dart';
+import 'package:miti/support/view/guide_screen.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/view/nickname_update_screen.dart';
 import 'package:miti/user/view/user_payment_screen.dart';
@@ -192,7 +193,7 @@ class _MenuComponent extends StatelessWidget {
           title: '문의하기',
         ),
         _MenuItem(
-          onTap: () {},
+          onTap: () => context.pushNamed(GuideScreen.routeName),
           title: '서비스 이용 안내',
         ),
       ],

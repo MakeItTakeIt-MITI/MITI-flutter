@@ -51,6 +51,10 @@ abstract class SupportPRepository
   Future<ResponseListModel<FAQModel>> getFAQ({
     @Query('search') String? search,
   });
+
+  @GET('/support/guide')
+  Future<ResponseListModel<GuideModel>> getGuide(
+      {@Query('category') String? category});
 }
 //
 // final faqRepositoryProvider = Provider<FAQRepository>((ref) {

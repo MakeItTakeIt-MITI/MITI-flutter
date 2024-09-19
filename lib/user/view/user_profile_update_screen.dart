@@ -13,8 +13,10 @@ import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/provider/user_provider.dart';
+import 'package:miti/user/view/user_delete_screen.dart';
 import 'package:miti/user/view/user_profile_form_screen.dart';
 
+import '../../common/component/custom_dialog.dart';
 import '../../util/util.dart';
 import '../model/user_model.dart';
 
@@ -131,10 +133,12 @@ class _PasswordResetting extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              '비밀번호 재설정',
-              style: MITITextStyle.mdLight.copyWith(
-                color: MITIColor.gray100,
+            Expanded(
+              child: Text(
+                '비밀번호 재설정',
+                style: MITITextStyle.mdLight.copyWith(
+                  color: MITIColor.gray100,
+                ),
               ),
             ),
             SvgPicture.asset(AssetUtil.getAssetPath(
@@ -157,14 +161,34 @@ class _AuthComponent extends ConsumerWidget {
       child: Column(
         children: [
           GestureDetector(
-            onTap: () => ref.read(authProvider.notifier).logout(),
+            onTap: () {
+              showModalBottomSheet(
+                  context: context,
+                  builder: (_) {
+                    return BottomDialog(
+                      hasPop: true,
+                      title: '로그아웃',
+                      content:
+                          ' 로그아웃 시, 모집하거나 참여한 경기에\n해당하는 알람을 받을 수 없습니다.\n그래도 로그아웃 하시겠습니까?',
+                      btn: TextButton(
+                        onPressed: () {
+                          context.pop();
+                          ref.read(authProvider.notifier).logout();
+                        },
+                        child: const Text("로그아웃 하기"),
+                      ),
+                    );
+                  });
+            },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '로그아웃',
-                  style: MITITextStyle.mdLight.copyWith(
-                    color: MITIColor.gray100,
+                Expanded(
+                  child: Text(
+                    '로그아웃',
+                    style: MITITextStyle.mdLight.copyWith(
+                      color: MITIColor.gray100,
+                    ),
                   ),
                 ),
                 SvgPicture.asset(AssetUtil.getAssetPath(
@@ -174,14 +198,16 @@ class _AuthComponent extends ConsumerWidget {
           ),
           SizedBox(height: 12.h),
           GestureDetector(
-            onTap: () {},
+            onTap: () => context.pushNamed(UserDeleteScreen.routeName),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '회원탈퇴',
-                  style: MITITextStyle.mdLight.copyWith(
-                    color: MITIColor.gray100,
+                Expanded(
+                  child: Text(
+                    '회원탈퇴',
+                    style: MITITextStyle.mdLight.copyWith(
+                      color: MITIColor.gray100,
+                    ),
                   ),
                 ),
                 SvgPicture.asset(AssetUtil.getAssetPath(

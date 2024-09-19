@@ -84,6 +84,8 @@ dependencies:
 
   flutter_html: ^3.0.0-beta.2
 
+  carousel_slider: ^5.0.0
+
 dependency_overrides:
   fading_edge_scrollview: ^4.1.1
 

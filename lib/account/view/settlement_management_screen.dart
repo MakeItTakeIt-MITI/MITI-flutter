@@ -244,14 +244,13 @@ class _AccountInfo extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final result = ref.watch(accountProvider);
-    if (result is LoadingModel) {
-      return const CircularProgressIndicator();
-    } else if (result is ErrorModel) {
-      return const Text('error');
-    }
+    // final result = ref.watch(accountProvider);
+    // if (result is LoadingModel) {
+    //   return const CircularProgressIndicator();
+    // } else if (result is ErrorModel) {
+    //   return const Text('error');
+    // }
 
-    final model = (result as ResponseModel<AccountDetailModel>).data!;
 
     return Container(
       color: MITIColor.gray800,
@@ -275,9 +274,10 @@ class _AccountInfo extends ConsumerWidget {
                       children: [
                         Consumer(
                           builder: (BuildContext context, WidgetRef ref, Widget? child) {
+
                             final result = ref.watch(accountProvider);
                             if(result is LoadingModel){
-                              return CircularProgressIndicator();
+                              return Container();
                             }else if(result is ErrorModel){
                               return Text("error");
                             }

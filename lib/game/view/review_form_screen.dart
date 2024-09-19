@@ -293,9 +293,14 @@ class MultiLineTextFormField extends StatefulWidget {
   final String hint;
   final ValueChanged<String>? onChanged;
   final BuildContext context;
+  final ScrollController? scrollController;
 
   const MultiLineTextFormField(
-      {super.key, this.onChanged, required this.hint, required this.context});
+      {super.key,
+      this.onChanged,
+      required this.hint,
+      required this.context,
+      this.scrollController});
 
   @override
   State<MultiLineTextFormField> createState() => _MultiLineTextFormFieldState();
@@ -305,14 +310,14 @@ class _MultiLineTextFormFieldState extends State<MultiLineTextFormField> {
   late final TextEditingController _editTextController;
   late final FocusNode _focusNode;
   late final GlobalKey key;
-  late final ScrollController _scrollController;
+  // late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
     key = GlobalKey();
     _editTextController = TextEditingController();
-    _scrollController = ScrollController();
+    // _scrollController = ScrollController();
     _focusNode = FocusNode()
       ..addListener(() {
         if (_focusNode.hasFocus) {
@@ -328,7 +333,7 @@ class _MultiLineTextFormFieldState extends State<MultiLineTextFormField> {
   @override
   void dispose() {
     _editTextController.dispose();
-    _scrollController.dispose();
+    // _scrollController.dispose();
     _focusNode.dispose();
     super.dispose();
   }
@@ -342,7 +347,7 @@ class _MultiLineTextFormFieldState extends State<MultiLineTextFormField> {
       child: Align(
         child: RawScrollbar(
           thumbColor: MITIColor.gray500,
-          controller: _scrollController,
+          controller: widget.scrollController,
           crossAxisMargin: 4.w,
           thickness: 2.w,
           radius: Radius.circular(100.r),
@@ -350,8 +355,11 @@ class _MultiLineTextFormFieldState extends State<MultiLineTextFormField> {
           child: TextField(
               key: key,
               focusNode: _focusNode,
-              scrollController: _scrollController,
+              scrollController: widget.scrollController,
               // autofocus: true,
+              onTap: () {
+                FocusScope.of(context).requestFocus(_focusNode);
+              },
               keyboardType: TextInputType.multiline,
               maxLines: null,
               autocorrect: true,

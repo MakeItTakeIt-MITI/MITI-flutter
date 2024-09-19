@@ -569,7 +569,6 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
     return GestureDetector(
       onTap: widget.onTap,
       child: SizedBox(
-        height: 24.h,
         child: Row(
           children: [
             SizedBox(
@@ -584,6 +583,7 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
                 height: 24.r,
               ),
             ),
+
             SizedBox(width: widget.isCheckBox ? 16.w : 8.w),
             Text(
               widget.title,

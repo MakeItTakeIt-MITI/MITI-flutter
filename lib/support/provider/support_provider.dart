@@ -125,3 +125,25 @@ class FAQ extends _$FAQ {
     });
   }
 }
+
+@riverpod
+class Guide extends _$Guide {
+  @override
+  BaseModel build() {
+    getQuestion();
+    return LoadingModel();
+  }
+
+  void getQuestion() {
+    final repository = ref.watch(supportPRepositoryProvider);
+    repository.getGuide().then((value) {
+      logger.i(value);
+      state = value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state = error;
+    });
+  }
+}

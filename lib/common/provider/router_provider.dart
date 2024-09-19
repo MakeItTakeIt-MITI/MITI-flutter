@@ -19,6 +19,7 @@ import 'package:miti/game/view/game_update_screen.dart';
 import 'package:miti/game/view/review_form_screen.dart';
 import 'package:miti/notification/view/notification_screen.dart';
 import 'package:miti/support/view/faq_screen.dart';
+import 'package:miti/support/view/guide_screen.dart';
 import 'package:miti/support/view/support_form_screen.dart';
 import 'package:miti/user/view/user_delete_screen.dart';
 import 'package:miti/user/view/user_payment_screen.dart';
@@ -623,11 +624,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                       parentNavigatorKey: rootNavKey,
                       name: UserDeleteScreen.routeName,
                       builder: (context, state) {
-                        final int bottomIdx =
-                            int.parse(state.uri.queryParameters['bottomIdx']!);
-                        return UserDeleteScreen(
-                          bottomIdx: bottomIdx,
-                        );
+                        return const UserDeleteScreen();
                       },
                     ),
                     GoRoute(
@@ -834,6 +831,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                     name: FAQScreen.routeName,
                     builder: (context, state) {
                       return const FAQScreen();
+                    },
+                  ),
+                  GoRoute(
+                    path: 'guide',
+                    parentNavigatorKey: rootNavKey,
+                    name: GuideScreen.routeName,
+                    builder: (context, state) {
+                      return const GuideScreen();
                     },
                   ),
                   GoRoute(

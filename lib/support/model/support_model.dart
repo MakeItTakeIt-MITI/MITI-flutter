@@ -80,3 +80,26 @@ class FAQModel extends IModelWithId {
   factory FAQModel.fromJson(Map<String, dynamic> json) =>
       _$FAQModelFromJson(json);
 }
+
+@JsonSerializable()
+class GuideModel extends IModelWithId {
+  final String category;
+  final String title;
+  final String content;
+  final DateTime created_at;
+  final DateTime modified_at;
+  final List<String> image;
+
+  GuideModel({
+    required super.id,
+    required this.category,
+    required this.title,
+    required this.content,
+    required this.image,
+    required this.created_at,
+    required this.modified_at,
+  });
+
+  factory GuideModel.fromJson(Map<String, dynamic> json) =>
+      _$GuideModelFromJson(json);
+}
