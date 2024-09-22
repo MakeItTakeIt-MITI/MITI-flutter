@@ -304,7 +304,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
           child: DraggableScrollableSheet(
             initialChildSize: 0.04,
             // 0.04
-            maxChildSize: 0.8,
+            maxChildSize: 0.85,
             minChildSize: 0.04,
             snap: true,
             controller: _draggableScrollableController,

@@ -7,8 +7,8 @@ const String assetPathIcon = 'assets/images/v2/';
 
 enum AssetType {
   logo,
-  icon;
-
+  icon,
+  gif;
 }
 
 class AssetUtil {
