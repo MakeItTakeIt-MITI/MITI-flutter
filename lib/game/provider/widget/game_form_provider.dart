@@ -47,9 +47,10 @@ class GameForm extends _$GameForm {
 
   void selectGameHistory({required GameRecentHostModel model}) {
     GameCourtParam court = GameCourtParam(
-        name: model.court.name,
-        address: model.court.address,
-        address_detail: model.court.address_detail);
+      name: model.court.name,
+      address: model.court.address,
+      address_detail: model.court.address_detail,
+    );
     state = state.copyWith(
       title: model.title,
       court: court,

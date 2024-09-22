@@ -432,6 +432,19 @@ final routerProvider = Provider<GoRouter>((ref) {
                         },
                         routes: [
                           GoRoute(
+                            path: 'update',
+                            parentNavigatorKey: rootNavKey,
+                            name: GameUpdateScreen.routeName,
+                            builder: (context, state) {
+                              final int gameId =
+                              int.parse(state.pathParameters['gameId']!);
+
+                              return GameUpdateScreen(
+                                gameId: gameId,
+                              );
+                            },
+                          ),
+                          GoRoute(
                               path: 'report',
                               parentNavigatorKey: rootNavKey,
                               name: ReportListScreen.routeName,
@@ -591,19 +604,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                               );
                             },
                           ),
-                          GoRoute(
-                            path: 'update',
-                            parentNavigatorKey: rootNavKey,
-                            name: GameUpdateScreen.routeName,
-                            builder: (context, state) {
-                              final int gameId =
-                                  int.parse(state.pathParameters['gameId']!);
 
-                              return GameUpdateScreen(
-                                gameId: gameId,
-                              );
-                            },
-                          ),
                         ]),
                   ]),
               GoRoute(

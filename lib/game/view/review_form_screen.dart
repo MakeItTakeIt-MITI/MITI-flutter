@@ -293,35 +293,33 @@ class MultiLineTextFormField extends StatefulWidget {
   final String hint;
   final ValueChanged<String>? onChanged;
   final BuildContext context;
-  final ScrollController? scrollController;
+  final TextEditingController? editTextController;
 
   const MultiLineTextFormField(
       {super.key,
       this.onChanged,
       required this.hint,
       required this.context,
-      this.scrollController});
+      this.editTextController});
 
   @override
   State<MultiLineTextFormField> createState() => _MultiLineTextFormFieldState();
 }
 
 class _MultiLineTextFormFieldState extends State<MultiLineTextFormField> {
-  late final TextEditingController _editTextController;
+  // late final TextEditingController _editTextController;
   late final FocusNode _focusNode;
   late final GlobalKey key;
+
   // late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
     key = GlobalKey();
-    _editTextController = TextEditingController();
-    // _scrollController = ScrollController();
     _focusNode = FocusNode()
       ..addListener(() {
         if (_focusNode.hasFocus) {
-          log("AAAA");
           Scrollable.ensureVisible(widget.context,
               alignment: 1,
               duration: Duration(milliseconds: 300),
@@ -332,8 +330,6 @@ class _MultiLineTextFormFieldState extends State<MultiLineTextFormField> {
 
   @override
   void dispose() {
-    _editTextController.dispose();
-    // _scrollController.dispose();
     _focusNode.dispose();
     super.dispose();
   }
@@ -347,7 +343,6 @@ class _MultiLineTextFormFieldState extends State<MultiLineTextFormField> {
       child: Align(
         child: RawScrollbar(
           thumbColor: MITIColor.gray500,
-          controller: widget.scrollController,
           crossAxisMargin: 4.w,
           thickness: 2.w,
           radius: Radius.circular(100.r),
@@ -355,7 +350,7 @@ class _MultiLineTextFormFieldState extends State<MultiLineTextFormField> {
           child: TextField(
               key: key,
               focusNode: _focusNode,
-              scrollController: widget.scrollController,
+              controller: widget.editTextController,
               // autofocus: true,
               onTap: () {
                 FocusScope.of(context).requestFocus(_focusNode);
@@ -374,10 +369,9 @@ class _MultiLineTextFormFieldState extends State<MultiLineTextFormField> {
                   borderRadius: BorderRadius.circular(12.r),
                   borderSide: BorderSide.none,
                 ),
-
                 // constraints: BoxConstraints(
                 //   minHeight: 68.h,
-                //   maxHeight: widget.height.h,
+                //   maxHeight: 200.h,
                 // ),
                 hintText: widget.hint,
                 hintStyle:
@@ -386,7 +380,7 @@ class _MultiLineTextFormFieldState extends State<MultiLineTextFormField> {
                 fillColor: MITIColor.gray700,
                 filled: true,
                 contentPadding:
-                    EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                    EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
                 // isDense: true,
               )),
         ),

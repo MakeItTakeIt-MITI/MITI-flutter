@@ -117,6 +117,8 @@ class CustomTextFormField extends StatelessWidget {
                 color: MITIColor.gray100,
               ),
           decoration: InputDecoration(
+            contentPadding:
+                EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
             constraints:
                 BoxConstraints(maxHeight: height.h, minHeight: height.h),
             focusedBorder: OutlineInputBorder(

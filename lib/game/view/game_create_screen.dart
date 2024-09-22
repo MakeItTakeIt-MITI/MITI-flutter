@@ -1159,7 +1159,7 @@ class _FeeFormState extends ConsumerState<_FeeForm> {
         ref.read(gameFormProvider.notifier).update(fee: val);
       },
       suffixIcon: Text(
-        '₩',
+        '원',
         textAlign: TextAlign.center,
         style: MITITextStyle.sm.copyWith(
           color: MITIColor.gray100,
@@ -1209,58 +1209,67 @@ class _AdditionalInfoFormState extends ConsumerState<_AdditionalInfoForm> {
             style: MITITextStyle.sm.copyWith(color: MITIColor.gray300),
           ),
           SizedBox(height: 10.h),
-          ConstrainedBox(
-            constraints: BoxConstraints.tight(Size(double.infinity, 200.h)),
-            child: MultiLineTextFormField(
-              onChanged: (val) {
-                ref.read(gameFormProvider.notifier).update(info: val);
-              },
-              hint: '주차, 샤워 가능 여부, 경기 진행 방식, 필요한 유니폼 색상 등 참가들에게 공지할 정보들을 입력해주세요', context: context,
-            ),
-          ),
-          ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: 74.h,
-              maxHeight: 300.h,
-            ),
-            child: Scrollbar(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                reverse: true,
-                child: TextField(
-                  maxLines: null,
-                  controller: infoController,
-                  textAlignVertical: TextAlignVertical.top,
-                  style: MITITextStyle.sm150.copyWith(
-                    color: MITIColor.gray100,
-                  ),
-                  onChanged: (val) {
-                    ref.read(gameFormProvider.notifier).update(info: val);
-                  },
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                      borderSide: BorderSide.none,
-                    ),
-                    constraints: BoxConstraints(
-                      minHeight: 74.h,
-                      maxHeight: 300.h,
-                    ),
-                    hintText:
-                        '주차, 샤워 가능 여부, 경기 진행 방식, 필요한 유니폼 색상 등 참가들에게 공지할 정보들을 입력해주세요',
-                    hintStyle:
-                        MITITextStyle.sm150.copyWith(color: MITIColor.gray500),
-                    hintMaxLines: 10,
-                    fillColor: MITIColor.gray700,
-                    filled: true,
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-                    // isDense: true,
-                  ),
-                ),
+          IntrinsicHeight(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                  maxHeight: 200.h,
+                  minHeight: 74.h,
+                  maxWidth: double.infinity,
+                  minWidth: double.infinity),
+              child: MultiLineTextFormField(
+                editTextController: infoController,
+                onChanged: (val) {
+                  ref.read(gameFormProvider.notifier).update(info: val);
+                },
+                hint:
+                    '주차, 샤워 가능 여부, 경기 진행 방식, 필요한 유니폼 색상 등 참가들에게 공지할 정보들을 입력해주세요',
+                context: context,
               ),
             ),
           ),
+          // ConstrainedBox(
+          //   constraints: BoxConstraints(
+          //     minHeight: 74.h,
+          //     maxHeight: 300.h,
+          //   ),
+          //   child: Scrollbar(
+          //     child: SingleChildScrollView(
+          //       scrollDirection: Axis.vertical,
+          //       reverse: true,
+          //       child: TextField(
+          //         maxLines: null,
+          //         controller: infoController,
+          //         textAlignVertical: TextAlignVertical.top,
+          //         style: MITITextStyle.sm150.copyWith(
+          //           color: MITIColor.gray100,
+          //         ),
+          //         onChanged: (val) {
+          //           ref.read(gameFormProvider.notifier).update(info: val);
+          //         },
+          //         decoration: InputDecoration(
+          //           border: OutlineInputBorder(
+          //             borderRadius: BorderRadius.circular(8.r),
+          //             borderSide: BorderSide.none,
+          //           ),
+          //           constraints: BoxConstraints(
+          //             minHeight: 74.h,
+          //             maxHeight: 300.h,
+          //           ),
+          //           hintText:
+          //               '주차, 샤워 가능 여부, 경기 진행 방식, 필요한 유니폼 색상 등 참가들에게 공지할 정보들을 입력해주세요',
+          //           hintStyle:
+          //               MITITextStyle.sm150.copyWith(color: MITIColor.gray500),
+          //           hintMaxLines: 10,
+          //           fillColor: MITIColor.gray700,
+          //           filled: true,
+          //           contentPadding:
+          //               EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          //           // isDense: true,
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

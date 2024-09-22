@@ -7,14 +7,14 @@ class MITITextStyle {
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w700,
     height: 1.4,
-    letterSpacing: -0.02,
+    letterSpacing: -24.sp * 0.02,
   );
 
   static final TextStyle xxl = TextStyle(
     fontSize: 24.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w700,
-    letterSpacing: -0.02,
+    letterSpacing: -24.sp * 0.02,
     height: 1,
   );
 
@@ -22,7 +22,7 @@ class MITITextStyle {
     fontSize: 20.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w700,
-    letterSpacing: -0.02,
+    letterSpacing: -20.sp * 0.02,
     height: 1,
   );
 
@@ -30,7 +30,7 @@ class MITITextStyle {
     fontSize: 20.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w700,
-    letterSpacing: -0.02,
+    letterSpacing: -20.sp * 0.02,
     height: 1.5,
   );
 
@@ -38,7 +38,7 @@ class MITITextStyle {
     fontSize: 20.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w300,
-    letterSpacing: -0.02,
+    letterSpacing: -20.sp * 0.02,
     height: 1,
   );
 
@@ -73,7 +73,7 @@ class MITITextStyle {
     fontSize: 16.sp,
     fontFamily: 'Pretender',
     fontWeight: FontWeight.w500,
-    letterSpacing: -0.02,
+    letterSpacing: -16.sp * 0.02,
     height: 1,
   );
 
@@ -81,7 +81,7 @@ class MITITextStyle {
     fontSize: 16.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w600,
-    letterSpacing: -0.02,
+    letterSpacing: -16.sp * 0.02,
     height: 1,
   );
 
@@ -89,7 +89,7 @@ class MITITextStyle {
     fontSize: 16.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w600,
-    letterSpacing: -0.02,
+    letterSpacing: -16.sp * 0.02,
     height: 1.5,
   );
 
@@ -97,7 +97,7 @@ class MITITextStyle {
     fontSize: 16.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w300,
-    letterSpacing: -0.02,
+    letterSpacing: -16.sp * 0.02,
     height: 1,
   );
 
@@ -106,14 +106,14 @@ class MITITextStyle {
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w400,
     height: 1.5,
-    letterSpacing: -0.02,
+    letterSpacing: -14.sp * 0.02,
   );
 
   static final TextStyle sm = TextStyle(
     fontSize: 14.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w400,
-    letterSpacing: -0.02,
+    letterSpacing: -14.sp * 0.02,
     height: 1,
   );
 
@@ -121,7 +121,7 @@ class MITITextStyle {
     fontSize: 14.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w600,
-    letterSpacing: -0.02,
+    letterSpacing: -14.sp * 0.02,
     height: 1,
   );
 
@@ -129,7 +129,7 @@ class MITITextStyle {
     fontSize: 14.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.bold,
-    letterSpacing: -0.02,
+    letterSpacing: -14.sp * 0.02,
     height: 1,
   );
 
@@ -166,7 +166,7 @@ class MITITextStyle {
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w300,
     height: 1.5,
-    letterSpacing: -0.02,
+    letterSpacing: -12.sp * 0.02,
   );
 
   static final TextStyle xxxsmBold = TextStyle(

@@ -11,6 +11,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/component/custom_time_picker.dart';
@@ -55,6 +56,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     with AutomaticKeepAliveClientMixin {
   late final DraggableScrollableController _draggableScrollableController;
   NaverMapController? _mapController;
+  late final Box<bool> permissionBox;
 
   @override
   bool get wantKeepAlive => true; //override with True.
@@ -63,6 +65,23 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     super.initState();
     log('page init!!');
     _draggableScrollableController = DraggableScrollableController();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      startApp();
+    });
+  }
+
+  Future<void> startApp() async {
+    permissionBox = Hive.box('permission');
+    final display = permissionBox.get('permission');
+    if (display == null) {
+      if (mounted) {
+        showDialog(
+            context: context,
+            builder: (_) {
+              return _PermissionComponent();
+            });
+      }
+    }
   }
 
   @override
@@ -111,16 +130,8 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     showDialog(
         context: context,
         builder: (_) {
-          return CustomDialog(
-            title: '위치 허용',
-            content: '위치 서비스를 이용할 수 없습니다.\n위치 서비스를 켜주세요.',
-            onPressed: () async {
-              await openAppSettings();
-              await getLocation();
-              if (mounted) {
-                context.pop();
-              }
-            },
+          return const PermissionDialog(
+            title: '설정>개인정보보호>위치서비스와\n설정>MITI에서 위치 정보 접근을\n모두 허용해 주세요.',
           );
         });
   }
@@ -1135,8 +1146,7 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
                               WidgetStateProperty.all(Size(98.w, 48.h)),
                           maximumSize:
                               WidgetStateProperty.all(Size(98.w, 48.h)),
-                          fixedSize:
-                              WidgetStateProperty.all(Size(98.w, 48.h))),
+                          fixedSize: WidgetStateProperty.all(Size(98.w, 48.h))),
                       child: Text(
                         "초기화",
                         style:
@@ -1383,6 +1393,91 @@ class _FilterChipsComponent extends StatelessWidget {
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+class _PermissionComponent extends StatelessWidget {
+  const _PermissionComponent({super.key});
+
+  Widget _permission(String title, String desc) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Text(
+              title,
+              style: MITITextStyle.smBold.copyWith(
+                color: MITIColor.gray100,
+              ),
+            ),
+            SizedBox(width: 8.w),
+            Text(
+              '(선택)',
+              style: MITITextStyle.sm.copyWith(
+                color: MITIColor.gray300,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 8.h),
+        Text(
+          desc,
+          style: MITITextStyle.xxsmLight150.copyWith(
+            color: MITIColor.gray100,
+          ),
+        )
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.center,
+      child: Container(
+        width: 333.w,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20.r),
+          color: MITIColor.gray800,
+        ),
+        padding:
+            EdgeInsets.only(left: 20.w, right: 20.w, top: 28.h, bottom: 20.h),
+        child: Material(
+          color: Colors.transparent,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                '‘MITI’서비스 이용을 위해\n접근권한의 허용이 필요합니다.',
+                style: MITITextStyle.mdBold150.copyWith(
+                  color: MITIColor.gray100,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              Divider(height: 41.h, color: MITIColor.gray600),
+              _permission('알림', '경기 상태 등 서비스 알림 전송'),
+              SizedBox(height: 20.h),
+              _permission('위치설정', '주변 경기 및 경기장 추천'),
+              SizedBox(height: 40.h),
+              TextButton(
+                onPressed: () async {
+                  await Permission.location.request();
+                  await Permission.notification.request();
+                  final Box<bool> permissionBox = Hive.box('permission');
+                  await permissionBox.put('permission', false);
+                  if (context.mounted) {
+                    context.pop();
+                  }
+                },
+                child: const Text('확인'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

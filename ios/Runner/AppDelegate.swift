@@ -2,7 +2,7 @@ import UIKit
 import Flutter
 import flutter_local_notifications
 import Firebase // Add Line.
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlutterAppDelegate {
 
   override func application(
