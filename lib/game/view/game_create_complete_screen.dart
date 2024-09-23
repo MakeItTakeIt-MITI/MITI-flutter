@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/theme/color_theme.dart';
@@ -102,23 +103,53 @@ class GameCompleteScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(height: 60.h),
-              Text(
-                type == GameCompleteType.create ? '경기 생성 완료!' : '경기 참여 완료!',
-                style: MITITextStyle.xxl140.copyWith(
-                  color: Colors.white,
+              SizedBox(
+                height: 170.h,
+                child: Stack(
+                  children: [
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      child: Lottie.asset(
+                        'assets/lottie/success.json',
+                        width: 200,
+                        height: 200,
+                        fit: BoxFit.fill,
+                        repeat: false,
+                      ),
+                    ),
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: Column(
+                        // crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          SizedBox(height: 52.h),
+                          Text(
+                            type == GameCompleteType.create
+                                ? '경기 생성 완료!'
+                                : '경기 참가 완료!',
+                            style: MITITextStyle.xxl140.copyWith(
+                              color: Colors.white,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: 10.h),
+                          Text(
+                            '경기 정보를 확인해 보세요.',
+                            style: MITITextStyle.sm150.copyWith(
+                              color: MITIColor.gray300,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: 52.h),
+                        ],
+                      ),
+                    )
+                  ],
                 ),
-                textAlign: TextAlign.center,
               ),
-              SizedBox(height: 12.h),
-              Text(
-                '경기 정보를 확인해 보세요.',
-                style: MITITextStyle.sm150.copyWith(
-                  color: MITIColor.gray300,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 60.h),
               Text(
                 type == GameCompleteType.create
                     ? "새로운 경기를 생성하셨습니다."

@@ -103,14 +103,8 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
     if (result is ErrorModel) {
       if (mounted) {
         FocusScope.of(context).requestFocus(FocusNode());
-
-        if (type == PhoneAuthType.find_email) {
-          AuthError.fromModel(model: result)
-              .responseError(context, AuthApiType.requestSMSFormFindEmail, ref);
-        } else {
-          AuthError.fromModel(model: result).responseError(
-              context, AuthApiType.requestSMSForResetPassword, ref);
-        }
+        AuthError.fromModel(model: result).responseError(
+            context, AuthApiType.requestSMS, ref);
       }
     } else {
       showTime = true;

@@ -30,8 +30,7 @@ enum AuthApiType {
   signup_check,
   send_code,
   request_code,
-  requestSMSFormFindEmail,
-  requestSMSForResetPassword,
+  requestSMS,
   oauth,
   reissue,
   findInfo,
@@ -80,11 +79,8 @@ class AuthError extends ErrorBase {
       // case AuthApiType.findInfo:
       //   _findInfo(context, ref);
       //   break;
-      case AuthApiType.requestSMSFormFindEmail:
-        _findEmail(context, ref);
-        break;
-      case AuthApiType.requestSMSForResetPassword:
-        _requestSMSForResetPassword(context, ref);
+      case AuthApiType.requestSMS:
+        _requestSMS(context, ref);
         break;
       case AuthApiType.reissue:
         _reissue(context, ref);
@@ -192,7 +188,7 @@ class AuthError extends ErrorBase {
   /// 일반 회원가입 API
   void _signup(BuildContext context, WidgetRef ref) {
     if (this.status_code == BadRequest && this.error_code == 101) {
-      /// 유효성 검증 실패
+      /// 회원가입 데이터 유효성 검증 실패
       if (model.data['phone'] != null &&
           (model.data['phone'] as List<dynamic>).isNotEmpty) {
         showDialog(
@@ -227,7 +223,40 @@ class AuthError extends ErrorBase {
           );
         },
       );
-    } else {
+    }else if (this.status_code == BadRequest && this.error_code == 220) {
+      /// 인증 미완료 휴대전화 번호
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '회원가입 실패',
+            content: '인증되지 않은 휴대전화입니다.',
+          );
+        },
+      );
+    }else if (this.status_code == BadRequest && this.error_code == 520) {
+      /// 토큰 유효성 오류
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '회원가입 실패',
+            content: '다시 시도해 주세요.',
+          );
+        },
+      );
+    } else if (this.status_code == BadRequest && this.error_code == 940) {
+      /// 회원가입 방식 불일치
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '회원가입 실패',
+            content: '다시 시도해 주세요.',
+          );
+        },
+      );
+    }  else {
       /// 서버 오류
       showDialog(
         context: context,
@@ -607,43 +636,8 @@ class AuthError extends ErrorBase {
     }
   }
 
-  /// SMS 전송 - 이메일 찾기 API
-  void _findEmail(BuildContext context, WidgetRef ref) {
-    if (this.status_code == BadRequest && this.error_code == 101) {
-      /// 입력값 유효성 검증 실패
-      showDialog(
-          context: context,
-          builder: (_) {
-            return CustomDialog(
-              title: 'SMS 요청 실패',
-              onPressed: () => context.goNamed(LoginScreen.routeName),
-              content: '이메일을 다시 입력해주세요.',
-            );
-          });
-    } else if (this.status_code == NotFound && this.error_code == 140) {
-      /// 사용자 정보 조회 실패
-      ref
-          .read(interactionDescProvider(InteractionType.email).notifier)
-          .update((state) => InteractionDesc(
-                isSuccess: false,
-                desc: "해당 정보와 일치하는 사용자가 존재하지 않습니다.",
-              ));
-    } else {
-      /// 서버 오류
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: 'SMS 요청 실패',
-            content: '서버가 불안정해 잠시후 다시 이용해주세요.',
-          );
-        },
-      );
-    }
-  }
-
   /// SMS 전송 - 비밀번호 재설정 API
-  void _requestSMSForResetPassword(BuildContext context, WidgetRef ref) {
+  void _requestSMS(BuildContext context, WidgetRef ref) {
     if (this.status_code == BadRequest && this.error_code == 101) {
       /// 입력값 유효성 검증 실패
       showDialog(
@@ -655,14 +649,17 @@ class AuthError extends ErrorBase {
               content: '비밀번호를 다시 입력해주세요.',
             );
           });
-    } else if (this.status_code == NotFound && this.error_code == 140) {
-      /// 사용자 정보 조회 실패
-      ref
-          .read(interactionDescProvider(InteractionType.password).notifier)
-          .update((state) => InteractionDesc(
-                isSuccess: false,
-                desc: "해당 정보와 일치하는 사용자가 존재하지 않습니다.",
-              ));
+    } else if (this.status_code == ServerError && this.error_code == 100) {
+      /// sms 전송 요청 실패
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: 'SMS 요청 실패',
+            content: '서버가 불안정해 잠시후 다시 이용해주세요.',
+          );
+        },
+      );
     } else {
       /// 서버 오류
       showDialog(

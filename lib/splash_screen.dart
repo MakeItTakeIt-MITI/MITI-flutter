@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:lottie/lottie.dart';
 
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/auth/view/login_screen.dart';
@@ -32,11 +33,12 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
-late final GifController _controller;
+  late final GifController _controller;
+
   @override
   void initState() {
     super.initState();
-    _controller = GifController(onFinish: (){
+    _controller = GifController(onFinish: () {
       log("AAA");
     });
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -50,6 +52,7 @@ late final GifController _controller;
         if (mounted) {
           ref.read(authProvider.notifier).autoLogin(context: context);
         }
+
       });
     });
   }
@@ -59,16 +62,15 @@ late final GifController _controller;
     return Scaffold(
       backgroundColor: MITIColor.black,
       body: Center(
-        child: GifView.asset(
-          controller: _controller,
-          AssetUtil.getAssetPath(
-              type: AssetType.gif, name: 'splash', extension: 'gif'),
-          height: 84.h,
-          width: 160.w,
-          fit: BoxFit.fill,
-          frameRate: 60, // default is 15 FPS
-        )
-      ),
+          child: GifView.asset(
+        controller: _controller,
+        AssetUtil.getAssetPath(
+            type: AssetType.gif, name: 'splash', extension: 'gif'),
+        height: 84.h,
+        width: 160.w,
+        fit: BoxFit.fill,
+        frameRate: 60, // default is 15 FPS
+      )),
     );
   }
 }

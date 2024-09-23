@@ -122,11 +122,7 @@ class InfoBody extends ConsumerWidget {
               );
             },
           ),
-          SliverToBoxAdapter(
-            child: Lottie.asset(
-              'assets/lottie/fail_animation.json',
-            ),
-          )
+
         ],
       ),
     );

@@ -344,8 +344,6 @@ class KakaoLoginButton extends ConsumerWidget {
 
       final result = await ref
           .read(loginProvider(param: param, type: AuthType.kakao).future);
-      // final result = await ref
-      //     .read(oauthLoginProvider(param: param, type: AuthType.kakao).future);
       if (context.mounted) {
         if (result is ErrorModel) {
           if(result.status_code == Forbidden && result.error_code == 540) {
@@ -468,12 +466,12 @@ class AppleLoginButton extends ConsumerWidget {
               context, AuthApiType.oauth, ref,
               object: AuthType.apple);
         }
-        if(result.status_code == Forbidden && result.error_code == 540){
-          final String userInfoToken = result.data['userinfo_token'];
-          log("userInfoToken = $userInfoToken");
-          final storage = ref.read(secureStorageProvider);
-          await storage.write(key: "userInfoToken", value: userInfoToken);
-        }
+        // if(result.status_code == Forbidden && result.error_code == 540){
+        //   final String userInfoToken = result.data['userinfo_token'];
+        //   log("userInfoToken = $userInfoToken");
+        //   final storage = ref.read(secureStorageProvider);
+        //   await storage.write(key: "userInfoToken", value: userInfoToken);
+        // }
       } else {
         context.goNamed(CourtMapScreen.routeName);
       }
