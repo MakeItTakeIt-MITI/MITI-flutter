@@ -87,68 +87,6 @@ class CourtListComponent extends StatelessWidget {
                 endIdx: model.data!.end_index,
                 currentIdx: model.data!.current_index,
               ),
-              SizedBox(
-                height: 24.r,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.chevron_left,
-                      size: 24.r,
-                      color: const Color(0xFF999999),
-                    ),
-                    SizedBox(width: 20.w),
-                    ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.zero,
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemBuilder: (_, idx) {
-                          final currentIdx = model.data!.current_index;
-                          bool selected = currentIdx - 1 == idx;
-                          return Consumer(
-                            builder: (BuildContext context, WidgetRef ref,
-                                Widget? child) {
-                              return GestureDetector(
-                                onTap: () {
-                                  ref
-                                      .read(selectedProvider.notifier)
-                                      .update((state) => idx);
-                                },
-                                child: Container(
-                                  height: 24.r,
-                                  width: 24.r,
-                                  decoration: selected
-                                      ? const BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: MITIColor.primary,
-                                        )
-                                      : null,
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    "${idx + 1}",
-                                    style: MITITextStyle.xxsm.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: selected
-                                            ? MITIColor.gray800
-                                            : MITIColor.gray500),
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                        separatorBuilder: (_, idx) => SizedBox(width: 4.w),
-                        itemCount: 11 >= 5 ? 5 : 11),
-                    SizedBox(width: 20.w),
-                    Icon(
-                      Icons.chevron_right,
-                      size: 24.r,
-                      color: const Color(0xFF999999),
-                    )
-                  ],
-                ),
-              ),
               SizedBox(height: 20.h),
               Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {

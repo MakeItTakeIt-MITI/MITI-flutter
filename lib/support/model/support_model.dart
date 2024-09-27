@@ -83,7 +83,7 @@ class FAQModel extends IModelWithId {
 
 @JsonSerializable()
 class GuideModel extends IModelWithId {
-  final String category;
+  final UserGuideType category;
   final String title;
   final String content;
   final DateTime created_at;

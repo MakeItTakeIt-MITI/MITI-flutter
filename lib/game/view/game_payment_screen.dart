@@ -164,7 +164,7 @@ class GamePaymentScreen extends StatelessWidget {
             final queryParameters = {
               'redirectUrl': model.next_redirect_mobile_url
             };
-            context.pushNamed(
+            context.goNamed(
               PaymentScreen.routeName,
               pathParameters: pathParameters,
               queryParameters: queryParameters,

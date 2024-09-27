@@ -39,7 +39,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   void initState() {
     super.initState();
     _controller = GifController(onFinish: () {
-      log("AAA");
     });
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       startApp();
@@ -62,15 +61,25 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     return Scaffold(
       backgroundColor: MITIColor.black,
       body: Center(
-          child: GifView.asset(
-        controller: _controller,
-        AssetUtil.getAssetPath(
-            type: AssetType.gif, name: 'splash', extension: 'gif'),
-        height: 84.h,
-        width: 160.w,
-        fit: BoxFit.fill,
-        frameRate: 60, // default is 15 FPS
-      )),
+
+        child:Lottie.asset(
+          'assets/lottie/splash.json',
+            height: 84.h,
+            width: 160.w,
+          fit: BoxFit.fill,
+          repeat: false,
+        ),
+      //     child: GifView.asset(
+      //   controller: _controller,
+      //   AssetUtil.getAssetPath(
+      //       type: AssetType.gif, name: 'splash', extension: 'gif'),
+      //   height: 84.h,
+      //   width: 160.w,
+      //   fit: BoxFit.fill,
+      //   frameRate: 60, // default is 15 FPS
+      // ),
+
+      ),
     );
   }
 }

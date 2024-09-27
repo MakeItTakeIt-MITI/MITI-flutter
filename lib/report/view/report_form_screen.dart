@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,13 +15,15 @@ import 'package:miti/report/provider/report_provider.dart';
 import 'package:miti/report/provider/widget/report_form_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../common/component/custom_dialog.dart';
 import '../../common/component/default_layout.dart';
 import '../../game/view/review_form_screen.dart';
 import '../../theme/text_theme.dart';
+import '../error/report_error.dart';
 import '../model/report_model.dart';
 
-class ReportFormScreen extends StatelessWidget {
+class ReportFormScreen extends StatefulWidget {
   final int gameId;
   final int reportId;
   final HostReportCategoryType type;
@@ -34,6 +38,13 @@ class ReportFormScreen extends StatelessWidget {
   });
 
   @override
+  State<ReportFormScreen> createState() => _ReportFormScreenState();
+}
+
+class _ReportFormScreenState extends State<ReportFormScreen> {
+  GlobalKey key = GlobalKey();
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -42,41 +53,45 @@ class ReportFormScreen extends StatelessWidget {
         bottomNavigationBar: BottomButton(
           button: Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              final form = ref.watch(reportFormProvider(category: type));
+              final form = ref.watch(reportFormProvider(category: widget.type));
               final valid = form.content.isNotEmpty;
               return TextButton(
                 onPressed: valid
                     ? () async {
-                        final result = ref.read(
-                            createReportProvider(gameId: gameId, category: type)
-                                .future);
+                        final result = await ref.read(createReportProvider(
+                                gameId: widget.gameId, category: widget.type)
+                            .future);
 
                         if (result is ErrorModel) {
+                          ReportError.fromModel(model: result).responseError(
+                              context, ReportApiType.report, ref);
                         } else {
-                          final model =
-                              (ref.read(gameDetailProvider(gameId: gameId))
-                                      as ResponseModel<GameDetailModel>)
-                                  .data!;
+                          final model = (ref.read(
+                                      gameDetailProvider(gameId: widget.gameId))
+                                  as ResponseModel<GameDetailModel>)
+                              .data!;
                           Map<String, String> pathParameters = {
                             'gameId': model.id.toString()
                           };
-                          context.goNamed(GameDetailScreen.routeName,
-                              pathParameters: pathParameters);
 
-                          Future.delayed(const Duration(microseconds: 200), () {
-                            if(context.mounted) {
-                              showModalBottomSheet(
+                          if (context.mounted) {
+                            showModalBottomSheet(
+                                isDismissible: false,
                                 context: context,
                                 builder: (_) {
                                   return BottomDialog(
                                     title: '경기 신고 완료',
-                                    content: '‘${model.title}’ 경기의 신고가 접수되었습니다.',
+                                    content:
+                                        '‘${model.title}’ 경기의 신고가 접수되었습니다.',
                                     btn: Consumer(
                                       builder: (BuildContext context,
                                           WidgetRef ref, Widget? child) {
                                         return TextButton(
                                           onPressed: () async {
                                             context.pop();
+                                            context.goNamed(
+                                                GameDetailScreen.routeName,
+                                                pathParameters: pathParameters);
                                           },
                                           style: TextButton.styleFrom(
                                             fixedSize:
@@ -90,8 +105,7 @@ class ReportFormScreen extends StatelessWidget {
                                     ),
                                   );
                                 });
-                            }
-                          });
+                          }
                         }
                       }
                     : () {},
@@ -108,17 +122,14 @@ class ReportFormScreen extends StatelessWidget {
             },
           ),
         ),
-        body: NestedScrollView(headerSliverBuilder: (_, __) {
-          return [
-            const DefaultAppBar(
-              isSliver: true,
-              title: '신고하기',
-              backgroundColor: MITIColor.gray750,
-            )
-          ];
-        }, body: Consumer(
+        appBar: const DefaultAppBar(
+          title: '신고하기',
+          backgroundColor: MITIColor.gray750,
+        ),
+        body: Consumer(
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
-            final result = ref.watch(reportDetailProvider(reportId: reportId));
+            final result =
+                ref.watch(reportDetailProvider(reportId: widget.reportId));
             if (result is LoadingModel) {
               return CircularProgressIndicator();
             } else if (result is ErrorModel) {
@@ -138,13 +149,58 @@ class ReportFormScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   SliverToBoxAdapter(
-                    child: Text(
-                      model.content,
-                      style: MITITextStyle.sm150.copyWith(
-                        color: MITIColor.gray300,
-                      ),
+                    child: Html(
+                      data: model.content,
+                      style: {
+                        'body': Style(margin: Margins.all(0)),
+                        'p': Style(
+                          fontSize: FontSize(16.sp),
+                          color: MITIColor.gray300,
+                        ),
+                        'ul': Style(
+                          listStyleType: ListStyleType.none,
+                          margin: Margins.zero,
+                          padding: HtmlPaddings.all(5.r),
+                          fontSize: FontSize(12.sp),
+                          lineHeight: LineHeight.em(1.5),
+                        ),
+                        'b': Style(
+                          color: MITIColor.gray300,
+                        ),
+                        'li': Style(
+                          margin: Margins.all(4.r),
+                          fontSize: FontSize(12.sp),
+                          listStyleType: ListStyleType.none,
+                          lineHeight: LineHeight.em(1.5),
+                          color: MITIColor.gray300,
+                          listStylePosition: ListStylePosition.inside,
+                        ),
+                        'h1': Style(
+                          color: MITIColor.gray300,
+                        ),
+                        'h2': Style(
+                          color: MITIColor.gray300,
+                        ),
+                        'h3': Style(
+                          color: MITIColor.gray300,
+                        ),
+                        'h4': Style(
+                          color: MITIColor.gray300,
+                        ),
+                        'h5': Style(
+                          color: MITIColor.gray300,
+                        ),
+                        'h6': Style(
+                          color: MITIColor.gray300,
+                        ),
+                      },
+                      onLinkTap: (url, _, __) async {
+                        if (url != null) {
+                          final Uri _url = Uri.parse(url);
+                          await launchUrl(_url);
+                        }
+                      },
                     ),
                   ),
                   SliverToBoxAdapter(child: SizedBox(height: 20.h)),
@@ -155,7 +211,8 @@ class ReportFormScreen extends StatelessWidget {
                       child: MultiLineTextFormField(
                         onChanged: (val) {
                           ref
-                              .read(reportFormProvider(category: type).notifier)
+                              .read(reportFormProvider(category: widget.type)
+                                  .notifier)
                               .update(content: val);
                         },
                         hint: '신고 내용을 작성해주세요.',
@@ -163,27 +220,12 @@ class ReportFormScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // SliverToBoxAdapter(
-                  //   child: Html(
-                  //     data: model.content,
-                  //     style: {
-                  //       'body': Style(margin: Margins.all(0)),
-                  //       'p': Style(
-                  //         fontSize: FontSize(14.sp),
-                  //         fontWeight: FontWeight.w500,
-                  //         color: MITIColor.gray300,
-                  //         fontFamily: 'Pretendard',
-                  //         lineHeight: LineHeight.em(1.5),
-                  //       )
-                  //     },
-                  //   ),
-                  // ),
                   SliverToBoxAdapter(child: SizedBox(height: 32.h)),
                 ],
               ),
             );
           },
-        )),
+        ),
       ),
     );
   }

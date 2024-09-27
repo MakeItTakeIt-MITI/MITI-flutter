@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miti/common/component/custom_time_picker.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/model/default_model.dart';
+import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/support/provider/support_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -23,7 +24,7 @@ class GuideScreen extends StatefulWidget {
 }
 
 class _GuideScreenState extends State<GuideScreen> {
-  String category = '';
+  UserGuideType category = UserGuideType.game;
   int currentIdx = 0;
   late final CarouselSliderController carouselController;
 
@@ -74,7 +75,7 @@ class _GuideScreenState extends State<GuideScreen> {
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (_, idx) {
                         return _GuideChip(
-                          title: model[idx].category,
+                          title: model[idx].category.displayName,
                           onTap: () {
                             setState(() {
                               category = model[idx].category;
@@ -163,20 +164,44 @@ class _GuideScreenState extends State<GuideScreen> {
                         style: {
                           'body': Style(margin: Margins.all(0)),
                           'p': Style(
-                            fontSize: FontSize(14.sp),
-                            fontWeight: FontWeight.w500,
+                            fontSize: FontSize(16.sp),
                             color: MITIColor.gray100,
-                            fontFamily: 'Pretendard',
+                          ),
+                          'ul': Style(
+                            listStyleType: ListStyleType.none,
+                            margin: Margins.zero,
+                            padding: HtmlPaddings.all(5.r),
+                            fontSize: FontSize(12.sp),
                             lineHeight: LineHeight.em(1.5),
-                            letterSpacing: -14.sp * 0.02,
+                          ),
+                          'b': Style(
+                            color: MITIColor.gray100,
                           ),
                           'li': Style(
-                            fontSize: FontSize(14.sp),
-                            fontWeight: FontWeight.w500,
-                            color: MITIColor.gray100,
-                            fontFamily: 'Pretendard',
+                            margin: Margins.all(4.r),
+                            fontSize: FontSize(12.sp),
+                            listStyleType: ListStyleType.none,
                             lineHeight: LineHeight.em(1.5),
-                            letterSpacing: -14.sp * 0.02,
+                            color: MITIColor.gray100,
+                            listStylePosition: ListStylePosition.inside,
+                          ),
+                          'h1': Style(
+                            color: MITIColor.gray100,
+                          ),
+                          'h2': Style(
+                            color: MITIColor.gray100,
+                          ),
+                          'h3': Style(
+                            color: MITIColor.gray100,
+                          ),
+                          'h4': Style(
+                            color: MITIColor.gray100,
+                          ),
+                          'h5': Style(
+                            color: MITIColor.gray100,
+                          ),
+                          'h6': Style(
+                            color: MITIColor.gray100,
                           ),
                         },
                         onLinkTap: (url, _, __) async {

@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:kpostal/kpostal.dart';
 import 'package:marquee/marquee.dart';
 import 'dart:math' hide log;
 
@@ -11,7 +12,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' hide TextDirection;
-import 'package:kpostal/kpostal.dart';
 import 'package:miti/auth/view/signup/signup_screen.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
 import 'package:miti/common/component/default_appbar.dart';
@@ -97,46 +97,39 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
       onTap: () => FocusScope.of(context).unfocus(),
       onPanDown: (v) => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        body: NestedScrollView(
-          controller: _scrollController,
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return [
-              const DefaultAppBar(
-                isSliver: true,
-                title: '경기 생성하기',
-              )
-            ];
-          },
-          body: Padding(
-            padding: EdgeInsets.only(
-              top: 20.h,
-              left: 21.w,
-              right: 21.w,
-              // bottom: bottomPadding,
-            ),
-            child: CustomScrollView(
-              slivers: <Widget>[
-                const _TitleForm(),
-                getSpacer(),
-                V2DateForm(),
-                // const _DateForm(),
-                getSpacer(),
-                const _AddressForm(),
-                getSpacer(),
-                SliverToBoxAdapter(
-                    child: ApplyForm(
-                  formKeys: formKeys,
-                  focusNodes: focusNodes,
-                )),
-                getSpacer(),
-                const _FeeForm(),
-                getSpacer(),
-                const _AdditionalInfoForm(),
-                getSpacer(height: 32),
-                const AgreeTermComponent(),
-                getSpacer(height: 20),
-              ],
-            ),
+        appBar: const DefaultAppBar(
+          title: '경기 생성하기',
+        ),
+        body: Padding(
+          padding: EdgeInsets.only(
+            top: 20.h,
+            left: 21.w,
+            right: 21.w,
+            // bottom: bottomPadding,
+          ),
+          child: CustomScrollView(
+            controller: _scrollController,
+            slivers: <Widget>[
+              const _TitleForm(),
+              getSpacer(),
+              V2DateForm(),
+              // const _DateForm(),
+              getSpacer(),
+              const _AddressForm(),
+              getSpacer(),
+              SliverToBoxAdapter(
+                  child: ApplyForm(
+                formKeys: formKeys,
+                focusNodes: focusNodes,
+              )),
+              getSpacer(),
+              const _FeeForm(),
+              getSpacer(),
+              const _AdditionalInfoForm(),
+              getSpacer(height: 32),
+              const AgreeTermComponent(),
+              getSpacer(height: 20),
+            ],
           ),
         ),
         bottomNavigationBar: Consumer(

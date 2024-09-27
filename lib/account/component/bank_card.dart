@@ -14,6 +14,13 @@ class BankCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<BankType> pngBank = [
+      BankType.SAEMAUL,
+      BankType.TOSSBANK,
+      BankType.KDBBANK
+    ];
+
+
     return Container(
       width: 76.w,
       padding: EdgeInsets.symmetric(vertical: 8.h),
@@ -25,11 +32,20 @@ class BankCard extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          SvgPicture.asset(
-            AssetUtil.getAssetPath(
-                type: AssetType.logo, name: 'bank/${bank.displayName}'),
-            height: 20.h,
-          ),
+          if (pngBank.contains(bank))
+            Image.asset(
+              AssetUtil.getAssetPath(
+                  type: AssetType.logo,
+                  name: 'bank/${bank.displayName}',
+                  extension: "png"),
+              height: 20.h,
+            )
+          else
+            SvgPicture.asset(
+              AssetUtil.getAssetPath(
+                  type: AssetType.logo, name: 'bank/${bank.displayName}'),
+              height: 20.h,
+            ),
           SizedBox(height: 4.h),
           Text(
             bank.displayName,

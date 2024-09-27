@@ -6,7 +6,7 @@ part 'push_model.g.dart';
 
 @JsonSerializable()
 class PushDataModel {
-  final String id;
+  final String? id;
   final PushNotificationTopicType topic;
 
   PushDataModel({

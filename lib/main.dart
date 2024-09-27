@@ -145,19 +145,6 @@ class _MyAppState extends ConsumerState<MyApp> {
     _fcmSetting();
   }
 
-  // void disableBattaryOptimization() async {
-  //   final response =
-  //       await DisableBatteryOptimization.showDisableAllOptimizationsSettings(
-  //           "Enable Auto Start",
-  //           "Follow the steps and enable the auto start of this app",
-  //           "Your device has additional battery optimization",
-  //           "Follow the steps and disable the optimizations to allow smooth functioning of this app");
-  //   if (response != null && response) {
-  //     bool? isAutoStartEnabled =
-  //         await DisableBatteryOptimization.isAutoStartEnabled;
-  //   }
-  // }
-
   void _fcmSetting() async {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 

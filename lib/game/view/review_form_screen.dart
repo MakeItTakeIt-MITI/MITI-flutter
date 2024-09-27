@@ -79,6 +79,10 @@ class _ReviewScreenState extends State<ReviewScreen> {
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
     // log("bottomPadding = $bottomPadding");
     return Scaffold(
+      appBar: DefaultAppBar(
+        title: widget.participationId != null ? '게스트 리뷰' : '호스트 리뷰',
+        backgroundColor: MITIColor.gray750,
+      ),
       backgroundColor: MITIColor.gray750,
       bottomNavigationBar: Padding(
         padding: EdgeInsets.only(bottom: bottomPadding),
@@ -94,16 +98,6 @@ class _ReviewScreenState extends State<ReviewScreen> {
                     ? () async {
                         createReview(
                             ref, context, widget.userInfoModel.nickname);
-
-                        // if (widget.participationId != null) {
-                        //   final result = ref.read(
-                        //       ratingProvider(ratingId: widget.participationId!));
-                        //   if (result is ResponseModel<UserReviewModel>) {
-                        //     final model = (result).data!;
-                        //     createReview(ref, context, model.nickname);
-                        //   } else {
-                        //   }
-                        // }
                       }
                     : () {},
                 style: TextButton.styleFrom(
@@ -119,44 +113,33 @@ class _ReviewScreenState extends State<ReviewScreen> {
           ),
         ),
       ),
-      body: NestedScrollView(
+      body: CustomScrollView(
         controller: _scrollController,
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return [
-            DefaultAppBar(
-              title: widget.participationId != null ? '게스트 리뷰' : '호스트 리뷰',
-              isSliver: true,
-              backgroundColor: MITIColor.gray750,
-            )
-          ];
-        },
-        body: CustomScrollView(
-          // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          slivers: [
-            SliverToBoxAdapter(
-              child: Column(
-                children: [
-                  UserShortInfoComponent.fromModel(
-                    model: widget.userInfoModel,
-                  ),
-                  getDivider(),
-                  _RatingForm(
-                    participationId: widget.participationId,
-                  ),
-                  getDivider(),
-                  _CommentForm(
-                    participationId: widget.participationId,
-                  ),
-                  getDivider(),
-                  Padding(
-                    padding: EdgeInsets.only(bottom: (200)),
-                    child: _ReviewForm(),
-                  ),
-                ],
-              ),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        slivers: [
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                UserShortInfoComponent.fromModel(
+                  model: widget.userInfoModel,
+                ),
+                getDivider(),
+                _RatingForm(
+                  participationId: widget.participationId,
+                ),
+                getDivider(),
+                _CommentForm(
+                  participationId: widget.participationId,
+                ),
+                getDivider(),
+                Padding(
+                  padding: EdgeInsets.only(bottom: (200)),
+                  child: _ReviewForm(),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -235,6 +218,7 @@ class _ReviewForm extends ConsumerWidget {
               },
               hint: '리뷰를 작성해주세요.',
               context: context,
+              formKey: GlobalKey(),
             ),
           )),
           // Scrollbar(
@@ -300,31 +284,25 @@ class MultiLineTextFormField extends StatefulWidget {
       this.onChanged,
       required this.hint,
       required this.context,
-      this.editTextController});
+      this.editTextController,
+      formKey});
 
   @override
   State<MultiLineTextFormField> createState() => _MultiLineTextFormFieldState();
 }
 
 class _MultiLineTextFormFieldState extends State<MultiLineTextFormField> {
-  // late final TextEditingController _editTextController;
   late final FocusNode _focusNode;
-  late final GlobalKey key;
 
-  // late final ScrollController _scrollController;
+  late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
-    key = GlobalKey();
+    _scrollController = ScrollController();
     _focusNode = FocusNode()
       ..addListener(() {
-        if (_focusNode.hasFocus) {
-          Scrollable.ensureVisible(widget.context,
-              alignment: 1,
-              duration: Duration(milliseconds: 300),
-              alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd);
-        }
+        if (_focusNode.hasFocus) {}
       });
   }
 
@@ -342,18 +320,19 @@ class _MultiLineTextFormFieldState extends State<MultiLineTextFormField> {
       },
       child: Align(
         child: RawScrollbar(
+          controller: _scrollController,
           thumbColor: MITIColor.gray500,
           crossAxisMargin: 4.w,
           thickness: 2.w,
           radius: Radius.circular(100.r),
           trackVisibility: true,
           child: TextField(
-              key: key,
+              scrollController: _scrollController,
               focusNode: _focusNode,
               controller: widget.editTextController,
-              // autofocus: true,
               onTap: () {
-                FocusScope.of(context).requestFocus(_focusNode);
+                // Scrollable.ensureVisible(widget.formKey.currentContext!);
+                // FocusScope.of(context).requestFocus(_focusNode);
               },
               keyboardType: TextInputType.multiline,
               maxLines: null,
@@ -524,39 +503,6 @@ class _CommentForm extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Consumer getComments(int? idx, String comment) {
-    return Consumer(
-      builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        final selected = ref.watch(selectedProvider);
-        return InkWell(
-          onTap: () {
-            ref.read(selectedProvider.notifier).update((state) => idx);
-            String comments = idx == 3 ? '' : comment;
-            ref.read(reviewFormProvider.notifier).updateComment(comments);
-          },
-          child: Row(children: [
-            SvgPicture.asset(
-              'assets/images/icon/system_success.svg',
-              colorFilter: ColorFilter.mode(
-                  selected == idx
-                      ? const Color(0xFF4065F5)
-                      : const Color(0xFF666666),
-                  BlendMode.srcIn),
-            ),
-            SizedBox(width: 4.5.w),
-            Text(
-              comment,
-              style: MITITextStyle.textChoiceStyle.copyWith(
-                  color: selected == idx
-                      ? const Color(0xff4065f5)
-                      : const Color(0xff666666)),
-            )
-          ]),
-        );
-      },
     );
   }
 }

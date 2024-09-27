@@ -96,39 +96,32 @@ class _BankTransferFormScreenState extends State<BankTransferFormScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        body: NestedScrollView(
+        appBar: const DefaultAppBar(
+          title: '정산금 수령 신청',
+          backgroundColor: MITIColor.gray750,
+          hasBorder: false,
+        ),
+        body: CustomScrollView(
           controller: _scrollController,
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return [
-              const DefaultAppBar(
-                title: '정산금 수령 신청',
-                isSliver: true,
-                backgroundColor: MITIColor.gray750,
-                hasBorder: false,
-              )
-            ];
-          },
-          body: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    _AccountForm(
-                      globalKeys: formKeys,
-                      focusNodes: focusNodes,
-                    ),
-                    getDivider(),
-                    _TransferAmountForm(
-                      focusNode: focusNodes[2],
-                      globalKey: formKeys[2],
-                    ),
-                    getDivider(),
-                    const _AgreementTermForm(),
-                  ],
-                ),
+          slivers: [
+            SliverToBoxAdapter(
+              child: Column(
+                children: [
+                  _AccountForm(
+                    globalKeys: formKeys,
+                    focusNodes: focusNodes,
+                  ),
+                  getDivider(),
+                  _TransferAmountForm(
+                    focusNode: focusNodes[2],
+                    globalKey: formKeys[2],
+                  ),
+                  getDivider(),
+                  const _AgreementTermForm(),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

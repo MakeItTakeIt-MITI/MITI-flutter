@@ -9,6 +9,7 @@ import 'package:miti/auth/view/phone_auth/phone_auth_info_screen.dart';
 import 'package:miti/auth/view/phone_auth/phone_auth_screen.dart';
 import 'package:miti/court/view/court_detail_screen.dart';
 import 'package:miti/court/view/court_game_list_screen.dart';
+import 'package:miti/etc/view/tc_policy_screen.dart';
 import 'package:miti/game/model/widget/user_reivew_short_info_model.dart';
 import 'package:miti/game/view/game_participation_screen.dart';
 import 'package:miti/game/view/game_refund_screen.dart';
@@ -52,6 +53,7 @@ import '../../review/view/my_review_detail_screen.dart';
 import '../../review/view/receive_review_list_screen.dart';
 import '../../review/view/review_list_screen.dart';
 import '../../review/view/written_review_list_screen.dart';
+import '../../test_screen.dart';
 import '../../user/view/nickname_update_screen.dart';
 import '../../user/view/profile_screen.dart';
 import '../../permission_screen.dart';
@@ -105,6 +107,14 @@ final routerProvider = Provider<GoRouter>((ref) {
           name: SplashScreen.routeName,
           builder: (context, state) {
             return SplashScreen();
+          },
+        ),
+        GoRoute(
+          path: '/scroll',
+          parentNavigatorKey: rootNavKey,
+          name: NestedCustomScrollExample.routeName,
+          builder: (context, state) {
+            return NestedCustomScrollExample();
           },
         ),
         GoRoute(
@@ -437,7 +447,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                             name: GameUpdateScreen.routeName,
                             builder: (context, state) {
                               final int gameId =
-                              int.parse(state.pathParameters['gameId']!);
+                                  int.parse(state.pathParameters['gameId']!);
 
                               return GameUpdateScreen(
                                 gameId: gameId,
@@ -604,7 +614,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                               );
                             },
                           ),
-
                         ]),
                   ]),
               GoRoute(
@@ -761,6 +770,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                   return const NoTransitionPage(child: ProfileBody());
                 },
                 routes: [
+                  GoRoute(
+                    path: 'tcPolicy',
+                    parentNavigatorKey: rootNavKey,
+                    name: TcPolicyScreen.routeName,
+                    builder: (context, state) {
+                      return const TcPolicyScreen();
+                    },
+                  ),
                   GoRoute(
                     path: 'nicknameUpdate',
                     parentNavigatorKey: rootNavKey,

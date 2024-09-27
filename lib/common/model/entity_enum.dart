@@ -345,6 +345,7 @@ enum PushNotificationTopicType {
   game_fee_changed('경기 참가비 변경', true),
   host_report_reportee('호스트 신고 알림 to 호스트', false),
   host_report_reporter('호스트 신고 알림 to 신고 사용자', false),
+  host_report_dismissed('호스트 신고 기각 알림', false),
   host_report_dismissed_reportee('호스트 신고 기각 알림 to 호스트', false),
   host_report_dismissed_reporter('호스트 신고 기각 알림 to 신고 사용자', false);
 
@@ -427,6 +428,56 @@ enum ReportStatusType {
   given_penalty('처분');
 
   const ReportStatusType(
+    this.displayName,
+  );
+
+  final String displayName;
+}
+
+enum UserGuideType {
+  game('경기'),
+  participation('참여'),
+  settlement('정산'),
+  transfer('이체'),
+  review('리뷰'),
+  report('신고'),
+  etc('기타');
+
+  const UserGuideType(
+    this.displayName,
+  );
+
+  final String displayName;
+}
+
+enum PanaltyType {
+  suspension('서비스 이용 정지'),
+  warning('이용 경고');
+
+  const PanaltyType(
+    this.displayName,
+  );
+
+  final String displayName;
+}
+
+enum ReportInvesticationResultType {
+  dismissed('신고 기각'),
+  penalized('신고 인정 및 해당 사용자 제재');
+
+  const ReportInvesticationResultType(
+    this.displayName,
+  );
+
+  final String displayName;
+}
+
+enum PolicyType {
+  policy('방침'),
+  terms_and_conditions('약관'),
+  user_policy('이용정책');
+
+  const PolicyType(
     this.displayName,
   );
 

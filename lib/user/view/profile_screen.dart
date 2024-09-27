@@ -22,6 +22,7 @@ import '../../account/view/settlement_management_screen.dart';
 import '../../account/view/settlement_screen.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/model/entity_enum.dart';
+import '../../etc/view/tc_policy_screen.dart';
 import '../../game/model/game_model.dart';
 import '../../game/view/game_create_screen.dart';
 import '../../notification/view/notification_setting_screen.dart';
@@ -29,6 +30,7 @@ import '../../review/view/receive_review_list_screen.dart';
 import '../../review/view/written_review_list_screen.dart';
 import '../../support/view/faq_screen.dart';
 import '../../support/view/support_screen.dart';
+import '../../test_screen.dart';
 import '../../theme/color_theme.dart';
 import '../model/user_model.dart';
 import '../provider/user_provider.dart';
@@ -199,11 +201,11 @@ class _MenuComponent extends StatelessWidget {
       ],
       '기타': [
         _MenuItem(
-          onTap: () {},
+          onTap: () => context.pushNamed(TcPolicyScreen.routeName),
           title: '약관 및 정책',
         ),
         _MenuItem(
-          onTap: () {},
+          onTap: () => context.pushNamed(NestedCustomScrollExample.routeName),
           title: '앱 정보',
         ),
       ],

@@ -87,6 +87,10 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
       onTap: () => FocusScope.of(context).unfocus(),
       onPanDown: (v) => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        appBar: const DefaultAppBar(
+          title: '경기 수정하기',
+          backgroundColor: MITIColor.gray750,
+        ),
         backgroundColor: MITIColor.gray750,
         bottomNavigationBar: BottomButton(
           button: TextButton(
@@ -96,7 +100,8 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
                   }
                 : () {},
             style: TextButton.styleFrom(
-                backgroundColor: valid() ? MITIColor.primary : MITIColor.gray500),
+                backgroundColor:
+                    valid() ? MITIColor.primary : MITIColor.gray500),
             child: Text(
               '저장하기',
               style: MITITextStyle.btnTextBStyle.copyWith(
@@ -105,61 +110,50 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
             ),
           ),
         ),
-        body: NestedScrollView(
+        body: CustomScrollView(
           controller: _scrollController,
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return [
-              const DefaultAppBar(
-                title: '경기 수정하기',
-                backgroundColor: MITIColor.gray750,
-                isSliver: true,
+          slivers: [
+            SliverToBoxAdapter(
+              child: Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  final result =
+                      ref.watch(gameDetailProvider(gameId: widget.gameId));
+                  if (result is LoadingModel) {
+                    return CircularProgressIndicator();
+                  } else if (result is ErrorModel) {
+                    GameError.fromModel(model: result)
+                        .responseError(context, GameApiType.get, ref);
+                    return Text('에러');
+                  }
+                  result as ResponseModel<GameDetailModel>;
+                  final model = result.data!;
+                  return Column(
+                    children: [
+                      SummaryComponent.fromDetailModel(
+                        model: model,
+                        isUpdateForm: true,
+                      ),
+                      getDivider(),
+                      _GameUpdateFormComponent(
+                        initMaxValue: model.max_invitation.toString(),
+                        initMinValue: model.min_invitation.toString(),
+                        focusNodes: focusNodes,
+                        formKeys: formKeys,
+                      ),
+                      getDivider(),
+                      _InfoComponent(
+                        info: model.info,
+                        focusNodes: focusNodes,
+                        formKeys: formKeys,
+                      ),
+                      SizedBox(height: 80.h),
+                      // const Spacer(),
+                    ],
+                  );
+                },
               ),
-            ];
-          },
-          body: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Consumer(
-                  builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                    final result =
-                        ref.watch(gameDetailProvider(gameId: widget.gameId));
-                    if (result is LoadingModel) {
-                      return CircularProgressIndicator();
-                    } else if (result is ErrorModel) {
-                      GameError.fromModel(model: result)
-                          .responseError(context, GameApiType.get, ref);
-                      return Text('에러');
-                    }
-                    result as ResponseModel<GameDetailModel>;
-                    final model = result.data!;
-                    return Column(
-                      children: [
-                        SummaryComponent.fromDetailModel(
-                          model: model,
-                          isUpdateForm: true,
-                        ),
-                        getDivider(),
-                        _GameUpdateFormComponent(
-                          initMaxValue: model.max_invitation.toString(),
-                          initMinValue: model.min_invitation.toString(),
-                          focusNodes: focusNodes,
-                          formKeys: formKeys,
-                        ),
-                        getDivider(),
-                        _InfoComponent(
-                          info: model.info,
-                          focusNodes: focusNodes,
-                          formKeys: formKeys,
-                        ),
-                        SizedBox(height: 80.h),
-                        // const Spacer(),
-                      ],
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

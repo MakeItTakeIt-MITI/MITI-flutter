@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -13,6 +14,7 @@ import 'package:miti/support/provider/widget/support_form_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/util/util.dart';
 import 'package:expandable/expandable.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../common/component/default_appbar.dart';
 import '../../theme/text_theme.dart';
 
@@ -122,6 +124,7 @@ class _FAQScreenState extends State<FAQScreen> {
                   }).toList();
 
                   final form = ref.watch(fAQSearchFormProvider);
+
                   /// 검색 결과가 없을 때
                   if (modelList.isEmpty) {
                     return Expanded(
@@ -144,7 +147,7 @@ class _FAQScreenState extends State<FAQScreen> {
                         ],
                       ),
                     );
-                  }else if(form.search.isNotEmpty){
+                  } else if (form.search.isNotEmpty) {
                     return Expanded(
                       child: SingleChildScrollView(
                         child: ListView.separated(
@@ -298,12 +301,65 @@ class _FAQComponent extends ConsumerWidget {
               ),
               margin: EdgeInsets.only(top: 20.h),
               padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
-              child: Text(
-                content,
-                style: MITITextStyle.sm150.copyWith(
-                  color: MITIColor.gray300,
-                ),
+              child: Html(
+                data: content,
+                style: {
+                  'body': Style(margin: Margins.all(0)),
+                  'p': Style(
+                    fontSize: FontSize(16.sp),
+                    color: MITIColor.gray300,
+                  ),
+                  'ul': Style(
+                    listStyleType: ListStyleType.none,
+                    margin: Margins.zero,
+                    padding: HtmlPaddings.all(5.r),
+                    fontSize: FontSize(12.sp),
+                    lineHeight: LineHeight.em(1.5),
+                  ),
+                  'b': Style(
+                    color: MITIColor.gray300,
+                  ),
+                  'li': Style(
+                    margin: Margins.all(4.r),
+                    fontSize: FontSize(12.sp),
+                    listStyleType: ListStyleType.none,
+                    lineHeight: LineHeight.em(1.5),
+                    color: MITIColor.gray300,
+                    listStylePosition: ListStylePosition.inside,
+                  ),
+                  'h1': Style(
+                    color: MITIColor.gray300,
+                  ),
+                  'h2': Style(
+                    color: MITIColor.gray300,
+                  ),
+                  'h3': Style(
+                    color: MITIColor.gray300,
+                  ),
+                  'h4': Style(
+                    color: MITIColor.gray300,
+                  ),
+                  'h5': Style(
+                    color: MITIColor.gray300,
+                  ),
+                  'h6': Style(
+                    color: MITIColor.gray300,
+                  ),
+                },
+                onLinkTap: (url, _, __) async {
+                  if (url != null) {
+                    final Uri _url = Uri.parse(url);
+                    await launchUrl(_url);
+                  }
+                },
               ),
+
+              // Text(
+              //   content,
+              //   style: MITITextStyle.sm150.copyWith(
+              //     color: MITIColor.gray300,
+              //   ),
+              // ),
             ),
           ),
         ),

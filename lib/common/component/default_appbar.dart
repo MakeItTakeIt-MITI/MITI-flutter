@@ -31,7 +31,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    log('context.canPop() = ${context.canPop()}');
+    // log('context.canPop() = ${context.canPop()}');
     if (isSliver) {
       return SliverAppBar(
         toolbarHeight: 44.h,

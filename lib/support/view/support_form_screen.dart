@@ -68,10 +68,9 @@ class _SupportFormScreenState extends State<SupportFormScreen> {
                                 context, SupportApiType.create, ref);
                           } else {
                             context.pop();
-                            Future.delayed(
-                                const Duration(milliseconds: 100), () {
-                              FlashUtil.showFlash(
-                                  context, '문의 작성이 완료되었습니다.');
+                            Future.delayed(const Duration(milliseconds: 100),
+                                () {
+                              FlashUtil.showFlash(context, '문의 작성이 완료되었습니다.');
                             });
                           }
                         }
@@ -91,7 +90,8 @@ class _SupportFormScreenState extends State<SupportFormScreen> {
         ),
         body: NestedScrollView(
           controller: _scrollController,
-          headerSliverBuilder: ((BuildContext context, bool innerBoxIsScrolled) {
+          headerSliverBuilder:
+              ((BuildContext context, bool innerBoxIsScrolled) {
             return [
               const DefaultAppBar(
                 isSliver: true,
@@ -161,14 +161,14 @@ class _ContentForm extends ConsumerWidget {
         ),
         SizedBox(height: 12.h),
         ConstrainedBox(
-          constraints:
-          BoxConstraints.tight(Size(double.infinity, 200.h)),
+          constraints: BoxConstraints.tight(Size(double.infinity, 200.h)),
           child: MultiLineTextFormField(
             onChanged: (val) {
               ref.read(supportFormProvider.notifier).update(content: val);
             },
             hint: '내용을 작성해주세요.',
             context: context,
+            formKey: GlobalKey(),
           ),
         ),
       ],
