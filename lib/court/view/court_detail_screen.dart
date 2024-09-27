@@ -322,12 +322,12 @@ class SoonestGamesComponent extends StatelessWidget {
                           context.pushNamed(GameCreateScreen.routeName);
                         },
                         child: Container(
-                          padding: EdgeInsets.only(
-                              left: 12.w, right: 16.w, top: 6.h, bottom: 6.h),
+                          padding: EdgeInsets.only(left: 12.w, right: 16.w),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50.r),
                             color: MITIColor.primary,
                           ),
+                          height: 36.h,
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [

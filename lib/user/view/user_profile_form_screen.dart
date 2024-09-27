@@ -21,7 +21,6 @@ import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/error/user_error.dart';
 import 'package:miti/user/provider/user_form_provider.dart';
 import 'package:miti/user/provider/user_provider.dart';
-import 'package:miti/user/view/user_info_screen.dart';
 import 'package:miti/util/util.dart';
 
 import '../../auth/error/auth_error.dart';

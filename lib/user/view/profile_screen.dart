@@ -33,10 +33,6 @@ import '../../support/view/support_screen.dart';
 import '../../theme/color_theme.dart';
 import '../model/user_model.dart';
 import '../provider/user_provider.dart';
-import 'user_delete_screen.dart';
-import 'user_host_list_screen.dart';
-import 'user_profile_form_screen.dart';
-import 'user_review_screen.dart';
 import '../../util/util.dart';
 
 class ProfileBody extends StatefulWidget {

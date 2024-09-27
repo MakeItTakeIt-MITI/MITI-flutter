@@ -22,7 +22,6 @@ import '../../common/model/entity_enum.dart';
 import '../../common/provider/form_util_provider.dart';
 import '../model/find_info_model.dart';
 import '../view/oauth_error_screen.dart';
-import '../view/phone_auth/phone_auth_screen.dart';
 
 enum AuthApiType {
   login,

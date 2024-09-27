@@ -11,7 +11,6 @@ import '../../default_screen.dart';
 import '../../game/view/game_screen.dart';
 import '../../user/view/profile_screen.dart';
 import '../../theme/color_theme.dart';
-import '../../user/view/user_info_screen.dart';
 
 class DefaultLayout extends StatefulWidget {
   final int bottomIdx;

@@ -15,7 +15,6 @@ import 'package:miti/auth/param/signup_param.dart';
 import 'package:miti/auth/provider/signup_provider.dart';
 import 'package:miti/auth/provider/widget/phone_auth_provider.dart';
 import 'package:miti/auth/provider/widget/sign_up_form_provider.dart';
-import 'package:miti/auth/view/phone_auth/phone_auth_send_screen.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/provider/secure_storage_provider.dart';
 import 'package:miti/common/provider/widget/form_provider.dart';

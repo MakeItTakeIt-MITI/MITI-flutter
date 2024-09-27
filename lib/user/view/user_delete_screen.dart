@@ -13,7 +13,6 @@ import 'package:miti/court/view/court_map_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/provider/user_provider.dart';
-import 'package:miti/user/view/user_delete_success_screen.dart';
 
 import '../../common/component/custom_dialog.dart';
 import '../../common/component/default_appbar.dart';

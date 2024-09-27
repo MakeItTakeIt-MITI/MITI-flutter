@@ -10,7 +10,7 @@ class PushDataModel {
   final PushNotificationTopicType topic;
 
   PushDataModel({
-    required this.id,
+    this.id,
     required this.topic,
   });
 
@@ -56,5 +56,4 @@ class PushAllowModel {
       _$PushAllowModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$PushAllowModelToJson(this);
-
 }

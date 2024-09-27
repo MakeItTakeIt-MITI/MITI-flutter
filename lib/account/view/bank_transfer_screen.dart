@@ -153,7 +153,9 @@ class _BankTransferScreenState extends ConsumerState<BankTransferScreen> {
 
   void changeDropButton(String? value, WidgetRef ref) {
     final userId = ref.read(authProvider)!.id!;
-    ref.read(dropDownValueProvider(DropButtonType.transfer).notifier).update((state) => value);
+    ref
+        .read(dropDownValueProvider(DropButtonType.transfer).notifier)
+        .update((state) => value);
     final status = getStatus(value!);
     log('status = ${status}');
     final provider =

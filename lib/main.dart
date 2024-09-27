@@ -19,13 +19,16 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/env/environment.dart';
+import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/notification_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'common/model/entity_enum.dart';
 import 'common/provider/provider_observer.dart';
 import 'common/provider/router_provider.dart';
 import 'common/provider/secure_storage_provider.dart';
 import 'firebase_options.dart';
+import 'notification/view/notification_screen.dart';
 
 //
 @pragma('vm:entry-point')
@@ -177,7 +180,7 @@ class _MyAppState extends ConsumerState<MyApp> {
               ),
               iOS: DarwinNotificationDetails(),
             ),
-            payload: message.data['test_paremeter1']);
+            payload: message.data['id']);
 
         log('notification.title = ${notification.title}');
         log('notification.body = ${notification.body}');
@@ -196,7 +199,23 @@ class _MyAppState extends ConsumerState<MyApp> {
   }
 
   void _handleMessage(RemoteMessage message) {
-    rootNavKey.currentState?.context.goNamed(LoginScreen.routeName);
+    final String? id = message.data['id'];
+    final PushNotificationTopicType topic = message.data['topic'];
+    switch (topic) {
+      case PushNotificationTopicType.general:
+        rootNavKey.currentState?.context.goNamed(NotificationScreen.routeName);
+      case PushNotificationTopicType.game_status_changed:
+      case PushNotificationTopicType.new_participation:
+      case PushNotificationTopicType.game_fee_changed:
+        Map<String, String> pathParameters = {'gameId': id.toString()};
+        rootNavKey.currentState?.context.goNamed(
+          GameDetailScreen.routeName,
+          pathParameters: pathParameters,
+        );
+        break;
+      default:
+        rootNavKey.currentState?.context.goNamed(NotificationScreen.routeName);
+    }
   }
 
   void _localNotificationSetting() {
@@ -278,10 +297,8 @@ class _MyAppState extends ConsumerState<MyApp> {
                         color: MITIColor.gray800,
                       ),
                     ),
-                    foregroundColor:
-                        WidgetStateProperty.all(MITIColor.gray800),
-                    backgroundColor:
-                        WidgetStateProperty.all(MITIColor.primary),
+                    foregroundColor: WidgetStateProperty.all(MITIColor.gray800),
+                    backgroundColor: WidgetStateProperty.all(MITIColor.primary),
                     shape: WidgetStateProperty.all(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(

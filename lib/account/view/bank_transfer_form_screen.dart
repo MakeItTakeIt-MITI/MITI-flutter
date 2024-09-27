@@ -1,13 +1,9 @@
-import 'dart:developer';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/account/error/account_error.dart';
 import 'package:miti/account/model/account_model.dart';
@@ -17,20 +13,14 @@ import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/provider/widget/form_provider.dart';
-import 'package:miti/court/component/court_list_component.dart';
 import 'package:miti/game/view/game_refund_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/view/profile_screen.dart';
-import 'package:miti/user/view/user_info_screen.dart';
 
 import '../../auth/view/signup/signup_screen.dart';
-import '../../common/component/custom_drop_down_button.dart';
 import '../../common/component/default_appbar.dart';
-import '../../common/component/default_layout.dart';
 import '../../common/model/entity_enum.dart';
-import '../../common/provider/form_util_provider.dart';
-import '../../common/provider/router_provider.dart';
 import '../../util/util.dart';
 import '../component/bank_card.dart';
 

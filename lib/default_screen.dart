@@ -7,7 +7,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
-import 'package:miti/user/view/user_info_screen.dart';
 import 'package:miti/util/util.dart';
 import 'court/view/court_map_screen.dart';
 import 'court/view/court_search_screen.dart';

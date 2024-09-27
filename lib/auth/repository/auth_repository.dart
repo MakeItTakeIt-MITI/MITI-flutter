@@ -104,4 +104,5 @@ abstract class AuthRepository {
   @POST('/auth/password-authentication')
   Future<ResponseModel<UpdateTokenModel>> getUpdateToken(
       {@Body() required UpdateTokenParam param});
+
 }

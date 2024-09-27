@@ -33,7 +33,6 @@ import '../../default_screen.dart';
 import '../../report/view/report_list_screen.dart';
 import '../../user/view/profile_screen.dart';
 import '../../user/model/review_model.dart';
-import '../../user/view/user_info_screen.dart';
 import '../../util/util.dart';
 import 'game_payment_screen.dart';
 import 'game_screen.dart';

@@ -114,58 +114,28 @@ Future<BaseModel> oauthLogin(OauthLoginRef ref,
   });
 }
 
-enum PhoneAuthType { signup, login }
-
-// @riverpod
-// Future<BaseModel> requestSMS(RequestSMSRef ref,
-//     {required PhoneAuthType type}) async {
-//   late final RequestCodeParam param;
-//   switch (type) {
-//     case PhoneAuthType.signup:
-//       param =
-//           RequestCodeParam.fromSignForm(model: ref.read(signUpFormProvider));
-//       break;
-//     case PhoneAuthType.login:
-//       param =
-//           RequestCodeParam.fromLoginForm(model: ref.read(loginFormProvider));
-//       break;
-//   }
-//
-//   return await ref
-//       .watch(authRepositoryProvider)
-//       .requestCode(param: param)
-//       .then<BaseModel>((value) {
-//     logger.i('requestSMS $param!');
-//     final model = value.data!;
-//     // ref
-//     //     .read(phoneAuthProvider.notifier)
-//     //     .update(user_info_token: model.authentication_token);
-//     return value;
-//   }).catchError((e) {
-//     final error = ErrorModel.respToError(e);
-//     logger.e(
-//         'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
-//     return error;
-//   });
-// }
-
 @riverpod
-Future<BaseModel> sendSMS(SendSMSRef ref) async {
-  // final model = ref.read(phoneAuthProvider);
-  // final param = CodeParam(code: model.code);
-  return LoadingModel();
-  // return await ref
-  //     .watch(authRepositoryProvider)
-  //     .sendCode(param: param, user_info_token: model.user_info_token)
-  //     .then<BaseModel>((value) {
-  //   logger.i('sendSMS $param!');
-  //   final model = value.data!;
-  //   return value;
-  // }).catchError((e) {
-  //   final error = ErrorModel.respToError(e);
-  //
-  //   logger.e(
-  //       'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
-  //   return error;
-  // });
+Future<BaseModel> logout(LogoutRef ref,
+    {required LoginBaseParam param, required AuthType type}) async {
+  final fcmToken = ref.read(fcmTokenProvider)!;
+  print("login fcm_token ${fcmToken}");
+  return await ref
+      .watch(authRepositoryProvider)
+      .oauthLogin(param: param, provider: type, fcmToken: fcmToken)
+      .then<BaseModel>((value) async {
+    logger.i('oauthLogin $param!');
+    final model = value.data!;
+    final storage = ref.read(secureStorageProvider);
+    log('refreshToken = ${model.token.refresh}');
+    await saveUserInfo(storage, model, ref);
+
+    final refresh = await storage.read(key: 'refreshToken');
+    log('refreshrefresh = ${refresh}');
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
 }
