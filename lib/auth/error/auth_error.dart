@@ -25,6 +25,7 @@ import '../view/oauth_error_screen.dart';
 
 enum AuthApiType {
   login,
+  logout,
   signup,
   signup_check,
   send_code,
@@ -59,6 +60,9 @@ class AuthError extends ErrorBase {
     switch (authApi) {
       case AuthApiType.login:
         _login(context, ref);
+        break;
+      case AuthApiType.logout:
+        _logout(context, ref);
         break;
       case AuthApiType.signup_check:
         _signupCheck(context, ref);
@@ -146,6 +150,22 @@ class AuthError extends ErrorBase {
     }
   }
 
+  /// 로그아웃 API
+  void _logout(BuildContext context, WidgetRef ref) {
+    if (this.status_code == BadRequest && this.error_code == 101) {
+      /// 토큰값 오류
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '로그아웃 실패',
+            content: '서버가 불안정해 잠시후 다시 이용해주세요.',
+          );
+        },
+      );
+    }
+  }
+
   /// 회원가입정보 중복 확인 API
   void _signupCheck(BuildContext context, WidgetRef ref) {
     if (this.status_code == BadRequest && this.error_code == 101) {
@@ -222,7 +242,7 @@ class AuthError extends ErrorBase {
           );
         },
       );
-    }else if (this.status_code == BadRequest && this.error_code == 220) {
+    } else if (this.status_code == BadRequest && this.error_code == 220) {
       /// 인증 미완료 휴대전화 번호
       showDialog(
         context: context,
@@ -233,7 +253,7 @@ class AuthError extends ErrorBase {
           );
         },
       );
-    }else if (this.status_code == BadRequest && this.error_code == 520) {
+    } else if (this.status_code == BadRequest && this.error_code == 520) {
       /// 토큰 유효성 오류
       showDialog(
         context: context,
@@ -255,7 +275,7 @@ class AuthError extends ErrorBase {
           );
         },
       );
-    }  else {
+    } else {
       /// 서버 오류
       showDialog(
         context: context,
@@ -790,27 +810,4 @@ class AuthError extends ErrorBase {
       );
     }
   }
-
-// void _findInfo(BuildContext context, WidgetRef ref) {
-//   if (this.status_code == NotFound && this.error_code == 101) {
-//     /// 일치 사용자 없음
-//     ref
-//         .read(interactionDescProvider(InteractionType.email).notifier)
-//         .update((state) => InteractionDesc(
-//               isSuccess: false,
-//               desc: "일치하는 사용자 정보가 존재하지 않습니다.",
-//             ));
-//   } else {
-//     /// 서버 오류
-//     showDialog(
-//       context: context,
-//       builder: (BuildContext context) {
-//         return const CustomDialog(
-//           title: '사용자 조회 실패',
-//           content: '서버가 불안정해 잠시후 다시 이용해주세요.',
-//         );
-//       },
-//     );
-//   }
-// }
 }

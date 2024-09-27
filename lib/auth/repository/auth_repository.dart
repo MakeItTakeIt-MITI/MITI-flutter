@@ -8,6 +8,7 @@ import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../dio/dio_interceptor.dart';
 import '../../dio/provider/dio_provider.dart';
+import '../../user/model/user_model.dart';
 import '../model/auth_model.dart';
 import '../model/code_model.dart';
 import '../model/find_info_model.dart';
@@ -37,9 +38,6 @@ abstract class AuthRepository {
       {@Path() required String user_info_token,
       @Body() required CodeParam param});
 
-  // @POST('/auth/send-sms/authentication')
-  // Future<ResponseModel<RequestCodeModel>> requestCode(
-  //     {@Body() required RequestCodeParam param});
 
   @Headers({'Authorization': 'true', 'refresh': 'true'})
   @POST('/auth/logout')
@@ -105,4 +103,7 @@ abstract class AuthRepository {
   Future<ResponseModel<UpdateTokenModel>> getUpdateToken(
       {@Body() required UpdateTokenParam param});
 
+  @Headers({'token': 'true'})
+  @DELETE('/auth/withdraw')
+  Future<ResponseModel<UserModel>> deleteUser();
 }

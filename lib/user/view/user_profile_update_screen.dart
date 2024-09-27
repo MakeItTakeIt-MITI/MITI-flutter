@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:miti/account/component/bank_card.dart';
 import 'package:miti/account/error/account_error.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
+import 'package:miti/auth/provider/logout_provider.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/model/entity_enum.dart';
@@ -16,6 +17,7 @@ import 'package:miti/user/provider/user_provider.dart';
 import 'package:miti/user/view/user_delete_screen.dart';
 import 'package:miti/user/view/user_profile_form_screen.dart';
 
+import '../../auth/error/auth_error.dart';
 import '../../common/component/custom_dialog.dart';
 import '../../util/util.dart';
 import '../model/user_model.dart';
@@ -37,7 +39,6 @@ class UserProfileUpdateScreen extends ConsumerWidget {
       body: Column(
         children: <Widget>[
           const _UserInfoComponent(),
-          SizedBox(height: 8.h),
           const _PasswordResetting(),
           SizedBox(height: 8.h),
           const _AuthComponent(),
@@ -120,32 +121,43 @@ class _UserInfoComponent extends ConsumerWidget {
   }
 }
 
-class _PasswordResetting extends StatelessWidget {
+class _PasswordResetting extends ConsumerWidget {
   const _PasswordResetting({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => context.pushNamed(UserProfileFormScreen.routeName),
-      child: Container(
-        color: MITIColor.gray800,
-        padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Text(
-                '비밀번호 재설정',
-                style: MITITextStyle.mdLight.copyWith(
-                  color: MITIColor.gray100,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final result = ref.watch(userInfoProvider);
+    final model = (result as ResponseModel<UserModel>).data!;
+
+    if (model.signup_method != AuthType.email) {
+      return Container();
+    }
+    return Column(
+      children: [
+        SizedBox(height: 8.h),
+        GestureDetector(
+          onTap: () => context.pushNamed(UserProfileFormScreen.routeName),
+          child: Container(
+            color: MITIColor.gray800,
+            padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    '비밀번호 재설정',
+                    style: MITITextStyle.mdLight.copyWith(
+                      color: MITIColor.gray100,
+                    ),
+                  ),
                 ),
-              ),
+                SvgPicture.asset(AssetUtil.getAssetPath(
+                    type: AssetType.icon, name: 'chevron_right'))
+              ],
             ),
-            SvgPicture.asset(AssetUtil.getAssetPath(
-                type: AssetType.icon, name: 'chevron_right'))
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }
@@ -171,9 +183,16 @@ class _AuthComponent extends ConsumerWidget {
                       content:
                           ' 로그아웃 시, 모집하거나 참여한 경기에\n해당하는 알람을 받을 수 없습니다.\n그래도 로그아웃 하시겠습니까?',
                       btn: TextButton(
-                        onPressed: () {
-                          context.pop();
-                          ref.read(authProvider.notifier).logout();
+                        onPressed: () async {
+                          final result = await ref.read(logoutProvider.future);
+                          if (context.mounted) {
+                            if (result is ErrorModel) {
+                              AuthError.fromModel(model: result).responseError(
+                                  context, AuthApiType.login, ref);
+                            } else {
+                              context.pop();
+                            }
+                          }
                         },
                         child: const Text("로그아웃 하기"),
                       ),
