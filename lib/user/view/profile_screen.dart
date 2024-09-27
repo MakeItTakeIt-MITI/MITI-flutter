@@ -30,7 +30,6 @@ import '../../review/view/receive_review_list_screen.dart';
 import '../../review/view/written_review_list_screen.dart';
 import '../../support/view/faq_screen.dart';
 import '../../support/view/support_screen.dart';
-import '../../test_screen.dart';
 import '../../theme/color_theme.dart';
 import '../model/user_model.dart';
 import '../provider/user_provider.dart';
@@ -205,7 +204,7 @@ class _MenuComponent extends StatelessWidget {
           title: '약관 및 정책',
         ),
         _MenuItem(
-          onTap: () => context.pushNamed(NestedCustomScrollExample.routeName),
+          onTap: () => context.pop(),
           title: '앱 정보',
         ),
       ],

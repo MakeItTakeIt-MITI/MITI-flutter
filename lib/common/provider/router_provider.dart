@@ -53,7 +53,6 @@ import '../../review/view/my_review_detail_screen.dart';
 import '../../review/view/receive_review_list_screen.dart';
 import '../../review/view/review_list_screen.dart';
 import '../../review/view/written_review_list_screen.dart';
-import '../../test_screen.dart';
 import '../../user/view/nickname_update_screen.dart';
 import '../../user/view/profile_screen.dart';
 import '../../permission_screen.dart';
@@ -106,15 +105,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           parentNavigatorKey: rootNavKey,
           name: SplashScreen.routeName,
           builder: (context, state) {
-            return SplashScreen();
-          },
-        ),
-        GoRoute(
-          path: '/scroll',
-          parentNavigatorKey: rootNavKey,
-          name: NestedCustomScrollExample.routeName,
-          builder: (context, state) {
-            return NestedCustomScrollExample();
+            return const SplashScreen();
           },
         ),
         GoRoute(
@@ -414,20 +405,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                           return const GameCreateScreen();
                         },
                         routes: [
-                          GoRoute(
-                            path: ':gameId/complete',
-                            parentNavigatorKey: rootNavKey,
-                            name: GameCompleteScreen.routeName,
-                            builder: (context, state) {
-                              final extra = state.extra as GameCompleteType;
-                              final int gameId =
-                                  int.parse(state.pathParameters['gameId']!);
-                              return GameCompleteScreen(
-                                gameId: gameId,
-                                type: extra,
-                              );
-                            },
-                          ),
+
                         ]),
                     GoRoute(
                         path: ':gameId',
@@ -441,6 +419,20 @@ final routerProvider = Provider<GoRouter>((ref) {
                           );
                         },
                         routes: [
+                          GoRoute(
+                            path: 'complete',
+                            parentNavigatorKey: rootNavKey,
+                            name: GameCompleteScreen.routeName,
+                            builder: (context, state) {
+                              final extra = state.extra as GameCompleteType;
+                              final int gameId =
+                              int.parse(state.pathParameters['gameId']!);
+                              return GameCompleteScreen(
+                                gameId: gameId,
+                                type: extra,
+                              );
+                            },
+                          ),
                           GoRoute(
                             path: 'update',
                             parentNavigatorKey: rootNavKey,

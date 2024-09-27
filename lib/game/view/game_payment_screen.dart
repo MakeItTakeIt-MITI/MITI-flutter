@@ -175,7 +175,7 @@ class GamePaymentScreen extends StatelessWidget {
             Map<String, String> pathParameters = {'gameId': gameId.toString()};
             const GameCompleteType extra = GameCompleteType.payment;
 
-            context.pushNamed(
+            context.goNamed(
               GameCompleteScreen.routeName,
               pathParameters: pathParameters,
               extra: extra,

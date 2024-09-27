@@ -69,7 +69,8 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                     'gameId': widget.gameId.toString()
                   };
                   const GameCompleteType extra = GameCompleteType.payment;
-                  context.pushNamed(
+
+                  context.goNamed(
                     GameCompleteScreen.routeName,
                     pathParameters: pathParameters,
                     extra: extra,

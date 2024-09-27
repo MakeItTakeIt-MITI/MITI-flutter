@@ -211,6 +211,12 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
                                               .future);
 
                                       if (result is ErrorModel) {
+                                        if (context.mounted) {
+                                          GameError.fromModel(model: result)
+                                              .responseError(context,
+                                                  GameApiType.cancel, ref);
+                                          context.pop();
+                                        }
                                       } else {
                                         if (context.mounted) {
                                           context.goNamed(GameScreen.routeName);
@@ -324,8 +330,6 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
         fixedSize: Size(double.infinity, 48.h),
         maximumSize: Size(double.infinity, 48.h),
         minimumSize: Size(double.infinity, 48.h),
-        // maximumSize: Size(223.w, 48.h),
-        // minimumSize: Size(223.w, 48.h),
       ),
       child: const Text('리뷰 작성하기'),
     );
@@ -409,8 +413,8 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
             child: Row(
               mainAxisSize: MainAxisSize.max,
               children: [
-                reportButton,
-                SizedBox(width: 12.w),
+                if (!model.is_host) reportButton,
+                if (!model.is_host) SizedBox(width: 12.w),
                 Expanded(child: reviewButton)
               ],
             ),

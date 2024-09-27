@@ -29,6 +29,7 @@ enum GameApiType {
   createGuestReview,
   createHostReview,
   free,
+  cancel,
 }
 
 class GameError extends ErrorBase {
@@ -77,6 +78,9 @@ class GameError extends ErrorBase {
         break;
       case GameApiType.free:
         _free(context, ref);
+        break;
+      case GameApiType.cancel:
+        _cancel(context, ref);
         break;
       default:
         break;
@@ -671,6 +675,35 @@ class GameError extends ErrorBase {
     } else {
       /// 서버 오류
       FlashUtil.showFlash(context, "경기 무료 전환에 실패하였습니다.",
+          textColor: MITIColor.error);
+    }
+  }
+
+  /// 경기 모집 취소 API
+  void _cancel(BuildContext context, WidgetRef ref) {
+    if (this.status_code == UnAuthorized && this.error_code == 501) {
+      /// 액세스 토큰 오류
+      FlashUtil.showFlash(context, "경기 모집 취소에 실패하였습니다.",
+          textColor: MITIColor.error);
+    } else if (this.status_code == Forbidden && this.error_code == 940) {
+      /// 경기 취소 권한 없음
+      FlashUtil.showFlash(context, "경기 모집 취소에 실패하였습니다.",
+          textColor: MITIColor.error);
+    } else if (this.status_code == Forbidden && this.error_code == 941) {
+      /// 취소 불가능한 경기 상태
+      FlashUtil.showFlash(context, "경기 모집 취소에 실패하였습니다.",
+          textColor: MITIColor.error);
+    } else if (this.status_code == NotFound && this.error_code == 940) {
+      /// 경기 정보 조회 실패
+      FlashUtil.showFlash(context, "경기 모집 취소에 실패하였습니다.",
+          textColor: MITIColor.error);
+    } else if (this.status_code == ServerError && this.error_code == 540) {
+      /// 서버 내부 오류
+      FlashUtil.showFlash(context, "경기 모집 취소에 실패하였습니다.",
+          textColor: MITIColor.error);
+    } else {
+      /// 서버 오류
+      FlashUtil.showFlash(context, "경기 모집 취소에 실패하였습니다.",
           textColor: MITIColor.error);
     }
   }
