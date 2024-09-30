@@ -39,8 +39,87 @@ class PushModel extends IModelWithId {
     required this.isRead,
   });
 
+  PushModel copyWith({
+    int? id,
+    PushNotificationTopicType? topic,
+    String? title,
+    String? body,
+    PushDataModel? data,
+    bool? isRead,
+    String? createdAt,
+  }) {
+    return PushModel(
+      id: id ?? this.id,
+      topic: topic ?? this.topic,
+      title: title ?? this.title,
+      body: body ?? this.body,
+      data: data ?? this.data,
+      isRead: isRead ?? this.isRead,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
   factory PushModel.fromJson(Map<String, dynamic> json) =>
       _$PushModelFromJson(json);
+}
+
+@JsonSerializable()
+class PushDetailModel extends PushModel {
+  final String status;
+  final String content;
+  @JsonKey(name: 'is_sent')
+  final bool isSent;
+  @JsonKey(name: 'modified_at')
+  final String modifiedAt;
+  @JsonKey(name: 'expire_at')
+  final String? expireAt;
+
+  PushDetailModel({
+    required super.id,
+    required super.topic,
+    required this.status,
+    required super.title,
+    required super.body,
+    required this.content,
+    required super.data,
+    required super.isRead,
+    required this.isSent,
+    required super.createdAt,
+    required this.modifiedAt,
+    this.expireAt,
+  });
+
+  PushDetailModel copyWith({
+    int? id,
+    PushNotificationTopicType? topic,
+    String? status,
+    String? title,
+    String? body,
+    String? content,
+    PushDataModel? data,
+    bool? isRead,
+    bool? isSent,
+    String? createdAt,
+    String? modifiedAt,
+    String? expireAt,
+  }) {
+    return PushDetailModel(
+      id: id ?? this.id,
+      topic: topic ?? this.topic,
+      status: status ?? this.status,
+      title: title ?? this.title,
+      body: body ?? this.body,
+      content: content ?? this.content,
+      data: data ?? this.data,
+      isRead: isRead ?? this.isRead,
+      isSent: isSent ?? this.isSent,
+      createdAt: createdAt ?? this.createdAt,
+      modifiedAt: modifiedAt ?? this.modifiedAt,
+    );
+  }
+
+  factory PushDetailModel.fromJson(Map<String, dynamic> json) =>
+      _$PushDetailModelFromJson(json);
 }
 
 @JsonSerializable()

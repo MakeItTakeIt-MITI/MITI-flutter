@@ -138,6 +138,7 @@ class _SupportScreenState extends State<SupportScreen> {
           style: MITITextStyle.sm150.copyWith(
             color: MITIColor.gray300,
           ),
+          textAlign: TextAlign.center,
         )
       ],
     );

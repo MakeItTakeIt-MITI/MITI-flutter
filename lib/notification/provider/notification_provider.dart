@@ -34,6 +34,35 @@ class Notice extends _$Notice {
 }
 
 @Riverpod(keepAlive: true)
+class Push extends _$Push {
+  @override
+  BaseModel build({required int pushId}) {
+    get(pushId: pushId);
+    return LoadingModel();
+  }
+
+  Future<void> get({required int pushId}) async {
+    final repository = ref.watch(pushPRepositoryProvider);
+    final userId = ref.read(authProvider)!.id!;
+    repository.get(userId: userId, pushId: pushId).then((value) {
+      logger.i(value);
+      state = value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state = error;
+    });
+  }
+
+  // void update({required PushAllowModel model}) {
+  //   final uState = (state as ResponseModel<PushAllowModel>);
+  //   state = ResponseModel(
+  //       status_code: uState.status_code, message: uState.message, data: model);
+  // }
+}
+
+@Riverpod(keepAlive: true)
 class PushSetting extends _$PushSetting {
   @override
   BaseModel build() {

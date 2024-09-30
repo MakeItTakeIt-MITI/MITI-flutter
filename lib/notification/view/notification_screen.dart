@@ -279,6 +279,7 @@ class _TabBar extends StatelessWidget {
 }
 
 class PushCard extends ConsumerStatefulWidget {
+  final int id;
   final PushNotificationTopicType topic;
   final String title;
   final String body;
@@ -288,6 +289,7 @@ class PushCard extends ConsumerStatefulWidget {
 
   const PushCard({
     super.key,
+    required this.id,
     required this.topic,
     required this.title,
     required this.body,
@@ -298,11 +300,12 @@ class PushCard extends ConsumerStatefulWidget {
 
   factory PushCard.fromModel({required PushModel model}) {
     return PushCard(
+      id: model.id,
       topic: model.topic,
       title: model.title,
       body: model.body,
       data: model.data,
-      isRead: true,
+      isRead: model.isRead,
       createdAt: formatDateTime(model.createdAt),
     );
   }
@@ -349,60 +352,70 @@ class _PushCardState extends ConsumerState<PushCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
-      decoration: BoxDecoration(
-        color: widget.isRead ? MITIColor.gray800 : MITIColor.gray700,
-        border: const Border(
-          bottom: BorderSide(color: MITIColor.gray700),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                widget.topic.displayName,
-                style: MITITextStyle.xxsmLight.copyWith(
-                  color: MITIColor.gray300,
-                ),
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.createdAt,
-                    style: MITITextStyle.xxsmLight.copyWith(
-                      color: MITIColor.gray300,
-                    ),
-                  ),
-                  Visibility(
-                    visible: false,
-                    child: Row(
-                      children: [
-                        SizedBox(width: 4.w),
-                        Badge(
-                          smallSize: 4.r,
-                          largeSize: 4.r,
-                          backgroundColor: MITIColor.primary,
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              )
-            ],
+    return GestureDetector(
+      onTap: () {
+        Map<String, String> pathParameters = {'id': widget.id.toString()};
+        context.pushNamed(
+          NoticeDetailScreen.routeName,
+          pathParameters: pathParameters,
+          extra: NoticeScreenType.push,
+        );
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
+        decoration: BoxDecoration(
+          color: widget.isRead ? MITIColor.gray800 : MITIColor.gray700,
+          border: const Border(
+            bottom: BorderSide(color: MITIColor.gray700),
           ),
-          SizedBox(height: 16.h),
-          Text(
-            widget.title,
-            style: MITITextStyle.smSemiBold.copyWith(
-              color: MITIColor.gray200,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  widget.topic.displayName,
+                  style: MITITextStyle.xxsmLight.copyWith(
+                    color: MITIColor.gray300,
+                  ),
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.createdAt,
+                      style: MITITextStyle.xxsmLight.copyWith(
+                        color: MITIColor.gray300,
+                      ),
+                    ),
+                    Visibility(
+                      visible: !widget.isRead,
+                      child: Row(
+                        children: [
+                          SizedBox(width: 4.w),
+                          Badge(
+                            smallSize: 4.r,
+                            largeSize: 4.r,
+                            backgroundColor: MITIColor.primary,
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                )
+              ],
             ),
-          )
-        ],
+            SizedBox(height: 16.h),
+            Text(
+              widget.title,
+              style: MITITextStyle.smSemiBold.copyWith(
+                color: MITIColor.gray200,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -434,14 +447,12 @@ class NotificationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        showDialog(
-            context: context,
-            barrierColor: MITIColor.gray800,
-            builder: (context) {
-              return NotificationDetailScreen(
-                notificationId: id,
-              );
-            });
+        Map<String, String> pathParameters = {'id': id.toString()};
+        context.pushNamed(
+          NoticeDetailScreen.routeName,
+          pathParameters: pathParameters,
+          extra: NoticeScreenType.notification,
+        );
       },
       child: Container(
         decoration: const BoxDecoration(

@@ -80,7 +80,7 @@ class SignUpScreen extends ConsumerWidget {
       },
     );
     return PopScope(
-        // onPopInvokedWithResult: (bool didPop, T? result){}
+      // onPopInvokedWithResult: (bool didPop, T? result){}
       // canPop: false,
       onPopInvoked: (didPop) {
         log("didPop = $didPop");
@@ -1509,7 +1509,7 @@ class SignUpCompleteScreen extends StatelessWidget {
                         width: 200,
                         height: 200,
                         fit: BoxFit.fill,
-                        repeat: false,
+                        repeat: true,
                       ),
                     ),
                     Positioned(

@@ -65,6 +65,13 @@ abstract class PushPRepository
   });
 
   @Headers({'token': 'true'})
+  @GET('/users/{userId}/push-notifications/{pushId}')
+  Future<ResponseModel<PushDetailModel>> get({
+    @Path() required int userId,
+    @Path() required int pushId,
+  });
+
+  @Headers({'token': 'true'})
   @PATCH('/users/{userId}/push-notifications/setting/on')
   Future<ResponseModel<PushAllowModel>> allowPush({
     @Path() required int userId,

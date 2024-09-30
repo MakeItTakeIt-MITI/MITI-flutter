@@ -20,6 +20,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/env/environment.dart';
+import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/notification_provider.dart';
 import 'package:miti/theme/color_theme.dart';

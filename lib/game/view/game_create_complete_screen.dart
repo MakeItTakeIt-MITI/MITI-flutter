@@ -115,7 +115,7 @@ class GameCompleteScreen extends StatelessWidget {
                         width: 200,
                         height: 200,
                         fit: BoxFit.fill,
-                        repeat: false,
+                        repeat: true,
                       ),
                     ),
                     Positioned(

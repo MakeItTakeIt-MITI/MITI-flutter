@@ -16,6 +16,7 @@ import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/game/view/game_payment_screen.dart';
 import 'package:miti/game/view/game_update_screen.dart';
 import 'package:miti/game/view/review_form_screen.dart';
+import 'package:miti/notification/view/notification_detail_screen.dart';
 import 'package:miti/notification/view/notification_screen.dart';
 import 'package:miti/support/view/faq_screen.dart';
 import 'package:miti/support/view/guide_screen.dart';
@@ -728,6 +729,22 @@ final routerProvider = Provider<GoRouter>((ref) {
                     builder: (context, state) {
                       return const NotificationScreen();
                     },
+                    routes: [
+                      GoRoute(
+                        path: ':id',
+                        parentNavigatorKey: rootNavKey,
+                        name: NoticeDetailScreen.routeName,
+                        builder: (context, state) {
+                          final int id =
+                              int.parse(state.pathParameters['id']!);
+                          final type = state.extra as NoticeScreenType;
+                          return NoticeDetailScreen(
+                            id: id,
+                            type: type,
+                          );
+                        },
+                      ),
+                    ],
                   ),
                   GoRoute(
                     path: 'notificationSetting',

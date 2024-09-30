@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/notification/repository/notification_repository.dart';
@@ -60,6 +62,18 @@ class PushPageStateNotifier
     super.param,
     super.path,
   });
+
+  /// optimistic response
+  void read({required int pushId}) {
+    final model = (state as ResponseModel<PaginationModel<PushModel>>);
+    final pState = model.data!;
+    final newPageContent = pState.page_content.map((e) {
+      if (e.id == pushId) {
+        return e.copyWith(isRead: true);
+      }
+      return e;
+    }).toList();
+    final newData = pState.copyWith(page_content: newPageContent);
+    state = model.copyWith(data: newData);
+  }
 }
-
-
