@@ -79,9 +79,6 @@ class AuthError extends ErrorBase {
       case AuthApiType.request_code:
         _requestCode(context, ref);
         break;
-      // case AuthApiType.findInfo:
-      //   _findInfo(context, ref);
-      //   break;
       case AuthApiType.requestSMS:
         _requestSMS(context, ref);
         break;

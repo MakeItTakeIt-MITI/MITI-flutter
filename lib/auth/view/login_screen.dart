@@ -450,8 +450,7 @@ class AppleLoginButton extends ConsumerWidget {
         AppleIDAuthorizationScopes.fullName,
       ],
     );
-
-    final param = AppleLoginParam.fromModel(credential: credential);
+   final param = AppleLoginParam.fromModel(credential: credential);
     final result = await ref
         .read(loginProvider(param: param, type: AuthType.apple).future);
 
@@ -462,12 +461,12 @@ class AppleLoginButton extends ConsumerWidget {
               context, AuthApiType.oauth, ref,
               object: AuthType.apple);
         }
-        // if(result.status_code == Forbidden && result.error_code == 540){
-        //   final String userInfoToken = result.data['userinfo_token'];
-        //   log("userInfoToken = $userInfoToken");
-        //   final storage = ref.read(secureStorageProvider);
-        //   await storage.write(key: "userInfoToken", value: userInfoToken);
-        // }
+        if(result.status_code == Forbidden && result.error_code == 540){
+          final String userInfoToken = result.data['userinfo_token'];
+          log("userInfoToken = $userInfoToken");
+          final storage = ref.read(secureStorageProvider);
+          await storage.write(key: "userInfoToken", value: userInfoToken);
+        }
       } else {
         context.goNamed(CourtMapScreen.routeName);
       }
