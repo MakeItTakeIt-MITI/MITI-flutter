@@ -49,11 +49,38 @@ class SignUpScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(progressProvider);
-
     ref.watch(signUpPopProvider);
-    final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
+    final appbar = Consumer(
+      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        final showDetail =
+            ref.watch(signUpFormProvider.select((value) => value.showDetail));
+        final show = showDetail.where((e) => e).isNotEmpty;
+        final progressValue = ref.watch(progressProvider).progress;
+        if (show && progressValue == 5) {
+          return SliverAppBar(
+            backgroundColor: MITIColor.gray800,
 
+            /// 앱바 pinned 시 surface 컬러
+            surfaceTintColor: MITIColor.gray800,
+            centerTitle: true,
+            leading: IconButton(
+              onPressed: () {
+                ref.read(progressProvider.notifier).hideDetail();
+              },
+              icon: SvgPicture.asset(
+                AssetUtil.getAssetPath(type: AssetType.icon, name: "delete"),
+              ),
+            ),
+          );
+        }
+        return const DefaultAppBar(
+          title: '회원가입',
+          isSliver: true,
+        );
+      },
+    );
     return PopScope(
+        // onPopInvokedWithResult: (bool didPop, T? result){}
       // canPop: false,
       onPopInvoked: (didPop) {
         log("didPop = $didPop");
@@ -62,83 +89,46 @@ class SignUpScreen extends ConsumerWidget {
         onTap: () => FocusScope.of(context).unfocus(),
         child: Scaffold(
           resizeToAvoidBottomInset: false,
-          body: NestedScrollView(
-            headerSliverBuilder:
-                (BuildContext context, bool innerBoxIsScrolled) {
-              final appbar = Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  final showDetail = ref.watch(
-                      signUpFormProvider.select((value) => value.showDetail));
-                  final show = showDetail.where((e) => e).isNotEmpty;
-                  final progressValue = ref.watch(progressProvider).progress;
-                  if (show && progressValue == 5) {
-                    return SliverAppBar(
-                      backgroundColor: MITIColor.gray800,
-
-                      /// 앱바 pinned 시 surface 컬러
-                      surfaceTintColor: MITIColor.gray800,
-                      centerTitle: true,
-                      leading: IconButton(
-                        onPressed: () {
-                          ref.read(progressProvider.notifier).hideDetail();
-                        },
-                        icon: SvgPicture.asset(
-                          AssetUtil.getAssetPath(
-                              type: AssetType.icon, name: "delete"),
-                        ),
+          body: Padding(
+            padding: EdgeInsets.only(
+              left: 21.w,
+              right: 21.w,
+              // bottom: bottomPadding,
+            ),
+            child: CustomScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              slivers: [
+                appbar,
+                SliverFillRemaining(
+                  fillOverscroll: true,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 20.h),
+                      progressComponent(),
+                      DescComponent(
+                        type: type,
                       ),
-                      pinned: true,
-                    );
-                  }
-                  return const DefaultAppBar(
-                    title: '회원가입',
-                    isSliver: true,
-                  );
-                },
-              );
-              return [appbar];
-            },
-            body: Padding(
-              padding: EdgeInsets.only(
-                left: 21.w,
-                right: 21.w,
-                // bottom: bottomPadding,
-              ),
-              child: CustomScrollView(
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                slivers: [
-                  SliverFillRemaining(
-                    fillOverscroll: true,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 20.h),
-                        progressComponent(),
-                        DescComponent(
-                          type: type,
-                        ),
-                        signUpComponent(ref),
-                        // if (ref.watch(progressProvider).progress == 1)
-                        //   const NicknameForm(),
-                        // if (ref.watch(progressProvider).progress == 2)
-                        //   const EmailForm(),
-                        // if (ref.watch(progressProvider).progress == 3)
-                        //   const PasswordForm(),
-                        // if (ref.watch(progressProvider).progress == 4)
-                        //   const PersonalInfoForm(),
-                        // if (ref.watch(progressProvider).progress == 5)
-                        //   const CheckBoxForm(),
-                        const Spacer(),
-                        _NextButton(
-                          type: type,
-                        ),
-                      ],
-                    ),
+                      signUpComponent(ref),
+                      // if (ref.watch(progressProvider).progress == 1)
+                      //   const NicknameForm(),
+                      // if (ref.watch(progressProvider).progress == 2)
+                      //   const EmailForm(),
+                      // if (ref.watch(progressProvider).progress == 3)
+                      //   const PasswordForm(),
+                      // if (ref.watch(progressProvider).progress == 4)
+                      //   const PersonalInfoForm(),
+                      // if (ref.watch(progressProvider).progress == 5)
+                      //   const CheckBoxForm(),
+                      const Spacer(),
+                      _NextButton(
+                        type: type,
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

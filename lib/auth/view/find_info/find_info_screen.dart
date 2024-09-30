@@ -194,7 +194,7 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
                           if (model.purpose == null) {
                             context.goNamed(NotFoundAccountScreen.routeName);
                             return;
-                          }
+                          }//김정현
                           Map<String, String> queryParameters = {
                             'email': model.email!,
                           };

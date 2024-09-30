@@ -275,19 +275,12 @@ class _FAQComponent extends ConsumerWidget {
             iconColor: MITIColor.gray400,
             iconSize: 24.r,
             iconPadding: EdgeInsets.zero,
+            headerAlignment: ExpandablePanelHeaderAlignment.center,
           ),
-          header: Align(
-            alignment: const Alignment(-1, 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  title,
-                  style: MITITextStyle.md.copyWith(
-                    color: MITIColor.gray50,
-                  ),
-                ),
-              ],
+          header: Text(
+            title,
+            style: MITITextStyle.md.copyWith(
+              color: MITIColor.gray50,
             ),
           ),
           collapsed: Container(),

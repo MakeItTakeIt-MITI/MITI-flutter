@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 import 'package:miti/auth/view/find_info/find_info_screen.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/auth/view/signup/signup_select_screen.dart';
@@ -116,6 +117,14 @@ class _OauthComponent extends StatelessWidget {
     return Column(
       children: <Widget>[
         const Spacer(),
+        Lottie.asset(
+          'assets/lottie/success2.json',
+          width: 100.r,
+          height: 100.r,
+          fit: BoxFit.fill,
+          repeat: false,
+        ),
+        SizedBox(height: 20.h),
         Text(
           "이메일 찾기",
           style: MITITextStyle.xxl140.copyWith(

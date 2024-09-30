@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 import 'package:miti/auth/error/auth_error.dart';
 import 'package:miti/auth/provider/widget/find_info_provider.dart';
 import 'package:miti/auth/view/login_screen.dart';
@@ -123,6 +124,16 @@ class CompleteRestPasswordScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(height: 200.h),
+            Lottie.asset(
+              'assets/lottie/success2.json',
+              width: 100.r,
+              height: 100.r,
+              fit: BoxFit.fill,
+              repeat: false,
+            ),
+            SizedBox(
+              height: 20.h,
+            ),
             Text(
               '비밀번호 설정 완료',
               style: MITITextStyle.xxl140.copyWith(

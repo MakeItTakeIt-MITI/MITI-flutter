@@ -17,35 +17,69 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/env/environment.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/notification_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:miti/user/view/profile_screen.dart';
 import 'common/model/entity_enum.dart';
 import 'common/provider/provider_observer.dart';
 import 'common/provider/router_provider.dart';
 import 'common/provider/secure_storage_provider.dart';
 import 'firebase_options.dart';
+import 'notification/provider/widget/unconfirmed_provider.dart';
 import 'notification/view/notification_screen.dart';
 
 //
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `initializeApp` before using other Firebase services.
-  await Firebase.initializeApp();
-  print("Handling a background message: ${message.messageId}");
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  log("background push data ${message.data}");
+  log("Handling a background category: ${message.category}");
 }
 
-void _foregroundRouting(NotificationResponse details) {
-  rootNavKey.currentState?.context.goNamed(LoginScreen.routeName);
+void _foregroundRouting(NotificationResponse details) async {
+  /// foreground 상태일 때 만 fcm 알림 내용 받기 가능
+  /// terminated, background 상태일 때는 null
   log('_foregroundRouting = $details');
+  log("details.payload = ${details.payload}");
+  if (details.payload != null && details.payload!.isNotEmpty) {
+    List<String> params = details.payload!.split("&");
+    final id = params[0].split("=").length > 1 ? params[0].split("=")[1] : null;
+    final topic =
+        params[1].split("=").length > 1 ? params[1].split("=")[1] : null;
+
+    final topicEnum = PushNotificationTopicType.stringToEnum(value: topic!);
+    _handleMessage(id, topicEnum);
+  }
 }
 
 void _backgroundRouting(NotificationResponse details) {
   log('_backgroundRouting = $details');
+  rootNavKey.currentContext!.goNamed(NotificationScreen.routeName);
+}
+
+void _handleMessage(String? id, PushNotificationTopicType topic) {
+  switch (topic) {
+    case PushNotificationTopicType.general:
+      rootNavKey.currentContext!.goNamed(NotificationScreen.routeName);
+    case PushNotificationTopicType.game_status_changed:
+    case PushNotificationTopicType.new_participation:
+    case PushNotificationTopicType.game_fee_changed:
+      Map<String, String> pathParameters = {'gameId': id.toString()};
+      rootNavKey.currentContext!.goNamed(
+        GameDetailScreen.routeName,
+        pathParameters: pathParameters,
+      );
+      break;
+    default:
+      rootNavKey.currentContext!.goNamed(NotificationScreen.routeName);
+  }
 }
 
 Future<FlutterLocalNotificationsPlugin> _initLocalNotification() async {
@@ -54,7 +88,7 @@ Future<FlutterLocalNotificationsPlugin> _initLocalNotification() async {
 
   /// Android 세팅
   const AndroidInitializationSettings initSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings('@mipmap/ic_notification');
 
   /// IOS 세팅
   const initSettingsIOS = DarwinInitializationSettings(
@@ -139,22 +173,14 @@ class _MyAppState extends ConsumerState<MyApp> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       getFcmToken(ref);
     });
-    // disableBattaryOptimization();
   }
 
   void _notificationSetting() {
     _localNotificationSetting();
-
     _fcmSetting();
   }
 
   void _fcmSetting() async {
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-    FirebaseMessaging.onMessageOpenedApp.listen((event) {});
-
-    FirebaseMessaging.onMessage.listen((event) {});
-
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
       alert: true,
@@ -162,10 +188,40 @@ class _MyAppState extends ConsumerState<MyApp> {
       sound: true,
     );
 
+    /// 백그라운드 메시지 푸쉬 올 때
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+    /// 백그라운드에서 메시지 푸쉬를 열 때
+    FirebaseMessaging.onMessageOpenedApp.listen((event) async {
+      log('onMessageOpenedApp');
+      if (mounted) {
+        final id = event.data['id'];
+        String topic = event.data['topic'];
+        final topicEnum = PushNotificationTopicType.stringToEnum(value: topic);
+        _handleMessage(id, topicEnum);
+      }
+    });
+
+    // 앱이 처음 시작될 때 초기 메시지 처리 (앱이 백그라운드에서 실행되었을 때)
+    FirebaseMessaging.instance.getInitialMessage().then((message) async {
+      if (message != null && message.data.isNotEmpty) {
+        await ref.read(authProvider.notifier).autoLogin();
+        final id = message.data['id'];
+        String topic = message.data['topic'];
+        final topicEnum = PushNotificationTopicType.stringToEnum(value: topic);
+        _handleMessage(id, topicEnum);
+      }
+    });
+
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      ref.read(unconfirmedProvider.notifier).update((s) => true);
       RemoteNotification? notification = message.notification;
 
+      /// fcm이 오면 local notification으로 푸쉬 알람 보여주기
       if (notification != null) {
+        String? id = message.data['id'];
+        String? topic = message.data['topic'];
+
         final flutterLocalNotificationsPlugin =
             ref.read(notificationProvider.notifier).getNotification;
         await flutterLocalNotificationsPlugin?.show(
@@ -177,45 +233,21 @@ class _MyAppState extends ConsumerState<MyApp> {
                 'high_importance_channel',
                 'high_importance_notification',
                 importance: Importance.max,
+                icon: 'ic_notification',
+                ticker: 'ticker',
+                color: Colors.black,
+                ongoing: true,
+                showWhen: true,
               ),
               iOS: DarwinNotificationDetails(),
             ),
-            payload: message.data['id']);
+            payload: "id=$id&topic=$topic");
 
         log('notification.title = ${notification.title}');
         log('notification.body = ${notification.body}');
         // log("수신자 측 메시지 수신");
       }
     });
-
-    RemoteMessage? message =
-        await FirebaseMessaging.instance.getInitialMessage();
-
-    log('remoteMessage = $message');
-    if (message != null) {
-      // 액션 부분 -> 파라미터는 message.data['test_parameter1'] 이런 방식으로...
-      _handleMessage(message);
-    }
-  }
-
-  void _handleMessage(RemoteMessage message) {
-    final String? id = message.data['id'];
-    final PushNotificationTopicType topic = message.data['topic'];
-    switch (topic) {
-      case PushNotificationTopicType.general:
-        rootNavKey.currentState?.context.goNamed(NotificationScreen.routeName);
-      case PushNotificationTopicType.game_status_changed:
-      case PushNotificationTopicType.new_participation:
-      case PushNotificationTopicType.game_fee_changed:
-        Map<String, String> pathParameters = {'gameId': id.toString()};
-        rootNavKey.currentState?.context.goNamed(
-          GameDetailScreen.routeName,
-          pathParameters: pathParameters,
-        );
-        break;
-      default:
-        rootNavKey.currentState?.context.goNamed(NotificationScreen.routeName);
-    }
   }
 
   void _localNotificationSetting() {
@@ -225,6 +257,24 @@ class _MyAppState extends ConsumerState<MyApp> {
           .read(notificationProvider.notifier)
           .setNotificationPlugin(notification);
     });
+  }
+
+  void _handleMessage(String? id, PushNotificationTopicType topic) {
+    switch (topic) {
+      case PushNotificationTopicType.general:
+        rootNavKey.currentContext!.goNamed(NotificationScreen.routeName);
+      case PushNotificationTopicType.game_status_changed:
+      case PushNotificationTopicType.new_participation:
+      case PushNotificationTopicType.game_fee_changed:
+        Map<String, String> pathParameters = {'gameId': id.toString()};
+        rootNavKey.currentContext!.goNamed(
+          GameDetailScreen.routeName,
+          pathParameters: pathParameters,
+        );
+        break;
+      default:
+        rootNavKey.currentContext!.goNamed(NotificationScreen.routeName);
+    }
   }
 
   @override

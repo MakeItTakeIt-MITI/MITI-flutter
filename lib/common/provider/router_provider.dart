@@ -108,6 +108,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (_, state) => const LoginScreen(),
             routes: [
               GoRoute(
+                path: 'signUpComplete',
+                parentNavigatorKey: rootNavKey,
+                name: SignUpCompleteScreen.routeName,
+                builder: (_, state) => SignUpCompleteScreen(),
+              ),
+              GoRoute(
+                //
                 path: 'oauthError',
                 parentNavigatorKey: rootNavKey,
                 name: OauthErrorScreen.routeName,
@@ -182,83 +189,83 @@ final routerProvider = Provider<GoRouter>((ref) {
                   builder: (_, state) => const SignUpSelectScreen(),
                   routes: [
                     GoRoute(
-                      path: 'signUp',
-                      parentNavigatorKey: rootNavKey,
-                      name: SignUpScreen.routeName,
+                        path: 'signUp',
+                        parentNavigatorKey: rootNavKey,
+                        name: SignUpScreen.routeName,
 
-                      // onExit: (context) {
-                      //   if (ref.read(signUpPopProvider)) {
-                      //     return true;
-                      //   }
-                      //
-                      //   showDialog(
-                      //     context: context,
-                      //     builder: (BuildContext context) {
-                      //       final button = Row(
-                      //         mainAxisAlignment:
-                      //             MainAxisAlignment.center,
-                      //         children: [
-                      //           Expanded(
-                      //             child: TextButton(
-                      //               onPressed: () {
-                      //                 context.pop();
-                      //                 context.pop();
-                      //                 ref
-                      //                     .read(signUpPopProvider
-                      //                         .notifier)
-                      //                     .update((state) => true);
-                      //               },
-                      //               style: ButtonStyle(
-                      //                   backgroundColor:
-                      //                       WidgetStateProperty.all(
-                      //                           MITIColor.gray600)),
-                      //               child: Text(
-                      //                 '취소하기',
-                      //                 style: MITITextStyle.mdBold
-                      //                     .copyWith(
-                      //                   color: MITIColor.primary,
-                      //                 ),
-                      //               ),
-                      //             ),
-                      //           ),
-                      //           SizedBox(width: 6.w),
-                      //           Expanded(
-                      //             child: TextButton(
-                      //               onPressed: () {
-                      //                 context.pop();
-                      //               },
-                      //               child: Text(
-                      //                 '가입 계속하기',
-                      //                 style: MITITextStyle.mdBold
-                      //                     .copyWith(
-                      //                   color: MITIColor.gray800,
-                      //                 ),
-                      //               ),
-                      //             ),
-                      //           ),
-                      //         ],
-                      //       );
-                      //       return Material(
-                      //         color: Colors.transparent,
-                      //         child: CustomDialog(
-                      //           title: '회원가입 취소',
-                      //           content:
-                      //               '회원가입 취소 시 입력하신 정보가 모두 삭제됩니다.\n회원가입을 취소하시겠습니까?',
-                      //           button: button,
-                      //         ),
-                      //       );
-                      //     },
-                      //   );
-                      //   return false;
-                      // },
-                      builder: (_, state) {
-                        AuthType extra = state.extra as AuthType;
+                        // onExit: (context) {
+                        //   if (ref.read(signUpPopProvider)) {
+                        //     return true;
+                        //   }
+                        //
+                        //   showDialog(
+                        //     context: context,
+                        //     builder: (BuildContext context) {
+                        //       final button = Row(
+                        //         mainAxisAlignment:
+                        //             MainAxisAlignment.center,
+                        //         children: [
+                        //           Expanded(
+                        //             child: TextButton(
+                        //               onPressed: () {
+                        //                 context.pop();
+                        //                 context.pop();
+                        //                 ref
+                        //                     .read(signUpPopProvider
+                        //                         .notifier)
+                        //                     .update((state) => true);
+                        //               },
+                        //               style: ButtonStyle(
+                        //                   backgroundColor:
+                        //                       WidgetStateProperty.all(
+                        //                           MITIColor.gray600)),
+                        //               child: Text(
+                        //                 '취소하기',
+                        //                 style: MITITextStyle.mdBold
+                        //                     .copyWith(
+                        //                   color: MITIColor.primary,
+                        //                 ),
+                        //               ),
+                        //             ),
+                        //           ),
+                        //           SizedBox(width: 6.w),
+                        //           Expanded(
+                        //             child: TextButton(
+                        //               onPressed: () {
+                        //                 context.pop();
+                        //               },
+                        //               child: Text(
+                        //                 '가입 계속하기',
+                        //                 style: MITITextStyle.mdBold
+                        //                     .copyWith(
+                        //                   color: MITIColor.gray800,
+                        //                 ),
+                        //               ),
+                        //             ),
+                        //           ),
+                        //         ],
+                        //       );
+                        //       return Material(
+                        //         color: Colors.transparent,
+                        //         child: CustomDialog(
+                        //           title: '회원가입 취소',
+                        //           content:
+                        //               '회원가입 취소 시 입력하신 정보가 모두 삭제됩니다.\n회원가입을 취소하시겠습니까?',
+                        //           button: button,
+                        //         ),
+                        //       );
+                        //     },
+                        //   );
+                        //   return false;
+                        // },
+                        builder: (_, state) {
+                          AuthType extra = state.extra as AuthType;
 
-                        return SignUpScreen(
-                          type: extra,
-                        );
-                      },
-                    ),
+                          return SignUpScreen(
+                            type: extra,
+                          );
+                        },
+                        routes: []),
                   ]),
             ]),
         GoRoute(
@@ -300,14 +307,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                 pageBuilder: (context, state) {
                   return const NoTransitionPage(child: CourtMapScreen());
                 },
-                routes: [
-                  GoRoute(
-                    path: 'signUpComplete',
-                    parentNavigatorKey: rootNavKey,
-                    name: SignUpCompleteScreen.routeName,
-                    builder: (_, state) => SignUpCompleteScreen(),
-                  ),
-                ],
               ),
               GoRoute(
                   path: '/game',

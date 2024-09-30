@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
+import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/auth/view/signup/signup_screen.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/provider/router_provider.dart';
@@ -57,36 +58,38 @@ class _UserDeleteScreenState extends ConsumerState<UserDeleteScreen> {
       bottomNavigationBar: BottomButton(
         hasBorder: false,
         button: TextButton(
-          onPressed: () async {
-            final result = await ref.read(deleteUserProvider.future);
-            if (context.mounted) {
-              if (result is ErrorModel) {
-                UserError.fromModel(model: result)
-                    .responseError(context, UserApiType.delete, ref);
-              }
-            } else {
-              showModalBottomSheet(
-                  context: context,
-                  builder: (_) {
-                    return BottomDialog(
-                      title: '탈퇴 완료',
-                      content:
-                          '회원 탈퇴가 완료되었습니다.\n농구 하고싶을 땐 미티! 다시 볼 날을 고대하고 있을게요!',
-                      btn: Consumer(
-                        builder: (BuildContext context, WidgetRef ref,
-                            Widget? child) {
-                          return TextButton(
-                            onPressed: () => context.pop(),
-                            child: const Text(
-                              "확인",
+          onPressed: valid
+              ? () async {
+                  final result = await ref.read(deleteUserProvider.future);
+                  if (context.mounted) {
+                    if (result is ErrorModel) {
+                      UserError.fromModel(model: result)
+                          .responseError(context, UserApiType.delete, ref);
+                    }
+                  } else {
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (_) {
+                          return BottomDialog(
+                            title: '탈퇴 완료',
+                            content:
+                                '회원 탈퇴가 완료되었습니다.\n농구 하고싶을 땐 미티! 다시 볼 날을 고대하고 있을게요!',
+                            btn: Consumer(
+                              builder: (BuildContext context, WidgetRef ref,
+                                  Widget? child) {
+                                return TextButton(
+                                  onPressed: () => context.pop(),
+                                  child: const Text(
+                                    "확인",
+                                  ),
+                                );
+                              },
                             ),
                           );
-                        },
-                      ),
-                    );
-                  });
-            }
-          },
+                        });
+                  }
+                }
+              : () {},
           style: TextButton.styleFrom(
             backgroundColor: valid ? MITIColor.primary : MITIColor.gray500,
           ),

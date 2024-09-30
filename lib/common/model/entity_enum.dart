@@ -351,6 +351,11 @@ enum PushNotificationTopicType {
 
   const PushNotificationTopicType(this.displayName, this.canSetting);
 
+  static PushNotificationTopicType stringToEnum({required String value}) {
+    return PushNotificationTopicType.values
+        .firstWhere((e) => e.name == value);
+  }
+
   final String displayName;
   final bool canSetting;
 }

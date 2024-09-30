@@ -1305,6 +1305,9 @@ class _FilterChipsComponent extends StatelessWidget {
   const _FilterChipsComponent({super.key, required this.inFilter});
 
   String parsingStatus(GameListParam filter) {
+    filter.gameStatus.sort((f1, f2) {
+      return f1.index - f2.index;
+    });
     String gameStatus = filter.gameStatus
         .fold("", (value, element) => "$value${element.displayName}, ");
     if (gameStatus.isNotEmpty) {

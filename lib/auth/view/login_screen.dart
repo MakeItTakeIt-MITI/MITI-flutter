@@ -20,6 +20,7 @@ import 'package:miti/common/provider/secure_storage_provider.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/util/util.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../common/component/custom_text_form_field.dart';
 import '../../common/component/default_appbar.dart';
@@ -39,12 +40,9 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-
-    return
-      GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        onPanDown: (v) => FocusScope.of(context).unfocus(),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      onPanDown: (v) => FocusScope.of(context).unfocus(),
       child: Scaffold(
         backgroundColor: MITIColor.black,
         resizeToAvoidBottomInset: false,
@@ -344,7 +342,7 @@ class KakaoLoginButton extends ConsumerWidget {
           .read(loginProvider(param: param, type: AuthType.kakao).future);
       if (context.mounted) {
         if (result is ErrorModel) {
-          if(result.status_code == Forbidden && result.error_code == 540) {
+          if (result.status_code == Forbidden && result.error_code == 540) {
             final String userInfoToken = result.data['userinfo_token'];
             log("userInfoToken = $userInfoToken");
             final storage = ref.read(secureStorageProvider);
@@ -491,7 +489,12 @@ class HelpComponent extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             InkWell(
-              onTap: () {},
+              onTap: () async {
+                final uri = Uri.parse('https://www.makeittakeit.kr');
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(uri);
+                }
+              },
               child: Text(
                 '고객센터',
                 style: MITITextStyle.xxsm.copyWith(
