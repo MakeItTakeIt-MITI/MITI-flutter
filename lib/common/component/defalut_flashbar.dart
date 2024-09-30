@@ -7,8 +7,8 @@ import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
 
 class FlashUtil {
-  static void showFlash(
-      BuildContext context, String content, {Color? textColor}) {
+  static void showFlash(BuildContext context, String content,
+      {Color textColor = MITIColor.correct}) {
     context.showFlash(
         builder: (BuildContext context, FlashController controller) {
       Future.delayed(const Duration(seconds: 1), () {
@@ -17,6 +17,7 @@ class FlashUtil {
       return DefaultFlash(
         controller: controller,
         content: content,
+        textColor: textColor,
       );
     });
   }
@@ -31,7 +32,7 @@ class DefaultFlash extends StatelessWidget {
       {super.key,
       required this.controller,
       required this.content,
-      this.textColor = MITIColor.correct});
+      required this.textColor});
 
   @override
   Widget build(BuildContext context) {

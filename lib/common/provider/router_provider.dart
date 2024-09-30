@@ -56,7 +56,7 @@ import '../../splash_screen.dart';
 import '../../support/view/support_detail_screen.dart';
 import '../../support/view/support_screen.dart';
 import '../../user/provider/user_provider.dart';
-import '../../user/view/user_host_list_screen.dart';
+import '../../user/view/user_participation_screen.dart';
 import '../../user/view/user_profile_update_screen.dart';
 import '../../user/view/user_review_screen.dart';
 import '../error/view/error_screen.dart';
@@ -152,8 +152,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                       name: OtherAccountScreen.routeName,
                       builder: (_, state) {
                         final AuthType authType = state.extra as AuthType;
+                        final PhoneAuthType phoneType =
+                            PhoneAuthType.stringToEnum(
+                                value: state.uri.queryParameters['phoneType']!);
                         return OtherAccountScreen(
                           authType: authType,
+                          phoneType: phoneType,
                         );
                       },
                     ),
@@ -331,10 +335,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                     GoRoute(
                       path: 'myParticipation',
                       parentNavigatorKey: rootNavKey,
-                      name: GameMyParticipationScreen.routeName,
+                      name: UserParticipationScreen.routeName,
                       builder: (context, state) {
                         UserGameType extra = state.extra as UserGameType;
-                        return GameMyParticipationScreen(
+                        return UserParticipationScreen(
                           type: extra,
                         );
                       },

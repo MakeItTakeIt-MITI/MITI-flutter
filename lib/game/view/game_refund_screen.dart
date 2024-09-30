@@ -221,14 +221,14 @@ class _RefundInfoComponent extends ConsumerWidget {
             getPayment(
               title: '결제 수수료',
               fee: formatFee(model.commission_amount.payment_commission_amount),
-              color: MITIColor.error,
+              color: MITIColor.gray100,
             ),
             SizedBox(height: 12.h),
             getPayment(
               title: '참여 취소 수수료',
               fee: formatFee(
                   model.commission_amount.cancelation_commission_amount),
-              color: MITIColor.error,
+              color: MITIColor.gray100,
             ),
             getDivider(),
             Row(

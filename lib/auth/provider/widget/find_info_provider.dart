@@ -128,7 +128,6 @@ Future<BaseModel> verifyPhone(VerifyPhoneRef ref,
         ref
             .read(signUpFormProvider.notifier)
             .updateForm(signup_token: model.signup_token);
-        // 김정현
         return value;
       }).catchError((e) {
         final error = ErrorModel.respToError(e);

@@ -117,7 +117,7 @@ class ReportError extends ErrorBase {
         builder: (BuildContext context) {
           return const CustomDialog(
             title: '경기 신고 실패',
-            content: '경기 신고를 할 수 없는 경기입니다.',
+            content: '6시간 이내의 경기만 신고 할 수 있습니다.',
           );
         },
       );

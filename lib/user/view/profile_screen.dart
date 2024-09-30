@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/common/model/default_model.dart';
@@ -58,6 +59,7 @@ class _ProfileBodyState extends State<ProfileBody> {
             hasBorder: false,
             actions: [
               //todo 뱃지 위치 적용 필요
+
               Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   final unconfirmed = ref.watch(unconfirmedProvider);

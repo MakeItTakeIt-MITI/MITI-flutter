@@ -174,18 +174,18 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
               } else {
                 model = ref.watch(findPasswordProvider);
               }
-
-
               return TextButton(
                 onPressed: model != null
                     ? () {
-
-
                         if (widget.type == PhoneAuthType.find_email) {
                           model as EmailVerifyModel;
                           if (model.authType != null) {
+                            final Map<String, String> queryParameters = {
+                              'phoneType': widget.type.name
+                            };
                             context.pushNamed(
                               OtherAccountScreen.routeName,
+                              queryParameters: queryParameters,
                               extra: model.authType,
                             );
                             return;
@@ -194,7 +194,7 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
                           if (model.purpose == null) {
                             context.goNamed(NotFoundAccountScreen.routeName);
                             return;
-                          }//김정현
+                          }
                           Map<String, String> queryParameters = {
                             'email': model.email!,
                           };
@@ -207,8 +207,12 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
                         } else {
                           model as PasswordVerifyModel;
                           if (model.authType != null) {
+                            final Map<String, String> queryParameters = {
+                              'phoneType': widget.type.name
+                            };
                             context.pushNamed(
                               OtherAccountScreen.routeName,
+                              queryParameters: queryParameters,
                               extra: model.authType,
                             );
                             return;

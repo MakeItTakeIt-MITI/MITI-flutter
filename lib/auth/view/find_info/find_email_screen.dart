@@ -40,9 +40,11 @@ class FindEmailScreen extends StatelessWidget {
 
 class OtherAccountScreen extends StatelessWidget {
   static String get routeName => 'otherAccount';
+  final PhoneAuthType phoneType;
   final AuthType authType;
 
-  const OtherAccountScreen({super.key, required this.authType});
+  const OtherAccountScreen(
+      {super.key, required this.authType, required this.phoneType});
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +56,7 @@ class OtherAccountScreen extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 21.w),
         child: _OauthComponent(
           authType: authType,
+          phoneType: phoneType,
         ),
       ),
     );
@@ -107,8 +110,10 @@ class NotFoundAccountScreen extends StatelessWidget {
 
 class _OauthComponent extends StatelessWidget {
   final AuthType authType;
+  final PhoneAuthType phoneType;
 
-  const _OauthComponent({super.key, required this.authType});
+  const _OauthComponent(
+      {super.key, required this.authType, required this.phoneType});
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +131,7 @@ class _OauthComponent extends StatelessWidget {
         ),
         SizedBox(height: 20.h),
         Text(
-          "이메일 찾기",
+          phoneType == PhoneAuthType.find_email ? "이메일 찾기" : "비밀번호 찾기",
           style: MITITextStyle.xxl140.copyWith(
             color: MITIColor.white,
           ),

@@ -103,8 +103,8 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
     if (result is ErrorModel) {
       if (mounted) {
         FocusScope.of(context).requestFocus(FocusNode());
-        AuthError.fromModel(model: result).responseError(
-            context, AuthApiType.requestSMS, ref);
+        AuthError.fromModel(model: result)
+            .responseError(context, AuthApiType.requestSMS, ref);
       }
     } else {
       showTime = true;
@@ -238,9 +238,7 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
                           }
                         }
                       : null,
-                  style: TextButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 8.w),
-                      backgroundColor: phoneBtnColor),
+                  style: TextButton.styleFrom(backgroundColor: phoneBtnColor),
                   child: Text(
                     phoneBtnDesc,
                     style: MITITextStyle.md.copyWith(
@@ -313,7 +311,6 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
                       }
                     },
                     style: TextButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 8.w),
                       backgroundColor: codeBtnColor,
                     ),
                     child: Text(

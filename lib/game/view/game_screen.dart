@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:miti/game/view/game_create_screen.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/provider/user_provider.dart';
-import 'package:miti/user/view/user_host_list_screen.dart';
+import 'package:miti/user/view/user_participation_screen.dart';
 
 import '../../auth/provider/auth_provider.dart';
 import '../../common/component/custom_drop_down_button.dart';
@@ -136,10 +136,10 @@ class _GameScreenState extends ConsumerState<GameScreen>
               ];
             },
             body: TabBarView(controller: tabController, children: const [
-              GameMyParticipationScreen(
+              UserParticipationScreen(
                 type: UserGameType.host,
               ),
-              GameMyParticipationScreen(
+              UserParticipationScreen(
                 type: UserGameType.participation,
               )
             ])),

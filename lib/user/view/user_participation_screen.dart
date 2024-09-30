@@ -22,20 +22,21 @@ import '../../game/model/game_model.dart';
 import '../../theme/text_theme.dart';
 import '../param/user_profile_param.dart';
 
-class GameMyParticipationScreen extends ConsumerStatefulWidget {
-  static String get routeName => 'gameMyParticipation';
+class UserParticipationScreen extends ConsumerStatefulWidget {
+  static String get routeName => 'userParticipation';
   final UserGameType type;
 
-  const GameMyParticipationScreen({
+  const UserParticipationScreen({
     super.key,
     required this.type,
   });
 
   @override
-  ConsumerState<GameMyParticipationScreen> createState() => _GameHostScreenState();
+  ConsumerState<UserParticipationScreen> createState() =>
+      _GameHostScreenState();
 }
 
-class _GameHostScreenState extends ConsumerState<GameMyParticipationScreen> {
+class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
   final items = [
     '모집 중',
     '모집 완료',
@@ -74,7 +75,8 @@ class _GameHostScreenState extends ConsumerState<GameMyParticipationScreen> {
 
   Future<void> refresh() async {
     final id = ref.read(authProvider)!.id!;
-    final gameStatus = getStatus(ref.read(dropDownValueProvider(DropButtonType.game)));
+    final gameStatus =
+        getStatus(ref.read(dropDownValueProvider(DropButtonType.game)));
     final provider = widget.type == UserGameType.host
         ? userHostingPProvider(PaginationStateParam(path: id))
         : userParticipationPProvider(PaginationStateParam(path: id))
@@ -121,7 +123,8 @@ class _GameHostScreenState extends ConsumerState<GameMyParticipationScreen> {
           ),
           Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              final gameStatus = getStatus(ref.watch(dropDownValueProvider(DropButtonType.game)));
+              final gameStatus = getStatus(
+                  ref.watch(dropDownValueProvider(DropButtonType.game)));
               final provider = widget.type == UserGameType.host
                   ? userHostingPProvider(PaginationStateParam(path: id))
                       as AutoDisposeStateNotifierProvider<
@@ -182,7 +185,9 @@ class _GameHostScreenState extends ConsumerState<GameMyParticipationScreen> {
   }
 
   void changeDropButton(String? value, int id) {
-    ref.read(dropDownValueProvider(DropButtonType.game).notifier).update((state) => value);
+    ref
+        .read(dropDownValueProvider(DropButtonType.game).notifier)
+        .update((state) => value);
     final gameStatus = getStatus(value!);
     final provider = widget.type == UserGameType.host
         ? userHostingPProvider(PaginationStateParam(path: id))

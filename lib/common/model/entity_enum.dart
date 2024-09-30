@@ -246,6 +246,10 @@ enum PhoneAuthType {
   signup,
   find_email,
   password_update;
+
+  static PhoneAuthType stringToEnum({required String value}) {
+    return PhoneAuthType.values.firstWhere((e) => e.name == value);
+  }
 }
 
 enum FormType {
@@ -352,8 +356,7 @@ enum PushNotificationTopicType {
   const PushNotificationTopicType(this.displayName, this.canSetting);
 
   static PushNotificationTopicType stringToEnum({required String value}) {
-    return PushNotificationTopicType.values
-        .firstWhere((e) => e.name == value);
+    return PushNotificationTopicType.values.firstWhere((e) => e.name == value);
   }
 
   final String displayName;

@@ -65,28 +65,32 @@ class _UserDeleteScreenState extends ConsumerState<UserDeleteScreen> {
                     if (result is ErrorModel) {
                       UserError.fromModel(model: result)
                           .responseError(context, UserApiType.delete, ref);
+                    } else {
+                      Future.delayed(const Duration(milliseconds: 200), () {
+                        showModalBottomSheet(
+                            context: rootNavKey.currentState!.context!,
+                            builder: (_) {
+                              return BottomDialog(
+                                title: '탈퇴 완료',
+                                content:
+                                    '회원 탈퇴가 완료되었습니다.\n농구 하고싶을 땐 미티! 다시 볼 날을 고대하고 있을게요!',
+                                btn: Consumer(
+                                  builder: (BuildContext context, WidgetRef ref,
+                                      Widget? child) {
+                                    return TextButton(
+                                      onPressed: () {
+                                        context.pop();
+                                      },
+                                      child: const Text(
+                                        "확인",
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            });
+                      });
                     }
-                  } else {
-                    showModalBottomSheet(
-                        context: context,
-                        builder: (_) {
-                          return BottomDialog(
-                            title: '탈퇴 완료',
-                            content:
-                                '회원 탈퇴가 완료되었습니다.\n농구 하고싶을 땐 미티! 다시 볼 날을 고대하고 있을게요!',
-                            btn: Consumer(
-                              builder: (BuildContext context, WidgetRef ref,
-                                  Widget? child) {
-                                return TextButton(
-                                  onPressed: () => context.pop(),
-                                  child: const Text(
-                                    "확인",
-                                  ),
-                                );
-                              },
-                            ),
-                          );
-                        });
                   }
                 }
               : () {},
