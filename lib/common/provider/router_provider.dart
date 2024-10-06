@@ -572,109 +572,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                   },
                   routes: [
                     GoRoute(
-                      path: 'delete',
-                      parentNavigatorKey: rootNavKey,
-                      name: UserDeleteScreen.routeName,
-                      builder: (context, state) {
-                        return const UserDeleteScreen();
-                      },
-                    ),
-                    GoRoute(
-                        path: 'support',
-                        parentNavigatorKey: rootNavKey,
-                        name: SupportScreen.routeName,
-                        builder: (context, state) {
-                          return const SupportScreen();
-                        },
-                        routes: [
-                          GoRoute(
-                            path: 'supportForm',
-                            parentNavigatorKey: rootNavKey,
-                            name: SupportFormScreen.routeName,
-                            builder: (context, state) {
-                              return SupportFormScreen();
-                            },
-                          ),
-                          GoRoute(
-                            path: ':questionId',
-                            parentNavigatorKey: rootNavKey,
-                            name: SupportDetailScreen.routeName,
-                            builder: (context, state) {
-                              final int questionId = int.parse(
-                                  state.pathParameters['questionId']!);
-                              return SupportDetailScreen(
-                                questionId: questionId,
-                              );
-                            },
-                          ),
-                        ]),
-                    GoRoute(
-                      path: 'bankTransfer',
-                      parentNavigatorKey: rootNavKey,
-                      name: BankTransferScreen.routeName,
-                      builder: (context, state) {
-                        final int bottomIdx =
-                            int.parse(state.uri.queryParameters['bottomIdx']!);
-
-                        return BankTransferScreen(
-                          bottomIdx: bottomIdx,
-                        );
-                      },
-                    ),
-                    GoRoute(
-                        path: 'settlements',
-                        parentNavigatorKey: rootNavKey,
-                        name: SettlementListScreen.routeName,
-                        builder: (context, state) {
-                          final int bottomIdx = int.parse(
-                              state.uri.queryParameters['bottomIdx']!);
-                          return SettlementListScreen(
-                            bottomIdx: bottomIdx,
-                          );
-                        },
-                        routes: [
-                          GoRoute(
-                            path: ':settlementId',
-                            parentNavigatorKey: rootNavKey,
-                            name: SettlementDetailScreen.routeName,
-                            builder: (context, state) {
-                              final int settlementId = int.parse(
-                                  state.pathParameters['settlementId']!);
-
-                              return SettlementDetailScreen(
-                                settlementId: settlementId,
-                              );
-                            },
-                          ),
-                        ]),
-                    GoRoute(
-                      path: 'review',
-                      parentNavigatorKey: rootNavKey,
-                      name: UserWrittenReviewScreen.routeName,
-                      builder: (_, state) {
-                        final extra = UserReviewType.stringToEnum(
-                            value: state.extra! as String);
-                        final int bottomIdx =
-                            int.parse(state.uri.queryParameters['bottomIdx']!);
-                        return UserWrittenReviewScreen(
-                          type: extra,
-                          bottomIdx: bottomIdx,
-                        );
-                      },
-                      routes: [],
-                    ),
-                    GoRoute(
                         path: ':courtId',
                         parentNavigatorKey: rootNavKey,
                         name: CourtDetailScreen.routeName,
                         builder: (context, state) {
                           final int courtId =
                               int.parse(state.pathParameters['courtId']!);
-                          final CourtSearchModel extra =
-                              state.extra! as CourtSearchModel;
+
                           return CourtDetailScreen(
                             courtId: courtId,
-                            model: extra,
                           );
                         },
                         routes: [
@@ -705,6 +611,98 @@ final routerProvider = Provider<GoRouter>((ref) {
                   return const NoTransitionPage(child: ProfileBody());
                 },
                 routes: [
+                  GoRoute(
+                    path: 'delete',
+                    parentNavigatorKey: rootNavKey,
+                    name: UserDeleteScreen.routeName,
+                    builder: (context, state) {
+                      return const UserDeleteScreen();
+                    },
+                  ),
+                  GoRoute(
+                      path: 'support',
+                      parentNavigatorKey: rootNavKey,
+                      name: SupportScreen.routeName,
+                      builder: (context, state) {
+                        return const SupportScreen();
+                      },
+                      routes: [
+                        GoRoute(
+                          path: 'supportForm',
+                          parentNavigatorKey: rootNavKey,
+                          name: SupportFormScreen.routeName,
+                          builder: (context, state) {
+                            return SupportFormScreen();
+                          },
+                        ),
+                        GoRoute(
+                          path: ':questionId',
+                          parentNavigatorKey: rootNavKey,
+                          name: SupportDetailScreen.routeName,
+                          builder: (context, state) {
+                            final int questionId =
+                                int.parse(state.pathParameters['questionId']!);
+                            return SupportDetailScreen(
+                              questionId: questionId,
+                            );
+                          },
+                        ),
+                      ]),
+                  GoRoute(
+                    path: 'bankTransfer',
+                    parentNavigatorKey: rootNavKey,
+                    name: BankTransferScreen.routeName,
+                    builder: (context, state) {
+                      final int bottomIdx =
+                          int.parse(state.uri.queryParameters['bottomIdx']!);
+
+                      return BankTransferScreen(
+                        bottomIdx: bottomIdx,
+                      );
+                    },
+                  ),
+                  GoRoute(
+                      path: 'settlements',
+                      parentNavigatorKey: rootNavKey,
+                      name: SettlementListScreen.routeName,
+                      builder: (context, state) {
+                        final int bottomIdx =
+                            int.parse(state.uri.queryParameters['bottomIdx']!);
+                        return SettlementListScreen(
+                          bottomIdx: bottomIdx,
+                        );
+                      },
+                      routes: [
+                        GoRoute(
+                          path: ':settlementId',
+                          parentNavigatorKey: rootNavKey,
+                          name: SettlementDetailScreen.routeName,
+                          builder: (context, state) {
+                            final int settlementId = int.parse(
+                                state.pathParameters['settlementId']!);
+
+                            return SettlementDetailScreen(
+                              settlementId: settlementId,
+                            );
+                          },
+                        ),
+                      ]),
+                  GoRoute(
+                    path: 'review',
+                    parentNavigatorKey: rootNavKey,
+                    name: UserWrittenReviewScreen.routeName,
+                    builder: (_, state) {
+                      final extra = UserReviewType.stringToEnum(
+                          value: state.extra! as String);
+                      final int bottomIdx =
+                          int.parse(state.uri.queryParameters['bottomIdx']!);
+                      return UserWrittenReviewScreen(
+                        type: extra,
+                        bottomIdx: bottomIdx,
+                      );
+                    },
+                    routes: [],
+                  ),
                   GoRoute(
                     path: 'tcPolicy',
                     parentNavigatorKey: rootNavKey,

@@ -117,11 +117,9 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
 
   void onTap(CourtSearchModel model, BuildContext context) {
     Map<String, String> pathParameters = {'courtId': model.id.toString()};
-    final extra = model;
     context.pushNamed(
       CourtDetailScreen.routeName,
       pathParameters: pathParameters,
-      extra: extra,
     );
   }
 
@@ -220,7 +218,8 @@ class _SearchComponent extends StatelessWidget {
               items: items,
               onChanged: (val) {
                 changeDropButton(val, ref);
-              }, type: DropButtonType.district,
+              },
+              type: DropButtonType.district,
             );
           },
         ),
@@ -234,7 +233,9 @@ class _SearchComponent extends StatelessWidget {
     final form = ref
         .read(courtSearchProvider.notifier)
         .update(district: district, isAll: district == null);
-    ref.read(dropDownValueProvider(DropButtonType.district).notifier).update((state) => val);
+    ref
+        .read(dropDownValueProvider(DropButtonType.district).notifier)
+        .update((state) => val);
     ref.read(courtPageProvider(PaginationStateParam()).notifier).paginate(
         paginationParams: const PaginationParam(page: 1),
         forceRefetch: true,

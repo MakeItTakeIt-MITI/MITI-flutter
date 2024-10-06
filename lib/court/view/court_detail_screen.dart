@@ -31,13 +31,14 @@ import 'court_map_screen.dart';
 
 class CourtDetailScreen extends ConsumerStatefulWidget {
   static String get routeName => 'courtDetail';
-  final CourtSearchModel model;
+
+  // final CourtSearchModel model;
   final int courtId;
 
   const CourtDetailScreen({
     super.key,
     required this.courtId,
-    required this.model,
+    // required this.model,
   });
 
   @override
@@ -61,6 +62,13 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final result = ref.watch(courtDetailProvider(courtId: widget.courtId));
+    if (result is LoadingModel) {
+      return CircularProgressIndicator();
+    } else if (result is ErrorModel) {
+      return Text("Error");
+    }
+    final model = (result as ResponseModel<CourtDetailModel>).data!;
     return Scaffold(
       backgroundColor: MITIColor.gray750,
       body: NestedScrollView(
@@ -68,7 +76,7 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
             DefaultAppBar(
-              title: widget.model.name,
+              title: model.name,
               backgroundColor: MITIColor.gray800,
               isSliver: true,
               hasBorder: false,
@@ -76,8 +84,12 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
                 Padding(
                   padding: EdgeInsets.only(right: 13.w),
                   child: GestureDetector(
-                    onTap: () {
-                      Share.share("share");
+                    onTap: () async {
+                      final result = await Share.shareUri(Uri(
+                        scheme: 'https',
+                        host: "www.makeittakeit.kr",
+                        path: 'court/${widget.courtId}',
+                      ));
                     },
                     child: SvgPicture.asset(
                       AssetUtil.getAssetPath(
@@ -103,14 +115,14 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
               SliverToBoxAdapter(
                 child: _CourtMapComponent(
                   latLng: NLatLng(
-                    double.parse(widget.model.latitude),
-                    double.parse(widget.model.longitude),
+                    double.parse(model.latitude),
+                    double.parse(model.longitude),
                   ),
                 ),
               ),
               getDivider(),
               _CourtInfoComponent(
-                courtId: widget.courtId,
+                model: model,
               ),
               getDivider(),
               SoonestGamesComponent(
@@ -179,26 +191,15 @@ class _CourtMapComponentState extends State<_CourtMapComponent> {
 }
 
 class _CourtInfoComponent extends ConsumerWidget {
-  final int courtId;
+  final CourtDetailModel model;
 
   const _CourtInfoComponent({
     super.key,
-    required this.courtId,
+    required this.model,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final result = ref.watch(courtDetailProvider(courtId: courtId));
-    if (result is LoadingModel) {
-      return SliverToBoxAdapter(
-        child: CircularProgressIndicator(),
-      );
-    } else if (result is ErrorModel) {
-      return SliverToBoxAdapter(
-        child: Text("Error"),
-      );
-    }
-    final model = (result as ResponseModel<CourtDetailModel>).data!;
     return SliverToBoxAdapter(
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 24.h),

@@ -168,7 +168,7 @@ class MyApp extends ConsumerStatefulWidget {
 
 class _MyAppState extends ConsumerState<MyApp> {
   @override
-  void initState() async {
+  void initState()  {
     super.initState();
     _notificationSetting();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {

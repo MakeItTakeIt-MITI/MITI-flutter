@@ -73,7 +73,11 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
       backgroundColor: MITIColor.gray750,
       floatingActionButton: GestureDetector(
         onTap: () async {
-          final result = await Share.shareUri(Uri(scheme: "naver"));
+          final result = await Share.shareUri(Uri(
+            scheme: 'https',
+            host: "www.makeittakeit.kr",
+            path: 'game/${widget.gameId}',
+          ));
         },
         child: Container(
           padding: EdgeInsets.all(10.r),
