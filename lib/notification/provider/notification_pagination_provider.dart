@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miti/common/model/default_model.dart';
+import 'package:miti/notification/provider/notification_provider.dart';
+import 'package:miti/notification/provider/widget/unconfirmed_provider.dart';
 import 'package:miti/notification/repository/notification_repository.dart';
 import 'package:miti/notification_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -64,15 +66,21 @@ class PushPageStateNotifier
   });
 
   /// optimistic response
-  void read({required int pushId}) {
+  void read({required int pushId, required WidgetRef ref}) {
     final model = (state as ResponseModel<PaginationModel<PushModel>>);
     final pState = model.data!;
+    bool hasUnConfirmed = false;
     final newPageContent = pState.page_content.map((e) {
       if (e.id == pushId) {
         return e.copyWith(isRead: true);
       }
+      // 확인 안 한 푸시 알림이 있을 경우 true
+      if (!e.isRead) {
+        hasUnConfirmed = !e.isRead;
+      }
       return e;
     }).toList();
+    ref.read(unconfirmedProvider.notifier).update((s) => hasUnConfirmed);
     final newData = pState.copyWith(page_content: newPageContent);
     state = model.copyWith(data: newData);
   }

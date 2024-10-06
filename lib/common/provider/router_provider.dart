@@ -16,6 +16,7 @@ import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/game/view/game_payment_screen.dart';
 import 'package:miti/game/view/game_update_screen.dart';
 import 'package:miti/game/view/review_form_screen.dart';
+import 'package:miti/notification/model/push_model.dart';
 import 'package:miti/notification/view/notification_detail_screen.dart';
 import 'package:miti/notification/view/notification_screen.dart';
 import 'package:miti/support/view/faq_screen.dart';
@@ -89,17 +90,23 @@ class DialogPage<T> extends Page<T> {
 final routerProvider = Provider<GoRouter>((ref) {
   final provider = ref.read(tokenProvider);
   return GoRouter(
-      initialLocation: '/splash',
+      initialLocation: '/',
       debugLogDiagnostics: true,
       navigatorKey: rootNavKey,
       refreshListenable: TokenProvider(ref: ref),
       routes: <RouteBase>[
         GoRoute(
-          path: '/splash',
+          path: '/',
           parentNavigatorKey: rootNavKey,
           name: SplashScreen.routeName,
           builder: (context, state) {
-            return const SplashScreen();
+            PushDataModel? model;
+            if (state.extra != null) {
+              model = state.extra as PushDataModel;
+            }
+            return SplashScreen(
+              pushModel: model,
+            );
           },
         ),
         GoRoute(
@@ -735,8 +742,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                         parentNavigatorKey: rootNavKey,
                         name: NoticeDetailScreen.routeName,
                         builder: (context, state) {
-                          final int id =
-                              int.parse(state.pathParameters['id']!);
+                          final int id = int.parse(state.pathParameters['id']!);
                           final type = state.extra as NoticeScreenType;
                           return NoticeDetailScreen(
                             id: id,

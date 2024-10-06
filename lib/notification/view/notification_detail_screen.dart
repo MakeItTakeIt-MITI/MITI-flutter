@@ -48,7 +48,7 @@ class _PushDetailScreenState extends ConsumerState<NoticeDetailScreen> {
         final userId = ref.read(authProvider)!.id!;
         ref
             .read(pushPProvider(PaginationStateParam(path: userId)).notifier)
-            .read(pushId: widget.id);
+            .read(pushId: widget.id, ref: ref);
       }
     });
   }

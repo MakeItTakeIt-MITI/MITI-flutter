@@ -1,29 +1,38 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:gif_view/gif_view.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 
+import 'common/model/entity_enum.dart';
+import 'game/view/game_detail_screen.dart';
+import 'notification/model/push_model.dart';
+import 'notification/provider/notification_provider.dart';
+import 'notification/view/notification_detail_screen.dart';
+
 class SplashScreen extends ConsumerStatefulWidget {
   static String get routeName => 'splash';
+  final PushDataModel? pushModel;
 
-  const SplashScreen({super.key});
+  const SplashScreen({
+    super.key,
+    this.pushModel,
+  });
 
   @override
   ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
-  late final GifController _controller;
-
   @override
   void initState() {
     super.initState();
-    _controller = GifController(onFinish: () {});
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       startApp();
     });
@@ -33,10 +42,49 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Future.delayed(const Duration(milliseconds: 1500), () {
         if (mounted) {
-          ref.read(authProvider.notifier).autoLogin(context: context);
+          if (widget.pushModel != null) {
+            log("push routing!!!");
+            ref.read(authProvider.notifier).autoLogin();
+            _handleMessage(widget.pushModel!);
+          } else {
+            ref.read(authProvider.notifier).autoLogin(context: context);
+          }
         }
       });
     });
+  }
+
+  void _handleMessage(PushDataModel model) {
+    switch (model.topic) {
+      case PushNotificationTopicType.general:
+        Map<String, String> pathParameters = {'id': model.pushId.toString()};
+        context.goNamed(
+          NoticeDetailScreen.routeName,
+          pathParameters: pathParameters,
+          extra: NoticeScreenType.notification,
+        );
+      case PushNotificationTopicType.game_status_changed:
+      case PushNotificationTopicType.new_participation:
+      case PushNotificationTopicType.game_fee_changed:
+        ref
+            .read(pushProvider(pushId: int.parse(model.pushId)).notifier)
+            .get(pushId: int.parse(model.pushId));
+        Map<String, String> pathParameters = {
+          'gameId': model.gameId.toString()
+        };
+        context.goNamed(
+          GameDetailScreen.routeName,
+          pathParameters: pathParameters,
+        );
+        break;
+      default:
+        Map<String, String> pathParameters = {'id': model.pushId.toString()};
+        context.goNamed(
+          NoticeDetailScreen.routeName,
+          pathParameters: pathParameters,
+          extra: NoticeScreenType.push,
+        );
+    }
   }
 
   @override
