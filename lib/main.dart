@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
@@ -9,7 +10,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-// import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -18,9 +18,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
-import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/env/environment.dart';
-import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/notification/model/push_model.dart';
 import 'package:miti/notification/view/notification_detail_screen.dart';
@@ -28,11 +26,9 @@ import 'package:miti/notification_provider.dart';
 import 'package:miti/splash_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
-import 'package:miti/user/view/profile_screen.dart';
 import 'common/model/entity_enum.dart';
 import 'common/provider/provider_observer.dart';
 import 'common/provider/router_provider.dart';
-import 'common/provider/secure_storage_provider.dart';
 import 'firebase_options.dart';
 import 'notification/provider/notification_provider.dart';
 import 'notification/provider/widget/unconfirmed_provider.dart';
@@ -172,7 +168,7 @@ class MyApp extends ConsumerStatefulWidget {
 
 class _MyAppState extends ConsumerState<MyApp> {
   @override
-  void initState() {
+  void initState() async {
     super.initState();
     _notificationSetting();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {

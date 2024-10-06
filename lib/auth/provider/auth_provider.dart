@@ -36,9 +36,15 @@ class TokenProvider extends ChangeNotifier {
     await ref.read(authProvider.notifier).logout();
   }
 
-  String? redirectLogic(GoRouterState goRouteState) {
+  Future<String?> redirectLogic(GoRouterState goRouteState) async {
     log('redirect start!');
-    final tokens = ref.read(authProvider);
+
+    AuthModel? tokens = ref.read(authProvider);
+    if (tokens == null) {
+      await ref.read(authProvider.notifier).autoLogin();
+      tokens = ref.read(authProvider);
+    }
+
     final loginIn = goRouteState.path == '/login';
 
     // 유저 정보가 없는데
