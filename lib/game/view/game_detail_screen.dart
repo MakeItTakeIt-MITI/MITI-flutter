@@ -4,7 +4,9 @@ import 'package:flash/flash.dart';
 import 'package:flash/flash_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -28,6 +30,7 @@ import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../account/model/account_model.dart';
+import '../../common/component/share_fab_component.dart';
 import '../../common/model/entity_enum.dart';
 import '../../court/view/court_map_screen.dart';
 import '../../default_screen.dart';
@@ -66,6 +69,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
+
     super.dispose();
   }
 
@@ -73,122 +77,10 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MITIColor.gray750,
-      floatingActionButton: GestureDetector(
-        onTap: () async {
-          final FeedTemplate defaultFeed = FeedTemplate(
-            content: Content(
-              title: '딸기 치즈 케익',
-              description: '#케익 #딸기 #삼평동 #카페 #분위기 #소개팅',
-              imageUrl: Uri.parse(
-                  'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
-              link: Link(
-                webUrl: Uri(
-                  scheme: 'https',
-                  host: "www.makeittakeit.kr",
-                  path: 'games/${widget.gameId}',
-                ),
-                mobileWebUrl: Uri(
-                  scheme: 'https',
-                  host: "www.makeittakeit.kr",
-                  path: 'games/${widget.gameId}',
-                ),
-              ),
-            ),
-            itemContent: ItemContent(
-              profileText: 'Kakao',
-              profileImageUrl: Uri.parse(
-                  'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
-              titleImageUrl: Uri.parse(
-                  'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
-              titleImageText: 'Cheese cake',
-              titleImageCategory: 'cake',
-              items: [
-                ItemInfo(item: 'cake1', itemOp: '1000원'),
-                ItemInfo(item: 'cake2', itemOp: '2000원'),
-                ItemInfo(item: 'cake3', itemOp: '3000원'),
-                ItemInfo(item: 'cake4', itemOp: '4000원'),
-                ItemInfo(item: 'cake5', itemOp: '5000원')
-              ],
-              sum: 'total',
-              sumOp: '15000원',
-            ),
-            // social: Social(likeCount: 286, commentCount: 45, sharedCount: 845),
-            buttons: [
-              Button(
-                title: '웹으로 보기',
-                link: Link(
-                  webUrl: Uri(
-                    scheme: 'https',
-                    host: "www.makeittakeit.kr",
-                    path: 'games/${widget.gameId}',
-                  ),
-                  mobileWebUrl: Uri(
-                    scheme: 'https',
-                    host: "www.makeittakeit.kr",
-                    path: 'games/${widget.gameId}',
-                  ),
-                ),
-              ),
-              Button(
-                title: '앱으로보기',
-                link: Link(
-                  webUrl: Uri.parse('https://makeittakeit.kr/games/30000'),
-                  mobileWebUrl:
-                      Uri.parse('https://makeittakeit.kr/games/30000'),
-                  // iosExecutionParams: {'gameId': '30000'}, // iOS 앱으로 전달할 파라미터
-                  // androidExecutionParams: {'gameId': '30000'}, // Android 앱으로 전달할 파라미터
-                  iosExecutionParams: {
-                    'url': 'https://makeittakeit.kr/games/30000'
-                  },
-                  // iOS 용 실행 URL
-                  androidExecutionParams: {
-                    'url': 'https://makeittakeit.kr/games/30000'
-                  }, // Android 용 실행 URL
-                ),
-              ),
-            ],
-          );
-          // 카카오톡 실행 가능 여부 확인
-          bool isKakaoTalkSharingAvailable =
-              await ShareClient.instance.isKakaoTalkSharingAvailable();
-
-          if (isKakaoTalkSharingAvailable) {
-            try {
-              Uri uri = await ShareClient.instance
-                  .shareDefault(template: defaultFeed);
-              await ShareClient.instance.launchKakaoTalk(uri);
-              print('shareUrl: ${uri}');
-              print('카카오톡 공유 완료');
-            } catch (error) {
-              print('카카오톡 공유 실패 $error');
-            }
-          } else {
-            try {
-              Uri shareUrl = await WebSharerClient.instance
-                  .makeDefaultUrl(template: defaultFeed);
-              print('shareUrl: ${shareUrl}');
-              await launchBrowserTab(shareUrl, popupOpen: true);
-            } catch (error) {
-              print('카카오톡 공유 실패 $error');
-            }
-          }
-
-          // final result = await Share.shareUri(Uri(
-          //   scheme: 'https',
-          //   host: "www.makeittakeit.kr",
-          //   path: 'game/${widget.gameId}',
-          // ));
-        },
-        child: Container(
-          padding: EdgeInsets.all(10.r),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: const Color(0xFF000000).withOpacity(0.6),
-          ),
-          child: SvgPicture.asset(
-            AssetUtil.getAssetPath(type: AssetType.icon, name: 'share'),
-          ),
-        ),
+      floatingActionButtonLocation: ExpandableFab.location,
+      floatingActionButton: ShareFabComponent(
+        id: widget.gameId,
+        type: ShareType.games,
       ),
       bottomNavigationBar: Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? child) {

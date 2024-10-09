@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,6 +23,7 @@ import 'package:miti/theme/text_theme.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../common/component/default_appbar.dart';
+import '../../common/component/share_fab_component.dart';
 import '../../common/model/model_id.dart';
 import '../../game/component/game_list_component.dart';
 import '../../game/model/game_model.dart';
@@ -72,6 +74,11 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
     final model = (result as ResponseModel<CourtDetailModel>).data!;
     return Scaffold(
       backgroundColor: MITIColor.gray750,
+      floatingActionButtonLocation: ExpandableFab.location,
+      floatingActionButton: ShareFabComponent(
+        id: model.id,
+        type: ShareType.courts,
+      ),
       body: NestedScrollView(
         controller: _scrollController,
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -81,32 +88,6 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
               backgroundColor: MITIColor.gray800,
               isSliver: true,
               hasBorder: false,
-              actions: [
-                Padding(
-                  padding: EdgeInsets.only(right: 13.w),
-                  child: GestureDetector(
-                    onTap: () async {
-                      final result = await Share.shareUri(Uri(
-                        scheme: 'https',
-                        host: "www.makeittakeit.kr",
-                        path: 'courts/${widget.courtId}',
-                      ));
-                    },
-                    child: SvgPicture.asset(
-                      AssetUtil.getAssetPath(
-                        type: AssetType.icon,
-                        name: 'share',
-                      ),
-                      height: 24.r,
-                      width: 24.r,
-                      colorFilter: const ColorFilter.mode(
-                        MITIColor.gray100,
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
             )
           ];
         },
