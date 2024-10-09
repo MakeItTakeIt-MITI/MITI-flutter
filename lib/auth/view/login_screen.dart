@@ -489,7 +489,7 @@ class HelpComponent extends StatelessWidget {
           children: [
             InkWell(
               onTap: () async {
-                final uri = Uri.parse('https://www.makeittakeit.kr');
+                final uri = Uri.parse('https://www.makeittakeit.kr/support/inquiry');
                 if (await canLaunchUrl(uri)) {
                   await launchUrl(uri);
                 }
