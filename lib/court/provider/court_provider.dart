@@ -14,10 +14,10 @@ part 'court_provider.g.dart';
 final searchProvider = StateProvider.autoDispose<String>((ref) => '');
 
 @riverpod
-Future<BaseModel> courtList(CourtListRef ref) async {
+Future<BaseModel> courtList(CourtListRef ref, {int page = 1}) async {
   final repository = ref.watch(courtRepositoryProvider);
   final param = ref.watch(gameFormProvider).court.address;
-  return await repository.getCourtList(search: param).then<BaseModel>((value) {
+  return await repository.getCourtList(search: param, page: page).then<BaseModel>((value) {
     logger.i(value);
     return value;
   }).catchError((e) {

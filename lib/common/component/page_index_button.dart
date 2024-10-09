@@ -40,7 +40,8 @@ class PageIndexButton extends StatelessWidget {
                 return _IdxButton(
                   idx: idx,
                   selected: currentIdx - 1 == idx,
-                  onTap: () {},
+                  onTap: () {
+                  },
                 );
               },
               separatorBuilder: (_, idx) => SizedBox(width: 4.w),
