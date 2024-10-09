@@ -20,6 +20,7 @@ import 'package:miti/util/util.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/model/entity_enum.dart';
 import '../../user/view/review_detail_screen.dart';
+import '../component/skeleton/game_participation_review_skeleton.dart';
 import '../model/game_model.dart';
 import 'package:collection/collection.dart';
 
@@ -73,7 +74,7 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
                   final result =
                       ref.watch(gamePlayersProvider(gameId: widget.gameId));
                   if (result is LoadingModel) {
-                    return const CircularProgressIndicator();
+                    return const GameParticipationReviewSkeleton();
                   } else if (result is ErrorModel) {
                     return const Column(
                       children: [
@@ -81,6 +82,7 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
                       ],
                     );
                   }
+
                   final model =
                       (result as ResponseModel<GameRevieweesModel>).data!;
                   final userId = ref.read(authProvider)?.id ?? 0;

@@ -17,6 +17,7 @@ import 'package:expandable/expandable.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../common/component/default_appbar.dart';
 import '../../theme/text_theme.dart';
+import '../component/skeleton/faq_skeleton.dart';
 
 class FAQScreen extends StatefulWidget {
   static String get routeName => 'faq';
@@ -109,7 +110,7 @@ class _FAQScreenState extends State<FAQScreen> {
                   final selectCategory = ref.watch(faqCategoryProvider);
                   final result = ref.watch(fAQProvider);
                   if (result is LoadingModel) {
-                    return const CircularProgressIndicator();
+                    return const FaqSkeleton();
                   } else if (result is ErrorModel) {
                     return Text('error');
                   }

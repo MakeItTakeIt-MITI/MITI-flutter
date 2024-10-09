@@ -360,7 +360,7 @@ class _TransferAmountForm extends ConsumerWidget {
               ),
               SizedBox(width: 20.w),
               Text(
-                '$amount원',
+                '$amount 원',
                 style: MITITextStyle.smBold.copyWith(color: MITIColor.primary),
               ),
             ],

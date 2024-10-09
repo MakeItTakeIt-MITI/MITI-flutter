@@ -18,6 +18,7 @@ import '../../common/model/entity_enum.dart';
 import '../../game/view/game_detail_screen.dart';
 import '../../theme/color_theme.dart';
 import '../../util/util.dart';
+import '../component/skeleton/settlement_detail_skeleton.dart';
 
 class SettlementDetailScreen extends ConsumerStatefulWidget {
   static String get routeName => 'settlementDetail';
@@ -65,6 +66,7 @@ class _SettlementDetailScreenState
               isSliver: true,
               title: '경기 정산 상세 내역',
               backgroundColor: MITIColor.gray750,
+              hasBorder: false,
             ),
           ];
         }),
@@ -77,7 +79,7 @@ class _SettlementDetailScreenState
                   final result = ref.watch(settlementProvider(
                       settlementId: widget.settlementId, userId: userId));
                   if (result is LoadingModel) {
-                    return CircularProgressIndicator();
+                    return const SettlementDetailSkeleton();
                   } else if (result is ErrorModel) {
                     AccountError.fromModel(model: result).responseError(
                         context, AccountApiType.getSettlementInfo, ref);

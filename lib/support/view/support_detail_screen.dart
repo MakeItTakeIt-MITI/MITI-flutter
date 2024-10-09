@@ -11,6 +11,7 @@ import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
+import '../component/skeleton/support_detail_skeleton.dart';
 import '../model/support_model.dart';
 
 class SupportDetailScreen extends StatefulWidget {
@@ -63,7 +64,7 @@ class _SupportDetailScreenState extends State<SupportDetailScreen> {
                   final result = ref
                       .watch(questionProvider(questionId: widget.questionId));
                   if (result is LoadingModel) {
-                    return CircularProgressIndicator();
+                    return const SupportDetailSkeleton();
                   } else if (result is ErrorModel) {
                     SupportError.fromModel(model: result)
                         .responseError(context, SupportApiType.get, ref);

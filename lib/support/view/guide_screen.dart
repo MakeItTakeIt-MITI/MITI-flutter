@@ -11,6 +11,7 @@ import 'package:miti/theme/color_theme.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:collection/collection.dart';
+import '../component/skeleton/guide_skeleton.dart';
 import '../model/support_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -49,7 +50,7 @@ class _GuideScreenState extends State<GuideScreen> {
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
           final result = ref.watch(guideProvider);
           if (result is LoadingModel) {
-            return CircularProgressIndicator();
+            return const GuideSkeleton();
           } else if (result is ErrorModel) {
             return Text("error");
           }

@@ -24,6 +24,7 @@ import '../../court/model/court_model.dart';
 import '../../game/model/game_model.dart';
 import '../../game/model/game_player_model.dart';
 import '../../game/view/game_detail_screen.dart';
+import '../../review/component/skeleton/review_detail_skeleton.dart';
 import '../error/user_error.dart';
 
 class ReviewDetailScreen extends StatefulWidget {
@@ -84,6 +85,7 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
               backgroundColor: MITIColor.gray750,
               title: '$nickname님에게 남긴 리뷰',
               isSliver: true,
+              hasBorder: false,
             ),
           ];
         },
@@ -98,7 +100,7 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                     reviewId: widget.reviewId,
                   ));
                   if (result is LoadingModel) {
-                    return CircularProgressIndicator();
+                    return const ReviewDetailSkeleton();
                   } else if (result is ErrorModel) {
                     // final userApiType =
                     //     UserReviewType.written == widget.reviewType
@@ -108,7 +110,6 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                     //     .responseError(context, userApiType, ref);
                     return Text('에러');
                   }
-
                   final model =
                       (result as ResponseModel<ReviewDetailModel>).data!;
 

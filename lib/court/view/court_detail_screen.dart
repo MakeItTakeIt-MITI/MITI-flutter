@@ -26,6 +26,7 @@ import '../../common/model/model_id.dart';
 import '../../game/component/game_list_component.dart';
 import '../../game/model/game_model.dart';
 import '../../util/util.dart';
+import '../component/skeleton/court_detail_skeleton.dart';
 import 'court_game_list_screen.dart';
 import 'court_map_screen.dart';
 
@@ -64,7 +65,7 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
   Widget build(BuildContext context) {
     final result = ref.watch(courtDetailProvider(courtId: widget.courtId));
     if (result is LoadingModel) {
-      return CircularProgressIndicator();
+      return const CourtDetailSkeleton();
     } else if (result is ErrorModel) {
       return Text("Error");
     }

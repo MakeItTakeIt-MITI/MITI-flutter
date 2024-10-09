@@ -24,6 +24,7 @@ import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/default_appbar.dart';
 import '../component/court_search_card.dart';
+import '../component/skeleton/court_list_skeleton.dart';
 import '../model/court_model.dart';
 
 class CourtSearchListScreen extends ConsumerStatefulWidget {
@@ -64,6 +65,7 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
             const DefaultAppBar(
               isSliver: true,
               title: '경기장 조회',
+              hasBorder: false,
             ),
           ];
         }),
@@ -102,7 +104,7 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
                           );
                         },
                         param: form,
-                        skeleton: Container(),
+                        skeleton: const CourtListSkeleton(),
                         controller: controller,
                         emptyWidget: getEmptyWidget(),
                       );

@@ -14,6 +14,7 @@ import 'package:miti/notification/provider/widget/unconfirmed_provider.dart';
 import 'package:miti/notification/view/notification_screen.dart';
 import 'package:miti/support/view/guide_screen.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:miti/user/component/skeleton/profile_skeleton.dart';
 import 'package:miti/user/view/nickname_update_screen.dart';
 import 'package:miti/user/view/user_payment_screen.dart';
 import 'package:miti/user/view/user_profile_update_screen.dart';
@@ -32,6 +33,7 @@ import '../../review/view/written_review_list_screen.dart';
 import '../../support/view/faq_screen.dart';
 import '../../support/view/support_screen.dart';
 import '../../theme/color_theme.dart';
+import '../component/skeleton/receive_review_skeleton.dart';
 import '../model/user_model.dart';
 import '../provider/user_provider.dart';
 import '../../util/util.dart';
@@ -311,7 +313,7 @@ class _ReviewComponent extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final result = ref.watch(userInfoProvider);
     if (result is LoadingModel) {
-      return CircularProgressIndicator();
+      return const ReceiveReviewSkeleton();
     } else if (result is ErrorModel) {
       return Text("error");
     }
@@ -491,7 +493,7 @@ class _ProfileComponent extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final result = ref.watch(userInfoProvider);
     if (result is LoadingModel) {
-      return CircularProgressIndicator();
+      return const ProfileSkeleton();
     } else if (result is ErrorModel) {
       return Text("error");
     }

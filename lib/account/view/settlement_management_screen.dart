@@ -6,6 +6,7 @@ import 'package:miti/account/provider/account_provider.dart';
 import 'package:miti/account/view/bank_transfer_form_screen.dart';
 import 'package:miti/account/view/settlement_screen.dart';
 import 'package:miti/common/component/default_appbar.dart';
+import 'package:miti/common/component/skeleton.dart';
 import 'package:miti/common/component/sliver_delegate.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/theme/color_theme.dart';
@@ -16,6 +17,8 @@ import '../../auth/provider/auth_provider.dart';
 import '../../common/component/dispose_sliver_pagination_list_view.dart';
 import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
+import '../component/skeleton/bank_transfer_skeleton.dart';
+import '../component/skeleton/settlement_skeleton.dart';
 import '../model/account_model.dart';
 import '../model/transfer_model.dart';
 import '../provider/account_pagination_provider.dart';
@@ -54,7 +57,7 @@ class _SettlementManagementScreenState extends State<SettlementManagementScreen>
       body: NestedScrollView(
           headerSliverBuilder: (_, __) {
             return [
-              DefaultAppBar(
+              const DefaultAppBar(
                 isSliver: true,
                 title: '정산 관리',
                 hasBorder: false,
@@ -149,7 +152,7 @@ class _SettlementHistoryComponentState
                     model: model,
                   );
                 },
-                skeleton: Container(),
+                skeleton: const SettlementListSkeleton(),
                 controller: scrollController,
                 separateSize: 8,
                 emptyWidget: Column(
@@ -214,7 +217,7 @@ class _TransferHistoryComponentState extends State<_TransferHistoryComponent> {
                     model: model,
                   );
                 },
-                skeleton: Container(),
+                skeleton: const BankTransferListSkeleton(),
                 controller: scrollController,
                 separateSize: 8,
                 emptyWidget: Column(
@@ -244,14 +247,6 @@ class _AccountInfo extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final result = ref.watch(accountProvider);
-    // if (result is LoadingModel) {
-    //   return const CircularProgressIndicator();
-    // } else if (result is ErrorModel) {
-    //   return const Text('error');
-    // }
-
-
     return Container(
       color: MITIColor.gray800,
       padding: EdgeInsets.symmetric(horizontal: 21.w),
@@ -277,7 +272,7 @@ class _AccountInfo extends ConsumerWidget {
 
                             final result = ref.watch(accountProvider);
                             if(result is LoadingModel){
-                              return Container();
+                              return const BoxSkeleton(width: 94, height: 24);
                             }else if(result is ErrorModel){
                               return Text("error");
                             }

@@ -19,6 +19,7 @@ import '../../common/component/default_layout.dart';
 import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
 import '../component/qna_label.dart';
+import '../component/skeleton/support_skeleton.dart';
 import '../model/support_model.dart';
 
 class SupportScreen extends StatefulWidget {
@@ -108,7 +109,7 @@ class _SupportScreenState extends State<SupportScreen> {
                             model: model,
                           );
                         },
-                        skeleton: Container(),
+                        skeleton: const SupportCardListSkeleton(),
                         controller: _scrollController,
                         emptyWidget: getEmptyWidget(),
                       );

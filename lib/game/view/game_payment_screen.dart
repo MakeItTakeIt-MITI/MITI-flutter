@@ -27,6 +27,7 @@ import '../../auth/view/signup/signup_screen.dart';
 import '../../common/view/operation_term_screen.dart';
 import '../../kakaopay/view/approval_screen.dart';
 import '../../kakaopay/view/payment_screen.dart';
+import '../component/skeleton/game_payment_skeleton.dart';
 import '../error/game_error.dart';
 import 'game_create_complete_screen.dart';
 import 'game_create_screen.dart';
@@ -89,7 +90,7 @@ class GamePaymentScreen extends StatelessWidget {
           return [
             const DefaultAppBar(
               isSliver: true,
-              title: '경기 상세 정보',
+              title: '경기 결제 정보',
               backgroundColor: MITIColor.gray750,
             ),
           ];
@@ -101,12 +102,14 @@ class GamePaymentScreen extends StatelessWidget {
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   final result = ref.watch(paymentProvider(gameId: gameId));
                   if (result is LoadingModel) {
-                    return CircularProgressIndicator();
+                    return const SingleChildScrollView(
+                        child: GamePaymentSkeleton());
                   } else if (result is ErrorModel) {
                     GameError.fromModel(model: result).responseError(
                         context, GameApiType.getPaymentInfo, ref);
                     return Text('에러');
                   }
+
                   final model =
                       (result as ResponseModel<GamePaymentModel>).data!;
                   final visiblePay = model

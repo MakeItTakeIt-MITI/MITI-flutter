@@ -20,6 +20,7 @@ import 'package:miti/user/view/user_profile_form_screen.dart';
 import '../../auth/error/auth_error.dart';
 import '../../common/component/custom_dialog.dart';
 import '../../util/util.dart';
+import '../component/skeleton/user_info_skeleton.dart';
 import '../model/user_model.dart';
 
 class UserProfileUpdateScreen extends ConsumerWidget {
@@ -86,6 +87,10 @@ class _UserInfoComponent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final result = ref.watch(userInfoProvider);
+    if (result is LoadingModel) {
+      return const UserInfoSkeleton();
+    }
+
     final model = (result as ResponseModel<UserModel>).data!;
     String? birthday;
     String? phone;

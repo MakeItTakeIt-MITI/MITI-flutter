@@ -19,6 +19,7 @@ import '../../game/view/review_form_screen.dart';
 import '../../user/model/review_model.dart';
 import '../../user/view/review_detail_screen.dart';
 import '../../util/util.dart';
+import '../component/skeleton/review_card_skeleton.dart';
 
 class ReviewListScreen extends StatelessWidget {
   final int gameId;
@@ -84,11 +85,12 @@ class ReviewListScreen extends StatelessWidget {
                   }
                   if (result is LoadingModel) {
                     return const SliverToBoxAdapter(
-                      child: CircularProgressIndicator(),
+                      child: ReviewCardListSkeleton(),
                     );
                   } else if (result is ErrorModel) {
                     return const SliverToBoxAdapter(child: Text('error'));
                   }
+
                   final model =
                       (result as ResponseModel<ReviewListModel>).data!;
 

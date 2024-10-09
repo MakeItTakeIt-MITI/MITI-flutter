@@ -39,7 +39,7 @@ abstract class AuthRepository {
       @Body() required CodeParam param});
 
 
-  @Headers({'Authorization': 'true', 'refresh': 'true'})
+  @Headers({'token': 'true', 'refresh': 'true'})
   @POST('/auth/logout')
   Future<CompletedModel> logout();
 

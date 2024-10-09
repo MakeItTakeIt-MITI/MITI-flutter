@@ -18,6 +18,7 @@ import '../../common/model/model_id.dart';
 import '../../common/provider/pagination_provider.dart';
 import '../../common/repository/base_pagination_repository.dart';
 import '../../game/component/game_list_component.dart';
+import '../../game/component/skeleton/game_list_skeleton.dart';
 import '../../game/model/game_model.dart';
 import '../../theme/text_theme.dart';
 import '../param/user_profile_param.dart';
@@ -105,9 +106,15 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
         slivers: [
           SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.only(right: 21.w, top: 20.h),
+              padding: EdgeInsets.only(left: 21.w, right: 21.w, top: 20.h),
               child: Row(
                 children: [
+                  Text(
+                    widget.type == UserGameType.host
+                        ? '호스트가 되어 게스트를 모집한 경기'
+                        : '게스트로 참여한 경기',
+                    style: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
+                  ),
                   const Spacer(),
                   CustomDropDownButton(
                     initValue: '전체',
@@ -142,7 +149,7 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
                       model: model,
                     );
                   },
-                  skeleton: Container(),
+                  skeleton: const GameListSkeleton(),
                   param: UserGameParam(
                     game_status: gameStatus,
                   ),

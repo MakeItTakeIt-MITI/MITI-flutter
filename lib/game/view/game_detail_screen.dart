@@ -35,6 +35,7 @@ import '../../report/view/report_list_screen.dart';
 import '../../user/view/profile_screen.dart';
 import '../../user/model/review_model.dart';
 import '../../util/util.dart';
+import '../component/skeleton/game_detail_skeleton.dart';
 import 'game_payment_screen.dart';
 import 'game_screen.dart';
 import 'game_update_screen.dart';
@@ -194,7 +195,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
           final result = ref.watch(gameDetailProvider(gameId: widget.gameId));
           if (result is LoadingModel) {
             // todo skeleton
-            return Container();
+            return const SizedBox(height: 0);
           } else if (result is ErrorModel) {
             return Container();
           }
@@ -223,10 +224,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
             final result = ref.watch(gameDetailProvider(gameId: widget.gameId));
             if (result is LoadingModel) {
-              // todo skeleton
-              return CustomScrollView(
-                slivers: [],
-              );
+              return SingleChildScrollView(child: const GameDetailSkeleton());
             } else if (result is ErrorModel) {
               return Text('에러');
             }
@@ -867,30 +865,6 @@ class SummaryComponent extends StatelessWidget {
       duration: end.difference(start).inMinutes.toString(),
     );
   }
-
-  // factory SummaryComponent.fromSettlementModel(
-  //     {required SettlementDetailModel model}) {
-  //   final game = model.game;
-  //   final startDate = game.startdate.replaceAll('-', '. ');
-  //   final endDate = game.startdate.replaceAll('-', '. ');
-  //
-  //   final time =
-  //       '${game.starttime.substring(0, 5)} ~ ${game.endtime.substring(0, 5)}';
-  //   final gameDate = startDate == endDate
-  //       ? '$startDate $time'
-  //       : '$startDate ${game.starttime.substring(0, 5)} ~ $endDate ${game.endtime.substring(0, 5)}';
-  //   final address = '${game.court.address} ${game.court.address_detail ?? ''}';
-  //   return SummaryComponent(
-  //     bankStatus: model.status,
-  //     title: game.title,
-  //     gameDate: gameDate,
-  //     address: address,
-  //     fee: NumberUtil.format(game.fee.toString()),
-  //     max_invitation: game.max_invitation,
-  //     num_of_confirmed_participations: game.num_of_confirmed_participations,
-  //     duration: '',
-  //   );
-  // }
 
   Row gameInfoComponent({required String title, required String svgPath}) {
     return Row(children: [

@@ -8,6 +8,7 @@ import '../../common/component/dispose_sliver_pagination_list_view.dart';
 import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
 import '../../game/component/game_list_component.dart';
+import '../../game/component/skeleton/game_list_skeleton.dart';
 import '../../game/model/game_model.dart';
 import '../param/court_pagination_param.dart';
 import '../provider/court_pagination_provider.dart';
@@ -44,6 +45,7 @@ class _CourtGameListScreenState extends State<CourtGameListScreen> {
               const DefaultAppBar(
                 title: '이 경기장에 생성된 경기',
                 isSliver: true,
+                hasBorder: false,
               ),
             ];
           },
@@ -63,7 +65,7 @@ class _CourtGameListScreenState extends State<CourtGameListScreen> {
                       return GameCardByDate.fromModel(model: model);
                     },
                     param: CourtPaginationParam(search: ''),
-                    skeleton: Container(),
+                    skeleton: const GameListSkeleton(),
                     controller: _scrollController,
                     emptyWidget: Container(),
                   );

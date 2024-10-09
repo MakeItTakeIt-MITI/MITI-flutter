@@ -15,6 +15,7 @@ import 'package:miti/notification/param/notification_param.dart';
 import 'package:miti/notification/provider/notification_pagination_provider.dart';
 import 'package:miti/notification/provider/widget/unconfirmed_provider.dart';
 import 'package:miti/notification/repository/notification_repository.dart';
+import 'package:miti/notification/skeleton/notice_skeleton.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
@@ -26,6 +27,7 @@ import '../../game/view/game_create_screen.dart';
 import '../model/notice_model.dart';
 import '../model/push_model.dart';
 import '../provider/notification_provider.dart';
+import '../skeleton/push_skeleton.dart';
 import 'notification_detail_screen.dart';
 
 class NotificationScreen extends ConsumerStatefulWidget {
@@ -94,7 +96,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
                   return PushCard.fromModel(model: model);
                 },
                 separateSize: 0,
-                skeleton: Container(),
+                skeleton: const PushListSkeleton(),
                 controller: scrollController,
                 emptyWidget: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -133,7 +135,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
                 return NotificationCard.fromModel(model: model);
               },
               separateSize: 0,
-              skeleton: Container(),
+              skeleton: const NoticeListSkeleton(),
               controller: scrollController,
               emptyWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -204,7 +206,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
                               width: 12.w,
                             ),
                             _TabBar(
-                              title: '공지 사항',
+                              title: '공지사항',
                               isSelected: !isNotification,
                               onTap: () {
                                 setState(() {
