@@ -364,28 +364,13 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
                           SizedBox(height: 8.h),
                           Align(
                             alignment: Alignment.center,
-                            child: GestureDetector(
-                              onVerticalDragUpdate: (details) {
-                                final newSize =
-                                    _draggableScrollableController.size +
-                                        details.primaryDelta! /
-                                            MediaQuery.of(context).size.height;
-                                if (newSize >= 0.04 && newSize <= 0.8) {
-                                  _draggableScrollableController.animateTo(
-                                    newSize,
-                                    duration: Duration(milliseconds: 100),
-                                    curve: Curves.easeInOut,
-                                  );
-                                }
-                              },
-                              child: Container(
-                                height: 4.h,
-                                width: 60.w,
-                                decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(8.r)),
-                                  color: MITIColor.gray100,
-                                ),
+                            child: Container(
+                              height: 4.h,
+                              width: 60.w,
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8.r)),
+                                color: MITIColor.gray100,
                               ),
                             ),
                           ),
