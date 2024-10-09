@@ -10,6 +10,7 @@ import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/component/dispose_sliver_pagination_list_view.dart';
 import 'package:miti/common/component/sliver_delegate.dart';
 import 'package:miti/common/param/pagination_param.dart';
+import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/notification/param/notification_param.dart';
 import 'package:miti/notification/provider/notification_pagination_provider.dart';
 import 'package:miti/notification/provider/widget/unconfirmed_provider.dart';
@@ -24,6 +25,7 @@ import '../../common/provider/router_provider.dart';
 import '../../game/view/game_create_screen.dart';
 import '../model/notice_model.dart';
 import '../model/push_model.dart';
+import '../provider/notification_provider.dart';
 import 'notification_detail_screen.dart';
 
 class NotificationScreen extends ConsumerStatefulWidget {
@@ -354,12 +356,30 @@ class _PushCardState extends ConsumerState<PushCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Map<String, String> pathParameters = {'id': widget.id.toString()};
-        context.pushNamed(
-          NoticeDetailScreen.routeName,
-          pathParameters: pathParameters,
-          extra: NoticeScreenType.push,
-        );
+        if (widget.data.gameId != null) {
+          final userId = ref.read(authProvider)!.id!;
+          Map<String, String> pathParameters = {
+            'gameId': widget.data.gameId.toString()
+          };
+          ref
+              .read(pushProvider(pushId: widget.id).notifier)
+              .get(pushId: widget.id);
+          ref
+              .read(pushPProvider(PaginationStateParam(path: userId)).notifier)
+              .read(pushId: widget.id, ref: ref);
+
+          context.pushNamed(
+            GameDetailScreen.routeName,
+            pathParameters: pathParameters,
+          );
+        } else {
+          Map<String, String> pathParameters = {'id': widget.id.toString()};
+          context.pushNamed(
+            NoticeDetailScreen.routeName,
+            pathParameters: pathParameters,
+            extra: NoticeScreenType.push,
+          );
+        }
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),

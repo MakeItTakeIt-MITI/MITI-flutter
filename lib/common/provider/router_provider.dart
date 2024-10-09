@@ -321,7 +321,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                 },
               ),
               GoRoute(
-                  path: '/game',
+                  path: '/games',
                   parentNavigatorKey: shellNavKey,
                   redirect: (_, state) => provider.redirectLogic(state),
                   name: GameScreen.routeName,
@@ -559,7 +559,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                         ]),
                   ]),
               GoRoute(
-                  path: '/court',
+                  path: '/courts',
                   parentNavigatorKey: shellNavKey,
                   name: CourtSearchListScreen.routeName,
                   redirect: (_, state) => provider.redirectLogic(state),

@@ -88,7 +88,7 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
                       final result = await Share.shareUri(Uri(
                         scheme: 'https',
                         host: "www.makeittakeit.kr",
-                        path: 'court/${widget.courtId}',
+                        path: 'courts/${widget.courtId}',
                       ));
                     },
                     child: SvgPicture.asset(

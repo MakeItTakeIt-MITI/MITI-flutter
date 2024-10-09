@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:app_links/app_links.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -29,6 +30,7 @@ import 'package:miti/theme/text_theme.dart';
 import 'common/model/entity_enum.dart';
 import 'common/provider/provider_observer.dart';
 import 'common/provider/router_provider.dart';
+import 'court/view/court_detail_screen.dart';
 import 'firebase_options.dart';
 import 'notification/provider/notification_provider.dart';
 import 'notification/provider/widget/unconfirmed_provider.dart';
@@ -167,18 +169,60 @@ class MyApp extends ConsumerStatefulWidget {
 }
 
 class _MyAppState extends ConsumerState<MyApp> {
+  late AppLinks _appLinks;
+  StreamSubscription<Uri>? _linkSubscription;
+
   @override
-  void initState()  {
+  void initState() {
     super.initState();
     _notificationSetting();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       getFcmToken(ref);
     });
+    initDeepLinks();
   }
 
   void _notificationSetting() {
     _localNotificationSetting();
     _fcmSetting();
+  }
+
+  Future<void> initDeepLinks() async {
+    _appLinks = AppLinks();
+
+    // Handle links
+    _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
+      debugPrint('uri.path: ${uri.path}');
+      debugPrint('uri.fragment: ${uri.fragment}');
+      debugPrint('uri.query: ${uri.query}');
+      debugPrint('uri.queryParameters: ${uri.queryParameters}');
+      if (uri.queryParameters['url'] != null) {
+        final paths = Uri.parse(uri.queryParameters['url']!).path.substring(1).split('/');
+        debugPrint('paths: ${paths}');
+
+        if (paths[0] == 'games') {
+          Map<String, String> pathParameters = {'gameId': paths[1]};
+          rootNavKey.currentContext!.goNamed(
+            GameDetailScreen.routeName,
+            pathParameters: pathParameters,
+          );
+        } else if (paths[0] == 'courts') {
+          Map<String, String> pathParameters = {'courtId': paths[1]};
+          rootNavKey.currentContext!.goNamed(
+            CourtDetailScreen.routeName,
+            pathParameters: pathParameters,
+          );
+        }
+      }
+
+      debugPrint('onAppLink: $uri');
+    });
+  }
+
+  @override
+  void dispose() {
+    _linkSubscription?.cancel();
+    super.dispose();
   }
 
   void _fcmSetting() async {

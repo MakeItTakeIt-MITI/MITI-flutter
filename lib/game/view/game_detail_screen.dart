@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/component/defalut_flashbar.dart';
 import 'package:miti/common/component/default_appbar.dart';
@@ -73,11 +74,109 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
       backgroundColor: MITIColor.gray750,
       floatingActionButton: GestureDetector(
         onTap: () async {
-          final result = await Share.shareUri(Uri(
-            scheme: 'https',
-            host: "www.makeittakeit.kr",
-            path: 'game/${widget.gameId}',
-          ));
+          final FeedTemplate defaultFeed = FeedTemplate(
+            content: Content(
+              title: '딸기 치즈 케익',
+              description: '#케익 #딸기 #삼평동 #카페 #분위기 #소개팅',
+              imageUrl: Uri.parse(
+                  'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
+              link: Link(
+                webUrl: Uri(
+                  scheme: 'https',
+                  host: "www.makeittakeit.kr",
+                  path: 'games/${widget.gameId}',
+                ),
+                mobileWebUrl: Uri(
+                  scheme: 'https',
+                  host: "www.makeittakeit.kr",
+                  path: 'games/${widget.gameId}',
+                ),
+              ),
+            ),
+            itemContent: ItemContent(
+              profileText: 'Kakao',
+              profileImageUrl: Uri.parse(
+                  'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
+              titleImageUrl: Uri.parse(
+                  'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
+              titleImageText: 'Cheese cake',
+              titleImageCategory: 'cake',
+              items: [
+                ItemInfo(item: 'cake1', itemOp: '1000원'),
+                ItemInfo(item: 'cake2', itemOp: '2000원'),
+                ItemInfo(item: 'cake3', itemOp: '3000원'),
+                ItemInfo(item: 'cake4', itemOp: '4000원'),
+                ItemInfo(item: 'cake5', itemOp: '5000원')
+              ],
+              sum: 'total',
+              sumOp: '15000원',
+            ),
+            // social: Social(likeCount: 286, commentCount: 45, sharedCount: 845),
+            buttons: [
+              Button(
+                title: '웹으로 보기',
+                link: Link(
+                  webUrl: Uri(
+                    scheme: 'https',
+                    host: "www.makeittakeit.kr",
+                    path: 'games/${widget.gameId}',
+                  ),
+                  mobileWebUrl: Uri(
+                    scheme: 'https',
+                    host: "www.makeittakeit.kr",
+                    path: 'games/${widget.gameId}',
+                  ),
+                ),
+              ),
+              Button(
+                title: '앱으로보기',
+                link: Link(
+                  webUrl: Uri.parse('https://makeittakeit.kr/games/30000'),
+                  mobileWebUrl:
+                      Uri.parse('https://makeittakeit.kr/games/30000'),
+                  // iosExecutionParams: {'gameId': '30000'}, // iOS 앱으로 전달할 파라미터
+                  // androidExecutionParams: {'gameId': '30000'}, // Android 앱으로 전달할 파라미터
+                  iosExecutionParams: {
+                    'url': 'https://makeittakeit.kr/games/30000'
+                  },
+                  // iOS 용 실행 URL
+                  androidExecutionParams: {
+                    'url': 'https://makeittakeit.kr/games/30000'
+                  }, // Android 용 실행 URL
+                ),
+              ),
+            ],
+          );
+          // 카카오톡 실행 가능 여부 확인
+          bool isKakaoTalkSharingAvailable =
+              await ShareClient.instance.isKakaoTalkSharingAvailable();
+
+          if (isKakaoTalkSharingAvailable) {
+            try {
+              Uri uri = await ShareClient.instance
+                  .shareDefault(template: defaultFeed);
+              await ShareClient.instance.launchKakaoTalk(uri);
+              print('shareUrl: ${uri}');
+              print('카카오톡 공유 완료');
+            } catch (error) {
+              print('카카오톡 공유 실패 $error');
+            }
+          } else {
+            try {
+              Uri shareUrl = await WebSharerClient.instance
+                  .makeDefaultUrl(template: defaultFeed);
+              print('shareUrl: ${shareUrl}');
+              await launchBrowserTab(shareUrl, popupOpen: true);
+            } catch (error) {
+              print('카카오톡 공유 실패 $error');
+            }
+          }
+
+          // final result = await Share.shareUri(Uri(
+          //   scheme: 'https',
+          //   host: "www.makeittakeit.kr",
+          //   path: 'game/${widget.gameId}',
+          // ));
         },
         child: Container(
           padding: EdgeInsets.all(10.r),

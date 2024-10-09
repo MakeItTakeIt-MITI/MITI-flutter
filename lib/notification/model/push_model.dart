@@ -22,6 +22,8 @@ class PushDataModel {
       _$PushDataModelFromJson(json);
 }
 
+
+
 @JsonSerializable()
 class PushModel extends IModelWithId {
   final PushNotificationTopicType topic;
