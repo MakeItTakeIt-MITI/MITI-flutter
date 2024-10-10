@@ -9,6 +9,7 @@ import '../../theme/color_theme.dart';
 import '../../user/model/review_model.dart';
 import '../../user/provider/user_provider.dart';
 import '../../user/view/review_detail_screen.dart';
+import '../component/skeleton/review_detail_skeleton.dart';
 
 class MyReviewDetailScreen extends StatelessWidget {
   final UserReviewType userReviewType;
@@ -57,13 +58,16 @@ class MyReviewDetailScreen extends StatelessWidget {
                       reviewId: reviewId));
                   if (result is LoadingModel) {
                     return SliverToBoxAdapter(
-                      child: CircularProgressIndicator(),
+                      child: ReviewDetailSkeleton(
+                        reviewType: reviewType,
+                      ),
                     );
                   } else if (result is ErrorModel) {
                     return SliverToBoxAdapter(
                       child: Text('error'),
                     );
                   }
+
                   String nickname = '';
                   final model =
                       (result as ResponseModel<MyReviewDetailBaseModel>).data!;

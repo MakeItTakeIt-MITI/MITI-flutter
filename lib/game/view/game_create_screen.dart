@@ -827,24 +827,9 @@ class AddressComponent extends StatelessWidget {
                                 ref
                                     .read(gameFormProvider.notifier)
                                     .update(court: newCourt);
-                                // todo fix court pagination
-                                final result =
-                                    await ref.read(courtListProvider.future);
-
-                                if (result is ErrorModel) {
-                                } else {
-                                  result as ResponseModel<
-                                      PaginationModel<CourtSearchModel>>;
-                                  if (context.mounted) {
-                                    if (result.data!.page_content.isNotEmpty) {
-                                      final extra = CourtListComponent(
-                                        model: result,
-                                      );
-                                      context.pushNamed(DialogPage.routeName,
-                                          extra: extra);
-                                    }
-                                  }
-                                }
+                                const extra = CourtListComponent();
+                                context.pushNamed(DialogPage.routeName,
+                                    extra: extra);
                               },
                             ),
                           ),

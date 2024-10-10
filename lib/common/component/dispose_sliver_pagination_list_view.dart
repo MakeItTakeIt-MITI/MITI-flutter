@@ -61,9 +61,8 @@ class _PaginationListViewState<T extends Base>
   void _scrollListener() {
     // log("scrolling!!");
     final family = widget.provider.argument as PaginationStateParam;
-
-    if (widget.controller.position.pixels ==
-        widget.controller.position.maxScrollExtent) {
+    if (widget.controller.position.pixels >
+        widget.controller.position.maxScrollExtent - 150) {
       // log("scroll end");
       ref.read(widget.provider.notifier).paginate(
             paginationParams: const PaginationParam(page: 1),

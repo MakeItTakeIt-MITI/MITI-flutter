@@ -12,6 +12,7 @@ import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
+import '../component/skeleton/payment_card_skeleton.dart';
 import '../param/user_profile_param.dart';
 import '../provider/user_pagination_provider.dart';
 
@@ -66,7 +67,7 @@ class _UserPaymentScreenState extends ConsumerState<UserPaymentScreen> {
 
                   return _PaymentCard.fromModel(model: pModel);
                 },
-                skeleton: Container(),
+                skeleton: const PaymentCardListSkeleton(),
                 param: UserPaymentParam(),
                 controller: _scrollController,
                 separateSize: 0,

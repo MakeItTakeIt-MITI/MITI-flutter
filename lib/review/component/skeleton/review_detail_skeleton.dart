@@ -3,12 +3,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:miti/common/component/skeleton.dart';
 
+import '../../../common/model/entity_enum.dart';
 import '../../../theme/color_theme.dart';
 import '../../../theme/text_theme.dart';
 import '../../../util/util.dart';
 
 class ReviewDetailSkeleton extends StatelessWidget {
-  const ReviewDetailSkeleton({super.key});
+  final ReviewType reviewType;
+
+  const ReviewDetailSkeleton({super.key, required this.reviewType});
 
   Widget getDivider() {
     return Divider(
@@ -22,7 +25,9 @@ class ReviewDetailSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const UserInfoSkeleton(),
+        UserInfoSkeleton(
+          reviewType: reviewType,
+        ),
         getDivider(),
         const GameInfoSkeleton(),
         getDivider(),
@@ -33,7 +38,9 @@ class ReviewDetailSkeleton extends StatelessWidget {
 }
 
 class UserInfoSkeleton extends StatelessWidget {
-  const UserInfoSkeleton({super.key});
+  final ReviewType reviewType;
+
+  const UserInfoSkeleton({super.key, required this.reviewType});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +50,7 @@ class UserInfoSkeleton extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            '리뷰 작성자',
+            reviewType == ReviewType.guest ? '리뷰 작성자' : '호스트',
             style: MITITextStyle.mdBold.copyWith(color: MITIColor.gray100),
           ),
           SizedBox(height: 20.h),
@@ -78,7 +85,7 @@ class GameInfoSkeleton extends StatelessWidget {
         Text(
           title,
           style: MITITextStyle.xxsmLight.copyWith(
-            color: MITIColor.gray400,
+            color: MITIColor.gray100,
           ),
         ),
         SizedBox(width: 4.w),

@@ -13,19 +13,27 @@ part 'court_provider.g.dart';
 
 final searchProvider = StateProvider.autoDispose<String>((ref) => '');
 
-@riverpod
-Future<BaseModel> courtList(CourtListRef ref, {int page = 1}) async {
-  final repository = ref.watch(courtRepositoryProvider);
-  final param = ref.watch(gameFormProvider).court.address;
-  return await repository.getCourtList(search: param, page: page).then<BaseModel>((value) {
-    logger.i(value);
-    return value;
-  }).catchError((e) {
-    final error = ErrorModel.respToError(e);
-    logger.e(
-        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
-    return error;
-  });
+@Riverpod(keepAlive: false)
+class CourtList extends _$CourtList {
+  @override
+  BaseModel build() {
+    getList(page: 1);
+    return LoadingModel();
+  }
+
+  Future<void> getList({required int page}) async {
+    final repository = ref.watch(courtRepositoryProvider);
+    final param = ref.watch(gameFormProvider).court.address;
+    repository.getCourtList(search: param, page: page).then((value) {
+      logger.i(value);
+      state = value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state = error;
+    });
+  }
 }
 
 @Riverpod(keepAlive: false)

@@ -100,7 +100,9 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                     reviewId: widget.reviewId,
                   ));
                   if (result is LoadingModel) {
-                    return const ReviewDetailSkeleton();
+                    return const ReviewDetailSkeleton(
+                      reviewType: ReviewType.guest,
+                    );
                   } else if (result is ErrorModel) {
                     // final userApiType =
                     //     UserReviewType.written == widget.reviewType
