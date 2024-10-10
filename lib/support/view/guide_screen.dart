@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,7 +29,7 @@ class GuideScreen extends StatefulWidget {
 class _GuideScreenState extends State<GuideScreen> {
   UserGuideType category = UserGuideType.game;
   int currentIdx = 0;
-  late final CarouselSliderController carouselController;
+  late CarouselSliderController carouselController;
 
   @override
   void initState() {
@@ -77,11 +79,12 @@ class _GuideScreenState extends State<GuideScreen> {
                       itemBuilder: (_, idx) {
                         return _GuideChip(
                           title: model[idx].category.displayName,
-                          onTap: () {
+                          onTap: () async {
                             setState(() {
                               category = model[idx].category;
                               carouselController.jumpToPage(0);
                             });
+                            // await carouselController.onReady;
                           },
                           selected: category == model[idx].category,
                         );
@@ -101,11 +104,14 @@ class _GuideScreenState extends State<GuideScreen> {
                           enlargeCenterPage: true,
                           viewportFraction: 1,
                           height: 220.h,
+                          initialPage: 0,
                           enlargeStrategy: CenterPageEnlargeStrategy.height,
+                          enableInfiniteScroll: false,
                           animateToClosest: false,
                           onPageChanged: (idx, _) {
                             setState(() {
                               currentIdx = idx;
+                              log('currentIdx = $currentIdx');
                             });
                           }),
                       items: images.map((image) {
