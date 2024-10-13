@@ -145,12 +145,14 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
 
 class _SearchComponent extends StatelessWidget {
   final items = [
+    '전체',
     '서울',
     '경기',
     '인천',
     '부산',
     '대구',
     '광주',
+    '대전',
     '울산',
     '세종',
     '강원',
@@ -161,8 +163,6 @@ class _SearchComponent extends StatelessWidget {
     '경북',
     '경남',
     '제주',
-    '대전',
-    '전체',
   ];
 
   _SearchComponent({super.key});

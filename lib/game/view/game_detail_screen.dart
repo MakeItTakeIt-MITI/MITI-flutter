@@ -79,10 +79,20 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
     return Scaffold(
       backgroundColor: MITIColor.gray750,
       floatingActionButtonLocation: ExpandableFab.location,
-      floatingActionButton: ShareFabComponent(
-        id: widget.gameId,
-        type: ShareType.games,
-        globalKey: fabKey,
+      floatingActionButton: Consumer(
+        builder: (BuildContext context, WidgetRef ref, Widget? child) {
+          GameDetailModel? model;
+          final result = ref.watch(gameDetailProvider(gameId: widget.gameId));
+          if (result is ResponseModel<GameDetailModel>) {
+            model = result.data!;
+          }
+          return ShareFabComponent(
+            id: widget.gameId,
+            type: ShareType.games,
+            globalKey: fabKey,
+            model: model,
+          );
+        },
       ),
       bottomNavigationBar: Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
@@ -91,7 +101,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
             // todo skeleton
             return const SizedBox(height: 0);
           } else if (result is ErrorModel) {
-            return Container();
+            return const SizedBox(height: 0);
           }
           result as ResponseModel<GameDetailModel>;
           final model = result.data!;
@@ -118,7 +128,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
             final result = ref.watch(gameDetailProvider(gameId: widget.gameId));
             if (result is LoadingModel) {
-              return SingleChildScrollView(child: const GameDetailSkeleton());
+              return const SingleChildScrollView(child: GameDetailSkeleton());
             } else if (result is ErrorModel) {
               return Text('에러');
             }

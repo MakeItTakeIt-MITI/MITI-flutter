@@ -350,6 +350,7 @@ class _ParticipationComponent extends StatelessWidget {
           ListView.separated(
               shrinkWrap: true,
               padding: EdgeInsets.zero,
+              physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (_, idx) {
                 return _ParticipationCard(
                   model: participations[idx],

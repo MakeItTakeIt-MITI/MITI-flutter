@@ -73,14 +73,21 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
     } else if (result is ErrorModel) {
       return Text("Error");
     }
+
     final model = (result as ResponseModel<CourtDetailModel>).data!;
+
     return Scaffold(
       backgroundColor: MITIColor.gray750,
       floatingActionButtonLocation: ExpandableFab.location,
-      floatingActionButton: ShareFabComponent(
-        id: model.id,
-        type: ShareType.courts,
-        globalKey: fabKey,
+      floatingActionButton: Consumer(
+        builder: (BuildContext context, WidgetRef ref, Widget? child) {
+          return ShareFabComponent(
+            id: widget.courtId,
+            type: ShareType.courts,
+            globalKey: fabKey,
+            model: model,
+          );
+        },
       ),
       body: NestedScrollView(
         controller: _scrollController,

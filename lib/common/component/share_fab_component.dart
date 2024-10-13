@@ -1,9 +1,14 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:miti/common/model/model_id.dart';
+import 'package:miti/court/model/court_model.dart';
+import 'package:miti/game/model/game_model.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../theme/color_theme.dart';
@@ -18,11 +23,16 @@ enum ShareType {
 
 class ShareFabComponent extends StatelessWidget {
   final GlobalKey<ExpandableFabState> globalKey;
-
   final int id;
   final ShareType type;
+  final IModelWithId? model;
 
-  const ShareFabComponent({super.key, required this.id, required this.type, required this.globalKey});
+  const ShareFabComponent(
+      {super.key,
+      required this.id,
+      required this.type,
+      required this.globalKey,
+      this.model});
 
   @override
   Widget build(BuildContext context) {
@@ -94,6 +104,14 @@ class ShareFabComponent extends StatelessWidget {
                     host: "www.makeittakeit.kr",
                     path: '${type.name}/$id',
                   ));
+                  // log('result.status = ${result.status}');
+                  if (ShareResultStatus.success == result.status) {
+                    final state = globalKey.currentState;
+                    if (state != null) {
+                      debugPrint('isOpen:${state.isOpen}');
+                      state.toggle();
+                    }
+                  }
                 },
                 heroTag: null,
                 child: SvgPicture.asset(
@@ -156,10 +174,45 @@ class ShareFabComponent extends StatelessWidget {
                 shape: const CircleBorder(),
                 heroTag: null,
                 onPressed: () async {
+                  String title = "";
+                  String desc = "";
+
+                  if (model != null) {
+                    if (model is GameDetailModel) {
+                      final gameModel = model as GameDetailModel;
+
+                      final start = DateTime.parse(
+                          "${gameModel.startdate} ${gameModel.starttime}");
+                      final end = DateTime.parse(
+                          "${gameModel.enddate} ${gameModel.endtime}");
+
+                      log("start $start");
+                      final startDate =
+                          gameModel.startdate.replaceAll('-', '. ');
+                      final endDate = gameModel.startdate.replaceAll('-', '. ');
+
+                      final time =
+                          '${gameModel.starttime.substring(0, 5)} ~ ${gameModel.endtime.substring(0, 5)}';
+                      final gameDate = startDate == endDate
+                          ? '$startDate $time'
+                          : '$startDate ${gameModel.starttime.substring(0, 5)} ~ $endDate ${gameModel.endtime.substring(0, 5)}';
+                      final address =
+                          '${gameModel.court.address} ${gameModel.court.address_detail ?? ''}';
+
+                      title = gameModel.title;
+                      desc = "$gameDate $address";
+                    } else if (model is CourtDetailModel) {
+                      final courtModel = model as CourtDetailModel;
+                      title = courtModel.name;
+                      desc =
+                          "${courtModel.address} ${courtModel.address_detail}";
+                    }
+                  }
+
                   final FeedTemplate defaultFeed = FeedTemplate(
                     content: Content(
-                      title: '딸기 치즈 케익',
-                      description: '#케익 #딸기 #삼평동 #카페 #분위기 #소개팅',
+                      title: title,
+                      description: desc,
                       imageUrl: Uri.parse(
                           'https://www.makeittakeit.kr/images/miti_thumbnail.png'),
                       link: Link(
@@ -175,25 +228,6 @@ class ShareFabComponent extends StatelessWidget {
                         ),
                       ),
                     ),
-                    // itemContent: ItemContent(
-                    //   profileText: 'Kakao',
-                    //   profileImageUrl: Uri.parse(
-                    //       'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
-                    //   titleImageUrl: Uri.parse(
-                    //       'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
-                    //   titleImageText: 'Cheese cake',
-                    //   titleImageCategory: 'cake',
-                    //   items: [
-                    //     ItemInfo(item: 'cake1', itemOp: '1000원'),
-                    //     ItemInfo(item: 'cake2', itemOp: '2000원'),
-                    //     ItemInfo(item: 'cake3', itemOp: '3000원'),
-                    //     ItemInfo(item: 'cake4', itemOp: '4000원'),
-                    //     ItemInfo(item: 'cake5', itemOp: '5000원')
-                    //   ],
-                    //   sum: 'total',
-                    //   sumOp: '15000원',
-                    // ),
-                    // social: Social(likeCount: 286, commentCount: 45, sharedCount: 845),
                     buttons: [
                       Button(
                         title: '웹으로 보기',
@@ -213,18 +247,20 @@ class ShareFabComponent extends StatelessWidget {
                       Button(
                         title: '앱으로보기',
                         link: Link(
-                          webUrl:
-                              Uri.parse('https://makeittakeit.kr/games/30000'),
-                          mobileWebUrl:
-                              Uri.parse('https://makeittakeit.kr/games/30000'),
+                          webUrl: Uri.parse(
+                              'https://www.makeittakeit.kr/${type.name}/$id'),
+                          mobileWebUrl: Uri.parse(
+                              'https://www.makeittakeit.kr/${type.name}/$id'),
                           // iosExecutionParams: {'gameId': '30000'}, // iOS 앱으로 전달할 파라미터
                           // androidExecutionParams: {'gameId': '30000'}, // Android 앱으로 전달할 파라미터
                           iosExecutionParams: {
-                            'url': 'https://makeittakeit.kr/games/30000'
+                            'url':
+                                'https://www.makeittakeit.kr/${type.name}/$id'
                           },
                           // iOS 용 실행 URL
                           androidExecutionParams: {
-                            'url': 'https://makeittakeit.kr/games/30000'
+                            'url':
+                                'https://www.makeittakeit.kr/${type.name}/$id'
                           }, // Android 용 실행 URL
                         ),
                       ),
