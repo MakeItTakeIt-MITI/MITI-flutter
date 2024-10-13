@@ -53,6 +53,9 @@ class _GameScreenState extends ConsumerState<GameScreen>
       length: 2,
       vsync: this,
     )..addListener(() {
+        ref
+            .read(dropDownValueProvider(DropButtonType.game).notifier)
+            .update((s) => null);
         removeFocus();
       });
   }

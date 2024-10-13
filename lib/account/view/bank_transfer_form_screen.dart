@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -180,6 +182,7 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
               SizedBox(height: 8.h),
               GestureDetector(
                 onTap: () {
+                  String selectBank = '';
                   showModalBottomSheet(
                       isScrollControlled: true,
                       context: context,
@@ -190,57 +193,93 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
                       ),
                       backgroundColor: MITIColor.gray800,
                       builder: (context) {
-                        final bankCards = BankType.values
-                            .map((b) => GestureDetector(
-                                  onTap: () {
-                                    FocusScope.of(context).unfocus();
-                                    ref
-                                        .read(transferFormProvider.notifier)
-                                        .update(account_bank: b.displayName);
-                                    context.pop();
-                                  },
-                                  child: BankCard(
-                                    bank: b,
+                        return StatefulBuilder(builder:
+                            (BuildContext context, StateSetter setState) {
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(vertical: 8.h),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: MITIColor.gray100,
+                                    borderRadius: BorderRadius.circular(8.r),
                                   ),
-                                ))
-                            .toList();
-
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.symmetric(vertical: 8.h),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: MITIColor.gray100,
-                                  borderRadius: BorderRadius.circular(8.r),
+                                  width: 60.w,
+                                  height: 4.h,
                                 ),
-                                width: 60.w,
-                                height: 4.h,
                               ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(20.r),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Text(
-                                    '은행',
-                                    style: MITITextStyle.mdBold.copyWith(
-                                      color: MITIColor.gray100,
+                              Padding(
+                                padding: EdgeInsets.all(20.r),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    Text(
+                                      '은행',
+                                      style: MITITextStyle.mdBold.copyWith(
+                                        color: MITIColor.gray100,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(height: 20.h),
-                                  Wrap(
-                                    spacing: 10.r,
-                                    runSpacing: 10.r,
-                                    children: bankCards,
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        );
+                                    SizedBox(height: 20.h),
+                                    Wrap(
+                                      spacing: 10.r,
+                                      runSpacing: 10.r,
+                                      children: BankType.values
+                                          .map((b) => GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    if (selectBank ==
+                                                        b.displayName) {
+                                                      selectBank = '';
+                                                    } else {
+                                                      selectBank =
+                                                          b.displayName;
+                                                    }
+                                                  });
+                                                },
+                                                child: BankCard(
+                                                  bank: b,
+                                                  isSelected: selectBank ==
+                                                      b.displayName,
+                                                ),
+                                              ))
+                                          .toList(),
+                                    ),
+                                    SizedBox(height: 20.h),
+                                    TextButton(
+                                        onPressed: selectBank.isNotEmpty
+                                            ? () {
+
+                                                ref
+                                                    .read(transferFormProvider
+                                                        .notifier)
+                                                    .update(
+                                                        account_bank:
+                                                            selectBank);
+                                                context.pop();
+                                                FocusScope.of(context)
+                                                    .unfocus();
+                                              }
+                                            : null,
+                                        style: TextButton.styleFrom(
+                                            backgroundColor:
+                                                selectBank.isNotEmpty
+                                                    ? MITIColor.primary
+                                                    : MITIColor.gray500),
+                                        child: Text(
+                                          '확인',
+                                          style: MITITextStyle.mdBold.copyWith(
+                                              color: selectBank.isNotEmpty
+                                                  ? MITIColor.gray800
+                                                  : MITIColor.gray50),
+                                        ))
+                                  ],
+                                ),
+                              )
+                            ],
+                          );
+                        });
                       });
                 },
                 child: Container(
@@ -281,7 +320,7 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
                     ],
                   ),
                 ),
-              ),
+              )
             ],
           ),
           SizedBox(height: 20.h),

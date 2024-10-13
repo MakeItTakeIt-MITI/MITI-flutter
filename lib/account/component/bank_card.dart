@@ -9,8 +9,9 @@ import '../../util/util.dart';
 
 class BankCard extends StatelessWidget {
   final BankType bank;
+  final bool isSelected;
 
-  const BankCard({super.key, required this.bank});
+  const BankCard({super.key, required this.bank, required this.isSelected});
 
   @override
   Widget build(BuildContext context) {
@@ -20,12 +21,12 @@ class BankCard extends StatelessWidget {
       BankType.KDBBANK
     ];
 
-
     return Container(
       width: 76.w,
       padding: EdgeInsets.symmetric(vertical: 8.h),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(color:isSelected ? MITIColor.primary : MITIColor.gray800) ,
         color: MITIColor.gray750,
       ),
       alignment: Alignment.center,
