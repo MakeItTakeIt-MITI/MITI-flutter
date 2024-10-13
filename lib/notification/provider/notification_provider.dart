@@ -55,11 +55,11 @@ class Push extends _$Push {
     });
   }
 
-  // void update({required PushAllowModel model}) {
-  //   final uState = (state as ResponseModel<PushAllowModel>);
-  //   state = ResponseModel(
-  //       status_code: uState.status_code, message: uState.message, data: model);
-  // }
+// void update({required PushAllowModel model}) {
+//   final uState = (state as ResponseModel<PushAllowModel>);
+//   state = ResponseModel(
+//       status_code: uState.status_code, message: uState.message, data: model);
+// }
 }
 
 @Riverpod(keepAlive: true)
@@ -147,6 +147,29 @@ Future<BaseModel> pushStatusUpdate(PushStatusUpdateRef ref,
       logger.e(
           'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
       return error;
+    });
+  }
+}
+
+@Riverpod(keepAlive: false)
+class UnreadPush extends _$UnreadPush {
+  @override
+  BaseModel build() {
+    get();
+    return LoadingModel();
+  }
+
+  Future<void> get() async {
+    final repository = ref.watch(pushPRepositoryProvider);
+    final userId = ref.read(authProvider)!.id!;
+    repository.unreadPush(userId: userId).then((value) {
+      logger.i(value);
+      state = value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state = error;
     });
   }
 }

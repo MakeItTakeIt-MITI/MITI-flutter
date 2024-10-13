@@ -20,12 +20,14 @@ import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/custom_dialog.dart';
+import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
 import '../../common/provider/router_provider.dart';
 import '../../game/view/game_create_screen.dart';
 import '../model/notice_model.dart';
 import '../model/push_model.dart';
+import '../model/unread_push_model.dart';
 import '../provider/notification_provider.dart';
 import '../skeleton/push_skeleton.dart';
 import 'notification_detail_screen.dart';
@@ -188,8 +190,11 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
                             Consumer(
                               builder: (BuildContext context, WidgetRef ref,
                                   Widget? child) {
-                                final unconfirmed =
-                                    ref.watch(unconfirmedProvider);
+                                final result = ref.watch(unreadPushProvider);
+                                bool unconfirmed = false;
+                                if (result is ResponseModel<UnreadPushModel>) {
+                                  unconfirmed = result.data!.pushCnt > 0;
+                                }
                                 return _TabBar(
                                   title: '활동 알림',
                                   isSelected: isNotification,
@@ -347,11 +352,6 @@ class _PushCardState extends ConsumerState<PushCard> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((p) {
-      if (!widget.isRead) {
-        ref.read(unconfirmedProvider.notifier).update((s) => !widget.isRead);
-      }
-    });
   }
 
   @override

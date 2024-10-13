@@ -80,7 +80,8 @@ class PushPageStateNotifier
       }
       return e;
     }).toList();
-    ref.read(unconfirmedProvider.notifier).update((s) => hasUnConfirmed);
+    ref.read(unreadPushProvider.notifier).get();
+
     final newData = pState.copyWith(page_content: newPageContent);
     state = model.copyWith(data: newData);
   }

@@ -58,6 +58,7 @@ class GameDetailScreen extends StatefulWidget {
 
 class _GameDetailScreenState extends State<GameDetailScreen> {
   int? participationId;
+  final fabKey = GlobalKey<ExpandableFabState>();
   late final ScrollController _scrollController;
 
   @override
@@ -69,7 +70,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
-
+    fabKey.currentState?.dispose();
     super.dispose();
   }
 
@@ -81,6 +82,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
       floatingActionButton: ShareFabComponent(
         id: widget.gameId,
         type: ShareType.games,
+        globalKey: fabKey,
       ),
       bottomNavigationBar: Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? child) {

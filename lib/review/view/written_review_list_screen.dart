@@ -19,6 +19,7 @@ import '../../user/param/user_profile_param.dart';
 import '../../user/provider/user_pagination_provider.dart';
 import '../../user/provider/user_provider.dart';
 import '../../util/util.dart';
+import '../component/skeleton/written_review_list_skeleton.dart';
 import 'my_review_detail_screen.dart';
 import 'review_list_screen.dart';
 
@@ -92,7 +93,7 @@ class _WrittenReviewListScreenState
                     },
                   );
                 },
-                skeleton: Container(),
+                skeleton: const WrittenReviewListSkeleton(),
                 param: UserReviewParam(),
                 controller: _scrollController,
                 separateSize: 8,

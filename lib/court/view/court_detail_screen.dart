@@ -50,6 +50,7 @@ class CourtDetailScreen extends ConsumerStatefulWidget {
 
 class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
   late final ScrollController _scrollController;
+  final fabKey = GlobalKey<ExpandableFabState>();
 
   @override
   void initState() {
@@ -60,6 +61,7 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
+    fabKey.currentState?.dispose();
     super.dispose();
   }
 
@@ -78,6 +80,7 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
       floatingActionButton: ShareFabComponent(
         id: model.id,
         type: ShareType.courts,
+        globalKey: fabKey,
       ),
       body: NestedScrollView(
         controller: _scrollController,

@@ -238,7 +238,6 @@ class _MyAppState extends ConsumerState<MyApp> {
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      ref.read(unconfirmedProvider.notifier).update((s) => true);
       RemoteNotification? notification = message.notification;
 
       /// fcm이 오면 local notification으로 푸쉬 알람 보여주기

@@ -10,6 +10,7 @@ import '../../common/repository/base_pagination_repository.dart';
 import '../../dio/dio_interceptor.dart';
 import '../../user/param/user_profile_param.dart';
 import '../model/push_model.dart';
+import '../model/unread_push_model.dart';
 import '../param/notification_param.dart';
 import '../param/push_setting_param.dart';
 
@@ -83,5 +84,11 @@ abstract class PushPRepository
   Future<ResponseModel<PushAllowModel>> disallowPush({
     @Path() required int userId,
     @Queries() required PushSettingParam? topic,
+  });
+
+  @Headers({'token': 'true'})
+  @GET('/users/{userId}/unread-push-notifications')
+  Future<ResponseModel<UnreadPushModel>> unreadPush({
+    @Path() required int userId,
   });
 }

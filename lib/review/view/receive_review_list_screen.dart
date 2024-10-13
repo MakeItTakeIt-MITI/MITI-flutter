@@ -21,6 +21,7 @@ import '../../user/param/user_profile_param.dart';
 import '../../user/provider/user_pagination_provider.dart';
 import '../../user/provider/user_provider.dart';
 import '../../util/util.dart';
+import '../component/skeleton/receive_review_list_skeleton.dart';
 import 'my_review_detail_screen.dart';
 
 class ReceiveReviewListScreen extends ConsumerStatefulWidget {
@@ -61,6 +62,7 @@ class _ReceiveReviewListScreenState
                 isSliver: true,
                 title: '나를 평가한 리뷰',
                 backgroundColor: MITIColor.gray750,
+                hasBorder: false,
               )
             ];
           },
@@ -75,12 +77,11 @@ class _ReceiveReviewListScreenState
 
                   return _ReceiveReviewCard.fromModel(model: pModel);
                 },
-                skeleton: Container(),
+                skeleton: const ReceiveReviewListSkeleton(),
                 param: UserReviewParam(),
                 controller: _scrollController,
                 separateSize: 8,
                 emptyWidget: Container(
-
                   color: MITIColor.gray750,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,

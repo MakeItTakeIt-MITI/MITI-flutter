@@ -9,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
 import '../../util/util.dart';
+import 'defalut_flashbar.dart';
 
 enum ShareType {
   games,
@@ -16,24 +17,23 @@ enum ShareType {
 }
 
 class ShareFabComponent extends StatelessWidget {
-  final _key = GlobalKey<ExpandableFabState>();
+  final GlobalKey<ExpandableFabState> globalKey;
 
   final int id;
   final ShareType type;
 
-  ShareFabComponent({super.key, required this.id, required this.type});
+  const ShareFabComponent({super.key, required this.id, required this.type, required this.globalKey});
 
   @override
   Widget build(BuildContext context) {
     return ExpandableFab(
-      key: _key,
+      key: globalKey,
       type: ExpandableFabType.up,
       childrenAnimation: ExpandableFabAnimation.none,
       distance: 60.h,
       overlayStyle: ExpandableFabOverlayStyle(
         color: Colors.black.withOpacity(.64),
       ),
-
       openButtonBuilder: FloatingActionButtonBuilder(
           size: 44.r,
           builder: (BuildContext context, void Function()? onPressed,
@@ -126,11 +126,12 @@ class ShareFabComponent extends StatelessWidget {
                     host: "www.makeittakeit.kr",
                     path: '${type.name}/$id',
                   ).toString()));
-                  final state = _key.currentState;
+                  final state = globalKey.currentState;
                   if (state != null) {
                     debugPrint('isOpen:${state.isOpen}');
                     state.toggle();
                   }
+                  FlashUtil.showFlash(context, '링크가 복사되었습니다.');
                 },
                 child: SvgPicture.asset(
                     AssetUtil.getAssetPath(type: AssetType.icon, name: 'link')),
@@ -160,7 +161,7 @@ class ShareFabComponent extends StatelessWidget {
                       title: '딸기 치즈 케익',
                       description: '#케익 #딸기 #삼평동 #카페 #분위기 #소개팅',
                       imageUrl: Uri.parse(
-                          'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
+                          'https://www.makeittakeit.kr/images/miti_thumbnail.png'),
                       link: Link(
                         webUrl: Uri(
                           scheme: 'https',
@@ -174,24 +175,24 @@ class ShareFabComponent extends StatelessWidget {
                         ),
                       ),
                     ),
-                    itemContent: ItemContent(
-                      profileText: 'Kakao',
-                      profileImageUrl: Uri.parse(
-                          'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
-                      titleImageUrl: Uri.parse(
-                          'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
-                      titleImageText: 'Cheese cake',
-                      titleImageCategory: 'cake',
-                      items: [
-                        ItemInfo(item: 'cake1', itemOp: '1000원'),
-                        ItemInfo(item: 'cake2', itemOp: '2000원'),
-                        ItemInfo(item: 'cake3', itemOp: '3000원'),
-                        ItemInfo(item: 'cake4', itemOp: '4000원'),
-                        ItemInfo(item: 'cake5', itemOp: '5000원')
-                      ],
-                      sum: 'total',
-                      sumOp: '15000원',
-                    ),
+                    // itemContent: ItemContent(
+                    //   profileText: 'Kakao',
+                    //   profileImageUrl: Uri.parse(
+                    //       'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
+                    //   titleImageUrl: Uri.parse(
+                    //       'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
+                    //   titleImageText: 'Cheese cake',
+                    //   titleImageCategory: 'cake',
+                    //   items: [
+                    //     ItemInfo(item: 'cake1', itemOp: '1000원'),
+                    //     ItemInfo(item: 'cake2', itemOp: '2000원'),
+                    //     ItemInfo(item: 'cake3', itemOp: '3000원'),
+                    //     ItemInfo(item: 'cake4', itemOp: '4000원'),
+                    //     ItemInfo(item: 'cake5', itemOp: '5000원')
+                    //   ],
+                    //   sum: 'total',
+                    //   sumOp: '15000원',
+                    // ),
                     // social: Social(likeCount: 286, commentCount: 45, sharedCount: 845),
                     buttons: [
                       Button(
@@ -240,7 +241,7 @@ class ShareFabComponent extends StatelessWidget {
                       await ShareClient.instance.launchKakaoTalk(uri);
                       print('shareUrl: ${uri}');
                       print('카카오톡 공유 완료');
-                      final state = _key.currentState;
+                      final state = globalKey.currentState;
                       if (state != null) {
                         debugPrint('isOpen:${state.isOpen}');
                         state.toggle();

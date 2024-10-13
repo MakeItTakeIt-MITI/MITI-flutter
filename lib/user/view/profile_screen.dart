@@ -10,6 +10,8 @@ import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/court/view/court_search_screen.dart';
+import 'package:miti/notification/model/unread_push_model.dart';
+import 'package:miti/notification/provider/notification_provider.dart';
 import 'package:miti/notification/provider/widget/unconfirmed_provider.dart';
 import 'package:miti/notification/view/notification_screen.dart';
 import 'package:miti/support/view/guide_screen.dart';
@@ -64,7 +66,11 @@ class _ProfileBodyState extends State<ProfileBody> {
 
               Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  final unconfirmed = ref.watch(unconfirmedProvider);
+                  final result = ref.watch(unreadPushProvider);
+                  bool unconfirmed = false;
+                  if (result is ResponseModel<UnreadPushModel>) {
+                    unconfirmed = result.data!.pushCnt > 0;
+                  }
                   return Padding(
                     padding: EdgeInsets.only(right: 13.w),
                     child: GestureDetector(
