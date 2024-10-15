@@ -300,8 +300,6 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
             ),
           ),
         ),
-
-
         Positioned(
           child: DraggableScrollableSheet(
             initialChildSize: 0.04,
@@ -327,15 +325,18 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
                       child: CustomScrollView(
                         controller: scrollController,
                         slivers: [
-                          SliverToBoxAdapter(child: SizedBox(height: 62.h,),),
+                          SliverToBoxAdapter(
+                            child: SizedBox(
+                              height: 62.h,
+                            ),
+                          ),
                           Consumer(
-                            builder: (BuildContext context,
-                                WidgetRef ref, Widget? child) {
+                            builder: (BuildContext context, WidgetRef ref,
+                                Widget? child) {
                               final modelList =
                                   ref.watch(selectGameListProvider);
                               return SliverPadding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 21.w),
+                                padding: EdgeInsets.symmetric(horizontal: 21.w),
                                 sliver: _getCourtComponent(modelList),
                               );
                             },
@@ -845,36 +846,7 @@ class DateBox extends ConsumerWidget {
               ),
             )
           ],
-        )
-
-        // Container(
-        //   width: 60.w,
-        //   // height: 52.h,
-        //   decoration: BoxDecoration(
-        //     borderRadius: BorderRadius.circular(8.r),
-        //     color: selectedDay == day
-        //         ? const Color(0xFF4065F6)
-        //         : const Color(0xFFF2F2F2),
-        //   ),
-        //   child: Column(
-        //     children: [
-        //       SizedBox(height: 8.h),
-        //       Text(
-        //         '$selectDay',
-        //         textAlign: TextAlign.center,
-        //         style: textStyle,
-        //       ),
-        //       SizedBox(height: 4.h),
-        //       Text(
-        //         dayOfWeek,
-        //         textAlign: TextAlign.center,
-        //         style: textStyle,
-        //       ),
-        //       SizedBox(height: 8.h),
-        //     ],
-        //   ),
-        // ),
-        );
+        ));
   }
 }
 
@@ -886,6 +858,8 @@ class _FilterComponent extends ConsumerStatefulWidget {
 }
 
 class _FilterComponentState extends ConsumerState<_FilterComponent> {
+  /// 처음 들어온 필터 상태
+  late final GameListParam joinFilter;
   late final ScrollController _dayScrollController;
   final List<GlobalKey> dayKeys = [];
 
@@ -896,7 +870,11 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
     for (int i = 0; i < 14; i++) {
       dayKeys.add(GlobalKey());
     }
+
     _dayScrollController = ScrollController();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      joinFilter = ref.read(gameFilterProvider);
+    });
   }
 
   void selectDay(List<List<String>> day, int idx) {
@@ -907,6 +885,12 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
       duration: const Duration(milliseconds: 600),
       curve: Curves.easeInOut,
     );
+  }
+
+  @override
+  void dispose() {
+    _dayScrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -1162,6 +1146,7 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
             /// todo 수정 필요
             GestureDetector(
               onTap: () {
+                ref.read(gameFilterProvider.notifier).rollback(joinFilter);
                 ref.read(showFilterProvider.notifier).update((state) => false);
               },
               child: SizedBox(

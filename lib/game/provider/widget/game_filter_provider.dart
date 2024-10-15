@@ -14,7 +14,7 @@ enum FilterType { date, time, status }
 class GameFilter extends _$GameFilter {
   @override
   GameListParam build() {
-    return init();
+    return _init();
   }
 
   void update({
@@ -29,7 +29,7 @@ class GameFilter extends _$GameFilter {
     );
   }
 
-  GameListParam init() {
+   GameListParam _init() {
     final now = DateTime.now();
     final df = DateFormat('yyyy-MM-dd');
     final startDate = df.format(now);
@@ -42,8 +42,12 @@ class GameFilter extends _$GameFilter {
         gameStatus: GameStatus.values.toList());
   }
 
+  void rollback(GameListParam filter){
+    state = filter;
+  }
+
   void clear() {
-    state = init();
+    state = _init();
   }
 
   void deleteStatus(GameStatus status) {
@@ -83,7 +87,7 @@ class GameFilter extends _$GameFilter {
             gameStatus: state.gameStatus);
         break;
       case FilterType.status:
-        state = init();
+        state = _init();
         break;
     }
   }

@@ -235,7 +235,7 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
   String date = "";
   bool isAfternoon = false;
   int selectedHour = 0;
-  int selectedMinute =  0;
+  int selectedMinute = 0;
 
   @override
   void initState() {
@@ -245,7 +245,19 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
     hourController = FixedExtentScrollController(initialItem: selectedHour);
     minController =
         FixedExtentScrollController(initialItem: selectedMinute ~/ 10);
+    WidgetsBinding.instance.addPostFrameCallback((t) {
+      final joinFilter = ref.read(gameFilterProvider);
+      final time = joinFilter.starttime!.split(':');
+      final hour = int.parse(time[0]);
+      final min = int.parse(time[1]);
+      timePeriodController.jumpToItem(hour >= 12 ? 1 : 0);
+      hourController.jumpToItem(hour % 12);
+      minController.jumpToItem(min ~/ 10);
+    });
+
   }
+
+
 
   Widget selectionOverlay() => Container(
         decoration: BoxDecoration(
@@ -271,25 +283,15 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    ref.listen(gameFilterProvider, (previous, next) {
-      if (previous?.starttime != next.starttime) {
-        // if (next.starttime != null) {
-        //   final times = next.starttime!.split(':');
-        //   final hour = int.parse(times[0]);
-        //   final min = int.parse(times[1]);
-        //
-        //   if(hour >= 12){
-        //     timePeriodController.animateToItem(1, duration: const Duration(milliseconds: 150), curve: Curves.easeOut);
-        //     hourController.animateToItem(hour-12, duration: const Duration(milliseconds: 150), curve: Curves.easeOut);
-        //   }else{
-        //     hourController.animateToItem(hour, duration: const Duration(milliseconds: 150), curve: Curves.easeOut);
-        //   }
-        //   minController.animateToItem(min, duration: const Duration(milliseconds: 150), curve: Curves.easeOut);
-        // }
-      }
-    });
+  void dispose() {
+    timePeriodController.dispose();
+    hourController.dispose();
+    minController.dispose();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
         Flexible(
