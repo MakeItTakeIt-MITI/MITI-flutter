@@ -31,6 +31,7 @@ class ResetPasswordScreen extends StatelessWidget {
       resizeToAvoidBottomInset: false,
       appBar: const DefaultAppBar(
         title: '회원 정보 찾기',
+        hasBorder: false,
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 21.w),
@@ -117,6 +118,7 @@ class CompleteRestPasswordScreen extends StatelessWidget {
       resizeToAvoidBottomInset: false,
       appBar: const DefaultAppBar(
         title: '회원 정보 찾기',
+        hasBorder: false,
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 21.w),

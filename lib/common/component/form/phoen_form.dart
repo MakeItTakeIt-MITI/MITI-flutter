@@ -13,6 +13,7 @@ import '../../../auth/model/code_model.dart';
 import '../../../auth/provider/widget/find_info_provider.dart';
 import '../../../auth/provider/widget/phone_auth_provider.dart';
 import '../../../auth/view/find_info/find_info_screen.dart';
+import '../../../dio/response_code.dart';
 import '../../../theme/color_theme.dart';
 import '../../../theme/text_theme.dart';
 import '../../model/default_model.dart';
@@ -145,8 +146,8 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
   }
 
   void sendSMS(BuildContext context) async {
-    onSend = false;
     FocusScope.of(context).requestFocus(FocusNode());
+
     final result =
         await ref.read(verifyPhoneProvider(type: widget.type).future);
     if (context.mounted) {
@@ -154,10 +155,22 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
         AuthError.fromModel(model: result).responseError(
             context, AuthApiType.send_code, ref,
             object: widget.type);
+        if (PhoneAuthType.signup != widget.type) {
+          if ((result.status_code == BadRequest &&
+                  (result.error_code == 440 || result.error_code == 441)) ||
+              (result.status_code == NotFound && result.error_code == 440)) {
+            onSend = false;
+            ref.read(formInfoProvider(InputFormType.phone).notifier).reset();
+            codeBtnDesc = "인증완료";
+            codeBtnColor = MITIColor.gray500;
+            codeBtnTextColor = MITIColor.primary;
+            timerReset();
+          }
+        }
       } else {
+        onSend = false;
         ref.read(formInfoProvider(InputFormType.phone).notifier).reset();
         codeBtnDesc = "인증완료";
-
         codeBtnColor = MITIColor.gray500;
         codeBtnTextColor = MITIColor.primary;
         timerReset();
@@ -241,7 +254,8 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
                           }
                         }
                       : null,
-                  style: TextButton.styleFrom(backgroundColor: phoneBtnColor),
+                  style: TextButton.styleFrom(
+                      backgroundColor: phoneBtnColor, padding: EdgeInsets.zero),
                   child: Text(
                     phoneBtnDesc,
                     style: MITITextStyle.md.copyWith(
