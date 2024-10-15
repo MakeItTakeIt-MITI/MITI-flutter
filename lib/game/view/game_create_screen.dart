@@ -619,7 +619,7 @@ class _GameTimePickerState extends State<_GameTimePicker> {
                   ),
                   SizedBox(width: 16.w),
                   Transform.rotate(
-                    angle: isOpen ? 180 * pi / 180 : 0,
+                    angle: isOpen ? 0 : 180 * pi / 180,
                     child: SvgPicture.asset(
                       AssetUtil.getAssetPath(
                           type: AssetType.icon, name: "top_arrow"),

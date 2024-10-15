@@ -43,6 +43,7 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
   int currentTime = 0;
   bool showTime = false;
   bool enabled = false;
+  bool onSend = false;
   String phoneBtnDesc = '인증 요청';
   String codeBtnDesc = '인증하기';
   Color phoneBtnColor = MITIColor.gray500;
@@ -86,6 +87,7 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
       enabled = true;
       codeBtnDesc = "인증하기";
       phoneBtnDesc = '요청 완료';
+      onSend = true;
       phoneBtnColor = MITIColor.gray500;
       phoneBtnTextColor = MITIColor.primary;
       codeBtnColor = MITIColor.gray500;
@@ -143,6 +145,7 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
   }
 
   void sendSMS(BuildContext context) async {
+    onSend = false;
     FocusScope.of(context).requestFocus(FocusNode());
     final result =
         await ref.read(verifyPhoneProvider(type: widget.type).future);
@@ -305,11 +308,13 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
                   height: 48.h,
                   width: 98.w,
                   child: TextButton(
-                    onPressed: () async {
-                      if (phoneAuth.code.length == 6) {
-                        sendSMS(context);
-                      }
-                    },
+                    onPressed: onSend
+                        ? () async {
+                            if (phoneAuth.code.length == 6) {
+                              sendSMS(context);
+                            }
+                          }
+                        : null,
                     style: TextButton.styleFrom(
                       backgroundColor: codeBtnColor,
                     ),

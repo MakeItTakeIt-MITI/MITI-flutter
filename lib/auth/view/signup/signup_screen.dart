@@ -57,7 +57,7 @@ class SignUpScreen extends ConsumerWidget {
         final show = showDetail.where((e) => e).isNotEmpty;
         final progressValue = ref.watch(progressProvider).progress;
         if (show && progressValue == 5) {
-          return SliverAppBar(
+          return AppBar(
             backgroundColor: MITIColor.gray800,
 
             /// 앱바 pinned 시 surface 컬러
@@ -75,10 +75,10 @@ class SignUpScreen extends ConsumerWidget {
         }
         return const DefaultAppBar(
           title: '회원가입',
-          isSliver: true,
         );
       },
     );
+    final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
     return PopScope(
       // onPopInvokedWithResult: (bool didPop, T? result){}
       // canPop: false,
@@ -88,47 +88,29 @@ class SignUpScreen extends ConsumerWidget {
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          body: Padding(
-            padding: EdgeInsets.only(
-              left: 21.w,
-              right: 21.w,
-              // bottom: bottomPadding,
-            ),
-            child: CustomScrollView(
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              slivers: [
-                appbar,
-                SliverFillRemaining(
-                  fillOverscroll: true,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 20.h),
-                      progressComponent(),
-                      DescComponent(
-                        type: type,
-                      ),
-                      signUpComponent(ref),
-                      // if (ref.watch(progressProvider).progress == 1)
-                      //   const NicknameForm(),
-                      // if (ref.watch(progressProvider).progress == 2)
-                      //   const EmailForm(),
-                      // if (ref.watch(progressProvider).progress == 3)
-                      //   const PasswordForm(),
-                      // if (ref.watch(progressProvider).progress == 4)
-                      //   const PersonalInfoForm(),
-                      // if (ref.watch(progressProvider).progress == 5)
-                      //   const CheckBoxForm(),
-                      const Spacer(),
-                      _NextButton(
-                        type: type,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+          bottomNavigationBar: _NextButton(type: type),
+          // resizeToAvoidBottomInset: false,
+          appBar: PreferredSize(
+              preferredSize: Size(double.infinity, 44.h), child: appbar),
+          body: SingleChildScrollView(
+            // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            // physics: const AlwaysScrollableScrollPhysics(),
+            child: Padding(
+              padding: EdgeInsets.only(
+                left: 21.w,
+                right: 21.w,
+                bottom: bottomPadding,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(height: 20.h),
+                  progressComponent(),
+                  DescComponent(type: type),
+                  signUpComponent(ref),
+                ],
+              ),
             ),
           ),
         ),
@@ -1346,74 +1328,71 @@ class _NextButtonState extends ConsumerState<_NextButton> {
       buttonText = '다음으로';
     }
 
-    return Column(
-      children: [
-        // SizedBox(height: 195.h,),
-        SizedBox(
-          height: 48.h,
-          child: TextButton(
-              onPressed: () async {
-                if (validNext) {
-                  if (!show &&
-                      (progress == 5 ||
-                          (progress == 3 && AuthType.email != widget.type))) {
-                    if (AuthType.email != widget.type) {
-                      final storage = ref.read(secureStorageProvider);
-                      final userInfoToken =
-                          await storage.read(key: "userInfoToken");
-                      ref
-                          .read(signUpFormProvider.notifier)
-                          .updateForm(userinfo_token: userInfoToken);
-                      await storage.delete(key: "userInfoToken");
-                    }
-
-                    final model = ref.read(signUpFormProvider);
-                    late SignUpBaseParam param;
-                    switch (widget.type) {
-                      case AuthType.email:
-                        param = SignUpEmailParam.fromForm(model: model);
-                        break;
-                      case AuthType.apple:
-                        param = SignUpAppleParam.fromForm(model: model);
-                        break;
-                      case AuthType.kakao:
-                        param = SignUpKakaoParam.fromForm(model: model);
-                        break;
-                    }
-                    final result = await ref.read(
-                        signUpProvider(type: widget.type, param: param).future);
-
-                    if (result is ErrorModel) {
-                      log('error');
-                      if (context.mounted) {
-                        AuthError.fromModel(model: result)
-                            .responseError(context, AuthApiType.signup, ref);
-                      }
-                    } else {
-                      log('회원가입!');
-                      if (context.mounted) {
-                        context.goNamed(SignUpCompleteScreen.routeName);
-                      }
-                    }
-                  } else if (show) {
-                    ref.read(progressProvider.notifier).hideDetail();
-                  } else {
-                    ref.read(progressProvider.notifier).nextProgress();
+    return Padding(
+      padding: EdgeInsets.only(left: 21.w, right: 21.w, bottom: 41.h),
+      child: SizedBox(
+        height: 48.h,
+        child: TextButton(
+            onPressed: () async {
+              if (validNext) {
+                if (!show &&
+                    (progress == 5 ||
+                        (progress == 3 && AuthType.email != widget.type))) {
+                  if (AuthType.email != widget.type) {
+                    final storage = ref.read(secureStorageProvider);
+                    final userInfoToken =
+                        await storage.read(key: "userInfoToken");
+                    ref
+                        .read(signUpFormProvider.notifier)
+                        .updateForm(userinfo_token: userInfoToken);
+                    await storage.delete(key: "userInfoToken");
                   }
+
+                  final model = ref.read(signUpFormProvider);
+                  late SignUpBaseParam param;
+                  switch (widget.type) {
+                    case AuthType.email:
+                      param = SignUpEmailParam.fromForm(model: model);
+                      break;
+                    case AuthType.apple:
+                      param = SignUpAppleParam.fromForm(model: model);
+                      break;
+                    case AuthType.kakao:
+                      param = SignUpKakaoParam.fromForm(model: model);
+                      break;
+                  }
+                  final result = await ref.read(
+                      signUpProvider(type: widget.type, param: param).future);
+
+                  if (result is ErrorModel) {
+                    log('error');
+                    if (context.mounted) {
+                      AuthError.fromModel(model: result)
+                          .responseError(context, AuthApiType.signup, ref);
+                    }
+                  } else {
+                    log('회원가입!');
+                    if (context.mounted) {
+                      context.goNamed(SignUpCompleteScreen.routeName);
+                    }
+                  }
+                } else if (show) {
+                  ref.read(progressProvider.notifier).hideDetail();
+                } else {
+                  ref.read(progressProvider.notifier).nextProgress();
                 }
-              },
-              style: TextButton.styleFrom(
-                  backgroundColor:
-                      validNext ? MITIColor.primary : MITIColor.gray500),
-              child: Text(
-                buttonText,
-                style: MITITextStyle.mdBold.copyWith(
-                  color: validNext ? MITIColor.gray800 : MITIColor.gray50,
-                ),
-              )),
-        ),
-        SizedBox(height: 41.h),
-      ],
+              }
+            },
+            style: TextButton.styleFrom(
+                backgroundColor:
+                    validNext ? MITIColor.primary : MITIColor.gray500),
+            child: Text(
+              buttonText,
+              style: MITITextStyle.mdBold.copyWith(
+                color: validNext ? MITIColor.gray800 : MITIColor.gray50,
+              ),
+            )),
+      ),
     );
   }
 }

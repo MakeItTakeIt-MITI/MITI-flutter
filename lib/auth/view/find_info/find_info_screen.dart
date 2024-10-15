@@ -63,34 +63,38 @@ class _FindEmailScreenState extends ConsumerState<FindInfoScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: DefaultAppBar(
-        title: '회원 정보 찾기',
-        bottom: TabBar(
-          indicatorWeight: 1.w,
-          unselectedLabelColor: MITIColor.gray500,
-          indicatorSize: TabBarIndicatorSize.tab,
-          labelStyle: MITITextStyle.xxsm,
-          controller: tabController,
-          dividerColor: MITIColor.gray500,
-          onTap: (idx) {
-            tabController.animateTo(idx);
-          },
-          tabs: const [
-            Tab(child: Text('이메일 찾기')),
-            Tab(child: Text('비밀번호 찾기')),
-          ],
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      onPanDown: (v) => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: DefaultAppBar(
+          title: '회원 정보 찾기',
+          bottom: TabBar(
+            indicatorWeight: 1.w,
+            unselectedLabelColor: MITIColor.gray500,
+            indicatorSize: TabBarIndicatorSize.tab,
+            labelStyle: MITITextStyle.xxsm,
+            controller: tabController,
+            dividerColor: MITIColor.gray500,
+            onTap: (idx) {
+              tabController.animateTo(idx);
+            },
+            tabs: const [
+              Tab(child: Text('이메일 찾기')),
+              Tab(child: Text('비밀번호 찾기')),
+            ],
+          ),
         ),
+        body: TabBarView(controller: tabController, children: const [
+          FindInfoBody(
+            type: PhoneAuthType.find_email,
+          ),
+          FindInfoBody(
+            type: PhoneAuthType.password_update,
+          ),
+        ]),
       ),
-      body: TabBarView(controller: tabController, children: const [
-        FindInfoBody(
-          type: PhoneAuthType.find_email,
-        ),
-        FindInfoBody(
-          type: PhoneAuthType.password_update,
-        ),
-      ]),
     );
   }
 }
