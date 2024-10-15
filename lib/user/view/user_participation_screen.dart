@@ -41,13 +41,7 @@ class UserParticipationScreen extends ConsumerStatefulWidget {
 }
 
 class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
-  final items = [
-    '전체',
-    '모집 중',
-    '모집 완료',
-    '경기 취소',
-    '경기 완료',
-  ];
+
   late final ScrollController _scrollController;
 
   @override
@@ -107,153 +101,6 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
       child: CustomScrollView(
         controller: _scrollController,
         slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.only(left: 21.w, right: 21.w, top: 20.h),
-              child: Row(
-                children: [
-                  Text(
-                    widget.type == UserGameType.host
-                        ? '호스트가 되어 게스트를 모집한 경기'
-                        : '게스트로 참여한 경기',
-                    style: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
-                  ),
-                  const Spacer(),
-                  Consumer(
-                    builder:
-                        (BuildContext context, WidgetRef ref, Widget? child) {
-                      final gameStatus = getStatus(ref
-                          .watch(dropDownValueProvider(DropButtonType.game)));
-                      final selectStatus = gameStatus?.displayName ?? '전체';
-
-                      return GestureDetector(
-                        onTap: () {
-                          showModalBottomSheet(
-                              isScrollControlled: true,
-                              useRootNavigator: true,
-                              context: context,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20.r),
-                                ),
-                              ),
-                              backgroundColor: MITIColor.gray800,
-                              builder: (context) {
-                                return Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 8.h),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: MITIColor.gray100,
-                                          borderRadius:
-                                              BorderRadius.circular(8.r),
-                                        ),
-                                        width: 60.w,
-                                        height: 4.h,
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(20.r),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
-                                        children: [
-                                          Text(
-                                            '경기 상태',
-                                            style:
-                                                MITITextStyle.mdBold.copyWith(
-                                              color: MITIColor.gray100,
-                                            ),
-                                          ),
-                                          SizedBox(height: 20.h),
-                                          ...items.map((i) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                changeDropButton(i, id);
-                                                context.pop();
-                                              },
-                                              child: Container(
-                                                height: 60.h,
-                                                decoration: const BoxDecoration(
-                                                  border: Border(
-                                                    bottom: BorderSide(
-                                                      color: MITIColor.gray700,
-                                                    ),
-                                                  ),
-                                                ),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                      i,
-                                                      style: MITITextStyle
-                                                          .smSemiBold
-                                                          .copyWith(
-                                                              color: selectStatus ==
-                                                                      i
-                                                                  ? MITIColor
-                                                                      .primary
-                                                                  : MITIColor
-                                                                      .gray100),
-                                                    ),
-                                                    if (selectStatus == i)
-                                                      SvgPicture.asset(
-                                                        AssetUtil.getAssetPath(
-                                                            type:
-                                                                AssetType.icon,
-                                                            name:
-                                                                "active_check"),
-                                                        height: 24.r,
-                                                        width: 24.r,
-                                                      )
-                                                  ],
-                                                ),
-                                              ),
-                                            );
-                                          })
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                );
-                              });
-                        },
-                        child: Container(
-                          width: 92.w,
-                          height: 28.h,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(100.r),
-                            color: MITIColor.gray700,
-                          ),
-                          padding: EdgeInsets.only(left: 16.w, right: 4.w),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                gameStatus?.displayName ?? '전체',
-                                style: MITITextStyle.xxsmLight
-                                    .copyWith(color: MITIColor.gray100),
-                              ),
-                              Icon(
-                                Icons.keyboard_arrow_down,
-                                color: MITIColor.primary,
-                                size: 16.r,
-                              )
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  )
-                ],
-              ),
-            ),
-          ),
           Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
               final gameStatus = getStatus(
@@ -317,25 +164,5 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
     );
   }
 
-  void changeDropButton(String? value, int id) {
-    ref
-        .read(dropDownValueProvider(DropButtonType.game).notifier)
-        .update((state) => value);
-    final gameStatus = getStatus(value!);
-    final provider = widget.type == UserGameType.host
-        ? userHostingPProvider(PaginationStateParam(path: id))
-        : userParticipationPProvider(PaginationStateParam(path: id))
-            as AutoDisposeStateNotifierProvider<
-                PaginationProvider<Base, DefaultParam,
-                    IBasePaginationRepository<Base, DefaultParam>>,
-                BaseModel>;
-    ref.read(provider.notifier).paginate(
-          path: id,
-          forceRefetch: true,
-          param: UserGameParam(
-            game_status: gameStatus,
-          ),
-          paginationParams: const PaginationParam(page: 1),
-        );
-  }
+
 }

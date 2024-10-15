@@ -26,6 +26,7 @@ import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/custom_dialog.dart';
 import '../../common/component/default_appbar.dart';
+import '../../common/component/sliver_delegate.dart';
 import '../component/court_search_card.dart';
 import '../component/skeleton/court_list_skeleton.dart';
 import '../model/court_model.dart';
@@ -70,6 +71,13 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
               title: '경기장 조회',
               hasBorder: false,
             ),
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: SliverAppBarDelegate(
+                height: 58.h,
+                child: SizedBox(height: 58.h, child: const _SearchComponent()),
+              ),
+            ),
           ];
         }),
         body: RefreshIndicator(
@@ -78,17 +86,8 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
             controller: controller,
             slivers: [
               SliverPadding(
-                padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
+                padding: EdgeInsets.only(left: 21.w, right: 21.w, bottom: 20.h),
                 sliver: SliverMainAxisGroup(slivers: [
-                  SliverToBoxAdapter(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Flexible(child: _SearchComponent()),
-                        SizedBox(height: 20.h),
-                      ],
-                    ),
-                  ),
                   Consumer(
                     builder:
                         (BuildContext context, WidgetRef ref, Widget? child) {
@@ -178,177 +177,184 @@ class _SearchComponentState extends State<_SearchComponent> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Consumer(
-          builder: (BuildContext context, WidgetRef ref, Widget? child) {
-            // final form = ref.watch(courtSearchProvider);
-            return Expanded(
-              child: TextFormField(
-                decoration: InputDecoration(
-                  filled: true,
-                  constraints:
-                      BoxConstraints.loose(Size(double.infinity, 100.h)),
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 16.r, vertical: 8.h),
-                  border: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.circular(100.r)),
-                  hintText: '경기장 (주소/경기장 명)을 검색해주세요',
-                  hintStyle: MITITextStyle.xxsmSemiBold.copyWith(
-                    height: 1,
-                    color: MITIColor.gray500,
+    return Padding(
+      padding:
+          EdgeInsets.only(left: 21.w, right: 21.w, top: 20.h, bottom: 10.h),
+      child: Row(
+        children: [
+          Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              // final form = ref.watch(courtSearchProvider);
+              return Expanded(
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    filled: true,
+                    constraints:
+                        BoxConstraints.loose(Size(double.infinity, 100.h)),
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 16.r, vertical: 8.h),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(100.r)),
+                    hintText: '경기장 (주소/경기장 명)을 검색해주세요',
+                    hintStyle: MITITextStyle.xxsmSemiBold.copyWith(
+                      height: 1,
+                      color: MITIColor.gray500,
+                    ),
+                    fillColor: MITIColor.gray700,
+                    isDense: true,
                   ),
-                  fillColor: MITIColor.gray700,
-                  isDense: true,
+                  style: MITITextStyle.xxsmSemiBold.copyWith(
+                    color: MITIColor.gray100,
+                    height: 1,
+                  ),
+                  onChanged: (val) {
+                    final form = ref
+                        .read(courtSearchProvider.notifier)
+                        .update(search: val);
+                    ref
+                        .read(
+                            courtPageProvider(PaginationStateParam()).notifier)
+                        .updateDebounce(param: form);
+                  },
+                  onFieldSubmitted: (val) {
+                    // ref.read(courtSearchProvider.notifier).search(page: 1);
+                  },
                 ),
-                style: MITITextStyle.xxsmSemiBold.copyWith(
-                  color: MITIColor.gray100,
-                  height: 1,
-                ),
-                onChanged: (val) {
-                  final form = ref
-                      .read(courtSearchProvider.notifier)
-                      .update(search: val);
-                  ref
-                      .read(courtPageProvider(PaginationStateParam()).notifier)
-                      .updateDebounce(param: form);
-                },
-                onFieldSubmitted: (val) {
-                  // ref.read(courtSearchProvider.notifier).search(page: 1);
-                },
-              ),
-            );
-          },
-        ),
-        SizedBox(width: 8.w),
-        Consumer(
-          builder: (BuildContext context, WidgetRef ref, Widget? child) {
-            return GestureDetector(
-              onTap: () {
-                String selectRegion = region;
-                showModalBottomSheet(
-                    isScrollControlled: true,
-                    useRootNavigator: true,
-                    context: context,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(20.r),
+              );
+            },
+          ),
+          SizedBox(width: 8.w),
+          Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              return GestureDetector(
+                onTap: () {
+                  String selectRegion = region;
+                  showModalBottomSheet(
+                      isScrollControlled: true,
+                      useRootNavigator: true,
+                      context: context,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(20.r),
+                        ),
                       ),
-                    ),
-                    backgroundColor: MITIColor.gray800,
-                    builder: (context) {
-                      return StatefulBuilder(builder:
-                          (BuildContext context, StateSetter localSetState) {
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.symmetric(vertical: 8.h),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: MITIColor.gray100,
-                                  borderRadius: BorderRadius.circular(8.r),
+                      backgroundColor: MITIColor.gray800,
+                      builder: (context) {
+                        return StatefulBuilder(builder:
+                            (BuildContext context, StateSetter localSetState) {
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(vertical: 8.h),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: MITIColor.gray100,
+                                    borderRadius: BorderRadius.circular(8.r),
+                                  ),
+                                  width: 60.w,
+                                  height: 4.h,
                                 ),
-                                width: 60.w,
-                                height: 4.h,
                               ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(20.r),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Text(
-                                    '지역',
-                                    style: MITITextStyle.mdBold.copyWith(
-                                      color: MITIColor.gray100,
+                              Padding(
+                                padding: EdgeInsets.all(20.r),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    Text(
+                                      '지역',
+                                      style: MITITextStyle.mdBold.copyWith(
+                                        color: MITIColor.gray100,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(height: 20.h),
-                                  Wrap(
-                                    spacing: 10.r,
-                                    runSpacing: 10.r,
-                                    children: items
-                                        .map((r) => GestureDetector(
-                                              onTap: () {
-                                                localSetState(() {
-                                                  if (selectRegion == r) {
-                                                    selectRegion = '';
-                                                  } else {
-                                                    selectRegion = r;
-                                                  }
+                                    SizedBox(height: 20.h),
+                                    Wrap(
+                                      spacing: 10.r,
+                                      runSpacing: 10.r,
+                                      children: items
+                                          .map((r) => GestureDetector(
+                                                onTap: () {
+                                                  localSetState(() {
+                                                    if (selectRegion == r) {
+                                                      selectRegion = '';
+                                                    } else {
+                                                      selectRegion = r;
+                                                    }
+                                                  });
+                                                },
+                                                child: RegionCard(
+                                                  isSelected: selectRegion == r,
+                                                  region: r,
+                                                ),
+                                              ))
+                                          .toList(),
+                                    ),
+                                    SizedBox(height: 20.h),
+                                    TextButton(
+                                        onPressed: selectRegion.isNotEmpty
+                                            ? () {
+                                                changeDropButton(
+                                                    selectRegion, ref);
+                                                context.pop();
+                                                FocusScope.of(context)
+                                                    .unfocus();
+                                                setState(() {
+                                                  region = selectRegion;
+                                                  log(region);
                                                 });
-                                              },
-                                              child: RegionCard(
-                                                isSelected: selectRegion == r,
-                                                region: r,
-                                              ),
-                                            ))
-                                        .toList(),
-                                  ),
-                                  SizedBox(height: 20.h),
-                                  TextButton(
-                                      onPressed: selectRegion.isNotEmpty
-                                          ? () {
-                                              changeDropButton(
-                                                  selectRegion, ref);
-                                              context.pop();
-                                              FocusScope.of(context).unfocus();
-                                              setState(() {
-                                                region = selectRegion;
-                                                log(region);
-                                              });
-                                            }
-                                          : null,
-                                      style: TextButton.styleFrom(
-                                          backgroundColor:
-                                              selectRegion.isNotEmpty
-                                                  ? MITIColor.primary
-                                                  : MITIColor.gray500),
-                                      child: Text(
-                                        '확인',
-                                        style: MITITextStyle.mdBold.copyWith(
-                                            color: selectRegion.isNotEmpty
-                                                ? MITIColor.gray800
-                                                : MITIColor.gray50),
-                                      ))
-                                ],
-                              ),
-                            )
-                          ],
-                        );
+                                              }
+                                            : null,
+                                        style: TextButton.styleFrom(
+                                            backgroundColor:
+                                                selectRegion.isNotEmpty
+                                                    ? MITIColor.primary
+                                                    : MITIColor.gray500),
+                                        child: Text(
+                                          '확인',
+                                          style: MITITextStyle.mdBold.copyWith(
+                                              color: selectRegion.isNotEmpty
+                                                  ? MITIColor.gray800
+                                                  : MITIColor.gray50),
+                                        ))
+                                  ],
+                                ),
+                              )
+                            ],
+                          );
+                        });
                       });
-                    });
-              },
-              child: Container(
-                width: 77.w,
-                height: 28.h,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100.r),
-                  color: MITIColor.gray700,
+                },
+                child: Container(
+                  width: 77.w,
+                  height: 28.h,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100.r),
+                    color: MITIColor.gray700,
+                  ),
+                  padding: EdgeInsets.only(left: 16.w, right: 4.w),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        region,
+                        style: MITITextStyle.xxsmLight
+                            .copyWith(color: MITIColor.gray100),
+                      ),
+                      Icon(
+                        Icons.keyboard_arrow_down,
+                        color: MITIColor.primary,
+                        size: 16.r,
+                      )
+                    ],
+                  ),
                 ),
-                padding: EdgeInsets.only(left: 16.w, right: 4.w),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      region,
-                      style: MITITextStyle.xxsmLight
-                          .copyWith(color: MITIColor.gray100),
-                    ),
-                    Icon(
-                      Icons.keyboard_arrow_down,
-                      color: MITIColor.primary,
-                      size: 16.r,
-                    )
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      ],
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 

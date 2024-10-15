@@ -95,7 +95,7 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
           return [
             DefaultAppBar(
               title: model.name,
-              backgroundColor: MITIColor.gray800,
+              backgroundColor: MITIColor.gray750,
               isSliver: true,
               hasBorder: false,
             )
