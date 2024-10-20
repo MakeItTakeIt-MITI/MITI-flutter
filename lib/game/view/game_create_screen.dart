@@ -51,9 +51,22 @@ class GameCreateScreen extends ConsumerStatefulWidget {
 
 class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
   late final ScrollController _scrollController;
-  final formKeys = [GlobalKey(), GlobalKey()];
+  final formKeys = [
+    GlobalKey(),
+    GlobalKey(),
+    GlobalKey(),
+    GlobalKey(),
+    GlobalKey(),
+    GlobalKey(),
+    GlobalKey(),
+  ];
 
   late final List<FocusNode> focusNodes = [
+    FocusNode(),
+    FocusNode(),
+    FocusNode(),
+    FocusNode(),
+    FocusNode(),
     FocusNode(),
     FocusNode(),
   ];
@@ -225,6 +238,8 @@ class _TitleFormState extends State<_TitleForm> {
           textEditingController: titleController,
           hintText: '경기 제목을 입력해주세요.',
           label: '경기 제목',
+          onTap: () {},
+          onNext: () {},
           onChanged: (val) {
             ref.read(gameFormProvider.notifier).update(title: val);
           },

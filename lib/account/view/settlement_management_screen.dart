@@ -55,6 +55,7 @@ class _SettlementManagementScreenState extends State<SettlementManagementScreen>
     return Scaffold(
       backgroundColor: MITIColor.gray900,
       body: NestedScrollView(
+          physics: const NeverScrollableScrollPhysics(),
           headerSliverBuilder: (_, __) {
             return [
               const DefaultAppBar(
@@ -63,11 +64,10 @@ class _SettlementManagementScreenState extends State<SettlementManagementScreen>
                 hasBorder: false,
               ),
               SliverPersistentHeader(
-                delegate:
-                    SliverAppBarDelegate(child: _AccountInfo(), height: 100),
+                delegate: SliverAppBarDelegate(
+                    child: const _AccountInfo(), height: 100),
                 pinned: true,
               ),
-
               SliverPersistentHeader(
                 delegate: SliverAppBarDelegate(
                     child: Container(
@@ -154,7 +154,7 @@ class _SettlementHistoryComponentState
                 },
                 skeleton: const SettlementListSkeleton(),
                 controller: scrollController,
-                separateSize: 8,
+                separateSize: 4,
                 emptyWidget: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -219,7 +219,7 @@ class _TransferHistoryComponentState extends State<_TransferHistoryComponent> {
                 },
                 skeleton: const BankTransferListSkeleton(),
                 controller: scrollController,
-                separateSize: 8,
+                separateSize: 4,
                 emptyWidget: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -268,16 +268,19 @@ class _AccountInfo extends ConsumerWidget {
                     return Row(
                       children: [
                         Consumer(
-                          builder: (BuildContext context, WidgetRef ref, Widget? child) {
-
+                          builder: (BuildContext context, WidgetRef ref,
+                              Widget? child) {
                             final result = ref.watch(accountProvider);
-                            if(result is LoadingModel){
+                            if (result is LoadingModel) {
                               return const BoxSkeleton(width: 94, height: 24);
-                            }else if(result is ErrorModel){
+                            } else if (result is ErrorModel) {
                               return Text("error");
                             }
-                            final model= (result as ResponseModel<AccountDetailModel>).data!;
-                            final amount = NumberUtil.format(model.requestableTransferAmount.toString());
+                            final model =
+                                (result as ResponseModel<AccountDetailModel>)
+                                    .data!;
+                            final amount = NumberUtil.format(
+                                model.requestableTransferAmount.toString());
                             return Text(
                               amount,
                               style: MITITextStyle.xxl
