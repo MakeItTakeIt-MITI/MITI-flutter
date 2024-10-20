@@ -116,7 +116,6 @@ class _GameScreenState extends ConsumerState<GameScreen>
       ),
       body: SafeArea(
         child: NestedScrollView(
-            // controller: controller[1],
             physics: const NeverScrollableScrollPhysics(),
             headerSliverBuilder:
                 (BuildContext context, bool innerBoxIsScrolled) {
@@ -136,11 +135,11 @@ class _GameScreenState extends ConsumerState<GameScreen>
                     tabs: [
                       Tab(
                         height: 44.h,
-                        child: const Text('호스트로 참여한 경기'),
+                        child: const Text('호스트 경기'),
                       ),
                       Tab(
                         height: 44.h,
-                        child: const Text('게스트로 참여한 경기'),
+                        child: const Text('게스트 경기'),
                       ),
                     ],
                   )),
@@ -159,7 +158,7 @@ class _GameScreenState extends ConsumerState<GameScreen>
                           )),
                     );
                   },
-                )
+                ),
               ];
             },
             body: TabBarView(controller: tabController, children: const [
@@ -231,7 +230,6 @@ class _GameFilterComponentState extends ConsumerState<_GameFilterComponent> {
                 final gameStatus = getStatus(
                     ref.watch(dropDownValueProvider(DropButtonType.game)));
                 final selectStatus = gameStatus?.displayName ?? '전체';
-
                 return GestureDetector(
                   onTap: () {
                     showModalBottomSheet(

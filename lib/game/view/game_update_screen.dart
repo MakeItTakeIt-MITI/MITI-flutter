@@ -49,7 +49,9 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
     _scrollController = ScrollController();
     for (int i = 0; i < 3; i++) {
       focusNodes[i].addListener(() {
-        focusScrollable(i);
+        if (focusNodes[i].hasFocus) {
+          focusScrollable(i);
+        }
       });
     }
   }

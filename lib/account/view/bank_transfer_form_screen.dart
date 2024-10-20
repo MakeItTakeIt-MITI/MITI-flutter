@@ -49,6 +49,7 @@ class _BankTransferFormScreenState extends State<BankTransferFormScreen> {
   ];
 
   void focusScrollable(int i) {
+    log("scrollalble ${i}");
     Scrollable.ensureVisible(
       formKeys[i].currentContext!,
       duration: const Duration(milliseconds: 600),
@@ -63,7 +64,9 @@ class _BankTransferFormScreenState extends State<BankTransferFormScreen> {
     _scrollController = ScrollController();
     for (int i = 0; i < 3; i++) {
       focusNodes[i].addListener(() {
-        focusScrollable(i);
+        if(focusNodes[i].hasFocus){
+          focusScrollable(i);
+        }
       });
     }
   }

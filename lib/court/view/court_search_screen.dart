@@ -45,6 +45,10 @@ class CourtSearchListScreen extends ConsumerStatefulWidget {
 
 class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
   late final ScrollController controller;
+  final SliverOverlapAbsorberHandle _firstHandle =
+      SliverOverlapAbsorberHandle();
+  final SliverOverlapAbsorberHandle _secondHandle =
+      SliverOverlapAbsorberHandle();
 
   @override
   void initState() {
@@ -61,62 +65,93 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return NestedScrollView(
-        physics: const NeverScrollableScrollPhysics(),
-        headerSliverBuilder: ((BuildContext context, bool innerBoxIsScrolled) {
-          return [
-            const DefaultAppBar(
-              isSliver: true,
-              title: '경기장 조회',
-              hasBorder: false,
-            ),
-            SliverPersistentHeader(
-              pinned: true,
-              delegate: SliverAppBarDelegate(
-                height: 58.h,
-                child: SizedBox(height: 58.h, child: const _SearchComponent()),
-              ),
-            ),
-          ];
-        }),
-        body: RefreshIndicator(
-          onRefresh: refresh,
-          child: CustomScrollView(
-            controller: controller,
-            slivers: [
-              SliverPadding(
-                padding: EdgeInsets.only(left: 21.w, right: 21.w, bottom: 20.h),
-                sliver: SliverMainAxisGroup(slivers: [
-                  Consumer(
-                    builder:
-                        (BuildContext context, WidgetRef ref, Widget? child) {
-                      final form = ref.watch(courtSearchProvider);
+  void dispose() {
+    _firstHandle.dispose();
+    _secondHandle.dispose();
+    controller.dispose();
+    super.dispose();
+  }
 
-                      return DisposeSliverPaginationListView(
-                        provider: courtPageProvider(PaginationStateParam()),
-                        itemBuilder:
-                            (BuildContext context, int index, Base model) {
-                          model as CourtSearchModel;
-                          return ResultCard.fromModel(
-                            model: model,
-                            onTap: () {
-                              onTap(model, context);
-                            },
-                          );
-                        },
-                        param: form,
-                        skeleton: const CourtListSkeleton(),
-                        controller: controller,
-                        emptyWidget: getEmptyWidget(),
-                      );
-                    },
-                  ),
-                ]),
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: NestedScrollView(
+          physics: const NeverScrollableScrollPhysics(),
+          headerSliverBuilder:
+              ((BuildContext context, bool innerBoxIsScrolled) {
+            return [
+              SliverOverlapAbsorber(
+                handle: _firstHandle,
+                sliver: const DefaultAppBar(
+                  isSliver: true,
+                  title: '경기장 조회',
+                  hasBorder: false,
+                ),
               ),
-            ],
-          ),
-        ));
+              SliverOverlapAbsorber(
+                handle: _secondHandle,
+                sliver: SliverPersistentHeader(
+                  pinned: true,
+                  delegate: SliverAppBarDelegate(
+                    height: 58.h,
+                    child: Container(
+                        color: MITIColor.gray800,
+                        height: 58.h,
+                        child: const _SearchComponent()),
+                  ),
+                ),
+              ),
+            ];
+          }),
+          body: Builder(
+            builder: (BuildContext context) {
+              return Padding(
+                padding: EdgeInsets.only(
+                  top: 58.h + 48.h,
+                ),
+                child: RefreshIndicator(
+                  onRefresh: refresh,
+                  child: CustomScrollView(
+                    controller: controller,
+                    slivers: [
+                      SliverPadding(
+                        padding: EdgeInsets.only(
+                            left: 21.w, right: 21.w, bottom: 20.h),
+                        sliver: SliverMainAxisGroup(slivers: [
+                          Consumer(
+                            builder: (BuildContext context, WidgetRef ref,
+                                Widget? child) {
+                              final form = ref.watch(courtSearchProvider);
+
+                              return DisposeSliverPaginationListView(
+                                provider:
+                                    courtPageProvider(PaginationStateParam()),
+                                itemBuilder: (BuildContext context, int index,
+                                    Base model) {
+                                  model as CourtSearchModel;
+                                  return ResultCard.fromModel(
+                                    model: model,
+                                    onTap: () {
+                                      onTap(model, context);
+                                    },
+                                  );
+                                },
+                                param: form,
+                                skeleton: const CourtListSkeleton(),
+                                controller: controller,
+                                emptyWidget: getEmptyWidget(),
+                              );
+                            },
+                          ),
+                        ]),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          )),
+    );
   }
 
   void onTap(CourtSearchModel model, BuildContext context) {

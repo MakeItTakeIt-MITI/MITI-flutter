@@ -80,7 +80,7 @@ class _ReceiveReviewListScreenState
                 skeleton: const ReceiveReviewListSkeleton(),
                 param: UserReviewParam(),
                 controller: _scrollController,
-                separateSize: 8,
+                separateSize: 4,
                 emptyWidget: Container(
                   color: MITIColor.gray750,
                   child: Column(
