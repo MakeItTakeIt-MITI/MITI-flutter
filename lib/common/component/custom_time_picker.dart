@@ -221,42 +221,30 @@ class _CustomDateTimePickerState extends ConsumerState<CustomDateTimePicker> {
 }
 
 class CustomTimePicker extends ConsumerStatefulWidget {
-  const CustomTimePicker({super.key});
+  final FixedExtentScrollController timePeriodController;
+  final FixedExtentScrollController hourController;
+  final FixedExtentScrollController minController;
+
+  const CustomTimePicker({
+    super.key,
+    required this.timePeriodController,
+    required this.hourController,
+    required this.minController,
+  });
 
   @override
   ConsumerState<CustomTimePicker> createState() => _CustomTimePickerState();
 }
 
 class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
-  late final FixedExtentScrollController timePeriodController;
-  late final FixedExtentScrollController hourController;
-  late final FixedExtentScrollController minController;
+  // late final FixedExtentScrollController timePeriodController;
+  // late final FixedExtentScrollController hourController;
+  // late final FixedExtentScrollController minController;
 
   String date = "";
   bool isAfternoon = false;
   int selectedHour = 0;
   int selectedMinute = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    timePeriodController =
-        FixedExtentScrollController(initialItem: isAfternoon ? 1 : 0);
-    hourController = FixedExtentScrollController(initialItem: selectedHour);
-    minController =
-        FixedExtentScrollController(initialItem: selectedMinute ~/ 10);
-    WidgetsBinding.instance.addPostFrameCallback((t) {
-      final joinFilter = ref.read(gameFilterProvider);
-      final time = joinFilter.starttime!.split(':');
-      final hour = int.parse(time[0]);
-      final min = int.parse(time[1]);
-      timePeriodController.jumpToItem(hour >= 12 ? 1 : 0);
-      hourController.jumpToItem(hour % 12);
-      minController.jumpToItem(min ~/ 10);
-    });
-
-  }
-
 
 
   Widget selectionOverlay() => Container(
@@ -284,9 +272,9 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
 
   @override
   void dispose() {
-    timePeriodController.dispose();
-    hourController.dispose();
-    minController.dispose();
+    // timePeriodController.dispose();
+    // hourController.dispose();
+    // minController.dispose();
     super.dispose();
   }
 
@@ -310,7 +298,7 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
                 });
               },
               selectionOverlay: selectionOverlay(),
-              scrollController: timePeriodController,
+              scrollController: widget. timePeriodController,
               children: ['오전', '오후']
                   .mapIndexed((index, e) => Center(
                       child: Text(e,
@@ -337,7 +325,7 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
             },
             looping: true,
             selectionOverlay: selectionOverlay(),
-            scrollController: hourController,
+            scrollController: widget.hourController,
             children: List<Widget>.generate(12, (int index) {
               return Center(
                   child: Text(index == 0 ? '12' : oneDigitFormat(index),
@@ -363,7 +351,7 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
             },
             looping: true,
             selectionOverlay: selectionOverlay(),
-            scrollController: minController,
+            scrollController: widget.minController,
             children: List<Widget>.generate(6, (int index) {
               return Center(
                   child: Text(

@@ -386,7 +386,7 @@ class PaymentComponent extends StatelessWidget {
           SizedBox(height: 20.h),
           getPayment(
               title: '경기 참여 비용',
-              fee: game_fee_amount == '0' ? '무료' : game_fee_amount),
+              fee: game_fee_amount == '0' ? '무료' : '₩ $game_fee_amount'),
           Visibility(
               visible: final_payment_amount != '0',
               child: Column(

@@ -861,7 +861,14 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
   /// 처음 들어온 필터 상태
   late final GameListParam joinFilter;
   late final ScrollController _dayScrollController;
+  late final FixedExtentScrollController timePeriodController;
+  late final FixedExtentScrollController hourController;
+  late final FixedExtentScrollController minController;
   final List<GlobalKey> dayKeys = [];
+  String date = "";
+  bool isAfternoon = false;
+  int selectedHour = 0;
+  int selectedMinute = 0;
 
   @override
   void initState() {
@@ -870,10 +877,21 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
     for (int i = 0; i < 14; i++) {
       dayKeys.add(GlobalKey());
     }
+    timePeriodController =
+        FixedExtentScrollController(initialItem: isAfternoon ? 1 : 0);
+    hourController = FixedExtentScrollController(initialItem: selectedHour);
+    minController =
+        FixedExtentScrollController(initialItem: selectedMinute ~/ 10);
 
     _dayScrollController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       joinFilter = ref.read(gameFilterProvider);
+      final time = joinFilter.starttime!.split(':');
+      final hour = int.parse(time[0]);
+      final min = int.parse(time[1]);
+      timePeriodController.jumpToItem(hour >= 12 ? 1 : 0);
+      hourController.jumpToItem(hour % 12);
+      minController.jumpToItem(min ~/ 10);
     });
   }
 
@@ -889,6 +907,9 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
 
   @override
   void dispose() {
+    timePeriodController.dispose();
+    hourController.dispose();
+    minController.dispose();
     _dayScrollController.dispose();
     super.dispose();
   }
@@ -1052,7 +1073,12 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
                     children: [
                       Expanded(
                         child: SizedBox(
-                            height: 96.h, child: const CustomTimePicker()),
+                            height: 96.h,
+                            child: CustomTimePicker(
+                              timePeriodController: timePeriodController,
+                              hourController: hourController,
+                              minController: minController,
+                            )),
                       ),
                       SizedBox(width: 16.w),
                       Text(
@@ -1104,9 +1130,7 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
               child: Row(
                 children: [
                   TextButton(
-                      onPressed: () {
-                        ref.read(gameFilterProvider.notifier).clear();
-                      },
+                      onPressed: filterClear,
                       style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all(
                             MITIColor.gray500,
@@ -1161,6 +1185,30 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
           ],
         ),
       ),
+    );
+  }
+
+  void filterClear() {
+    ref.read(gameFilterProvider.notifier).clear();
+    _dayScrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOut,
+    );
+    timePeriodController.animateToItem(
+      0,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOut,
+    );
+    hourController.animateToItem(
+      0,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOut,
+    );
+    minController.animateToItem(
+      0,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOut,
     );
   }
 }
