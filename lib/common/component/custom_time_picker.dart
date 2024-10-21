@@ -43,8 +43,8 @@ class _CustomDateTimePickerState extends ConsumerState<CustomDateTimePicker> {
         FixedExtentScrollController(initialItem: getCurrentDateIndex());
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       date = generateDateString(0);
-      selectedHour = DateTime.now().hour;
-      selectedMinute = ((DateTime.now().minute ~/ 10) * 10);
+      selectedHour = dateTime.hour;
+      selectedMinute = ((dateTime.minute ~/ 10) * 10);
       ref.read(datePickerProvider(widget.isStart).notifier).update((state) =>
           "$date ${oneDigitFormat(selectedHour)}:${oneDigitFormat(selectedMinute)}");
     });

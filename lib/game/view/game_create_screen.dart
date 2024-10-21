@@ -563,56 +563,6 @@ class _GameTimePickerState extends State<_GameTimePicker> {
 
   @override
   Widget build(BuildContext context) {
-    // return ExpansionPanelList(children: [ExpansionPanel(
-    //
-    //     headerBuilder: (_, isExpand) {
-    //       return Row(
-    //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //         crossAxisAlignment: CrossAxisAlignment.center,
-    //         children: [
-    //           Text(
-    //             widget.isStart ? "경기 시작 시간" : "경기 종료 시간",
-    //             style: MITITextStyle.sm.copyWith(
-    //               color: MITIColor.gray100,
-    //             ),
-    //           ),
-    //           Row(
-    //             // crossAxisAlignment: CrossAxisAlignment.center,
-    //             children: [
-    //               Consumer(
-    //                 builder:
-    //                     (BuildContext context, WidgetRef ref, Widget? child) {
-    //                   final dateTime =
-    //                   ref.watch(datePickerProvider(widget.isStart));
-    //                   final text = dateTime.isNotEmpty
-    //                       ? dateTime.substring(7)
-    //                       : dateTime;
-    //                   return Text(
-    //                     text,
-    //                     style: MITITextStyle.smSemiBold.copyWith(
-    //                       color: MITIColor.primary,
-    //                     ),
-    //                   );
-    //                 },
-    //               ),
-    //               SizedBox(width: 16.w),
-    //               Transform.rotate(
-    //                 angle: isOpen ? 180 * pi / 180 : 0,
-    //                 child: SvgPicture.asset(
-    //                   AssetUtil.getAssetPath(
-    //                       type: AssetType.icon, name: "top_arrow"),
-    //                 ),
-    //               )
-    //             ],
-    //           )
-    //         ],
-    //       );
-    //     },
-    //     isExpanded: true,
-    //     canTapOnHeader: true,
-    //     body: CustomDateTimePicker(
-    //       isStart: widget.isStart,
-    //     ))],);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [

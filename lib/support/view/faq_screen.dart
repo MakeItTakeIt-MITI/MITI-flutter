@@ -297,7 +297,6 @@ class _FAQComponent extends ConsumerWidget {
               margin: EdgeInsets.only(top: 20.h),
               padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
               child: HtmlComponent(content: content),
-
             ),
           ),
         ),
