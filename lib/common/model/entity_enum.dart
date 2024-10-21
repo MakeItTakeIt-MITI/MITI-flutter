@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:json_annotation/json_annotation.dart';
 
 @JsonEnum(valueField: 'value')
@@ -337,6 +339,12 @@ enum BankType {
   @JsonValue("KB_SECURITIES")
   KB_SECURITIES("KB증권");
 
+  static BankType stringToEnum({required String value}) {
+    return BankType.values.firstWhere((e) {
+     return e.displayName == value;
+    });
+  }
+
   final String displayName;
 
   const BankType(this.displayName);
@@ -486,6 +494,33 @@ enum PolicyType {
   user_policy('이용정책');
 
   const PolicyType(
+    this.displayName,
+  );
+
+  final String displayName;
+}
+
+enum AgreementRequestType {
+  signup('회원가입 요청시 동의 항목'),
+  game_hosting('경기 생성시 사용자 동의 항목'),
+  game_participation('경기 참가시 사용자 동의 항목'),
+  transfer_request('이체 요청 생성시 사용자 동의 항목'),
+  participation_refund('환불 사용자 동의 항목');
+
+  const AgreementRequestType(
+    this.displayName,
+  );
+
+  final String displayName;
+}
+
+enum NotificationStatusType {
+  waiting('전송 대기중'),
+  failed('전송 실패'),
+  success('전송 완료'),
+  ignored('미전송');
+
+  const NotificationStatusType(
     this.displayName,
   );
 

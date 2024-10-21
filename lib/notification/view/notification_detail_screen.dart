@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
+import 'package:miti/common/component/html_component.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/notification/model/notice_model.dart';
 import 'package:miti/notification/model/push_model.dart';
@@ -116,58 +117,8 @@ class _PushDetailScreenState extends ConsumerState<NoticeDetailScreen> {
               Expanded(
                 child: Scrollbar(
                   child: SingleChildScrollView(
-                      child: Html(
-                    data: content,
-                    style: {
-                      'body': Style(margin: Margins.all(0)),
-                      'p': Style(
-                        fontSize: FontSize(16.sp),
-                        color: MITIColor.gray300,
-                      ),
-                      'ul': Style(
-                        listStyleType: ListStyleType.none,
-                        margin: Margins.zero,
-                        padding: HtmlPaddings.all(5.r),
-                        fontSize: FontSize(12.sp),
-                        lineHeight: LineHeight.em(1.5),
-                      ),
-                      'b': Style(
-                        color: MITIColor.gray300,
-                      ),
-                      'li': Style(
-                        margin: Margins.all(4.r),
-                        fontSize: FontSize(12.sp),
-                        listStyleType: ListStyleType.none,
-                        lineHeight: LineHeight.em(1.5),
-                        color: MITIColor.gray300,
-                        listStylePosition: ListStylePosition.inside,
-                      ),
-                      'h1': Style(
-                        color: MITIColor.gray300,
-                      ),
-                      'h2': Style(
-                        color: MITIColor.gray300,
-                      ),
-                      'h3': Style(
-                        color: MITIColor.gray300,
-                      ),
-                      'h4': Style(
-                        color: MITIColor.gray300,
-                      ),
-                      'h5': Style(
-                        color: MITIColor.gray300,
-                      ),
-                      'h6': Style(
-                        color: MITIColor.gray300,
-                      ),
-                    },
-                    onLinkTap: (url, _, __) async {
-                      if (url != null) {
-                        final Uri _url = Uri.parse(url);
-                        await launchUrl(_url);
-                      }
-                    },
-                  )),
+                    child: HtmlComponent(content: content),
+                  ),
                 ),
               ),
               SizedBox(height: 24.h),

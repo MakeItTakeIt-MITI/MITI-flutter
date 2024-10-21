@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miti/common/component/custom_time_picker.dart';
 import 'package:miti/common/component/default_appbar.dart';
+import 'package:miti/common/component/html_component.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/support/provider/support_provider.dart';
@@ -166,58 +167,7 @@ class _GuideScreenState extends State<GuideScreen> {
                       SizedBox(
                         height: 28.h,
                       ),
-                      Html(
-                        data: content,
-                        style: {
-                          'body': Style(margin: Margins.all(0)),
-                          'p': Style(
-                            fontSize: FontSize(16.sp),
-                            color: MITIColor.gray100,
-                          ),
-                          'ul': Style(
-                            listStyleType: ListStyleType.none,
-                            margin: Margins.zero,
-                            padding: HtmlPaddings.all(5.r),
-                            fontSize: FontSize(12.sp),
-                            lineHeight: LineHeight.em(1.5),
-                          ),
-                          'b': Style(
-                            color: MITIColor.gray100,
-                          ),
-                          'li': Style(
-                            margin: Margins.all(4.r),
-                            fontSize: FontSize(12.sp),
-                            listStyleType: ListStyleType.none,
-                            lineHeight: LineHeight.em(1.5),
-                            color: MITIColor.gray100,
-                            listStylePosition: ListStylePosition.inside,
-                          ),
-                          'h1': Style(
-                            color: MITIColor.gray100,
-                          ),
-                          'h2': Style(
-                            color: MITIColor.gray100,
-                          ),
-                          'h3': Style(
-                            color: MITIColor.gray100,
-                          ),
-                          'h4': Style(
-                            color: MITIColor.gray100,
-                          ),
-                          'h5': Style(
-                            color: MITIColor.gray100,
-                          ),
-                          'h6': Style(
-                            color: MITIColor.gray100,
-                          ),
-                        },
-                        onLinkTap: (url, _, __) async {
-                          if (url != null) {
-                            final Uri _url = Uri.parse(url);
-                            await launchUrl(_url);
-                          }
-                        },
-                      ),
+                      HtmlComponent(content: content),
                     ],
                   ),
                 ),

@@ -191,6 +191,7 @@ class Payment extends _$Payment {
       final error = ErrorModel.respToError(e);
       logger.e(
           'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state=error;
       return error;
     });
   }

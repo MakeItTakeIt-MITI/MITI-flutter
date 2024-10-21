@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/model/default_model.dart';
+import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/court/component/court_list_component.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
@@ -143,8 +144,11 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
               ),
             ),
             getDivider(),
-            const SliverToBoxAdapter(
-              child: PaymentCheckForm(),
+            SliverToBoxAdapter(
+              child: PaymentCheckForm(
+                type: AgreementRequestType.participation_refund,
+                gameId: widget.gameId,
+              ),
             ),
           ],
         ),

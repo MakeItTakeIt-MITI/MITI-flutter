@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:miti/common/component/html_component.dart';
 
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
@@ -13,9 +13,9 @@ class OperationTermScreen extends StatelessWidget {
 
   const OperationTermScreen(
       {super.key,
-        required this.title,
-        required this.desc,
-        required this.onPressed});
+      required this.title,
+      required this.desc,
+      required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class OperationTermScreen extends StatelessWidget {
         ),
         body: Padding(
           padding:
-          EdgeInsets.only(top: 20.h, left: 21.w, right: 21.w, bottom: 20.h),
+              EdgeInsets.only(top: 20.h, left: 21.w, right: 21.w, bottom: 20.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -45,18 +45,13 @@ class OperationTermScreen extends StatelessWidget {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        Text(
-                          desc,
-                          style: MITITextStyle.xxsmLight150.copyWith(
-                            color: MITIColor.gray200,
-                          ),
-                        ),
+                        HtmlComponent(content: desc),
                       ],
                     ),
                   ),
                 ),
               ),
-              SizedBox(height: 67.h),
+              SizedBox(height: 39.h),
               TextButton(onPressed: onPressed, child: const Text("확인")),
               SizedBox(height: 21.h),
             ],

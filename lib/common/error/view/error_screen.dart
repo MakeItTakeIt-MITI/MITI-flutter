@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:miti/theme/color_theme.dart';
 
 import '../../../theme/text_theme.dart';
 import '../../component/default_appbar.dart';
@@ -44,7 +45,7 @@ class ErrorScreen extends StatelessWidget {
                   children: [
                     Text(
                       content,
-                      style: MITITextStyle.pageMainTextStyle,
+                      style: MITITextStyle.sm.copyWith(color: MITIColor.gray50),
                     ),
                   ],
                 ),

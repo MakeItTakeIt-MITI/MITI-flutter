@@ -17,6 +17,7 @@ import 'package:miti/common/component/custom_text_form_field.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/component/default_layout.dart';
 import 'package:miti/common/model/default_model.dart';
+import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/common/provider/widget/datetime_provider.dart';
 import 'package:miti/court/model/court_model.dart';
 import 'package:miti/court/provider/court_provider.dart';
@@ -24,6 +25,8 @@ import 'package:miti/game/error/game_error.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:miti/game/view/review_form_screen.dart';
+import 'package:miti/report/model/agreement_policy_model.dart';
+import 'package:miti/report/provider/report_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
@@ -125,7 +128,7 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
             slivers: <Widget>[
               const _TitleForm(),
               getSpacer(),
-              V2DateForm(),
+              const V2DateForm(),
               // const _DateForm(),
               getSpacer(),
               const _AddressForm(),
@@ -148,7 +151,23 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
         bottomNavigationBar: Consumer(
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
             ref.watch(gameFormProvider);
-            final valid = ref.read(gameFormProvider.notifier).formValid();
+            final result = ref.watch(agreementPolicyProvider(
+                type: AgreementRequestType.game_hosting));
+            bool validNext = true;
+
+            if (result is ResponseListModel<AgreementPolicyModel>) {
+              final model = (result).data!;
+              final checkBoxes = ref.read(gameFormProvider).checkBoxes;
+              for (int i = 0; i < model.length; i++) {
+                if (model[i].is_required && !checkBoxes[i + 1]) {
+                  validNext = false;
+                  break;
+                }
+              }
+            }
+
+            final valid =
+                ref.read(gameFormProvider.notifier).formValid() && validNext;
             return BottomButton(
                 button: SizedBox(
               height: 48.h,
@@ -1274,9 +1293,21 @@ class AgreeTermComponent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final result = ref.watch(
+        agreementPolicyProvider(type: AgreementRequestType.game_hosting));
+    if (result is LoadingModel) {
+      return SliverToBoxAdapter(child: CircularProgressIndicator());
+    } else if (result is ErrorModel) {
+      return const SliverToBoxAdapter(child: Text('error'));
+    }
+    final model = (result as ResponseListModel<AgreementPolicyModel>).data!;
+
     List<bool> checkBoxes =
         ref.watch(gameFormProvider.select((value) => value.checkBoxes));
-    final title = ['[필수] 경기 관리 및 환불 처리 약관 동의', '[선택] 경기 정보 저장 및 활용 약관'];
+    final title = model.map((e) {
+      log('e.policy.name = ${e.policy.name}');
+      return '${e.is_required ? '[필수] ' : '[선택] '} ${e.policy.name}';
+    }).toList();
 
     return SliverToBoxAdapter(
       child: Column(
@@ -1315,9 +1346,8 @@ class AgreeTermComponent extends ConsumerWidget {
                         barrierColor: MITIColor.gray800,
                         builder: (context) {
                           return OperationTermScreen(
-                            title: '경기 운영 약관',
-                            desc:
-                                '본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.본 약관은 (주)핀업 (이하 회사 라 한다)에서 운영하는 핀업(https://www.finup.co.kr) 및 핀업 스탁(https://stock.finup.co.kr), 핀업 레이더(https://radar.finup.co.kr)의 사이트 (이하 합쳐서 사이트이라 한다)에서 제공하는 인터넷 관련 서비스(이하 서비스라 한다)를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.',
+                            title: model[idx].policy.name,
+                            desc: model[idx].policy.content,
                             onPressed: () {
                               if (!checkBoxes[idx + 1]) {
                                 ref
@@ -1333,7 +1363,7 @@ class AgreeTermComponent extends ConsumerWidget {
                 );
               },
               separatorBuilder: (context, idx) => SizedBox(height: 16.h),
-              itemCount: 2),
+              itemCount: title.length),
         ],
       ),
     );

@@ -234,3 +234,68 @@ class GameReviewParam extends Equatable {
   @override
   bool? get stringify => true;
 }
+
+@JsonSerializable()
+class GameParticipationParam extends Equatable {
+  final int gameId;
+  final PaymentMethodType type;
+  @JsonKey(includeToJson: false)
+  final List<bool> isCheckBoxes;
+
+  const GameParticipationParam({
+    required this.gameId,
+    required this.type,
+    required this.isCheckBoxes,
+  });
+
+  GameParticipationParam copyWith({
+    int? gameId,
+    PaymentMethodType? type,
+    List<bool>? isCheckBoxes,
+  }) {
+    return GameParticipationParam(
+        gameId: gameId ?? this.gameId,
+        type: type ?? this.type,
+        isCheckBoxes: isCheckBoxes ?? this.isCheckBoxes);
+  }
+
+  Map<String, dynamic> toJson() => _$GameParticipationParamToJson(this);
+
+  factory GameParticipationParam.fromJson(Map<String, dynamic> json) =>
+      _$GameParticipationParamFromJson(json);
+
+  @override
+  List<Object?> get props => [gameId, type];
+
+  @override
+  bool? get stringify => true;
+}
+
+
+@JsonSerializable()
+class GameRefundParam extends Equatable {
+  @JsonKey(includeToJson: false)
+  final List<bool> isCheckBoxes;
+
+  const GameRefundParam({
+    required this.isCheckBoxes,
+  });
+
+  GameRefundParam copyWith({
+    List<bool>? isCheckBoxes,
+  }) {
+    return GameRefundParam(
+        isCheckBoxes: isCheckBoxes ?? this.isCheckBoxes);
+  }
+
+  Map<String, dynamic> toJson() => _$GameRefundParamToJson(this);
+
+  factory GameRefundParam.fromJson(Map<String, dynamic> json) =>
+      _$GameRefundParamFromJson(json);
+
+  @override
+  List<Object?> get props => [];
+
+  @override
+  bool? get stringify => true;
+}

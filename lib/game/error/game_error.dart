@@ -299,7 +299,9 @@ class GameError extends ErrorBase {
     } else if (this.status_code == Forbidden && this.error_code == 940) {
       /// 참여 불가 경기
       const extra = ErrorScreenType.unAuthorization;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      WidgetsBinding.instance.addPostFrameCallback((t) {
+        context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      });
     } else if (this.status_code == Forbidden && this.error_code == 941) {
       /// 참여 불가 사용자
       const extra = ErrorScreenType.unAuthorization;

@@ -44,28 +44,33 @@ class BankTransferPaginationParam extends DefaultParam {
 @JsonSerializable()
 class BankTransferParam extends DefaultParam {
   final int amount;
-  final String account_bank;
+  final BankType? account_bank;
   final String account_holder;
   final String account_number;
+  @JsonKey(includeToJson: false)
+  final List<bool> checkBoxes;
 
   BankTransferParam({
     required this.amount,
     required this.account_bank,
     required this.account_holder,
     required this.account_number,
+    required this.checkBoxes,
   });
 
   BankTransferParam copyWith({
     int? amount,
-    String? account_bank,
+    BankType? account_bank,
     String? account_holder,
     String? account_number,
+    List<bool>? checkBoxes,
   }) {
     return BankTransferParam(
       amount: amount ?? this.amount,
       account_bank: account_bank ?? this.account_bank,
       account_holder: account_holder ?? this.account_holder,
       account_number: account_number ?? this.account_number,
+      checkBoxes: checkBoxes ?? this.checkBoxes,
     );
   }
 

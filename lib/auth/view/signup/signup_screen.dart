@@ -30,11 +30,15 @@ import '../../../common/model/entity_enum.dart';
 import '../../../common/provider/form_util_provider.dart';
 import '../../../common/provider/router_provider.dart';
 import '../../../common/provider/widget/datetime_provider.dart';
+import '../../../common/view/operation_term_screen.dart';
 import '../../../game/view/game_refund_screen.dart';
+import '../../../report/model/agreement_policy_model.dart';
+import '../../../report/provider/report_provider.dart';
 import '../../../util/util.dart';
 import '../../error/auth_error.dart';
 import '../../model/signup_model.dart';
 import '../../provider/auth_provider.dart';
+import 'package:collection/collection.dart';
 
 class SignUpScreen extends ConsumerWidget {
   final AuthType type;
@@ -52,27 +56,6 @@ class SignUpScreen extends ConsumerWidget {
     ref.watch(signUpPopProvider);
     final appbar = Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        final showDetail =
-            ref.watch(signUpFormProvider.select((value) => value.showDetail));
-        final show = showDetail.where((e) => e).isNotEmpty;
-        final progressValue = ref.watch(progressProvider).progress;
-        if (show && progressValue == 5) {
-          return AppBar(
-            backgroundColor: MITIColor.gray800,
-
-            /// 앱바 pinned 시 surface 컬러
-            surfaceTintColor: MITIColor.gray800,
-            centerTitle: true,
-            leading: IconButton(
-              onPressed: () {
-                ref.read(progressProvider.notifier).hideDetail();
-              },
-              icon: SvgPicture.asset(
-                AssetUtil.getAssetPath(type: AssetType.icon, name: "delete"),
-              ),
-            ),
-          );
-        }
         return const DefaultAppBar(
           title: '회원가입',
         );
@@ -118,28 +101,16 @@ class SignUpScreen extends ConsumerWidget {
     );
   }
 
-  Consumer progressComponent() {
-    return Consumer(
-      builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        final showDetail =
-            ref.watch(signUpFormProvider.select((value) => value.showDetail));
-        final show = showDetail.where((e) => e).isNotEmpty;
-        final progressValue = ref.watch(progressProvider).progress;
-        if (show && progressValue == 5) {
-          return Container();
-        }
-        return child!;
-      },
-      child: Column(
-        children: [
-          _ProgressComponent(
-            type: type,
-          ),
-          SizedBox(height: 40.h),
-        ],
-      ),
+  Widget progressComponent() {
+    return Column(
+      children: [
+        _ProgressComponent(
+          type: type,
+        ),
+        SizedBox(height: 40.h),
+      ],
     );
-  }
+  } //김정현
 
   Widget signUpComponent(WidgetRef ref) {
     if (ref.watch(progressProvider).progress == 1) {
@@ -307,207 +278,87 @@ class CheckBoxForm extends ConsumerStatefulWidget {
 }
 
 class _CheckBoxFormState extends ConsumerState<CheckBoxForm> {
-  late final ScrollController controller;
-
   @override
   void initState() {
     super.initState();
-    controller = ScrollController();
   }
-
-  bool check = false;
 
   @override
   void dispose() {
-    controller.dispose();
     super.dispose();
   }
 
-  final List<String> checkDesc = [
-    '[필수] 만 14세 이상입니다.',
-    '[필수] MITI 회원 이용 약관',
-    '[필수] 개인정보 수집 / 이용 동의',
-    '[필수] MITI 서비스 이용약관',
-    '[선택] 마케팅 목적 개인정보 수집 및 허용 동의',
-  ];
+  void onCheck(WidgetRef ref, int idx, List<AgreementPolicyModel> model) {
+    final allChecked =
+        !ref.read(signUpFormProvider.notifier).onCheck(idx).contains(false);
+    ref.read(checkProvider(2).notifier).update((state) => allChecked);
+
+    final checkBoxes = ref.read(signUpFormProvider).checkBoxes;
+    bool validNext = true;
+    for (int i = 0; i < model.length; i++) {
+      if (model[i].is_required && !checkBoxes[i]) {
+        validNext = false;
+        break;
+      }
+    }
+
+    ref.read(progressProvider.notifier).updateValidNext(validNext: validNext);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final checkBoxes =
+    final isCheckBoxes =
         ref.watch(signUpFormProvider.select((form) => form.checkBoxes));
-    final showDetail =
-        ref.watch(signUpFormProvider.select((form) => form.showDetail));
-    final showDetailIdx = showDetail.indexOf(true);
-
-    final allCheck = checkBoxes.where((e) => e).length == 5;
-    final subCheckBoxTextStyle =
-        MITITextStyle.sm.copyWith(color: MITIColor.gray200);
-    final show = showDetail.where((e) => e).isNotEmpty;
-
-    return Stack(
-      children: [
-        if (!show)
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: CustomCheckBox(
-                  title: '약관 전체 동의하기',
-                  textStyle:
-                      MITITextStyle.md.copyWith(color: MITIColor.gray100),
-                  check: allCheck,
-                  isCheckBox: true,
-                  onTap: () {
-                    List<bool> checkBoxes;
-                    if (allCheck) {
-                      checkBoxes = [false, false, false, false, false];
-                    } else {
-                      checkBoxes = [true, true, true, true, true];
-                    }
-                    ref
-                        .read(signUpFormProvider.notifier)
-                        .updateForm(checkBoxes: checkBoxes);
-                    validCheckBox();
-                  },
-                ),
-              ),
-              Divider(
-                thickness: 1.h,
-                color: MITIColor.gray600,
-                height: 40.h,
-              ),
-              ListView.separated(
-                  padding: EdgeInsets.zero,
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return CustomCheckBox(
-                      title: checkDesc[index],
-                      textStyle: subCheckBoxTextStyle,
-                      check: checkBoxes[index],
-                      onTap: () {
-                        agreeCondition(checkBoxes, index);
-                      },
-                      hasDetail: index != 0,
-                      showDetail: index != 0
-                          ? () {
-                              showDetails(index - 1);
-                            }
-                          : null,
-                    );
-                  },
-                  separatorBuilder: (context, index) {
-                    return SizedBox(height: 16.h);
-                  },
-                  itemCount: checkDesc.length),
-              // CustomCheckBox(
-              //   title: '[필수] 만 14세 이상입니다.',
-              //   textStyle: subCheckBoxTextStyle,
-              //   check: checkBoxes[0],
-              //   onTap: () {
-              //     agreeCondition(checkBoxes, 0);
-              //   },
-              // ),
-              // CustomCheckBox(
-              //   title: '[필수] MITI 회원 이용 약관',
-              //   textStyle: subCheckBoxTextStyle,
-              //   hasDetail: true,
-              //   check: checkBoxes[1],
-              //   onTap: () {
-              //     agreeCondition(checkBoxes, 1);
-              //   },
-              //   showDetail: () {
-              //     showDetails(0);
-              //   },
-              // ),
-              // CustomCheckBox(
-              //   title: '[필수] 개인정보 수집 / 이용 동의',
-              //   textStyle: subCheckBoxTextStyle,
-              //   hasDetail: true,
-              //   check: checkBoxes[2],
-              //   onTap: () {
-              //     agreeCondition(checkBoxes, 2);
-              //   },
-              //   showDetail: () {
-              //     showDetails(1);
-              //   },
-              // ),
-              // CustomCheckBox(
-              //   title: '[필수] MITI 서비스 이용약관',
-              //   textStyle: subCheckBoxTextStyle,
-              //   hasDetail: true,
-              //   check: checkBoxes[3],
-              //   onTap: () {
-              //     agreeCondition(checkBoxes, 3);
-              //   },
-              //   showDetail: () {
-              //     showDetails(2);
-              //   },
-              // ),
-              // CustomCheckBox(
-              //   title: '[선택] 마케팅 목적 개인정보 수집 및\n허용 동의',
-              //   textStyle: subCheckBoxTextStyle,
-              //   hasDetail: true,
-              //   check: checkBoxes[4],
-              //   onTap: () {
-              //     agreeCondition(checkBoxes, 4);
-              //   },
-              //   showDetail: () {
-              //     showDetails(3);
-              //   },
-              // ),
-            ],
-          ),
-        if (show)
-          Column(
-            children: [
-              SizedBox(height: 12.h),
-              Scrollbar(
-                controller: controller,
-                child: SizedBox(
-                  height: 504.h,
-                  child: SingleChildScrollView(
-                    controller: controller,
-                    child: Text(
-                      ref.watch(signUpFormProvider).detailDesc[showDetailIdx],
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w300,
-                        letterSpacing: -0.24.sp,
-                        color: MITIColor.gray200,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              // SizedBox(height: 65.h,),
-            ],
-          )
-      ],
-    );
-  }
-
-  void agreeCondition(List<bool> checkBoxes, index) {
-    setState(() {
-      checkBoxes[index] = !checkBoxes[index];
-      ref.read(signUpFormProvider.notifier).updateForm(checkBoxes: checkBoxes);
-    });
-    validCheckBox();
-  }
-
-  void showDetails(int idx) {
-    setState(() {
-      ref.read(signUpFormProvider.notifier).showDetail(idx: idx);
-      ref.read(progressProvider.notifier).updateValidNext(validNext: true);
-    });
-  }
-
-  void validCheckBox() {
-    if (ref.read(signUpFormProvider.notifier).validCheckBox()) {
-      ref.read(progressProvider.notifier).updateValidNext(validNext: true);
-    } else {
-      ref.read(progressProvider.notifier).updateValidNext(validNext: false);
+    final checkResult =
+        ref.watch(agreementPolicyProvider(type: AgreementRequestType.signup));
+    if (checkResult is LoadingModel) {
+      return Container();
+    } else if (checkResult is ErrorModel) {
+      return Container();
     }
+    final model =
+        (checkResult as ResponseListModel<AgreementPolicyModel>).data!;
+    final checkBoxes = model.mapIndexed((idx, e) {
+      return CustomCheckBox(
+          title: '${e.is_required ? '[필수] ' : '[선택] '} ${e.policy.name}',
+          textStyle: MITITextStyle.sm.copyWith(color: MITIColor.gray200),
+          check: isCheckBoxes[idx],
+          hasDetail: e.is_required,
+          showDetail: () {
+            showDialog(
+                context: context,
+                barrierColor: MITIColor.gray800,
+                builder: (context) {
+                  return OperationTermScreen(
+                    title: model[idx].policy.name,
+                    desc: model[idx].policy.content,
+                    onPressed: () {
+                      if (!isCheckBoxes[idx]) {
+                        onCheck(ref, idx, model);
+                      }
+                      context.pop();
+                    },
+                  );
+                });
+          },
+          onTap: () {
+            onCheck(ref, idx, model);
+          });
+    }).toList();
+    return CheckBoxFormV2(
+      checkBoxes: [...checkBoxes],
+      allTap: () {
+        ref.read(checkProvider(2).notifier).update((state) => !state);
+        isCheckBoxes.fillRange(
+            0, isCheckBoxes.length, ref.read(checkProvider(2)));
+        ref
+            .read(signUpFormProvider.notifier)
+            .updateForm(checkBoxes: isCheckBoxes.toList());
+        ref
+            .read(progressProvider.notifier)
+            .updateValidNext(validNext: ref.read(checkProvider(2)));
+      },
+    );
   }
 }
 
@@ -918,9 +769,9 @@ class DescComponent extends ConsumerWidget {
       desc = '약관에 동의하시면 회원가입이 완료됩니다.';
     }
 
-    final showDetail =
-        ref.watch(signUpFormProvider.select((value) => value.showDetail));
-    final show = showDetail.where((e) => e).isEmpty;
+    // final showDetail =
+    //     ref.watch(signUpFormProvider.select((value) => value.showDetail));
+    // final show = showDetail.where((e) => e).isEmpty;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -931,14 +782,12 @@ class DescComponent extends ConsumerWidget {
             color: MITIColor.white,
           ),
         ),
-        if (desc.isNotEmpty && show) SizedBox(height: 12.h),
-        if (desc.isNotEmpty && show)
-          Text(
-            desc,
-            style: MITITextStyle.sm150.copyWith(
-              color: MITIColor.gray300,
-            ),
+        Text(
+          desc,
+          style: MITITextStyle.sm150.copyWith(
+            color: MITIColor.gray300,
           ),
+        ),
       ],
     );
   }
@@ -1197,11 +1046,6 @@ class _BirthFormState extends ConsumerState<_BirthForm> {
                     ),
                   );
                 });
-
-            // showDatePicker(
-            //     context: context,
-            //     firstDate: DateTime(1900),
-            //     lastDate: DateTime(2999));
           },
           child: Container(
             height: 48.h,
@@ -1309,21 +1153,13 @@ class _NextButton extends ConsumerStatefulWidget {
 class _NextButtonState extends ConsumerState<_NextButton> {
   @override
   Widget build(BuildContext context) {
-    ref.watch(signUpFormProvider.select((value) => value.showDetail));
-
     final progressModel = ref.watch(progressProvider);
     final progress = progressModel.progress;
     final validNext = progressModel.validNext;
 
-    final showDetail =
-        ref.watch(signUpFormProvider.select((value) => value.showDetail));
-    final show = showDetail.where((e) => e).isNotEmpty;
     String buttonText = '';
     if (progress == 5 || (progress == 3 && AuthType.email != widget.type)) {
       buttonText = '가입하기';
-      if (show) {
-        buttonText = '확인';
-      }
     } else {
       buttonText = '다음으로';
     }
@@ -1335,9 +1171,8 @@ class _NextButtonState extends ConsumerState<_NextButton> {
         child: TextButton(
             onPressed: () async {
               if (validNext) {
-                if (!show &&
-                    (progress == 5 ||
-                        (progress == 3 && AuthType.email != widget.type))) {
+                if ((progress == 5 ||
+                    (progress == 3 && AuthType.email != widget.type))) {
                   if (AuthType.email != widget.type) {
                     final storage = ref.read(secureStorageProvider);
                     final userInfoToken =
@@ -1376,8 +1211,6 @@ class _NextButtonState extends ConsumerState<_NextButton> {
                       context.goNamed(SignUpCompleteScreen.routeName);
                     }
                   }
-                } else if (show) {
-                  ref.read(progressProvider.notifier).hideDetail();
                 } else {
                   ref.read(progressProvider.notifier).nextProgress();
                 }

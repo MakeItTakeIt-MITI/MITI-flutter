@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/notification/param/push_setting_param.dart';
 import 'package:miti/notification/repository/notification_repository.dart';
@@ -76,4 +78,28 @@ Future<BaseModel> createReport(CreateReportRef ref,
         'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
     return error;
   });
+}
+
+@Riverpod(keepAlive: false)
+class AgreementPolicy extends _$AgreementPolicy {
+  @override
+  BaseModel build({required AgreementRequestType type}) {
+    get(type: type);
+    return LoadingModel();
+  }
+
+  Future<void> get({required AgreementRequestType type}) async {
+    state = LoadingModel();
+    final repository = ref.watch(reportRepositoryProvider);
+    log('type.name = ${type.name}');
+    repository.getAgreementPolicy(type: type).then((value) {
+      logger.i(value);
+      state = value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state = error;
+    });
+  }
 }

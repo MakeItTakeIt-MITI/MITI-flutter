@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart' hide Headers;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:miti/common/model/entity_enum.dart';
+import 'package:miti/report/model/agreement_policy_model.dart';
 import 'package:miti/report/model/report_model.dart';
 import 'package:retrofit/http.dart';
 
@@ -36,5 +38,10 @@ abstract class ReportRepository {
   Future<ResponseModel<CreateReportModel>> report({
     @Path() required int gameId,
     @Body() required ReportParam param,
+  });
+
+  @GET('/agreement-policies/{type}')
+  Future<ResponseListModel<AgreementPolicyModel>> getAgreementPolicy({
+    @Path() required AgreementRequestType type,
   });
 }

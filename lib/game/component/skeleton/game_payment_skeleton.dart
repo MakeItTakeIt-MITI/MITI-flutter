@@ -2,13 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miti/common/component/skeleton.dart';
 
+import '../../../common/model/entity_enum.dart';
 import '../../../theme/color_theme.dart';
 import '../../../theme/text_theme.dart';
 import '../../view/game_payment_screen.dart';
 import 'game_detail_skeleton.dart';
 
 class GamePaymentSkeleton extends StatelessWidget {
-  const GamePaymentSkeleton({super.key});
+  final int gameId;
+  final PaymentMethodType payType;
+  final AgreementRequestType type;
+
+  const GamePaymentSkeleton({super.key, required this.type, required this.gameId, required this.payType});
 
   Widget getDivider() {
     return Container(
@@ -35,7 +40,10 @@ class GamePaymentSkeleton extends StatelessWidget {
           title: '결제 및 환불 정책',
         ),
         getDivider(),
-        const PaymentCheckForm(),
+        // PaymentCheckForm(
+        //   type: type, gameId: gameId,
+        //   payType: payType,
+        // ),
       ],
     );
   }

@@ -13,9 +13,12 @@ import 'package:miti/account/provider/account_provider.dart';
 import 'package:miti/account/provider/widget/transfer_form_provider.dart';
 import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
+import 'package:miti/common/component/custom_time_picker.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/provider/widget/form_provider.dart';
 import 'package:miti/game/view/game_refund_screen.dart';
+import 'package:miti/report/model/agreement_policy_model.dart';
+import 'package:miti/report/provider/report_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/view/profile_screen.dart';
@@ -23,8 +26,10 @@ import 'package:miti/user/view/profile_screen.dart';
 import '../../auth/view/signup/signup_screen.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/model/entity_enum.dart';
+import '../../common/view/operation_term_screen.dart';
 import '../../util/util.dart';
 import '../component/bank_card.dart';
+import 'package:collection/collection.dart';
 
 class BankTransferFormScreen extends StatefulWidget {
   static String get routeName => 'transferForm';
@@ -64,7 +69,7 @@ class _BankTransferFormScreenState extends State<BankTransferFormScreen> {
     _scrollController = ScrollController();
     for (int i = 0; i < 3; i++) {
       focusNodes[i].addListener(() {
-        if(focusNodes[i].hasFocus){
+        if (focusNodes[i].hasFocus) {
           focusScrollable(i);
         }
       });
@@ -253,13 +258,15 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
                                     TextButton(
                                         onPressed: selectBank.isNotEmpty
                                             ? () {
-
+                                                final selectBankType =
+                                                    BankType.stringToEnum(
+                                                        value: selectBank);
                                                 ref
                                                     .read(transferFormProvider
                                                         .notifier)
                                                     .update(
                                                         account_bank:
-                                                            selectBank);
+                                                            selectBankType);
                                                 context.pop();
                                                 FocusScope.of(context)
                                                     .unfocus();
@@ -301,14 +308,14 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
                             Widget? child) {
                           final accountBank = ref.watch(transferFormProvider
                               .select((t) => t.account_bank));
-                          final bank = accountBank.isEmpty
-                              ? '이체할 계좌번호의 은행사를 선택해주세요.'
-                              : accountBank;
+
+                          final bank = accountBank?.displayName ??
+                              '이체할 계좌번호의 은행사를 선택해주세요.';
 
                           return Text(
                             bank,
                             style: MITITextStyle.sm.copyWith(
-                              color: accountBank.isEmpty
+                              color: accountBank == null
                                   ? MITIColor.gray500
                                   : MITIColor.gray100,
                             ),
@@ -464,9 +471,6 @@ class _AgreementTermForm extends ConsumerStatefulWidget {
 }
 
 class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
-  bool check1 = false;
-  bool check2 = false;
-
   @override
   Widget build(BuildContext context) {
     final result = ref.watch(accountProvider);
@@ -480,52 +484,86 @@ class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
     }
     final model = (result as ResponseModel<AccountDetailModel>).data!;
 
+    List<bool> isCheckBoxes =
+        ref.watch(transferFormProvider.select((value) => value.checkBoxes));
+
+    final checkResult = ref.watch(
+        agreementPolicyProvider(type: AgreementRequestType.transfer_request));
+    bool validCheckBox = true;
+    if (checkResult is ResponseListModel<AgreementPolicyModel>) {
+      final checkModel = checkResult.data!;
+      for (int i = 0; i < isCheckBoxes.length; i++) {
+        if (checkModel[i].is_required && !isCheckBoxes[i]) {
+          validCheckBox = false;
+        }
+      }
+    }
+
     final form = ref.watch(transferFormProvider);
     final valid = ref
             .watch(transferFormProvider.notifier)
             .valid(model.requestableTransferAmount) &&
-        check1 &&
-        check2;
+        validCheckBox;
     return Container(
       color: MITIColor.gray750,
       padding:
           EdgeInsets.only(left: 21.w, right: 21.w, top: 24.h, bottom: 28.h),
       child: Column(
         children: [
-          CheckBoxFormV2(
-            checkBoxes: [
-              CustomCheckBox(
-                  title: 'MITI 송금 규정에 동의합니다.',
-                  textStyle:
-                      MITITextStyle.sm.copyWith(color: MITIColor.gray200),
-                  check: check1,
-                  onTap: () {
-                    setState(() {
-                      check1 = !check1;
-                      ref
-                          .read(checkProvider(2).notifier)
-                          .update((state) => check1 && check2);
+          Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              final checkResult = ref.watch(agreementPolicyProvider(
+                  type: AgreementRequestType.transfer_request));
+              if (checkResult is LoadingModel) {
+                return Container();
+              } else if (checkResult is ErrorModel) {
+                return Container();
+              }
+              final model =
+                  (checkResult as ResponseListModel<AgreementPolicyModel>)
+                      .data!;
+
+              final checkBoxes = model.mapIndexed((idx, e) {
+                return CustomCheckBox(
+                    title:
+                        '${e.is_required ? '[필수] ' : '[선택] '} ${e.policy.name}',
+                    textStyle:
+                        MITITextStyle.sm.copyWith(color: MITIColor.gray200),
+                    check: isCheckBoxes[idx],
+                    hasDetail: e.is_required,
+                    showDetail: () {
+                      showDialog(
+                          context: context,
+                          barrierColor: MITIColor.gray800,
+                          builder: (context) {
+                            return OperationTermScreen(
+                              title: model[idx].policy.name,
+                              desc: model[idx].policy.content,
+                              onPressed: () {
+                                if (!isCheckBoxes[idx]) {
+                                  onCheck(ref, idx);
+                                }
+                                context.pop();
+                              },
+                            );
+                          });
+                      // Navigator.of(context).push(TutorialOverlay());
+                    },
+                    onTap: () {
+                      onCheck(ref, idx);
                     });
-                  }),
-              CustomCheckBox(
-                  title: '송금은 신청일 오후 5시 이후 순차적으로 처리됩니다.',
-                  textStyle:
-                      MITITextStyle.sm.copyWith(color: MITIColor.gray200),
-                  check: check2,
-                  onTap: () {
-                    setState(() {
-                      check2 = !check2;
-                      ref
-                          .read(checkProvider(2).notifier)
-                          .update((state) => check1 && check2);
-                    });
-                  }),
-            ],
-            allTap: () {
-              ref.read(checkProvider(2).notifier).update((state) => !state);
-              setState(() {
-                check1 = check2 = ref.read(checkProvider(2));
-              });
+              }).toList();
+              return CheckBoxFormV2(
+                checkBoxes: [...checkBoxes],
+                allTap: () {
+                  ref.read(checkProvider(2).notifier).update((state) => !state);
+                  isCheckBoxes.fillRange(
+                      0, isCheckBoxes.length, ref.read(checkProvider(2)));
+                  ref
+                      .read(transferFormProvider.notifier)
+                      .update(checkBoxes: isCheckBoxes.toList());
+                },
+              );
             },
           ),
           SizedBox(height: 30.h),
@@ -550,6 +588,12 @@ class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
     );
   }
 
+  void onCheck(WidgetRef ref, int idx) {
+    final allChecked =
+        !ref.read(transferFormProvider.notifier).onCheck(idx).contains(false);
+    ref.read(checkProvider(2).notifier).update((state) => allChecked);
+  }
+
   Future<void> requestTransfer(WidgetRef ref, BuildContext context) async {
     final result = await ref.read(requestTransferProvider.future);
     if (context.mounted) {
@@ -559,6 +603,7 @@ class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
       } else {
         showModalBottomSheet(
             context: context,
+            isDismissible: false,
             builder: (_) {
               return BottomDialog(
                 title: '정산금 이체 신청 완료',

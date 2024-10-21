@@ -2,7 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:miti/common/model/default_model.dart';
 import 'package:miti/game/param/game_param.dart';
+import 'package:miti/report/model/agreement_policy_model.dart';
+import 'package:miti/report/provider/report_provider.dart';
 import 'package:miti/util/util.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -30,6 +33,27 @@ final interactionDescProvider = StateProvider.autoDispose
 class GameForm extends _$GameForm {
   @override
   GameCreateParam build() {
+    final result = ref.watch(
+        agreementPolicyProvider(type: AgreementRequestType.game_hosting));
+    if (result is ResponseListModel<AgreementPolicyModel>) {
+      // final model = result as
+      final List<bool> checkBoxes =
+          List.generate(result.data!.length + 1, (e) => false);
+      return GameCreateParam(
+        title: '',
+        startdate: '',
+        starttime: '',
+        enddate: '',
+        endtime: '',
+        min_invitation: '',
+        max_invitation: '',
+        info: '',
+        fee: '',
+        court: const GameCourtParam(name: '', address: '', address_detail: ''),
+        checkBoxes: checkBoxes,
+      );
+      ;
+    }
     return const GameCreateParam(
       title: '',
       startdate: '',
@@ -41,7 +65,7 @@ class GameForm extends _$GameForm {
       info: '',
       fee: '',
       court: GameCourtParam(name: '', address: '', address_detail: ''),
-      checkBoxes: [false, false, false],
+      checkBoxes: [false, false, false, false],
     );
   }
 
@@ -112,15 +136,15 @@ class GameForm extends _$GameForm {
     List<bool> newCheckBoxes = state.checkBoxes.toList();
     newCheckBoxes[idx] = !newCheckBoxes[idx];
     if (idx == 0) {
-      newCheckBoxes.fillRange(0, 3, newCheckBoxes[0]);
+      newCheckBoxes.fillRange(0, newCheckBoxes.length, newCheckBoxes[0]);
     } else {
-      if (newCheckBoxes[1] && newCheckBoxes[2]) {
-        newCheckBoxes.fillRange(0, 3, true);
+      final isAllChecked = newCheckBoxes.sublist(1).contains(false);
+      if (!isAllChecked) {
+        newCheckBoxes.fillRange(0, newCheckBoxes.length, true);
       } else {
         newCheckBoxes[0] = false;
       }
     }
-
     state = state.copyWith(checkBoxes: newCheckBoxes);
     formValid();
   }
@@ -221,10 +245,8 @@ class GameForm extends _$GameForm {
         ValidRegExp.gameAddress(state.court.address) &
         // ValidRegExp.gameAddressDetail(state.court.address_detail) &
         ValidRegExp.courtName(state.court.name);
-    bool checkBox = state.checkBoxes[1];
     log("formvalid = $formValid");
-    log("checkbox = $checkBox");
-    return validInvitation() && validDatetime() && formValid && checkBox;
+    return validInvitation() && validDatetime() && formValid;
   }
 }
 
@@ -263,5 +285,72 @@ class ReviewForm extends _$ReviewForm {
     log('state.rating = ${state.rating}');
     // log('state.comment.isNotEmpty = ${state.comment.isNotEmpty}');
     return state.tags.length > 1;
+  }
+}
+
+@riverpod
+class GameParticipationForm extends _$GameParticipationForm {
+  @override
+  GameParticipationParam build(
+      {required int gameId, required PaymentMethodType type}) {
+    final result = ref.watch(
+        agreementPolicyProvider(type: AgreementRequestType.game_participation));
+    if (result is ResponseListModel<AgreementPolicyModel>) {
+      final List<bool> checkBoxes =
+          List.generate(result.data!.length, (e) => false);
+      return GameParticipationParam(
+          gameId: gameId, type: type, isCheckBoxes: checkBoxes);
+    }
+    return GameParticipationParam(
+        gameId: gameId, type: type, isCheckBoxes: const [false, false, false]);
+  }
+
+  void update({
+    int? gameId,
+    PaymentMethodType? type,
+    List<bool>? isCheckBoxes,
+  }) {
+    state = state.copyWith(
+      gameId: gameId,
+      type: type,
+      isCheckBoxes: isCheckBoxes,
+    );
+  }
+
+  List<bool> onCheck(int idx) {
+    List<bool> newCheckBoxes = state.isCheckBoxes.toList();
+    newCheckBoxes[idx] = !newCheckBoxes[idx];
+    state = state.copyWith(isCheckBoxes: newCheckBoxes);
+    return state.isCheckBoxes;
+  }
+}
+
+@riverpod
+class GameRefundForm extends _$GameRefundForm {
+  @override
+  GameRefundParam build() {
+    final result = ref.watch(agreementPolicyProvider(
+        type: AgreementRequestType.participation_refund));
+    if (result is ResponseListModel<AgreementPolicyModel>) {
+      final List<bool> checkBoxes =
+          List.generate(result.data!.length, (e) => false);
+      return GameRefundParam(isCheckBoxes: checkBoxes);
+    }
+    return const GameRefundParam(isCheckBoxes: [false, false, false]);
+  }
+
+  void update({
+    List<bool>? isCheckBoxes,
+  }) {
+    state = state.copyWith(
+      isCheckBoxes: isCheckBoxes,
+    );
+  }
+
+  List<bool> onCheck(int idx) {
+    List<bool> newCheckBoxes = state.isCheckBoxes.toList();
+    newCheckBoxes[idx] = !newCheckBoxes[idx];
+    state = state.copyWith(isCheckBoxes: newCheckBoxes);
+    return state.isCheckBoxes;
   }
 }
