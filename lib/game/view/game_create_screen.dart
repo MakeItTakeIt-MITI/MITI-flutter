@@ -672,7 +672,7 @@ class _GameTimePickerState extends State<_GameTimePicker> {
               ? CustomDateTimePicker(
                   isStart: widget.isStart,
                 )
-              : SizedBox.shrink(),
+              : const SizedBox.shrink(),
         ),
       ],
     );

@@ -113,6 +113,8 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
                   onRefresh: refresh,
                   child: CustomScrollView(
                     controller: controller,
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
                     slivers: [
                       SliverPadding(
                         padding: EdgeInsets.only(

@@ -26,10 +26,10 @@ class CustomDateTimePicker extends ConsumerStatefulWidget {
 
 class _CustomDateTimePickerState extends ConsumerState<CustomDateTimePicker> {
   int dateIdx = 0;
-
-  DateTime selectedDate = DateTime.now();
-  int selectedHour = DateTime.now().hour;
-  int selectedMinute = (DateTime.now().minute ~/ 10) * 10;
+  DateTime dateTime = DateTime.now().add(const Duration(minutes: 10));
+  late DateTime selectedDate = dateTime;
+  late int selectedHour = dateTime.hour;
+  late int selectedMinute = (dateTime.minute ~/ 10) * 10;
   late final List<Widget> dateItems;
   late final FixedExtentScrollController dateController;
 
@@ -246,7 +246,6 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
   int selectedHour = 0;
   int selectedMinute = 0;
 
-
   Widget selectionOverlay() => Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadiusDirectional.all(Radius.circular(8.r)),
@@ -298,7 +297,7 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
                 });
               },
               selectionOverlay: selectionOverlay(),
-              scrollController: widget. timePeriodController,
+              scrollController: widget.timePeriodController,
               children: ['오전', '오후']
                   .mapIndexed((index, e) => Center(
                       child: Text(e,
