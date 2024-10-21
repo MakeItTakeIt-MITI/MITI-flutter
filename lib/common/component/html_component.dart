@@ -15,46 +15,31 @@ class HtmlComponent extends StatelessWidget {
     return Html(
       data: content,
       style: {
-        'body': Style(margin: Margins.all(0)),
-        'p': Style(
-          fontSize: FontSize(16.sp),
-          color: MITIColor.gray300,
+        '*': Style(color: MITIColor.gray300, margin: Margins.zero),
+        '.section': Style(
+          margin: Margins.only(top: 8.h, left: 0, bottom: 25.h, right: 0),
         ),
-        'ul': Style(
-          listStyleType: ListStyleType.none,
-          margin: Margins.zero,
-          padding: HtmlPaddings.all(5.r),
+        '.subsection': Style(
+          padding: HtmlPaddings(left: HtmlPadding(5.w)),
+          margin: Margins.only(top: 6.h, left: 0, bottom: 15.h, right: 0),
+        ),
+        '.lg-bold': Style(
+          fontSize: FontSize(16.sp),
+          fontWeight: FontWeight.bold,
+          margin: Margins.only(top: 10.h, left: 0, bottom: 10.h, right: 0),
+        ),
+        '.m-bold': Style(
+          fontSize: FontSize(14.sp),
+          fontWeight: FontWeight.bold,
+          margin: Margins.only(top: 10.h, left: 0, bottom: 10.h, right: 0),
+        ),
+        '.sm': Style(
           fontSize: FontSize(12.sp),
           lineHeight: LineHeight.em(1.5),
+          margin: Margins.only(top: 0, left: 0, bottom: 2.h, right: 0),
         ),
         'b': Style(
-          color: MITIColor.gray300,
-        ),
-        'li': Style(
-          margin: Margins.all(4.r),
-          fontSize: FontSize(12.sp),
-          listStyleType: ListStyleType.none,
-          lineHeight: LineHeight.em(1.5),
-          color: MITIColor.gray300,
-          listStylePosition: ListStylePosition.inside,
-        ),
-        'h1': Style(
-          color: MITIColor.gray300,
-        ),
-        'h2': Style(
-          color: MITIColor.gray300,
-        ),
-        'h3': Style(
-          color: MITIColor.gray300,
-        ),
-        'h4': Style(
-          color: MITIColor.gray300,
-        ),
-        'h5': Style(
-          color: MITIColor.gray300,
-        ),
-        'h6': Style(
-          color: MITIColor.gray300,
+          color: MITIColor.primary,
         ),
       },
       onLinkTap: (url, _, __) async {
