@@ -42,7 +42,6 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
-      onPanDown: (v) => FocusScope.of(context).unfocus(),
       child: Scaffold(
         backgroundColor: MITIColor.black,
         resizeToAvoidBottomInset: false,
@@ -103,22 +102,15 @@ class LoginComponent extends ConsumerStatefulWidget {
 }
 
 class _LoginComponentState extends ConsumerState<LoginComponent> {
-  final formKey = GlobalKey<FormState>();
   late final List<FocusNode> focusNodes = [FocusNode(), FocusNode()];
   InteractionDesc? interactionDesc;
-
-  late final TextEditingController emailController;
-  late final TextEditingController passwordController;
-
   @override
   void initState() {
     super.initState();
-    emailController = TextEditingController();
-    passwordController = TextEditingController();
-
     for (var focusNode in focusNodes) {
       focusNode.addListener(() {
-        // setState(() {});
+        setState(() {
+        });
       });
     }
 
@@ -132,9 +124,8 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
   }
 
   @override
+
   void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
     for (var focusNode in focusNodes) {
       focusNode.removeListener(() {});
     }
@@ -145,104 +136,103 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
   Widget build(BuildContext context) {
     ref.watch(loginFormProvider);
 
-    return Form(
-      key: formKey,
-      child: Column(
-        children: [
-          Consumer(
-            builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              final formInfo = ref.watch(formInfoProvider(InputFormType.email));
+    return Column(
+      children: [
+        Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final formInfo = ref.watch(formInfoProvider(InputFormType.email));
 
-              return CustomTextFormField(
-                focusNode: focusNodes[0],
-                textEditingController: emailController,
-                hintText: '이메일을 입력해주세요.',
-                textInputAction: TextInputAction.next,
-                label: '이메일',
-                borderColor: formInfo.borderColor,
-                onNext: () =>
-                    FocusScope.of(context).requestFocus(focusNodes[1]),
-                onChanged: (String? val) {
-                  ref
-                      .read(loginFormProvider.notifier)
-                      .updateFormField(email: val);
-                  log(ref.read(loginFormProvider).email);
-                },
-              );
-            },
-          ),
-          SizedBox(height: 20.h),
-          Consumer(
-            builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              final formInfo =
-                  ref.watch(formInfoProvider(InputFormType.password));
-              final isVisible =
-                  ref.watch(passwordVisibleProvider(PasswordFormType.password));
-              return Column(
-                children: [
-                  CustomTextFormField(
-                    focusNode: focusNodes[1],
-                    textEditingController: passwordController,
-                    hintText: '패스워드를 입력해 주세요.',
-                    textInputAction: TextInputAction.send,
-                    label: '비밀번호',
-                    obscureText: !isVisible,
-                    borderColor: formInfo.borderColor,
-                    suffixIcon: focusNodes[1].hasFocus
-                        ? GestureDetector(
-                            onTap: () {
-                              ref
-                                  .read(passwordVisibleProvider(
-                                          PasswordFormType.password)
-                                      .notifier)
-                                  .update((state) => !state);
-                            },
-                            child: SvgPicture.asset(
-                              AssetUtil.getAssetPath(
-                                  type: AssetType.icon,
-                                  name: isVisible ? 'visible' : 'invisible'),
-                              width: 24.r,
-                              height: 24.r,
-                            ),
-                          )
-                        : null,
-                    onChanged: (val) {
-                      ref
-                          .read(loginFormProvider.notifier)
-                          .updateFormField(password: val);
-                      log(ref.read(loginFormProvider).password);
-                    },
-                    onNext: () => login(),
-                    interactionDesc: formInfo.interactionDesc,
-                  ),
-                  // if(formInfo.interactionDesc == null)
-                  // SizedBox(height: 28.h),
-                ],
-              );
-            },
-          ),
-          SizedBox(height: 32.h),
-          TextButton(
-            onPressed: () => login(),
-            style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all(
-                ref.watch(loginFormProvider.notifier).isValid()
-                    ? MITIColor.primary
-                    : MITIColor.gray500,
-              ),
-            ),
-            child: Text(
-              '로그인 하기',
-              style: MITITextStyle.smBold.copyWith(
-                color: ref.watch(loginFormProvider.notifier).isValid()
-                    ? MITIColor.gray800
-                    : MITIColor.gray100,
-              ),
+            return CustomTextFormField(
+              focusNode: focusNodes[0],
+              hintText: '이메일을 입력해주세요.',
+              textInputAction: TextInputAction.next,
+              label: '이메일',
+              onTap: () =>
+                  FocusScope.of(context).requestFocus(focusNodes[0]),
+              borderColor: formInfo.borderColor,
+              onNext: () =>
+                  FocusScope.of(context).requestFocus(focusNodes[1]),
+              onChanged: (String? val) {
+                ref
+                    .read(loginFormProvider.notifier)
+                    .updateFormField(email: val);
+                log(ref.read(loginFormProvider).email);
+              },
+            );
+          },
+        ),
+        SizedBox(height: 20.h),
+        Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final formInfo =
+                ref.watch(formInfoProvider(InputFormType.password));
+            final isVisible =
+                ref.watch(passwordVisibleProvider(PasswordFormType.password));
+            return Column(
+              children: [
+                CustomTextFormField(
+                  focusNode: focusNodes[1],
+                  hintText: '패스워드를 입력해 주세요.',
+                  textInputAction: TextInputAction.send,
+                  label: '비밀번호',
+                  obscureText: !isVisible,
+                  onTap: () =>
+                      FocusScope.of(context).requestFocus(focusNodes[1]),
+                  borderColor: formInfo.borderColor,
+                  suffixIcon: focusNodes[1].hasFocus
+                      ? GestureDetector(
+                          onTap: () {
+                            ref
+                                .read(passwordVisibleProvider(
+                                        PasswordFormType.password)
+                                    .notifier)
+                                .update((state) => !state);
+                          },
+                          child: SvgPicture.asset(
+                            AssetUtil.getAssetPath(
+                                type: AssetType.icon,
+                                name: isVisible ? 'visible' : 'invisible'),
+                            width: 24.r,
+                            height: 24.r,
+                          ),
+                        )
+                      : null,
+                  onChanged: (val) {
+                    ref
+                        .read(loginFormProvider.notifier)
+                        .updateFormField(password: val);
+                    log(ref.read(loginFormProvider).password);
+                  },
+                  onNext: () => login(),
+                  interactionDesc: formInfo.interactionDesc,
+                ),
+                // if(formInfo.interactionDesc == null)
+                // SizedBox(height: 28.h),
+              ],
+            );
+          },
+        ),
+        SizedBox(height: 32.h),
+        TextButton(
+          onPressed: () => login(),
+          style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.all(
+              ref.watch(loginFormProvider.notifier).isValid()
+                  ? MITIColor.primary
+                  : MITIColor.gray500,
             ),
           ),
-          SizedBox(height: 12.h),
-        ],
-      ),
+          child: Text(
+            '로그인 하기',
+            style: MITITextStyle.smBold.copyWith(
+              color: ref.watch(loginFormProvider.notifier).isValid()
+                  ? MITIColor.gray800
+                  : MITIColor.gray100,
+            ),
+          ),
+        ),
+        SizedBox(height: 12.h),
+      ],
     );
   }
 
