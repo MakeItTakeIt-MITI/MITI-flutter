@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/common/component/default_appbar.dart';
+import 'package:miti/common/component/html_component.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/etc/model/tc_policy_model.dart';
 import 'package:miti/etc/provider/tc_policy_provider.dart';
@@ -117,12 +118,7 @@ class TcPolicyDetailScreen extends ConsumerWidget {
               Expanded(
                 child: Scrollbar(
                   child: SingleChildScrollView(
-                    child: Text(
-                      model.content,
-                      style: MITITextStyle.sm150.copyWith(
-                        color: MITIColor.gray300,
-                      ),
-                    ),
+                    child: HtmlComponent(content: model.content),
                   ),
                 ),
               ),
