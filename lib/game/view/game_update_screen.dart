@@ -35,12 +35,16 @@ class GameUpdateScreen extends ConsumerStatefulWidget {
 
 class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
   late final ScrollController _scrollController;
-  final formKeys = [GlobalKey(), GlobalKey(), GlobalKey()];
+  final formKeys = [
+    GlobalKey(),
+    GlobalKey(),
+    GlobalKey(),
+  ];
 
   late final List<FocusNode> focusNodes = [
     FocusNode(),
     FocusNode(),
-    FocusNode()
+    FocusNode(),
   ];
 
   @override
@@ -87,7 +91,6 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
-      onPanDown: (v) => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: const DefaultAppBar(
           title: '경기 수정하기',
@@ -184,8 +187,8 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
                     Map<String, String> pathParameters = {
                       'gameId': widget.gameId.toString()
                     };
-
                     context.pop();
+                    FocusScope.of(context).requestFocus(FocusNode());
                     context.goNamed(
                       GameDetailScreen.routeName,
                       pathParameters: pathParameters,

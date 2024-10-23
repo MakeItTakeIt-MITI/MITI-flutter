@@ -140,8 +140,8 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
               getSpacer(),
               SliverToBoxAdapter(
                   child: ApplyForm(
-                formKeys: formKeys,
-                focusNodes: focusNodes,
+                formKeys: formKeys.sublist(3),
+                focusNodes: focusNodes.sublist(3),
               )),
               getSpacer(),
               _FeeForm(
@@ -1019,12 +1019,12 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
             Expanded(
               child: CustomTextFormField(
                 textEditingController: minController,
-                focusNode: widget.focusNodes[3],
-                key: widget.formKeys[3],
+                focusNode: widget.focusNodes[0],
+                key: widget.formKeys[0],
                 onTap: () =>
-                    FocusScope.of(context).requestFocus(widget.focusNodes[3]),
+                    FocusScope.of(context).requestFocus(widget.focusNodes[0]),
                 onNext: () =>
-                    FocusScope.of(context).requestFocus(widget.focusNodes[4]),
+                    FocusScope.of(context).requestFocus(widget.focusNodes[1]),
                 hintText: '00',
                 label: widget.isUpdateForm ? null : '총 모집 인원',
                 textAlign: TextAlign.right,
@@ -1060,12 +1060,12 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
             Expanded(
               child: CustomTextFormField(
                 textEditingController: maxController,
-                focusNode: widget.focusNodes[4],
-                key: widget.formKeys[4],
+                focusNode: widget.focusNodes[1],
+                key: widget.formKeys[1],
                 onTap: () =>
-                    FocusScope.of(context).requestFocus(widget.focusNodes[4]),
+                    FocusScope.of(context).requestFocus(widget.focusNodes[1]),
                 onNext: () =>
-                    FocusScope.of(context).requestFocus(widget.focusNodes[5]),
+                    FocusScope.of(context).requestFocus(widget.focusNodes[2]),
                 hintText: '00',
                 label: widget.isUpdateForm ? null : '',
                 textAlign: TextAlign.right,
