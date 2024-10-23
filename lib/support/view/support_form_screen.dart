@@ -168,7 +168,6 @@ class _ContentForm extends ConsumerWidget {
             },
             hint: '내용을 작성해주세요.',
             context: context,
-            formKey: GlobalKey(),
           ),
         ),
       ],

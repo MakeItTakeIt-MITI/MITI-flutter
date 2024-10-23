@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -184,4 +186,14 @@ class TextStyleUtil {
       letterSpacing: -0.25.sp,
     );
   }
+}
+
+void focusScrollable(int i, List<GlobalKey> formKeys) {
+  log("scrollalble ${i}");
+  Scrollable.ensureVisible(
+    formKeys[i].currentContext!,
+    duration: const Duration(milliseconds: 600),
+    alignment: 0.5,
+    curve: Curves.easeInOut,
+  );
 }

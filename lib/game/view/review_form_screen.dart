@@ -218,7 +218,6 @@ class _ReviewForm extends ConsumerWidget {
               },
               hint: '리뷰를 작성해주세요.',
               context: context,
-              formKey: GlobalKey(),
             ),
           )),
           // Scrollbar(
@@ -278,6 +277,8 @@ class MultiLineTextFormField extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final BuildContext context;
   final TextEditingController? editTextController;
+  final FocusNode? focusNode;
+  final VoidCallback? onTap;
 
   const MultiLineTextFormField(
       {super.key,
@@ -285,39 +286,31 @@ class MultiLineTextFormField extends StatefulWidget {
       required this.hint,
       required this.context,
       this.editTextController,
-      formKey});
+      this.focusNode,
+      this.onTap});
 
   @override
   State<MultiLineTextFormField> createState() => _MultiLineTextFormFieldState();
 }
 
 class _MultiLineTextFormFieldState extends State<MultiLineTextFormField> {
-  late final FocusNode _focusNode;
-
   late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    _focusNode = FocusNode()
-      ..addListener(() {
-        if (_focusNode.hasFocus) {}
-      });
   }
 
   @override
   void dispose() {
-    _focusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return KeyboardVisibilityBuilder(
-      onVisibilityChange: (bool isKeyboardVisible) {
-        if (isKeyboardVisible && _focusNode.hasFocus) {}
-      },
+      onVisibilityChange: (bool isKeyboardVisible) {},
       child: Align(
         child: RawScrollbar(
           controller: _scrollController,
@@ -328,12 +321,9 @@ class _MultiLineTextFormFieldState extends State<MultiLineTextFormField> {
           trackVisibility: true,
           child: TextField(
               scrollController: _scrollController,
-              focusNode: _focusNode,
+              focusNode: widget.focusNode,
               controller: widget.editTextController,
-              onTap: () {
-                // Scrollable.ensureVisible(widget.formKey.currentContext!);
-                // FocusScope.of(context).requestFocus(_focusNode);
-              },
+              onTap: widget.onTap,
               keyboardType: TextInputType.multiline,
               maxLines: null,
               autocorrect: true,

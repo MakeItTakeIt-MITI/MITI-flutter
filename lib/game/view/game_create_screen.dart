@@ -78,7 +78,13 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-
+    for (int i = 0; i < formKeys.length; i++) {
+      focusNodes[i].addListener(() {
+        if (focusNodes[i].hasFocus) {
+          focusScrollable(i, formKeys);
+        }
+      });
+    }
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       final result = await ref.read(gameRecentHostingProvider.future);
 
@@ -91,9 +97,6 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
             models: model,
           );
           if (mounted) {
-            // showDialog(context: context, builder: (_){
-            //   return extra;
-            // });
             context.pushNamed(DialogPage.routeName, extra: extra);
           }
         }
@@ -111,27 +114,29 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
-      onPanDown: (v) => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: const DefaultAppBar(
           title: '경기 생성하기',
         ),
         body: Padding(
           padding: EdgeInsets.only(
-            top: 20.h,
             left: 21.w,
             right: 21.w,
             // bottom: bottomPadding,
           ),
           child: CustomScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             controller: _scrollController,
             slivers: <Widget>[
-              const _TitleForm(),
+              getSpacer(height: 20),
+              _TitleForm(focusNode: focusNodes[0], globalKey: formKeys[0]),
               getSpacer(),
               const V2DateForm(),
-              // const _DateForm(),
               getSpacer(),
-              const _AddressForm(),
+              _AddressForm(
+                focusNodes: focusNodes,
+                globalKeys: formKeys,
+              ),
               getSpacer(),
               SliverToBoxAdapter(
                   child: ApplyForm(
@@ -139,9 +144,15 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
                 focusNodes: focusNodes,
               )),
               getSpacer(),
-              const _FeeForm(),
+              _FeeForm(
+                formKeys: formKeys,
+                focusNodes: focusNodes,
+              ),
               getSpacer(),
-              const _AdditionalInfoForm(),
+              _AdditionalInfoForm(
+                formKeys: formKeys,
+                focusNodes: focusNodes,
+              ),
               getSpacer(height: 32),
               const AgreeTermComponent(),
               getSpacer(height: 20),
@@ -220,7 +231,11 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
 }
 
 class _TitleForm extends StatefulWidget {
-  const _TitleForm({super.key});
+  final FocusNode focusNode;
+  final GlobalKey globalKey;
+
+  const _TitleForm(
+      {super.key, required this.focusNode, required this.globalKey});
 
   @override
   State<_TitleForm> createState() => _TitleFormState();
@@ -257,8 +272,12 @@ class _TitleFormState extends State<_TitleForm> {
           textEditingController: titleController,
           hintText: '경기 제목을 입력해주세요.',
           label: '경기 제목',
-          onTap: () {},
-          onNext: () {},
+          key: widget.globalKey,
+          focusNode: widget.focusNode,
+          onTap: () => FocusScope.of(context).requestFocus(widget.focusNode),
+          onNext: () {
+            FocusScope.of(context).requestFocus(FocusNode());
+          },
           onChanged: (val) {
             ref.read(gameFormProvider.notifier).update(title: val);
           },
@@ -838,7 +857,14 @@ class AddressComponent extends StatelessWidget {
 }
 
 class _AddressForm extends ConsumerStatefulWidget {
-  const _AddressForm({super.key});
+  final List<FocusNode> focusNodes;
+  final List<GlobalKey> globalKeys;
+
+  const _AddressForm({
+    super.key,
+    required this.focusNodes,
+    required this.globalKeys,
+  });
 
   @override
   ConsumerState<_AddressForm> createState() => _AddressFormState();
@@ -887,10 +913,18 @@ class _AddressFormState extends ConsumerState<_AddressForm> {
           ),
           SizedBox(height: 32.h),
           CustomTextFormField(
+            key: widget.globalKeys[1],
+            focusNode: widget.focusNodes[1],
+            textInputAction: TextInputAction.next,
+            onTap: () =>
+                FocusScope.of(context).requestFocus(widget.focusNodes[1]),
+            onNext: () {
+              log("focus Node");
+              FocusScope.of(context).requestFocus(widget.focusNodes[2]);
+            },
             hintText: '상세 주소를 입력해주세요.',
             label: '경기 상세 주소',
             textEditingController: addressDetailController,
-            textInputAction: TextInputAction.next,
             onChanged: (val) {
               final newCourt = court.copyWith(address_detail: val);
               ref.read(gameFormProvider.notifier).update(court: newCourt);
@@ -898,10 +932,16 @@ class _AddressFormState extends ConsumerState<_AddressForm> {
           ),
           SizedBox(height: 32.h),
           CustomTextFormField(
+            key: widget.globalKeys[2],
+            focusNode: widget.focusNodes[2],
+            textInputAction: TextInputAction.next,
+            onTap: () =>
+                FocusScope.of(context).requestFocus(widget.focusNodes[2]),
+            onNext: () =>
+                FocusScope.of(context).requestFocus(widget.focusNodes[3]),
             textEditingController: nameController,
             hintText: '경기장 이름을 입력해주세요.',
             label: '경기장 이름',
-            textInputAction: TextInputAction.next,
             onChanged: (val) {
               final newCourt = court.copyWith(name: val);
               ref.read(gameFormProvider.notifier).update(court: newCourt);
@@ -979,9 +1019,12 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
             Expanded(
               child: CustomTextFormField(
                 textEditingController: minController,
-                focusNode: widget.focusNodes[1],
-                key: widget.formKeys[1],
-                // initialValue: widget.initMinValue,
+                focusNode: widget.focusNodes[3],
+                key: widget.formKeys[3],
+                onTap: () =>
+                    FocusScope.of(context).requestFocus(widget.focusNodes[3]),
+                onNext: () =>
+                    FocusScope.of(context).requestFocus(widget.focusNodes[4]),
                 hintText: '00',
                 label: widget.isUpdateForm ? null : '총 모집 인원',
                 textAlign: TextAlign.right,
@@ -1017,9 +1060,12 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
             Expanded(
               child: CustomTextFormField(
                 textEditingController: maxController,
-                focusNode: widget.focusNodes[0],
-                key: widget.formKeys[0],
-                // initialValue: widget.initMaxValue,
+                focusNode: widget.focusNodes[4],
+                key: widget.formKeys[4],
+                onTap: () =>
+                    FocusScope.of(context).requestFocus(widget.focusNodes[4]),
+                onNext: () =>
+                    FocusScope.of(context).requestFocus(widget.focusNodes[5]),
                 hintText: '00',
                 label: widget.isUpdateForm ? null : '',
                 textAlign: TextAlign.right,
@@ -1076,7 +1122,14 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
 }
 
 class _FeeForm extends ConsumerStatefulWidget {
-  const _FeeForm({super.key});
+  final List<GlobalKey> formKeys;
+  final List<FocusNode> focusNodes;
+
+  const _FeeForm({
+    super.key,
+    required this.formKeys,
+    required this.focusNodes,
+  });
 
   @override
   ConsumerState<_FeeForm> createState() => _FeeFormState();
@@ -1112,6 +1165,11 @@ class _FeeFormState extends ConsumerState<_FeeForm> {
       label: '경기 참가비',
       keyboardType: TextInputType.number,
       textInputAction: TextInputAction.next,
+      focusNode: widget.focusNodes[5],
+      key: widget.formKeys[5],
+      onTap: () => FocusScope.of(context).requestFocus(widget.focusNodes[5]),
+      onNext: () => FocusScope.of(context).requestFocus(widget.focusNodes[6]),
+
       // textAlign: fee.isNotEmpty ? TextAlign.right : TextAlign.left,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
@@ -1132,7 +1190,14 @@ class _FeeFormState extends ConsumerState<_FeeForm> {
 }
 
 class _AdditionalInfoForm extends ConsumerStatefulWidget {
-  const _AdditionalInfoForm({super.key});
+  final List<GlobalKey> formKeys;
+  final List<FocusNode> focusNodes;
+
+  const _AdditionalInfoForm({
+    super.key,
+    required this.formKeys,
+    required this.focusNodes,
+  });
 
   @override
   ConsumerState<_AdditionalInfoForm> createState() =>
@@ -1180,6 +1245,10 @@ class _AdditionalInfoFormState extends ConsumerState<_AdditionalInfoForm> {
                   minWidth: double.infinity),
               child: MultiLineTextFormField(
                 editTextController: infoController,
+                focusNode: widget.focusNodes[6],
+                key: widget.formKeys[6],
+                onTap: () =>
+                    FocusScope.of(context).requestFocus(widget.focusNodes[6]),
                 onChanged: (val) {
                   ref.read(gameFormProvider.notifier).update(info: val);
                 },
@@ -1189,49 +1258,6 @@ class _AdditionalInfoFormState extends ConsumerState<_AdditionalInfoForm> {
               ),
             ),
           ),
-          // ConstrainedBox(
-          //   constraints: BoxConstraints(
-          //     minHeight: 74.h,
-          //     maxHeight: 300.h,
-          //   ),
-          //   child: Scrollbar(
-          //     child: SingleChildScrollView(
-          //       scrollDirection: Axis.vertical,
-          //       reverse: true,
-          //       child: TextField(
-          //         maxLines: null,
-          //         controller: infoController,
-          //         textAlignVertical: TextAlignVertical.top,
-          //         style: MITITextStyle.sm150.copyWith(
-          //           color: MITIColor.gray100,
-          //         ),
-          //         onChanged: (val) {
-          //           ref.read(gameFormProvider.notifier).update(info: val);
-          //         },
-          //         decoration: InputDecoration(
-          //           border: OutlineInputBorder(
-          //             borderRadius: BorderRadius.circular(8.r),
-          //             borderSide: BorderSide.none,
-          //           ),
-          //           constraints: BoxConstraints(
-          //             minHeight: 74.h,
-          //             maxHeight: 300.h,
-          //           ),
-          //           hintText:
-          //               '주차, 샤워 가능 여부, 경기 진행 방식, 필요한 유니폼 색상 등 참가들에게 공지할 정보들을 입력해주세요',
-          //           hintStyle:
-          //               MITITextStyle.sm150.copyWith(color: MITIColor.gray500),
-          //           hintMaxLines: 10,
-          //           fillColor: MITIColor.gray700,
-          //           filled: true,
-          //           contentPadding:
-          //               EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-          //           // isDense: true,
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );
