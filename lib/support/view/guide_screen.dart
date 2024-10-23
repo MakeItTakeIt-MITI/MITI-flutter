@@ -83,9 +83,10 @@ class _GuideScreenState extends State<GuideScreen> {
                           onTap: () async {
                             setState(() {
                               category = model[idx].category;
-                              carouselController.jumpToPage(0);
+                              if (images.isNotEmpty) {
+                                carouselController.jumpToPage(0);
+                              }
                             });
-                            // await carouselController.onReady;
                           },
                           selected: category == model[idx].category,
                         );
@@ -99,35 +100,38 @@ class _GuideScreenState extends State<GuideScreen> {
               SliverToBoxAdapter(
                 child: Column(
                   children: [
-                    CarouselSlider(
-                      carouselController: carouselController,
-                      options: CarouselOptions(
-                          enlargeCenterPage: true,
-                          viewportFraction: 1,
-                          height: 220.h,
-                          initialPage: 0,
-                          enlargeStrategy: CenterPageEnlargeStrategy.height,
-                          enableInfiniteScroll: false,
-                          animateToClosest: false,
-                          onPageChanged: (idx, _) {
-                            setState(() {
-                              currentIdx = idx;
-                              log('currentIdx = $currentIdx');
-                            });
-                          }),
-                      items: images.map((image) {
-                        return Builder(
-                          builder: (BuildContext context) {
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(20.r),
-                              child: Image.network(
-                                image,
-                                fit: BoxFit.cover,
-                              ),
-                            );
-                          },
-                        );
-                      }).toList(),
+                    Visibility(
+                      visible: images.isNotEmpty,
+                      child: CarouselSlider(
+                        carouselController: carouselController,
+                        options: CarouselOptions(
+                            enlargeCenterPage: true,
+                            viewportFraction: 1,
+                            height: 220.h,
+                            initialPage: 0,
+                            enlargeStrategy: CenterPageEnlargeStrategy.height,
+                            enableInfiniteScroll: false,
+                            animateToClosest: false,
+                            onPageChanged: (idx, _) {
+                              setState(() {
+                                currentIdx = idx;
+                                log('currentIdx = $currentIdx');
+                              });
+                            }),
+                        items: images.map((image) {
+                          return Builder(
+                            builder: (BuildContext context) {
+                              return ClipRRect(
+                                borderRadius: BorderRadius.circular(20.r),
+                                child: Image.network(
+                                  image,
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            },
+                          );
+                        }).toList(),
+                      ),
                     ),
                     Padding(
                       padding: EdgeInsets.only(top: 8.h, bottom: 12.h),
