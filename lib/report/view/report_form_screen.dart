@@ -19,6 +19,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../common/component/custom_dialog.dart';
 import '../../common/component/default_layout.dart';
+import '../../common/provider/router_provider.dart';
 import '../../game/view/review_form_screen.dart';
 import '../../theme/text_theme.dart';
 import '../error/report_error.dart';
@@ -74,11 +75,12 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
                           Map<String, String> pathParameters = {
                             'gameId': model.id.toString()
                           };
-
-                          if (context.mounted) {
+                          context.goNamed(GameDetailScreen.routeName,
+                              pathParameters: pathParameters);
+                          Future.delayed(const Duration(milliseconds: 200), () {
                             showModalBottomSheet(
                                 isDismissible: false,
-                                context: context,
+                                context: rootNavKey.currentState!.context!,
                                 builder: (_) {
                                   return BottomDialog(
                                     title: '경기 신고 완료',
@@ -90,9 +92,6 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
                                         return TextButton(
                                           onPressed: () async {
                                             context.pop();
-                                            context.goNamed(
-                                                GameDetailScreen.routeName,
-                                                pathParameters: pathParameters);
                                           },
                                           style: TextButton.styleFrom(
                                             fixedSize:
@@ -106,7 +105,7 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
                                     ),
                                   );
                                 });
-                          }
+                          });
                         }
                       }
                     : () {},
