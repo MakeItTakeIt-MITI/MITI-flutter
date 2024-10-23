@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/notification/param/push_setting_param.dart';
 import 'package:miti/notification/repository/notification_repository.dart';
@@ -164,6 +167,15 @@ class UnreadPush extends _$UnreadPush {
     final userId = ref.read(authProvider)!.id!;
     repository.unreadPush(userId: userId).then((value) {
       logger.i(value);
+      AppBadgePlus.isSupported().then((isAllow) {
+        if (isAllow) {
+          int cnt = value.data!.pushCnt;
+          if (cnt > 999) {
+            cnt = 999;
+          }
+          AppBadgePlus.updateBadge(cnt);
+        }
+      });
       state = value;
     }).catchError((e) {
       final error = ErrorModel.respToError(e);

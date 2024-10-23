@@ -1,3 +1,4 @@
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,10 +14,31 @@ import 'package:miti/user/provider/user_form_provider.dart';
 import 'package:miti/user/provider/user_provider.dart';
 import 'package:miti/util/util.dart';
 
-class NicknameUpdateScreen extends StatelessWidget {
+class NicknameUpdateScreen extends ConsumerStatefulWidget {
   static String get routeName => 'nicknameUpdate';
 
   const NicknameUpdateScreen({super.key});
+
+  @override
+  ConsumerState<NicknameUpdateScreen> createState() =>
+      _NicknameUpdateScreenState();
+}
+
+class _NicknameUpdateScreenState extends ConsumerState<NicknameUpdateScreen> {
+  late Throttle<bool> _throttler;
+
+  @override
+  void initState() {
+    super.initState();
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: false,
+      checkEquality: true,
+    );
+    _throttler.values.listen((bool s) {
+      _updateNickname(ref, context);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,16 +83,7 @@ class NicknameUpdateScreen extends StatelessWidget {
                   return TextButton(
                       onPressed: valid
                           ? () async {
-                              final result =
-                                  await ref.read(updateNicknameProvider.future);
-                              if (result is ErrorModel) {
-                              } else {
-                                context.pop();
-                                Future.delayed(
-                                    const Duration(milliseconds: 100), () {
-                                  FlashUtil.showFlash(context, '프로필이 수정되었습니다.');
-                                });
-                              }
+                              _throttler.setValue(true);
                             }
                           : () {},
                       style: TextButton.styleFrom(
@@ -91,5 +104,16 @@ class NicknameUpdateScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _updateNickname(WidgetRef ref, BuildContext context) async {
+    final result = await ref.read(updateNicknameProvider.future);
+    if (result is ErrorModel) {
+    } else {
+      context.pop();
+      Future.delayed(const Duration(milliseconds: 100), () {
+        FlashUtil.showFlash(context, '프로필이 수정되었습니다.');
+      });
+    }
   }
 }

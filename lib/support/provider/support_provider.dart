@@ -100,7 +100,6 @@ class FAQ extends _$FAQ {
   @override
   BaseModel build() {
     searchDebounce.values.listen((FAQParam state) {
-      log('throttle!!');
       get(search: state.search);
     });
     get();

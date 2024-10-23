@@ -1,3 +1,4 @@
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -167,11 +168,31 @@ class _PasswordResetting extends ConsumerWidget {
   }
 }
 
-class _AuthComponent extends ConsumerWidget {
+class _AuthComponent extends ConsumerStatefulWidget {
   const _AuthComponent({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_AuthComponent> createState() => _AuthComponentState();
+}
+
+class _AuthComponentState extends ConsumerState<_AuthComponent> {
+  late Throttle<bool> _throttler;
+
+  @override
+  void initState() {
+    super.initState();
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: false,
+      checkEquality: true,
+    );
+    _throttler.values.listen((bool s) {
+      _logout(ref, context);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       color: MITIColor.gray800,
       padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
@@ -189,15 +210,7 @@ class _AuthComponent extends ConsumerWidget {
                           ' 로그아웃 시, 모집하거나 참여한 경기에\n해당하는 알람을 받을 수 없습니다.\n그래도 로그아웃 하시겠습니까?',
                       btn: TextButton(
                         onPressed: () async {
-                          final result = await ref.read(logoutProvider.future);
-                          if (context.mounted) {
-                            if (result is ErrorModel) {
-                              AuthError.fromModel(model: result).responseError(
-                                  context, AuthApiType.login, ref);
-                            } else {
-                              context.pop();
-                            }
-                          }
+                          _throttler.setValue(true);
                         },
                         child: const Text("로그아웃 하기"),
                       ),
@@ -242,5 +255,17 @@ class _AuthComponent extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _logout(WidgetRef ref, BuildContext context) async {
+    final result = await ref.read(logoutProvider.future);
+    if (context.mounted) {
+      if (result is ErrorModel) {
+        AuthError.fromModel(model: result)
+            .responseError(context, AuthApiType.login, ref);
+      } else {
+        context.pop();
+      }
+    }
   }
 }

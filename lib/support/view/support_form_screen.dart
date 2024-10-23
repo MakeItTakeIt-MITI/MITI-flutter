@@ -1,3 +1,4 @@
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -20,7 +21,7 @@ import '../../common/component/default_layout.dart';
 import '../../common/provider/router_provider.dart';
 import '../../game/view/review_form_screen.dart';
 
-class SupportFormScreen extends StatefulWidget {
+class SupportFormScreen extends ConsumerStatefulWidget {
   static String get routeName => 'supportForm';
 
   const SupportFormScreen({
@@ -28,20 +29,30 @@ class SupportFormScreen extends StatefulWidget {
   });
 
   @override
-  State<SupportFormScreen> createState() => _SupportFormScreenState();
+  ConsumerState<SupportFormScreen> createState() => _SupportFormScreenState();
 }
 
-class _SupportFormScreenState extends State<SupportFormScreen> {
+class _SupportFormScreenState extends ConsumerState<SupportFormScreen> {
   late final ScrollController _scrollController;
+  late Throttle<bool> _throttler;
 
   @override
   void initState() {
     super.initState();
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: false,
+      checkEquality: true,
+    );
+    _throttler.values.listen((bool s) {
+      _onCreate(ref, context);
+    });
     _scrollController = ScrollController();
   }
 
   @override
   void dispose() {
+    _throttler.cancel();
     _scrollController.dispose();
     super.dispose();
   }
@@ -60,20 +71,7 @@ class _SupportFormScreenState extends State<SupportFormScreen> {
               return TextButton(
                 onPressed: valid
                     ? () async {
-                        final result =
-                            await ref.read(supportCreateProvider.future);
-                        if (context.mounted) {
-                          if (result is ErrorModel) {
-                            SupportError.fromModel(model: result).responseError(
-                                context, SupportApiType.create, ref);
-                          } else {
-                            context.pop();
-                            Future.delayed(const Duration(milliseconds: 100),
-                                () {
-                              FlashUtil.showFlash(context, '문의 작성이 완료되었습니다.');
-                            });
-                          }
-                        }
+                        _throttler.setValue(true);
                       }
                     : () {},
                 style: TextButton.styleFrom(
@@ -117,6 +115,21 @@ class _SupportFormScreenState extends State<SupportFormScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _onCreate(WidgetRef ref, BuildContext context) async {
+    final result = await ref.read(supportCreateProvider.future);
+    if (context.mounted) {
+      if (result is ErrorModel) {
+        SupportError.fromModel(model: result)
+            .responseError(context, SupportApiType.create, ref);
+      } else {
+        context.pop();
+        Future.delayed(const Duration(milliseconds: 100), () {
+          FlashUtil.showFlash(context, '문의 작성이 완료되었습니다.');
+        });
+      }
+    }
   }
 }
 

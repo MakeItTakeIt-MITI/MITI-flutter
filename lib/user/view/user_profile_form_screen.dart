@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -97,6 +98,7 @@ class _PasswordForm extends ConsumerStatefulWidget {
 
 class _PasswordFormState extends ConsumerState<_PasswordForm> {
   String password = '';
+  late Throttle<bool> _throttler;
   final formKeys = [GlobalKey()];
 
   late final List<FocusNode> focusNodes = [
@@ -106,7 +108,14 @@ class _PasswordFormState extends ConsumerState<_PasswordForm> {
   @override
   void initState() {
     super.initState();
-
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: false,
+      checkEquality: true,
+    );
+    _throttler.values.listen((bool s) {
+      getUpdateToken();
+    });
     for (int i = 0; i < 1; i++) {
       focusNodes[i].addListener(() {
         // focusScrollable(i);
@@ -116,6 +125,7 @@ class _PasswordFormState extends ConsumerState<_PasswordForm> {
 
   @override
   void dispose() {
+    _throttler.cancel();
     for (int i = 0; i < 1; i++) {
       focusNodes[i].removeListener(() {
         // focusScrollable(i);
@@ -160,8 +170,7 @@ class _PasswordFormState extends ConsumerState<_PasswordForm> {
                 borderColor: interaction.borderColor,
                 focusNode: focusNodes[0],
                 onNext: () async {
-                  await getUpdateToken();
-                  // FocusScope.of(context).requestFocus(focusNodes[2]);
+                  _throttler.setValue(true);
                 },
                 onTap: () {
                   FocusScope.of(context).requestFocus(focusNodes[0]);
@@ -198,7 +207,7 @@ class _PasswordFormState extends ConsumerState<_PasswordForm> {
           child: TextButton(
               onPressed: valid
                   ? () async {
-                      await getUpdateToken();
+                      _throttler.setValue(true);
                     }
                   : () {},
               style: TextButton.styleFrom(
@@ -231,34 +240,6 @@ class _PasswordFormState extends ConsumerState<_PasswordForm> {
     }
   }
 
-  Future<void> updateNickname(BuildContext context) async {
-    final result = await ref.read(updateNicknameProvider.future);
-
-    if (result is ErrorModel) {
-      if (context.mounted) {
-        UserError.fromModel(model: result)
-            .responseError(context, UserApiType.updateNickname, ref);
-      }
-    } else {
-      if (context.mounted) {
-        final extra = CustomDialog(
-            title: '프로필 수정 완료',
-            content: '회원 정보가 정상적으로 저장되었습니다.',
-            onPressed: () {
-              ref
-                  .read(interactionDescProvider(InteractionType.nickname)
-                      .notifier)
-                  .update((state) => InteractionDesc(
-                        isSuccess: true,
-                        desc: "변경사항이 적용되었습니다.",
-                      ));
-              context.pop();
-              // context.goNamed(InfoBody.routeName);
-            });
-        context.pushNamed(DialogPage.routeName, extra: extra);
-      }
-    }
-  }
 }
 
 class _NewPasswordForm extends ConsumerStatefulWidget {
@@ -270,6 +251,7 @@ class _NewPasswordForm extends ConsumerStatefulWidget {
 
 class _NewPasswordFormState extends ConsumerState<_NewPasswordForm> {
   final formKeys = [GlobalKey(), GlobalKey()];
+  late Throttle<bool> _throttler;
 
   late final List<FocusNode> focusNodes = [
     FocusNode(),
@@ -279,7 +261,14 @@ class _NewPasswordFormState extends ConsumerState<_NewPasswordForm> {
   @override
   void initState() {
     super.initState();
-
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: false,
+      checkEquality: true,
+    );
+    _throttler.values.listen((bool s) {
+      updatePassword(context);
+    });
     for (int i = 0; i < 2; i++) {
       focusNodes[i].addListener(() {
         // focusScrollable(i);
@@ -444,7 +433,7 @@ class _NewPasswordFormState extends ConsumerState<_NewPasswordForm> {
               });
             },
             onNext: () {
-              updatePassword(context);
+              _throttler.setValue(true);
             },
             onChanged: (val) {
               ref
@@ -483,7 +472,7 @@ class _NewPasswordFormState extends ConsumerState<_NewPasswordForm> {
           TextButton(
               onPressed: valid
                   ? () async {
-                      updatePassword(context);
+                      _throttler.setValue(true);
                     }
                   : () {},
               style: TextButton.styleFrom(

@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -471,6 +472,27 @@ class _AgreementTermForm extends ConsumerStatefulWidget {
 }
 
 class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
+  late Throttle<bool> _throttler;
+
+  @override
+  void initState() {
+    super.initState();
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: false,
+      checkEquality: true,
+    );
+    _throttler.values.listen((bool s) {
+      requestTransfer(ref, context);
+    });
+  }
+
+  @override
+  void dispose() {
+    _throttler.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final result = ref.watch(accountProvider);
@@ -570,7 +592,7 @@ class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
           TextButton(
             onPressed: valid
                 ? () async {
-                    await requestTransfer(ref, context);
+                    _throttler.setValue(true);
                   }
                 : () {},
             style: TextButton.styleFrom(

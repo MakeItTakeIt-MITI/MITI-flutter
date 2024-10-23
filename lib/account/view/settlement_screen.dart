@@ -232,7 +232,7 @@ class SettlementCard extends StatelessWidget {
       datetime: period,
       address: '${game.court.address} ${game.court.address_detail ?? ''}',
       id: model.id,
-      fee: game.fee == 0 ? '무료' : NumberUtil.format(game.fee.toString()),
+      fee: NumberUtil.format(game.fee.toString()),
       status: model.status,
     );
   }
@@ -290,9 +290,7 @@ class SettlementCard extends StatelessWidget {
                             color: MITIColor.gray100,
                           ),
                         ),
-                        if(fee != '무료')
                         SizedBox(width: 2.w),
-                        if(fee != '무료')
                         Text(
                           '원',
                           style: MITITextStyle.xlLight.copyWith(

@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:miti/game/param/game_param.dart';
 import 'package:miti/game/provider/widget/game_filter_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
@@ -191,7 +192,7 @@ class Payment extends _$Payment {
       final error = ErrorModel.respToError(e);
       logger.e(
           'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
-      state=error;
+      state = error;
       return error;
     });
   }

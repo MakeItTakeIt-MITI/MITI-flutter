@@ -143,9 +143,8 @@ class SettlementCard extends StatelessWidget {
       datetime: period,
       address: '${game.court.address} ${game.court.address_detail ?? ''}',
       id: model.id,
-      expected_settlement_amount: model.expectedSettlementAmount == 0
-          ? '무료'
-          : NumberUtil.format(model.expectedSettlementAmount.toString()),
+      expected_settlement_amount:
+          NumberUtil.format(model.expectedSettlementAmount.toString()),
       status: model.status,
     );
   }

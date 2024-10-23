@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -37,11 +38,32 @@ import 'game_create_screen.dart';
 import 'game_detail_screen.dart';
 import 'package:collection/collection.dart';
 
-class GamePaymentScreen extends ConsumerWidget {
+class GamePaymentScreen extends ConsumerStatefulWidget {
   static String get routeName => 'paymentInfo';
   final int gameId;
 
   const GamePaymentScreen({super.key, required this.gameId});
+
+  @override
+  ConsumerState<GamePaymentScreen> createState() => _GamePaymentScreenState();
+}
+
+class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
+  late Throttle<bool> _throttler;
+  late PaymentMethodType type;
+
+  @override
+  void initState() {
+    super.initState();
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: false,
+      checkEquality: true,
+    );
+    _throttler.values.listen((bool s) {
+      onPay(ref, context, type);
+    });
+  }
 
   Widget getDivider() {
     return Container(
@@ -51,14 +73,14 @@ class GamePaymentScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final result = ref.watch(paymentProvider(gameId: gameId));
+  Widget build(BuildContext context) {
+    final result = ref.watch(paymentProvider(gameId: widget.gameId));
     GamePaymentModel? model;
     if (result is ResponseModel<GamePaymentModel>) {
       model = result.data!;
     }
     final fee = model?.payment_information.final_payment_amount;
-    final PaymentMethodType type = fee != null && fee == 0
+    type = fee != null && fee == 0
         ? PaymentMethodType.empty_pay
         : PaymentMethodType.kakao_pay;
 
@@ -71,7 +93,7 @@ class GamePaymentScreen extends ConsumerWidget {
           final result = ref.watch(agreementPolicyProvider(
               type: AgreementRequestType.game_participation));
           final isCheckBoxes = ref.watch(
-              gameParticipationFormProvider(gameId: gameId, type: type)
+              gameParticipationFormProvider(gameId: widget.gameId, type: type)
                   .select((s) => s.isCheckBoxes));
           if (result is ResponseListModel<AgreementPolicyModel>) {
             final model = (result).data!;
@@ -90,7 +112,7 @@ class GamePaymentScreen extends ConsumerWidget {
             button: TextButton(
               onPressed: valid
                   ? () async {
-                      await onPay(ref, context, type);
+                      _throttler.setValue(true);
                     }
                   : () {},
               style: TextButton.styleFrom(
@@ -122,12 +144,13 @@ class GamePaymentScreen extends ConsumerWidget {
             SliverFillRemaining(
               child: Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  final result = ref.watch(paymentProvider(gameId: gameId));
+                  final result =
+                      ref.watch(paymentProvider(gameId: widget.gameId));
                   if (result is LoadingModel) {
                     return SingleChildScrollView(
                         child: GamePaymentSkeleton(
                       type: AgreementRequestType.game_participation,
-                      gameId: gameId,
+                      gameId: widget.gameId,
                       payType: type,
                     ));
                   } else if (result is ErrorModel) {
@@ -163,7 +186,7 @@ class GamePaymentScreen extends ConsumerWidget {
                         getDivider(),
                         PaymentCheckForm(
                           type: AgreementRequestType.game_participation,
-                          gameId: gameId,
+                          gameId: widget.gameId,
                           payType: type,
                         ),
                       ],
@@ -180,8 +203,8 @@ class GamePaymentScreen extends ConsumerWidget {
 
   Future<void> onPay(
       WidgetRef ref, BuildContext context, PaymentMethodType type) async {
-    final result =
-        await ref.read(readyPayProvider(gameId: gameId, type: type).future);
+    final result = await ref
+        .read(readyPayProvider(gameId: widget.gameId, type: type).future);
     if (context.mounted) {
       if (result is ErrorModel) {
         PayError.fromModel(model: result)
@@ -193,7 +216,7 @@ class GamePaymentScreen extends ConsumerWidget {
             model as PayReadyModel;
             // log('model = ${model.runtimeType}');
 
-            final pathParameters = {'gameId': gameId.toString()};
+            final pathParameters = {'gameId': widget.gameId.toString()};
             final queryParameters = {
               'redirectUrl': model.next_redirect_mobile_url
             };
@@ -205,7 +228,9 @@ class GamePaymentScreen extends ConsumerWidget {
             break;
           case PaymentMethodType.empty_pay:
             log("무료 경기 참여 완료");
-            Map<String, String> pathParameters = {'gameId': gameId.toString()};
+            Map<String, String> pathParameters = {
+              'gameId': widget.gameId.toString()
+            };
             const GameCompleteType extra = GameCompleteType.payment;
 
             context.goNamed(

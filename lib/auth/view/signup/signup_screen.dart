@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -624,15 +625,27 @@ class EmailForm extends ConsumerStatefulWidget {
 class _EmailFormState extends ConsumerState<EmailForm> {
   late final TextEditingController controller;
   InteractionDesc? interactionDesc;
+  late Throttle<int> _throttler;
+  int throttleCnt = 0;
 
   @override
   void initState() {
     super.initState();
     controller = TextEditingController();
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: 0,
+      checkEquality: true,
+    );
+    _throttler.values.listen((int s) async {
+      await onSubmit(context);
+      throttleCnt++;
+    });
   }
 
   @override
   void dispose() {
+    _throttler.cancel();
     controller.dispose();
     super.dispose();
   }
@@ -655,7 +668,7 @@ class _EmailFormState extends ConsumerState<EmailForm> {
                 interactionDesc: formInfo.interactionDesc,
                 onNext: () async {
                   if (ref.read(signUpFormProvider.notifier).validEmail()) {
-                    await onSubmit(context);
+                    _throttler.setValue(throttleCnt + 1);
                   }
                 },
                 onChanged: (val) {
@@ -680,7 +693,7 @@ class _EmailFormState extends ConsumerState<EmailForm> {
               child: TextButton(
                 onPressed: () async {
                   if (ref.read(signUpFormProvider.notifier).validEmail()) {
-                    onSubmit(context);
+                    _throttler.setValue(throttleCnt + 1);
                   }
                 },
                 style: TextButton.styleFrom(
@@ -1151,6 +1164,27 @@ class _NextButton extends ConsumerStatefulWidget {
 }
 
 class _NextButtonState extends ConsumerState<_NextButton> {
+  late Throttle<bool> _throttler;
+
+  @override
+  void initState() {
+    super.initState();
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: false,
+      checkEquality: true,
+    );
+    _throttler.values.listen((bool s) {
+      _signUp(context);
+    });
+  }
+
+  @override
+  void dispose() {
+    _throttler.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final progressModel = ref.watch(progressProvider);
@@ -1173,44 +1207,7 @@ class _NextButtonState extends ConsumerState<_NextButton> {
               if (validNext) {
                 if ((progress == 5 ||
                     (progress == 3 && AuthType.email != widget.type))) {
-                  if (AuthType.email != widget.type) {
-                    final storage = ref.read(secureStorageProvider);
-                    final userInfoToken =
-                        await storage.read(key: "userInfoToken");
-                    ref
-                        .read(signUpFormProvider.notifier)
-                        .updateForm(userinfo_token: userInfoToken);
-                    await storage.delete(key: "userInfoToken");
-                  }
-
-                  final model = ref.read(signUpFormProvider);
-                  late SignUpBaseParam param;
-                  switch (widget.type) {
-                    case AuthType.email:
-                      param = SignUpEmailParam.fromForm(model: model);
-                      break;
-                    case AuthType.apple:
-                      param = SignUpAppleParam.fromForm(model: model);
-                      break;
-                    case AuthType.kakao:
-                      param = SignUpKakaoParam.fromForm(model: model);
-                      break;
-                  }
-                  final result = await ref.read(
-                      signUpProvider(type: widget.type, param: param).future);
-
-                  if (result is ErrorModel) {
-                    log('error');
-                    if (context.mounted) {
-                      AuthError.fromModel(model: result)
-                          .responseError(context, AuthApiType.signup, ref);
-                    }
-                  } else {
-                    log('회원가입!');
-                    if (context.mounted) {
-                      context.goNamed(SignUpCompleteScreen.routeName);
-                    }
-                  }
+                  _throttler.setValue(true);
                 } else {
                   ref.read(progressProvider.notifier).nextProgress();
                 }
@@ -1227,6 +1224,46 @@ class _NextButtonState extends ConsumerState<_NextButton> {
             )),
       ),
     );
+  }
+
+  Future<void> _signUp(BuildContext context) async {
+    if (AuthType.email != widget.type) {
+      final storage = ref.read(secureStorageProvider);
+      final userInfoToken = await storage.read(key: "userInfoToken");
+      ref
+          .read(signUpFormProvider.notifier)
+          .updateForm(userinfo_token: userInfoToken);
+      await storage.delete(key: "userInfoToken");
+    }
+
+    final model = ref.read(signUpFormProvider);
+    late SignUpBaseParam param;
+    switch (widget.type) {
+      case AuthType.email:
+        param = SignUpEmailParam.fromForm(model: model);
+        break;
+      case AuthType.apple:
+        param = SignUpAppleParam.fromForm(model: model);
+        break;
+      case AuthType.kakao:
+        param = SignUpKakaoParam.fromForm(model: model);
+        break;
+    }
+    final result =
+        await ref.read(signUpProvider(type: widget.type, param: param).future);
+
+    if (result is ErrorModel) {
+      log('error');
+      if (context.mounted) {
+        AuthError.fromModel(model: result)
+            .responseError(context, AuthApiType.signup, ref);
+      }
+    } else {
+      log('회원가입!');
+      if (context.mounted) {
+        context.goNamed(SignUpCompleteScreen.routeName);
+      }
+    }
   }
 }
 

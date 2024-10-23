@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:math' hide log;
 
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,7 +32,7 @@ import '../../util/util.dart';
 import '../model/widget/user_reivew_short_info_model.dart';
 import 'game_detail_screen.dart';
 
-class ReviewScreen extends StatefulWidget {
+class ReviewScreen extends ConsumerStatefulWidget {
   final int gameId;
 
   // final int ratingId;
@@ -49,20 +50,30 @@ class ReviewScreen extends StatefulWidget {
   });
 
   @override
-  State<ReviewScreen> createState() => _ReviewScreenState();
+  ConsumerState<ReviewScreen> createState() => _ReviewScreenState();
 }
 
-class _ReviewScreenState extends State<ReviewScreen> {
+class _ReviewScreenState extends ConsumerState<ReviewScreen> {
+  late Throttle<bool> _throttler;
   late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: false,
+      checkEquality: true,
+    );
+    _throttler.values.listen((bool s) {
+      createReview(ref, context, widget.userInfoModel.nickname);
+    });
     _scrollController = ScrollController();
   }
 
   @override
   void dispose() {
+    _throttler.cancel();
     _scrollController.dispose();
     super.dispose();
   }
@@ -96,8 +107,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
               return TextButton(
                 onPressed: valid
                     ? () async {
-                        createReview(
-                            ref, context, widget.userInfoModel.nickname);
+                        _throttler.setValue(true);
                       }
                     : () {},
                 style: TextButton.styleFrom(
@@ -220,52 +230,6 @@ class _ReviewForm extends ConsumerWidget {
               context: context,
             ),
           )),
-          // Scrollbar(
-          //   child: SingleChildScrollView(
-          //     // scrollDirection: Axis.vertical,
-          //     // reverse: true,
-          //     child: IntrinsicHeight(
-          //       child: ConstrainedBox(
-          //         constraints: BoxConstraints(
-          //           minHeight: 110.h,
-          //           maxHeight: 500.h,
-          //         ),
-          //         child: TextFormField(
-          //           maxLines: null,
-          //           expands: true,
-          //           enabled: true,
-          //           textAlignVertical: TextAlignVertical.top,
-          //           style: MITITextStyle.sm150.copyWith(
-          //             color: MITIColor.gray100,
-          //           ),
-          //           onChanged: (val) {
-          //             ref.read(reviewFormProvider.notifier).updateComment(val);
-          //           },
-          //           decoration: InputDecoration(
-          //             border: OutlineInputBorder(
-          //               borderRadius: BorderRadius.circular(12.r),
-          //               borderSide: BorderSide.none,
-          //             ),
-          //
-          //             // constraints: BoxConstraints(
-          //             //   minHeight: 68.h,
-          //             //   maxHeight: 500.h,
-          //             // ),
-          //             hintText: '리뷰를 작성해주세요.',
-          //             hintStyle: MITITextStyle.sm150
-          //                 .copyWith(color: MITIColor.gray500),
-          //             hintMaxLines: 10,
-          //             fillColor: MITIColor.gray700,
-          //             filled: true,
-          //             contentPadding: EdgeInsets.symmetric(
-          //                 horizontal: 16.w, vertical: 12.h),
-          //             // isDense: true,
-          //           ),
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );

@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flash/flash.dart';
 import 'package:flash/flash_helper.dart';
 import 'package:flutter/cupertino.dart';
@@ -43,7 +44,7 @@ import 'game_payment_screen.dart';
 import 'game_screen.dart';
 import 'game_update_screen.dart';
 
-class GameDetailScreen extends StatefulWidget {
+class GameDetailScreen extends ConsumerStatefulWidget {
   static String get routeName => 'gameDetail';
   final int gameId;
 
@@ -53,22 +54,32 @@ class GameDetailScreen extends StatefulWidget {
   });
 
   @override
-  State<GameDetailScreen> createState() => _GameDetailScreenState();
+  ConsumerState<GameDetailScreen> createState() => _GameDetailScreenState();
 }
 
-class _GameDetailScreenState extends State<GameDetailScreen> {
+class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
   int? participationId;
   final fabKey = GlobalKey<ExpandableFabState>();
   late final ScrollController _scrollController;
+  late Throttle<bool> _throttler;
 
   @override
   void initState() {
     super.initState();
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: false,
+      checkEquality: true,
+    );
+    _throttler.values.listen((bool s) {
+      _cancel(ref, context);
+    });
     _scrollController = ScrollController();
   }
 
   @override
   void dispose() {
+    _throttler.cancel();
     _scrollController.dispose();
     fabKey.currentState?.dispose();
     super.dispose();
@@ -208,24 +219,8 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
                           children: [
                             Expanded(
                                 child: TextButton(
-                                    onPressed: () async {
-                                      final result = await ref.read(
-                                          cancelRecruitGameProvider(
-                                                  gameId: widget.gameId)
-                                              .future);
-
-                                      if (result is ErrorModel) {
-                                        if (context.mounted) {
-                                          GameError.fromModel(model: result)
-                                              .responseError(context,
-                                                  GameApiType.cancel, ref);
-                                          context.pop();
-                                        }
-                                      } else {
-                                        if (context.mounted) {
-                                          context.goNamed(GameScreen.routeName);
-                                        }
-                                      }
+                                    onPressed: () {
+                                      _throttler.setValue(true);
                                     },
                                     style: ButtonStyle(
                                         backgroundColor:
@@ -427,6 +422,23 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
         break;
     }
     return button;
+  }
+
+  Future<void> _cancel(WidgetRef ref, BuildContext context) async {
+    final result =
+        await ref.read(cancelRecruitGameProvider(gameId: widget.gameId).future);
+
+    if (result is ErrorModel) {
+      if (context.mounted) {
+        GameError.fromModel(model: result)
+            .responseError(context, GameApiType.cancel, ref);
+        context.pop();
+      }
+    } else {
+      if (context.mounted) {
+        context.goNamed(GameScreen.routeName);
+      }
+    }
   }
 
   Widget getDivider() {
@@ -842,25 +854,17 @@ class SummaryComponent extends StatelessWidget {
                       btn: Consumer(
                         builder: (BuildContext context, WidgetRef ref,
                             Widget? child) {
+                          final throttler = Throttle(
+                            const Duration(seconds: 1),
+                            initialValue: false,
+                            checkEquality: true,
+                          );
+                          throttler.values.listen((bool s) {
+                            _changeFree(ref, context);
+                          });
                           return TextButton(
                             onPressed: () async {
-                              final result = await ref.read(
-                                  gameFreeProvider(gameId: gameId!).future);
-
-                              if (context.mounted) {
-                                if (result is ErrorModel) {
-                                  GameError.fromModel(model: result)
-                                      .responseError(
-                                          context, GameApiType.free, ref);
-                                } else {
-                                  context.pop();
-                                  Future.delayed(
-                                      const Duration(milliseconds: 100), () {
-                                    FlashUtil.showFlash(
-                                        context, '무료 경기로 전환되었습니다.');
-                                  });
-                                }
-                              }
+                              throttler.setValue(true);
                             },
                             child: const Text("무료 경기로 전환"),
                           );
@@ -873,6 +877,22 @@ class SummaryComponent extends StatelessWidget {
           ),
       ],
     );
+  }
+
+  Future<void> _changeFree(WidgetRef ref, BuildContext context) async {
+    final result = await ref.read(gameFreeProvider(gameId: gameId!).future);
+
+    if (context.mounted) {
+      if (result is ErrorModel) {
+        GameError.fromModel(model: result)
+            .responseError(context, GameApiType.free, ref);
+      } else {
+        context.pop();
+        Future.delayed(const Duration(milliseconds: 100), () {
+          FlashUtil.showFlash(context, '무료 경기로 전환되었습니다.');
+        });
+      }
+    }
   }
 
   @override

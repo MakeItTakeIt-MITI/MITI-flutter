@@ -30,7 +30,7 @@ Future<BaseModel> sendCode(SendCodeRef ref,
 
   switch (authType) {
     case PhoneAuthType.find_email:
-      return await repository.v2sendCode(param: param).then<BaseModel>((value) {
+      return await repository.sendCode(param: param).then<BaseModel>((value) {
         logger.i('findEmail $param!');
         final model = value.data!;
         ref.read(phoneAuthProvider(type: authType).notifier).update(
@@ -47,7 +47,7 @@ Future<BaseModel> sendCode(SendCodeRef ref,
       });
 
     case PhoneAuthType.password_update:
-      return await repository.v2sendCode(param: param).then<BaseModel>((value) {
+      return await repository.sendCode(param: param).then<BaseModel>((value) {
         logger.i('findPassword $param!');
         final model = value.data!;
         ref.read(phoneAuthProvider(type: authType).notifier).update(
@@ -65,7 +65,7 @@ Future<BaseModel> sendCode(SendCodeRef ref,
 
     /// todo
     case PhoneAuthType.signup:
-      return await repository.v2sendCode(param: param).then<BaseModel>((value) {
+      return await repository.sendCode(param: param).then<BaseModel>((value) {
         logger.i('findPassword $param!');
         final model = value.data!;
         ref.read(phoneAuthProvider(type: authType).notifier).update(

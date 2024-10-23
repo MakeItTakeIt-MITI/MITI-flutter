@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,6 +37,10 @@ class PhoneForm extends ConsumerStatefulWidget {
 }
 
 class _PhoneFormState extends ConsumerState<PhoneForm> {
+  late Throttle<int> _requestThrottler;
+  late Throttle<int> _authThrottler;
+  int requestCnt = 0;
+  int authCnt = 0;
   late final List<FocusNode> focusNodes = [FocusNode(), FocusNode()];
   bool firstSend = true;
   bool canRequest = false;
@@ -54,7 +59,33 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
   Color? borderColor;
 
   @override
+  void initState() {
+    super.initState();
+    _requestThrottler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: 0,
+      checkEquality: true,
+    );
+    _authThrottler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: 0,
+      checkEquality: true,
+    );
+    _requestThrottler.values.listen((int s) async {
+      final phone = ref.read(phoneNumberProvider(widget.type));
+      await requestValidCode(phone, widget.type);
+      requestCnt++;
+    });
+    _authThrottler.values.listen((int s) async {
+      await sendSMS(context);
+      authCnt++;
+    });
+  }
+
+  @override
   void dispose() {
+    _requestThrottler.cancel();
+    _authThrottler.cancel();
     timerReset();
     super.dispose();
   }
@@ -80,7 +111,7 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
     return RegExp(r"^\d{3}-\d{4}-\d{4}$").hasMatch(phone);
   }
 
-  void requestValidCode(String phone, PhoneAuthType type) async {
+  Future<void> requestValidCode(String phone, PhoneAuthType type) async {
     FocusScope.of(context).requestFocus(FocusNode());
     timerReset();
     final result = await ref.read(sendCodeProvider(authType: type).future);
@@ -145,7 +176,7 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
     }
   }
 
-  void sendSMS(BuildContext context) async {
+  Future<void> sendSMS(BuildContext context) async {
     FocusScope.of(context).requestFocus(FocusNode());
 
     final result =
@@ -230,7 +261,7 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
                 onNext: () {
                   if (validPhone(phone)) {
                     setState(() {
-                      requestValidCode(phone, widget.type);
+                      _requestThrottler.setValue(requestCnt + 1);
                     });
                   }
                 },
@@ -249,7 +280,7 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
                       ? () {
                           if (validPhone(phone)) {
                             setState(() {
-                              requestValidCode(phone, widget.type);
+                              _requestThrottler.setValue(requestCnt + 1);
                             });
                           }
                         }
@@ -298,7 +329,7 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
                     },
                     onNext: () {
                       if (phoneAuth.code.length == 6) {
-                        sendSMS(context);
+                        _authThrottler.setValue(authCnt + 1);
                       }
                     },
                     keyboardType: TextInputType.number,
@@ -325,7 +356,7 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
                     onPressed: onSend
                         ? () async {
                             if (phoneAuth.code.length == 6) {
-                              sendSMS(context);
+                              _authThrottler.setValue(authCnt + 1);
                             }
                           }
                         : null,

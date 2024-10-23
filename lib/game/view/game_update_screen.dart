@@ -1,3 +1,7 @@
+import 'dart:developer';
+
+import 'package:debounce_throttle/debounce_throttle.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -35,6 +39,8 @@ class GameUpdateScreen extends ConsumerStatefulWidget {
 
 class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
   late final ScrollController _scrollController;
+  late Throttle<bool> _throttler;
+
   final formKeys = [
     GlobalKey(),
     GlobalKey(),
@@ -51,6 +57,14 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: false,
+      checkEquality: true,
+    );
+    _throttler.values.listen((bool s) {
+      onUpdate(context);
+    });
     for (int i = 0; i < 3; i++) {
       focusNodes[i].addListener(() {
         if (focusNodes[i].hasFocus) {
@@ -70,6 +84,7 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
 
   @override
   void dispose() {
+    _throttler.cancel();
     for (int i = 0; i < 3; i++) {
       focusNodes[i].removeListener(() {
         focusScrollable(i);
@@ -101,7 +116,7 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
           button: TextButton(
             onPressed: valid()
                 ? () async {
-                    await onUpdate(context);
+                    _throttler.setValue(true);
                   }
                 : () {},
             style: TextButton.styleFrom(

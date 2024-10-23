@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,16 +35,26 @@ class UserDeleteScreen extends ConsumerStatefulWidget {
 
 class _UserDeleteScreenState extends ConsumerState<UserDeleteScreen> {
   late final ScrollController _scrollController;
+  late Throttle<bool> _throttler;
   bool valid = false;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: false,
+      checkEquality: true,
+    );
+    _throttler.values.listen((bool s) {
+      _deleteUser(context);
+    });
   }
 
   @override
   void dispose() {
+    _throttler.cancel();
     _scrollController.dispose();
     super.dispose();
   }
@@ -60,38 +71,7 @@ class _UserDeleteScreenState extends ConsumerState<UserDeleteScreen> {
         button: TextButton(
           onPressed: valid
               ? () async {
-                  final result = await ref.read(deleteUserProvider.future);
-                  if (context.mounted) {
-                    if (result is ErrorModel) {
-                      UserError.fromModel(model: result)
-                          .responseError(context, UserApiType.delete, ref);
-                    } else {
-                      Future.delayed(const Duration(milliseconds: 200), () {
-                        showModalBottomSheet(
-                            context: rootNavKey.currentState!.context!,
-                            builder: (_) {
-                              return BottomDialog(
-                                title: '탈퇴 완료',
-                                content:
-                                    '회원 탈퇴가 완료되었습니다.\n농구 하고싶을 땐 미티! 다시 볼 날을 고대하고 있을게요!',
-                                btn: Consumer(
-                                  builder: (BuildContext context, WidgetRef ref,
-                                      Widget? child) {
-                                    return TextButton(
-                                      onPressed: () {
-                                        context.pop();
-                                      },
-                                      child: const Text(
-                                        "확인",
-                                      ),
-                                    );
-                                  },
-                                ),
-                              );
-                            });
-                      });
-                    }
-                  }
+                  _throttler.setValue(true);
                 }
               : () {},
           style: TextButton.styleFrom(
@@ -160,5 +140,39 @@ class _UserDeleteScreenState extends ConsumerState<UserDeleteScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _deleteUser(BuildContext context) async {
+    final result = await ref.read(deleteUserProvider.future);
+    if (context.mounted) {
+      if (result is ErrorModel) {
+        UserError.fromModel(model: result)
+            .responseError(context, UserApiType.delete, ref);
+      } else {
+        Future.delayed(const Duration(milliseconds: 200), () {
+          showModalBottomSheet(
+              context: rootNavKey.currentState!.context!,
+              builder: (_) {
+                return BottomDialog(
+                  title: '탈퇴 완료',
+                  content: '회원 탈퇴가 완료되었습니다.\n농구 하고싶을 땐 미티! 다시 볼 날을 고대하고 있을게요!',
+                  btn: Consumer(
+                    builder:
+                        (BuildContext context, WidgetRef ref, Widget? child) {
+                      return TextButton(
+                        onPressed: () {
+                          context.pop();
+                        },
+                        child: const Text(
+                          "확인",
+                        ),
+                      );
+                    },
+                  ),
+                );
+              });
+        });
+      }
+    }
   }
 }

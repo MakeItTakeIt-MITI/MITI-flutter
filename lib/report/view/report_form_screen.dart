@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -25,7 +26,7 @@ import '../../theme/text_theme.dart';
 import '../error/report_error.dart';
 import '../model/report_model.dart';
 
-class ReportFormScreen extends StatefulWidget {
+class ReportFormScreen extends ConsumerStatefulWidget {
   final int gameId;
   final int reportId;
   final HostReportCategoryType type;
@@ -40,11 +41,31 @@ class ReportFormScreen extends StatefulWidget {
   });
 
   @override
-  State<ReportFormScreen> createState() => _ReportFormScreenState();
+  ConsumerState<ReportFormScreen> createState() => _ReportFormScreenState();
 }
 
-class _ReportFormScreenState extends State<ReportFormScreen> {
+class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
+  late Throttle<bool> _throttler;
   GlobalKey key = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: false,
+      checkEquality: true,
+    );
+    _throttler.values.listen((bool s) {
+      _report(ref, context);
+    });
+  }
+
+  @override
+  void dispose() {
+    _throttler.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,53 +81,7 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
               return TextButton(
                 onPressed: valid
                     ? () async {
-                        final result = await ref.read(createReportProvider(
-                                gameId: widget.gameId, category: widget.type)
-                            .future);
-
-                        if (result is ErrorModel) {
-                          ReportError.fromModel(model: result).responseError(
-                              context, ReportApiType.report, ref);
-                        } else {
-                          final model = (ref.read(
-                                      gameDetailProvider(gameId: widget.gameId))
-                                  as ResponseModel<GameDetailModel>)
-                              .data!;
-                          Map<String, String> pathParameters = {
-                            'gameId': model.id.toString()
-                          };
-                          context.goNamed(GameDetailScreen.routeName,
-                              pathParameters: pathParameters);
-                          Future.delayed(const Duration(milliseconds: 200), () {
-                            showModalBottomSheet(
-                                isDismissible: false,
-                                context: rootNavKey.currentState!.context!,
-                                builder: (_) {
-                                  return BottomDialog(
-                                    title: '경기 신고 완료',
-                                    content:
-                                        '‘${model.title}’ 경기의 신고가 접수되었습니다.',
-                                    btn: Consumer(
-                                      builder: (BuildContext context,
-                                          WidgetRef ref, Widget? child) {
-                                        return TextButton(
-                                          onPressed: () async {
-                                            context.pop();
-                                          },
-                                          style: TextButton.styleFrom(
-                                            fixedSize:
-                                                Size(double.infinity, 48.h),
-                                          ),
-                                          child: const Text(
-                                            "확인",
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  );
-                                });
-                          });
-                        }
+                        _throttler.setValue(true);
                       }
                     : () {},
                 style: TextButton.styleFrom(
@@ -177,5 +152,50 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _report(WidgetRef ref, BuildContext context) async {
+    final result = await ref.read(
+        createReportProvider(gameId: widget.gameId, category: widget.type)
+            .future);
+
+    if (result is ErrorModel) {
+      ReportError.fromModel(model: result)
+          .responseError(context, ReportApiType.report, ref);
+    } else {
+      final model = (ref.read(gameDetailProvider(gameId: widget.gameId))
+              as ResponseModel<GameDetailModel>)
+          .data!;
+      Map<String, String> pathParameters = {'gameId': model.id.toString()};
+      context.goNamed(GameDetailScreen.routeName,
+          pathParameters: pathParameters);
+      Future.delayed(const Duration(milliseconds: 200), () {
+        showModalBottomSheet(
+            isDismissible: false,
+            context: rootNavKey.currentState!.context!,
+            builder: (_) {
+              return BottomDialog(
+                title: '경기 신고 완료',
+                content: '‘${model.title}’ 경기의 신고가 접수되었습니다.',
+                btn: Consumer(
+                  builder:
+                      (BuildContext context, WidgetRef ref, Widget? child) {
+                    return TextButton(
+                      onPressed: () async {
+                        context.pop();
+                      },
+                      style: TextButton.styleFrom(
+                        fixedSize: Size(double.infinity, 48.h),
+                      ),
+                      child: const Text(
+                        "확인",
+                      ),
+                    );
+                  },
+                ),
+              );
+            });
+      });
+    }
   }
 }

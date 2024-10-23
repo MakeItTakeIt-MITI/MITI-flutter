@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:kpostal/kpostal.dart';
 import 'package:marquee/marquee.dart';
 import 'dart:math' hide log;
@@ -53,6 +54,7 @@ class GameCreateScreen extends ConsumerStatefulWidget {
 }
 
 class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
+  late Throttle<bool> _throttler;
   late final ScrollController _scrollController;
   final formKeys = [
     GlobalKey(),
@@ -77,6 +79,14 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
   @override
   void initState() {
     super.initState();
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: false,
+      checkEquality: true,
+    );
+    _throttler.values.listen((bool s) {
+      _onCreate(ref, context);
+    });
     _scrollController = ScrollController();
     for (int i = 0; i < formKeys.length; i++) {
       focusNodes[i].addListener(() {
@@ -106,6 +116,7 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
 
   @override
   void dispose() {
+    _throttler.cancel();
     _scrollController.dispose();
     super.dispose();
   }
@@ -185,27 +196,7 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
               child: TextButton(
                   onPressed: valid
                       ? () async {
-                          final result =
-                              await ref.read(gameCreateProvider.future);
-                          if (context.mounted) {
-                            if (result is ErrorModel) {
-                              GameError.fromModel(model: result).responseError(
-                                  context, GameApiType.createGame, ref);
-                            } else {
-                              final model =
-                                  result as ResponseModel<GameDetailModel>;
-                              Map<String, String> pathParameters = {
-                                'gameId': model.data!.id.toString()
-                              };
-                              const GameCompleteType extra =
-                                  GameCompleteType.create;
-                              context.pushNamed(
-                                GameCompleteScreen.routeName,
-                                pathParameters: pathParameters,
-                                extra: extra,
-                              );
-                            }
-                          }
+                          _throttler.setValue(true);
                         }
                       : () {},
                   style: TextButton.styleFrom(
@@ -223,6 +214,27 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _onCreate(WidgetRef ref, BuildContext context) async {
+    final result = await ref.read(gameCreateProvider.future);
+    if (context.mounted) {
+      if (result is ErrorModel) {
+        GameError.fromModel(model: result)
+            .responseError(context, GameApiType.createGame, ref);
+      } else {
+        final model = result as ResponseModel<GameDetailModel>;
+        Map<String, String> pathParameters = {
+          'gameId': model.data!.id.toString()
+        };
+        const GameCompleteType extra = GameCompleteType.create;
+        context.pushNamed(
+          GameCompleteScreen.routeName,
+          pathParameters: pathParameters,
+          extra: extra,
+        );
+      }
+    }
   }
 
   SliverToBoxAdapter getSpacer({double height = 32}) => SliverToBoxAdapter(

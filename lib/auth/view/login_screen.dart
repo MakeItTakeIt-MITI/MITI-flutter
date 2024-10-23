@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -103,14 +104,23 @@ class LoginComponent extends ConsumerStatefulWidget {
 
 class _LoginComponentState extends ConsumerState<LoginComponent> {
   late final List<FocusNode> focusNodes = [FocusNode(), FocusNode()];
+  late Throttle<bool> _throttler;
   InteractionDesc? interactionDesc;
+
   @override
   void initState() {
     super.initState();
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: false,
+      checkEquality: true,
+    );
+    _throttler.values.listen((bool s) {
+      login();
+    });
     for (var focusNode in focusNodes) {
       focusNode.addListener(() {
-        setState(() {
-        });
+        setState(() {});
       });
     }
 
@@ -124,8 +134,8 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
   }
 
   @override
-
   void dispose() {
+    _throttler.cancel();
     for (var focusNode in focusNodes) {
       focusNode.removeListener(() {});
     }
@@ -147,11 +157,9 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
               hintText: '이메일을 입력해주세요.',
               textInputAction: TextInputAction.next,
               label: '이메일',
-              onTap: () =>
-                  FocusScope.of(context).requestFocus(focusNodes[0]),
+              onTap: () => FocusScope.of(context).requestFocus(focusNodes[0]),
               borderColor: formInfo.borderColor,
-              onNext: () =>
-                  FocusScope.of(context).requestFocus(focusNodes[1]),
+              onNext: () => FocusScope.of(context).requestFocus(focusNodes[1]),
               onChanged: (String? val) {
                 ref
                     .read(loginFormProvider.notifier)
@@ -203,7 +211,7 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
                         .updateFormField(password: val);
                     log(ref.read(loginFormProvider).password);
                   },
-                  onNext: () => login(),
+                  onNext: () => _throttler.setValue(true),
                   interactionDesc: formInfo.interactionDesc,
                 ),
                 // if(formInfo.interactionDesc == null)
@@ -214,7 +222,7 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
         ),
         SizedBox(height: 32.h),
         TextButton(
-          onPressed: () => login(),
+          onPressed: () => _throttler.setValue(true),
           style: ButtonStyle(
             backgroundColor: WidgetStateProperty.all(
               ref.watch(loginFormProvider.notifier).isValid()
@@ -440,7 +448,7 @@ class AppleLoginButton extends ConsumerWidget {
         AppleIDAuthorizationScopes.fullName,
       ],
     );
-   final param = AppleLoginParam.fromModel(credential: credential);
+    final param = AppleLoginParam.fromModel(credential: credential);
     final result = await ref
         .read(loginProvider(param: param, type: AuthType.apple).future);
 
@@ -451,7 +459,7 @@ class AppleLoginButton extends ConsumerWidget {
               context, AuthApiType.oauth, ref,
               object: AuthType.apple);
         }
-        if(result.status_code == Forbidden && result.error_code == 540){
+        if (result.status_code == Forbidden && result.error_code == 540) {
           final String userInfoToken = result.data['userinfo_token'];
           log("userInfoToken = $userInfoToken");
           final storage = ref.read(secureStorageProvider);
@@ -479,7 +487,8 @@ class HelpComponent extends StatelessWidget {
           children: [
             InkWell(
               onTap: () async {
-                final uri = Uri.parse('https://www.makeittakeit.kr/support/inquiries/new');
+                final uri = Uri.parse(
+                    'https://www.makeittakeit.kr/support/inquiries/new');
                 if (await canLaunchUrl(uri)) {
                   await launchUrl(uri);
                 }

@@ -33,11 +33,6 @@ abstract class AuthRepository {
   Future<ResponseModel<SignUpCheckModel>> signUpCheck(
       {@Body() required BaseParam param});
 
-  @POST('/auth/{user_info_token}/authenticate')
-  Future<ResponseModel<ResponseCodeModel>> sendCode(
-      {@Path() required String user_info_token,
-      @Body() required CodeParam param});
-
 
   @Headers({'token': 'true', 'refresh': 'true'})
   @POST('/auth/logout')
@@ -57,8 +52,9 @@ abstract class AuthRepository {
   Future<ResponseModel<TokenModel>> getReIssueToken();
 
   /////////////////////////////////////////
+  /// 인증 코드 전송 요청 API
   @POST('/auth/send-code')
-  Future<ResponseModel<SendCodeModel>> v2sendCode(
+  Future<ResponseModel<SendCodeModel>> sendCode(
       {@Body() required SendCodeParam param});
 
   /// 회원가입, 이메일 찾기, 비밀번호 찾기 번호 인증
