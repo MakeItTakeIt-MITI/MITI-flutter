@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:debounce_throttle/debounce_throttle.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/support/provider/widget/support_form_provider.dart';
@@ -15,6 +16,7 @@ import '../../common/provider/pagination_provider.dart';
 import '../model/support_model.dart';
 import '../param/support_param.dart';
 import '../repository/support_repository.dart';
+import '../view/guide_screen.dart';
 
 part 'support_provider.g.dart';
 
@@ -137,6 +139,8 @@ class Guide extends _$Guide {
     final repository = ref.watch(supportPRepositoryProvider);
     repository.getGuide().then((value) {
       logger.i(value);
+      final globalKeys = List.generate(value.data!.length, (i) => GlobalKey());
+      ref.read(serviceFilterKeyProvider.notifier).update((s) => globalKeys);
       state = value;
     }).catchError((e) {
       final error = ErrorModel.respToError(e);

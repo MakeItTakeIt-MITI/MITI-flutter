@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:app_links/app_links.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -19,6 +20,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
+import 'package:miti/common/provider/secure_storage_provider.dart';
 import 'package:miti/env/environment.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/notification/model/push_model.dart';
@@ -84,7 +86,7 @@ void _foregroundRouting(NotificationResponse details) async {
     }
 
     final topicEnum =
-    PushNotificationTopicType.stringToEnum(value: resultMap['topic']!);
+        PushNotificationTopicType.stringToEnum(value: resultMap['topic']!);
     final model = PushDataModel(
         pushId: resultMap['pushId']!,
         topic: topicEnum,
@@ -96,8 +98,6 @@ void _backgroundRouting(NotificationResponse details) {
   log('_backgroundRouting = $details');
   rootNavKey.currentContext!.goNamed(NotificationScreen.routeName);
 }
-
-
 
 void main() async {
   HttpOverrides.global = MyHttpOverrides();
@@ -150,7 +150,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   }
 
   void _notificationSetting() async {
-     _localNotificationSetting();
+    _localNotificationSetting();
     _fcmSetting();
   }
 
@@ -248,6 +248,7 @@ class _MyAppState extends ConsumerState<MyApp> {
 
         final flutterLocalNotificationsPlugin =
             ref.read(notificationProvider.notifier).getNotification;
+
         await flutterLocalNotificationsPlugin?.show(
             notification.hashCode,
             notification.title,
@@ -266,7 +267,14 @@ class _MyAppState extends ConsumerState<MyApp> {
               iOS: DarwinNotificationDetails(),
             ),
             payload: "gameId=$gameId&pushId=$pushId&topic=$topic");
+        final secureProvider = ref.read(secureStorageProvider);
+        final String? storagePushCnt =
+            await secureProvider.read(key: 'pushCnt');
 
+        int pushCnt = int.parse(storagePushCnt ?? '-1') + 1;
+        AppBadgePlus.updateBadge(pushCnt);
+
+        secureProvider.write(key: 'pushCnt', value: pushCnt.toString());
         log('notification.title = ${notification.title}');
         log('notification.body = ${notification.body}');
         // log("수신자 측 메시지 수신");
@@ -282,9 +290,6 @@ class _MyAppState extends ConsumerState<MyApp> {
           .setNotificationPlugin(notification);
     });
   }
-
-
-
 
   Future<FlutterLocalNotificationsPlugin> _initLocalNotification() async {
     final FlutterLocalNotificationsPlugin localNotification =
@@ -309,7 +314,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     await localNotification.initialize(
       initSettings,
       onDidReceiveBackgroundNotificationResponse: _backgroundRouting,
-      onDidReceiveNotificationResponse: (details ){
+      onDidReceiveNotificationResponse: (details) {
         _foregroundRouting(details);
         if (details.payload != null && details.payload!.isNotEmpty) {
           // & 기준으로 문자열을 분할
@@ -325,8 +330,8 @@ class _MyAppState extends ConsumerState<MyApp> {
             }
           }
 
-          final topicEnum =
-          PushNotificationTopicType.stringToEnum(value: resultMap['topic']!);
+          final topicEnum = PushNotificationTopicType.stringToEnum(
+              value: resultMap['topic']!);
           final model = PushDataModel(
               pushId: resultMap['pushId']!,
               topic: topicEnum,
@@ -338,6 +343,7 @@ class _MyAppState extends ConsumerState<MyApp> {
 
     return localNotification;
   }
+
   void _handleMessage(PushDataModel model) {
     switch (model.topic) {
       case PushNotificationTopicType.general:
@@ -350,9 +356,9 @@ class _MyAppState extends ConsumerState<MyApp> {
       case PushNotificationTopicType.game_status_changed:
       case PushNotificationTopicType.new_participation:
       case PushNotificationTopicType.game_fee_changed:
-      ref
-          .read(pushProvider(pushId: int.parse(model.pushId)).notifier)
-          .get(pushId: int.parse(model.pushId));
+        ref
+            .read(pushProvider(pushId: int.parse(model.pushId)).notifier)
+            .get(pushId: int.parse(model.pushId));
         Map<String, String> pathParameters = {
           'gameId': model.gameId.toString()
         };
@@ -371,58 +377,8 @@ class _MyAppState extends ConsumerState<MyApp> {
     }
   }
 
-  // Future<FlutterLocalNotificationsPlugin> _initLocalNotification(
-  //     WidgetRef ref) async {
-  //   final FlutterLocalNotificationsPlugin localNotification =
-  //       FlutterLocalNotificationsPlugin();
-  //
-  //   /// Android 세팅
-  //   const AndroidInitializationSettings initSettingsAndroid =
-  //       AndroidInitializationSettings('@mipmap/ic_notification');
-  //
-  //   /// IOS 세팅
-  //   const initSettingsIOS = DarwinInitializationSettings(
-  //     requestSoundPermission: false,
-  //     requestBadgePermission: false,
-  //     requestAlertPermission: false,
-  //   );
-  //
-  //   const InitializationSettings initSettings = InitializationSettings(
-  //     android: initSettingsAndroid,
-  //     iOS: initSettingsIOS,
-  //   );
-  //
-  //   await localNotification.initialize(
-  //     initSettings,
-  //     onDidReceiveBackgroundNotificationResponse: _backgroundRouting,
-  //     onDidReceiveNotificationResponse: _foregroundRouting,
-  //   );
-  //
-  //   return localNotification;
-  // }
-  //
-  // void _foregroundRouting(NotificationResponse details) async {
-  //   /// foreground 상태일 때 만 fcm 알림 내용 받기 가능
-  //   /// terminated, background 상태일 때는 null
-  //   log('_foregroundRouting = $details');
-  //   log("details.payload = ${details.payload}");
-  //   if (details.payload != null && details.payload!.isNotEmpty) {
-  //     List<String> params = details.payload!.split("&");
-  //     final gameId =
-  //         params[0].split("=").length > 1 ? params[0].split("=")[1] : null;
-  //     final pushId = params[1].split("=")[1];
-  //     final topic =
-  //         params[2].split("=").length > 1 ? params[2].split("=")[1] : null;
-  //
-  //     final topicEnum = PushNotificationTopicType.stringToEnum(value: topic!);
-  //     _handleMessage(gameId, pushId, topicEnum);
-  //   }
-  // }
-
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     final router = ref.read(routerProvider);
 
     return ScreenUtilInit(

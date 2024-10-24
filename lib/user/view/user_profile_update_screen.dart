@@ -1,3 +1,4 @@
+import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -264,6 +265,7 @@ class _AuthComponentState extends ConsumerState<_AuthComponent> {
         AuthError.fromModel(model: result)
             .responseError(context, AuthApiType.login, ref);
       } else {
+        AppBadgePlus.updateBadge(0);
         context.pop();
       }
     }

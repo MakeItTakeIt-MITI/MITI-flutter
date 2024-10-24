@@ -14,20 +14,26 @@ import 'package:miti/theme/color_theme.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:collection/collection.dart';
+import 'package:miti/util/util.dart';
 import '../component/skeleton/guide_skeleton.dart';
 import '../model/support_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class GuideScreen extends StatefulWidget {
+class GuideScreen extends ConsumerStatefulWidget {
   static String get routeName => 'guide';
 
   const GuideScreen({super.key});
 
   @override
-  State<GuideScreen> createState() => _GuideScreenState();
+  ConsumerState<GuideScreen> createState() => _GuideScreenState();
 }
 
-class _GuideScreenState extends State<GuideScreen> {
+final serviceFilterKeyProvider =
+    StateProvider.autoDispose<List<GlobalKey>>((s) {
+  return [];
+});
+
+class _GuideScreenState extends ConsumerState<GuideScreen> {
   UserGuideType category = UserGuideType.game;
   int currentIdx = 0;
   late CarouselSliderController carouselController;
@@ -36,10 +42,12 @@ class _GuideScreenState extends State<GuideScreen> {
   void initState() {
     super.initState();
     carouselController = CarouselSliderController();
+    WidgetsBinding.instance.addPostFrameCallback((e) {});
   }
 
   @override
   Widget build(BuildContext context) {
+    final globalKeys = ref.watch(serviceFilterKeyProvider);
     return Scaffold(
       body: NestedScrollView(headerSliverBuilder: (_, __) {
         return [
@@ -80,7 +88,9 @@ class _GuideScreenState extends State<GuideScreen> {
                       itemBuilder: (_, idx) {
                         return _GuideChip(
                           title: model[idx].category.displayName,
+                          globalKey: globalKeys[idx],
                           onTap: () async {
+                            focusScrollable(idx, globalKeys);
                             setState(() {
                               category = model[idx].category;
                               if (images.isNotEmpty) {
@@ -188,17 +198,20 @@ class _GuideChip extends StatelessWidget {
   final String title;
   final VoidCallback onTap;
   final bool selected;
+  final GlobalKey globalKey;
 
   const _GuideChip(
       {super.key,
       required this.title,
       required this.onTap,
-      required this.selected});
+      required this.selected,
+      required this.globalKey});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      key: globalKey,
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.r),

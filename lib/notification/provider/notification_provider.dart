@@ -9,6 +9,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
+import '../../common/provider/secure_storage_provider.dart';
 import '../model/push_model.dart';
 
 part 'notification_provider.g.dart';
@@ -165,6 +166,8 @@ class UnreadPush extends _$UnreadPush {
   Future<void> get() async {
     final repository = ref.watch(pushPRepositoryProvider);
     final userId = ref.read(authProvider)!.id!;
+    final secureProvider = ref.read(secureStorageProvider);
+
     repository.unreadPush(userId: userId).then((value) {
       logger.i(value);
       AppBadgePlus.isSupported().then((isAllow) {
@@ -174,6 +177,7 @@ class UnreadPush extends _$UnreadPush {
             cnt = 999;
           }
           AppBadgePlus.updateBadge(cnt);
+          secureProvider.write(key: 'pushCnt', value: cnt.toString());
         }
       });
       state = value;

@@ -153,6 +153,7 @@ class _FAQScreenState extends State<FAQScreen> {
                     return Expanded(
                       child: SingleChildScrollView(
                         child: ListView.separated(
+
                           physics: const NeverScrollableScrollPhysics(),
                           itemBuilder: (_, idx) {
                             return _FAQComponent.fromModel(
@@ -205,6 +206,8 @@ class _FAQScreenState extends State<FAQScreen> {
                         SizedBox(height: 20.h),
                         Expanded(
                           child: SingleChildScrollView(
+                            keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
                             child: ListView.separated(
                               physics: const NeverScrollableScrollPhysics(),
                               itemBuilder: (_, idx) {
