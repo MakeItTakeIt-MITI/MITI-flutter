@@ -23,6 +23,7 @@ import 'package:miti/util/util.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../common/component/custom_dialog.dart';
 import '../../common/component/custom_text_form_field.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/model/default_model.dart';
@@ -490,11 +491,20 @@ class HelpComponent extends StatelessWidget {
           children: [
             InkWell(
               onTap: () async {
-                final uri = Uri.parse(
-                    'https://www.makeittakeit.kr/support/inquiries/new');
-                if (await canLaunchUrl(uri)) {
-                  await launchUrl(uri);
-                }
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '정산 내역 조회 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                );
+                // final uri = Uri.parse(
+                //     'https://www.makeittakeit.kr/support/inquiries/new');
+                // if (await canLaunchUrl(uri)) {
+                //   await launchUrl(uri);
+                // }
               },
               child: Text(
                 '고객센터',

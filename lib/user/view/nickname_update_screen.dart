@@ -14,6 +14,8 @@ import 'package:miti/user/provider/user_form_provider.dart';
 import 'package:miti/user/provider/user_provider.dart';
 import 'package:miti/util/util.dart';
 
+import '../error/user_error.dart';
+
 class NicknameUpdateScreen extends ConsumerStatefulWidget {
   static String get routeName => 'nicknameUpdate';
 
@@ -110,6 +112,8 @@ class _NicknameUpdateScreenState extends ConsumerState<NicknameUpdateScreen> {
   Future<void> _updateNickname(WidgetRef ref, BuildContext context) async {
     final result = await ref.read(updateNicknameProvider.future);
     if (result is ErrorModel) {
+      UserError.fromModel(model: result)
+          .responseError(context, UserApiType.updateNickname, ref);
     } else {
       context.pop();
       Future.delayed(const Duration(milliseconds: 100), () {

@@ -304,6 +304,9 @@ class _NewPasswordFormState extends ConsumerState<_NewPasswordForm> {
     if (result is LoadingModel) {
       return CircularProgressIndicator();
     } else if (result is ErrorModel) {
+      WidgetsBinding.instance.addPostFrameCallback((s) =>
+          UserError.fromModel(model: result)
+              .responseError(context, UserApiType.get, ref));
       return Text('에러');
     }
     final passwordForm = ref.watch(userPasswordFormProvider);

@@ -122,7 +122,6 @@ class UserInfo extends _$UserInfo {
   }
 }
 
-
 @riverpod
 Future<BaseModel> updateNickname(UpdateNicknameRef ref) async {
   final userId = ref.watch(authProvider)!.id!;
@@ -132,10 +131,6 @@ Future<BaseModel> updateNickname(UpdateNicknameRef ref) async {
       .updateNickname(userId: userId, param: param)
       .then<BaseModel>((value) {
     logger.i(value);
-    final result = ref.watch(userInfoProvider);
-
-    // final model = (result as ResponseModel<UserModel>).data!;
-
     ref.read(userInfoProvider.notifier).updateNickname(param.nickname);
     return value;
   }).catchError((e) {

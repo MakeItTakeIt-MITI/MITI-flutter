@@ -25,6 +25,7 @@ import 'package:collection/collection.dart';
 
 import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
+import '../../common/error/view/error_screen.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/provider/router_provider.dart';
@@ -109,7 +110,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
               return TextButton(
                 onPressed: valid
                     ? () async {
-                        _throttler.setValue(throttleCnt+1);
+                        _throttler.setValue(throttleCnt + 1);
                       }
                     : () {},
                 style: TextButton.styleFrom(
@@ -173,8 +174,10 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
         final gameApiType = widget.participationId != null
             ? GameApiType.createGuestReview
             : GameApiType.createHostReview;
-        GameError.fromModel(model: result)
-            .responseError(context, gameApiType, ref);
+        WidgetsBinding.instance.addPostFrameCallback((s) {
+          GameError.fromModel(model: result as ErrorModel)
+              .responseError(context, gameApiType, ref);
+        });
       }
     } else {
       ref

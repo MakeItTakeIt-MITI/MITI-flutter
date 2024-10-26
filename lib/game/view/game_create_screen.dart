@@ -1183,8 +1183,6 @@ class _FeeFormState extends ConsumerState<_FeeForm> {
       key: widget.formKeys[5],
       onTap: () => FocusScope.of(context).requestFocus(widget.focusNodes[5]),
       onNext: () => FocusScope.of(context).requestFocus(widget.focusNodes[6]),
-
-      // textAlign: fee.isNotEmpty ? TextAlign.right : TextAlign.left,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
         NumberFormatter(),
