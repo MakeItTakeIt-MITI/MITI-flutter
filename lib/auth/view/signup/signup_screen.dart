@@ -1164,18 +1164,20 @@ class _NextButton extends ConsumerStatefulWidget {
 }
 
 class _NextButtonState extends ConsumerState<_NextButton> {
-  late Throttle<bool> _throttler;
+  late Throttle<int> _throttler;
+  int throttleCnt = 0;
 
   @override
   void initState() {
     super.initState();
     _throttler = Throttle(
       const Duration(seconds: 1),
-      initialValue: false,
+      initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((bool s) {
+    _throttler.values.listen((int s) {
       _signUp(context);
+      throttleCnt++;
     });
   }
 
@@ -1207,7 +1209,7 @@ class _NextButtonState extends ConsumerState<_NextButton> {
               if (validNext) {
                 if ((progress == 5 ||
                     (progress == 3 && AuthType.email != widget.type))) {
-                  _throttler.setValue(true);
+                  _throttler.setValue(throttleCnt + 1);
                 } else {
                   ref.read(progressProvider.notifier).nextProgress();
                 }

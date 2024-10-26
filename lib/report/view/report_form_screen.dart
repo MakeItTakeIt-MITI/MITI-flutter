@@ -45,7 +45,8 @@ class ReportFormScreen extends ConsumerStatefulWidget {
 }
 
 class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
-  late Throttle<bool> _throttler;
+  late Throttle<int> _throttler;
+  int throttleCnt = 0;
   GlobalKey key = GlobalKey();
 
   @override
@@ -53,11 +54,12 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
     super.initState();
     _throttler = Throttle(
       const Duration(seconds: 1),
-      initialValue: false,
+      initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((bool s) {
+    _throttler.values.listen((int s) {
       _report(ref, context);
+      throttleCnt++;
     });
   }
 
@@ -81,7 +83,7 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
               return TextButton(
                 onPressed: valid
                     ? () async {
-                        _throttler.setValue(true);
+                        _throttler.setValue(throttleCnt+1);
                       }
                     : () {},
                 style: TextButton.styleFrom(

@@ -39,7 +39,8 @@ class GameUpdateScreen extends ConsumerStatefulWidget {
 
 class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
   late final ScrollController _scrollController;
-  late Throttle<bool> _throttler;
+  late Throttle<int> _throttler;
+  int throttleCnt = 0;
 
   final formKeys = [
     GlobalKey(),
@@ -59,11 +60,12 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
     _scrollController = ScrollController();
     _throttler = Throttle(
       const Duration(seconds: 1),
-      initialValue: false,
+      initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((bool s) {
+    _throttler.values.listen((int s) {
       onUpdate(context);
+      throttleCnt++;
     });
     for (int i = 0; i < 3; i++) {
       focusNodes[i].addListener(() {
@@ -116,7 +118,7 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
           button: TextButton(
             onPressed: valid()
                 ? () async {
-                    _throttler.setValue(true);
+                    _throttler.setValue(throttleCnt + 1);
                   }
                 : () {},
             style: TextButton.styleFrom(

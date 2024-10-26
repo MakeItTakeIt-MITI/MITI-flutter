@@ -177,17 +177,18 @@ class _AuthComponent extends ConsumerStatefulWidget {
 }
 
 class _AuthComponentState extends ConsumerState<_AuthComponent> {
-  late Throttle<bool> _throttler;
+  late Throttle<int> _throttler;
+  int throttleCnt = 0;
 
   @override
   void initState() {
     super.initState();
     _throttler = Throttle(
       const Duration(seconds: 1),
-      initialValue: false,
+      initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((bool s) {
+    _throttler.values.listen((int s) {
       _logout(ref, context);
     });
   }
@@ -211,7 +212,7 @@ class _AuthComponentState extends ConsumerState<_AuthComponent> {
                           ' 로그아웃 시, 모집하거나 참여한 경기에\n해당하는 알람을 받을 수 없습니다.\n그래도 로그아웃 하시겠습니까?',
                       btn: TextButton(
                         onPressed: () async {
-                          _throttler.setValue(true);
+                          _throttler.setValue(throttleCnt+1);
                         },
                         child: const Text("로그아웃 하기"),
                       ),

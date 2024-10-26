@@ -104,7 +104,8 @@ class LoginComponent extends ConsumerStatefulWidget {
 
 class _LoginComponentState extends ConsumerState<LoginComponent> {
   late final List<FocusNode> focusNodes = [FocusNode(), FocusNode()];
-  late Throttle<bool> _throttler;
+  late Throttle<int> _throttler;
+  int throttleCnt = 0;
   InteractionDesc? interactionDesc;
 
   @override
@@ -112,11 +113,12 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
     super.initState();
     _throttler = Throttle(
       const Duration(seconds: 1),
-      initialValue: false,
+      initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((bool s) {
-      login();
+    _throttler.values.listen((int s) async {
+      await login();
+      throttleCnt++;
     });
     for (var focusNode in focusNodes) {
       focusNode.addListener(() {
@@ -211,7 +213,7 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
                         .updateFormField(password: val);
                     log(ref.read(loginFormProvider).password);
                   },
-                  onNext: () => _throttler.setValue(true),
+                  onNext: () => _throttler.setValue(throttleCnt + 1),
                   interactionDesc: formInfo.interactionDesc,
                 ),
                 // if(formInfo.interactionDesc == null)
@@ -222,7 +224,9 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
         ),
         SizedBox(height: 32.h),
         TextButton(
-          onPressed: () => _throttler.setValue(true),
+          onPressed: () {
+            _throttler.setValue(throttleCnt + 1);
+          },
           style: ButtonStyle(
             backgroundColor: WidgetStateProperty.all(
               ref.watch(loginFormProvider.notifier).isValid()
@@ -244,7 +248,7 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
     );
   }
 
-  void login() async {
+  Future<void> login() async {
     FocusScope.of(context).requestFocus(FocusNode());
     if (ref.read(loginFormProvider.notifier).isValid()) {
       final param = ref.read(loginFormProvider);

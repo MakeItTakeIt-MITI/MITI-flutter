@@ -61,18 +61,20 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
   int? participationId;
   final fabKey = GlobalKey<ExpandableFabState>();
   late final ScrollController _scrollController;
-  late Throttle<bool> _throttler;
+  late Throttle<int> _throttler;
+  int throttleCnt = 0;
 
   @override
   void initState() {
     super.initState();
     _throttler = Throttle(
       const Duration(seconds: 1),
-      initialValue: false,
+      initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((bool s) {
+    _throttler.values.listen((int s) {
       _cancel(ref, context);
+      throttleCnt++;
     });
     _scrollController = ScrollController();
   }
@@ -220,7 +222,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                             Expanded(
                                 child: TextButton(
                                     onPressed: () {
-                                      _throttler.setValue(true);
+                                      _throttler.setValue(throttleCnt+1);
                                     },
                                     style: ButtonStyle(
                                         backgroundColor:

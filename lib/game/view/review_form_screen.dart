@@ -54,19 +54,21 @@ class ReviewScreen extends ConsumerStatefulWidget {
 }
 
 class _ReviewScreenState extends ConsumerState<ReviewScreen> {
-  late Throttle<bool> _throttler;
+  late Throttle<int> _throttler;
   late final ScrollController _scrollController;
+  int throttleCnt = 0;
 
   @override
   void initState() {
     super.initState();
     _throttler = Throttle(
       const Duration(seconds: 1),
-      initialValue: false,
+      initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((bool s) {
+    _throttler.values.listen((int s) {
       createReview(ref, context, widget.userInfoModel.nickname);
+      throttleCnt++;
     });
     _scrollController = ScrollController();
   }
@@ -107,7 +109,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
               return TextButton(
                 onPressed: valid
                     ? () async {
-                        _throttler.setValue(true);
+                        _throttler.setValue(throttleCnt+1);
                       }
                     : () {},
                 style: TextButton.styleFrom(

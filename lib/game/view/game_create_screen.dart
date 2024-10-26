@@ -54,7 +54,8 @@ class GameCreateScreen extends ConsumerStatefulWidget {
 }
 
 class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
-  late Throttle<bool> _throttler;
+  late Throttle<int> _throttler;
+  int throttleCnt = 0;
   late final ScrollController _scrollController;
   final formKeys = [
     GlobalKey(),
@@ -81,11 +82,12 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
     super.initState();
     _throttler = Throttle(
       const Duration(seconds: 1),
-      initialValue: false,
+      initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((bool s) {
+    _throttler.values.listen((int s) {
       _onCreate(ref, context);
+      throttleCnt++;
     });
     _scrollController = ScrollController();
     for (int i = 0; i < formKeys.length; i++) {
@@ -196,7 +198,7 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
               child: TextButton(
                   onPressed: valid
                       ? () async {
-                          _throttler.setValue(true);
+                          _throttler.setValue(throttleCnt + 1);
                         }
                       : () {},
                   style: TextButton.styleFrom(

@@ -98,7 +98,8 @@ class _PasswordForm extends ConsumerStatefulWidget {
 
 class _PasswordFormState extends ConsumerState<_PasswordForm> {
   String password = '';
-  late Throttle<bool> _throttler;
+  late Throttle<int> _throttler;
+  int throttleCnt = 0;
   final formKeys = [GlobalKey()];
 
   late final List<FocusNode> focusNodes = [
@@ -110,10 +111,10 @@ class _PasswordFormState extends ConsumerState<_PasswordForm> {
     super.initState();
     _throttler = Throttle(
       const Duration(seconds: 1),
-      initialValue: false,
+      initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((bool s) {
+    _throttler.values.listen((int s) {
       getUpdateToken();
     });
     for (int i = 0; i < 1; i++) {
@@ -170,7 +171,7 @@ class _PasswordFormState extends ConsumerState<_PasswordForm> {
                 borderColor: interaction.borderColor,
                 focusNode: focusNodes[0],
                 onNext: () async {
-                  _throttler.setValue(true);
+                  _throttler.setValue(throttleCnt + 1);
                 },
                 onTap: () {
                   FocusScope.of(context).requestFocus(focusNodes[0]);
@@ -207,7 +208,7 @@ class _PasswordFormState extends ConsumerState<_PasswordForm> {
           child: TextButton(
               onPressed: valid
                   ? () async {
-                      _throttler.setValue(true);
+                      _throttler.setValue(throttleCnt + 1);
                     }
                   : () {},
               style: TextButton.styleFrom(
@@ -239,7 +240,6 @@ class _PasswordFormState extends ConsumerState<_PasswordForm> {
           .update(password_update_token: model.password_update_token);
     }
   }
-
 }
 
 class _NewPasswordForm extends ConsumerStatefulWidget {
@@ -251,7 +251,8 @@ class _NewPasswordForm extends ConsumerStatefulWidget {
 
 class _NewPasswordFormState extends ConsumerState<_NewPasswordForm> {
   final formKeys = [GlobalKey(), GlobalKey()];
-  late Throttle<bool> _throttler;
+  late Throttle<int> _throttler;
+  int throttleCnt = 0;
 
   late final List<FocusNode> focusNodes = [
     FocusNode(),
@@ -263,11 +264,12 @@ class _NewPasswordFormState extends ConsumerState<_NewPasswordForm> {
     super.initState();
     _throttler = Throttle(
       const Duration(seconds: 1),
-      initialValue: false,
+      initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((bool s) {
+    _throttler.values.listen((int s) {
       updatePassword(context);
+      throttleCnt++;
     });
     for (int i = 0; i < 2; i++) {
       focusNodes[i].addListener(() {
@@ -433,7 +435,7 @@ class _NewPasswordFormState extends ConsumerState<_NewPasswordForm> {
               });
             },
             onNext: () {
-              _throttler.setValue(true);
+              _throttler.setValue(throttleCnt + 1);
             },
             onChanged: (val) {
               ref
@@ -472,7 +474,7 @@ class _NewPasswordFormState extends ConsumerState<_NewPasswordForm> {
           TextButton(
               onPressed: valid
                   ? () async {
-                      _throttler.setValue(true);
+                      _throttler.setValue(throttleCnt + 1);
                     }
                   : () {},
               style: TextButton.styleFrom(

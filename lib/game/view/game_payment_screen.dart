@@ -49,19 +49,22 @@ class GamePaymentScreen extends ConsumerStatefulWidget {
 }
 
 class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
-  late Throttle<bool> _throttler;
+  late Throttle<int> _throttler;
   late PaymentMethodType type;
+
+  int throttleCnt = 0;
 
   @override
   void initState() {
     super.initState();
     _throttler = Throttle(
       const Duration(seconds: 1),
-      initialValue: false,
+      initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((bool s) {
+    _throttler.values.listen((int s) {
       onPay(ref, context, type);
+      throttleCnt++;
     });
   }
 
@@ -112,7 +115,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
             button: TextButton(
               onPressed: valid
                   ? () async {
-                      _throttler.setValue(true);
+                      _throttler.setValue(throttleCnt + 1);
                     }
                   : () {},
               style: TextButton.styleFrom(

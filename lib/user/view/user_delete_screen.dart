@@ -35,7 +35,8 @@ class UserDeleteScreen extends ConsumerStatefulWidget {
 
 class _UserDeleteScreenState extends ConsumerState<UserDeleteScreen> {
   late final ScrollController _scrollController;
-  late Throttle<bool> _throttler;
+  late Throttle<int> _throttler;
+  int throttleCnt = 0;
   bool valid = false;
 
   @override
@@ -44,10 +45,10 @@ class _UserDeleteScreenState extends ConsumerState<UserDeleteScreen> {
     _scrollController = ScrollController();
     _throttler = Throttle(
       const Duration(seconds: 1),
-      initialValue: false,
+      initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((bool s) {
+    _throttler.values.listen((int s) {
       _deleteUser(context);
     });
   }
@@ -71,7 +72,7 @@ class _UserDeleteScreenState extends ConsumerState<UserDeleteScreen> {
         button: TextButton(
           onPressed: valid
               ? () async {
-                  _throttler.setValue(true);
+                  _throttler.setValue(throttleCnt+1);
                 }
               : () {},
           style: TextButton.styleFrom(

@@ -472,18 +472,20 @@ class _AgreementTermForm extends ConsumerStatefulWidget {
 }
 
 class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
-  late Throttle<bool> _throttler;
+  late Throttle<int> _throttler;
+  int throttleCnt = 0;
 
   @override
   void initState() {
     super.initState();
     _throttler = Throttle(
       const Duration(seconds: 1),
-      initialValue: false,
+      initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((bool s) {
+    _throttler.values.listen((int s) {
       requestTransfer(ref, context);
+      throttleCnt++;
     });
   }
 
@@ -592,7 +594,7 @@ class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
           TextButton(
             onPressed: valid
                 ? () async {
-                    _throttler.setValue(true);
+                    _throttler.setValue(throttleCnt + 1);
                   }
                 : () {},
             style: TextButton.styleFrom(
