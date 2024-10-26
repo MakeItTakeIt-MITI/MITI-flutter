@@ -90,6 +90,8 @@ dependencies:
   flutter_expandable_fab: ^2.3.0
 
   app_badge_plus: ^1.1.5
+
+  connectivity_plus: ^6.1.0
 dependency_overrides:
   fading_edge_scrollview: ^4.1.1
 

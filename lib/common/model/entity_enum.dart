@@ -274,6 +274,7 @@ enum InputFormType {
   password_update,
   updateToken,
   amount,
+  fee,
 }
 
 enum PasswordFormType { password, passwordCheck, newPassword, newPasswordCheck }

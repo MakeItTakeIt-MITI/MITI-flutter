@@ -33,6 +33,7 @@ import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/custom_time_picker.dart';
 import '../../common/provider/router_provider.dart';
+import '../../common/provider/widget/form_provider.dart';
 import '../../common/view/operation_term_screen.dart';
 import '../../court/component/court_list_component.dart';
 import '../../util/util.dart';
@@ -185,6 +186,7 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
               for (int i = 0; i < model.length; i++) {
                 if (model[i].is_required && !checkBoxes[i + 1]) {
                   validNext = false;
+
                   break;
                 }
               }
@@ -1172,6 +1174,7 @@ class _FeeFormState extends ConsumerState<_FeeForm> {
       }
     });
     final fee = ref.watch(gameFormProvider.select((value) => value.fee));
+    final formInfo = ref.watch(formInfoProvider(InputFormType.fee));
     return SliverToBoxAdapter(
         child: CustomTextFormField(
       textEditingController: feeController,
@@ -1181,14 +1184,27 @@ class _FeeFormState extends ConsumerState<_FeeForm> {
       textInputAction: TextInputAction.next,
       focusNode: widget.focusNodes[5],
       key: widget.formKeys[5],
+      borderColor: formInfo.borderColor,
       onTap: () => FocusScope.of(context).requestFocus(widget.focusNodes[5]),
       onNext: () => FocusScope.of(context).requestFocus(widget.focusNodes[6]),
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
         NumberFormatter(),
       ],
+      interactionDesc: formInfo.interactionDesc,
       onChanged: (val) {
         ref.read(gameFormProvider.notifier).update(fee: val);
+        if (ref.read(gameFormProvider.notifier).validFee()) {
+          ref.read(formInfoProvider(InputFormType.fee).notifier).reset();
+        } else {
+          ref.read(formInfoProvider(InputFormType.fee).notifier).update(
+                borderColor: MITIColor.error,
+                interactionDesc: InteractionDesc(
+                  isSuccess: false,
+                  desc: "참가비는 0원 혹은 500원 이상이어야합니다.",
+                ),
+              );
+        }
       },
       suffixIcon: Text(
         '원',
