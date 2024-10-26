@@ -63,6 +63,7 @@ import '../../user/view/user_profile_update_screen.dart';
 import '../../user/view/user_review_screen.dart';
 import '../error/view/error_screen.dart';
 import '../model/entity_enum.dart';
+import '../view/not_found_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> shellNavKey = GlobalKey<NavigatorState>();
@@ -94,6 +95,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       debugLogDiagnostics: true,
       navigatorKey: rootNavKey,
       refreshListenable: TokenProvider(ref: ref),
+      errorBuilder: (BuildContext context, GoRouterState state) {
+        return const NotFoundScreen();
+      },
       routes: <RouteBase>[
         GoRoute(
           path: '/',
@@ -286,9 +290,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           name: ErrorScreen.routeName,
           builder: (context, state) {
             ErrorScreenType extra = state.extra as ErrorScreenType;
-            return ErrorScreen(
-              errorType: extra,
-            );
+            return const ErrorScreen();
           },
         ),
         GoRoute(

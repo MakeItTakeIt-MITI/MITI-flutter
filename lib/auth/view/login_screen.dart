@@ -81,7 +81,6 @@ class LoginScreen extends StatelessWidget {
                 ),
               SizedBox(height: 16.h),
               OtherWayComponent(
-                // desc: '아직 회원이 아니신가요?',
                 way: '회원가입 하러 가기',
                 onTap: () => context.pushNamed(SignUpSelectScreen.routeName),
               ),

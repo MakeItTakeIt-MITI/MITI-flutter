@@ -1,37 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miti/account/error/account_error.dart';
+import 'package:miti/common/component/default_appbar.dart';
+import 'package:miti/court/view/court_map_screen.dart';
 import 'package:miti/theme/color_theme.dart';
+import 'package:miti/theme/text_theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../court/view/court_map_screen.dart';
-import '../../../theme/text_theme.dart';
-import '../../component/default_appbar.dart';
-import '../../component/default_layout.dart';
-import '../../model/entity_enum.dart';
+import '../component/default_layout.dart';
 
-class ErrorScreen extends StatelessWidget {
+class NotFoundScreen extends StatelessWidget {
+  static String get routeName => 'notFound';
 
-  static String get routeName => 'error';
-
-  const ErrorScreen({super.key,});
+  const NotFoundScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: const DefaultAppBar(hasBorder: false),
       bottomNavigationBar: BottomButton(
           button: SizedBox(
-            height: 48.h,
-            child: TextButton(
-                onPressed: () {
-                  context.goNamed(CourtMapScreen.routeName);
-                },
-                child: const Text(
-                  '홈으로 가기',
-                )),
-          )),
+        height: 48.h,
+        child: TextButton(
+            onPressed: () {
+              context.goNamed(CourtMapScreen.routeName);
+            },
+            child: const Text(
+              '홈으로 가기',
+            )),
+      )),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
