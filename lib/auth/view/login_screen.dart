@@ -324,19 +324,19 @@ class KakaoLoginButton extends ConsumerWidget {
     try {
       bool isInstalled = await isKakaoTalkInstalled();
 
-      log('isInstalled =${isInstalled}');
+      print('isInstalled =${isInstalled}');
       OAuthToken token = isInstalled
-          ? await UserApi.instance
-              .loginWithKakaoTalk()
-              .then((value) => value)
-              .catchError((e, _) {
-              log('kakao login fail');
+          ? await UserApi.instance.loginWithKakaoTalk().then((value) {
+              print("value = $value");
+              return value;
+            }).catchError((e, _) {
+              print('kakao login fail = $e');
             })
           : await UserApi.instance.loginWithKakaoAccount();
-      log('token ${token}');
+      print('token ${token}');
       AccessTokenInfo tokenInfo = await UserApi.instance.accessTokenInfo();
-      log('token Info = ${tokenInfo}');
-      log('access token ${token.accessToken}');
+      print('token Info = ${tokenInfo}');
+      print('access token ${token.accessToken}');
       final KakaoLoginParam param =
           KakaoLoginParam(access_token: token.accessToken);
 

@@ -31,7 +31,7 @@
 			<string></string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>kakao6c982be35c0f15be99a90f823b7da8f5</string>
+				 <string>kakao$(KAKAO_NATIVE_APP_KEY)</string>
 			</array>
 		</dict>
 		<dict/>

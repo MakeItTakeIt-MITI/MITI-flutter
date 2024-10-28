@@ -248,25 +248,27 @@ class _MyAppState extends ConsumerState<MyApp> {
 
         final flutterLocalNotificationsPlugin =
             ref.read(notificationProvider.notifier).getNotification;
-
-        await flutterLocalNotificationsPlugin?.show(
-            notification.hashCode,
-            notification.title,
-            notification.body,
-            const NotificationDetails(
-              android: AndroidNotificationDetails(
-                'high_importance_channel',
-                'high_importance_notification',
-                importance: Importance.max,
-                icon: 'ic_notification',
-                ticker: 'ticker',
-                color: Colors.black,
-                ongoing: true,
-                showWhen: true,
+        if (Platform.isAndroid) {
+          await flutterLocalNotificationsPlugin?.show(
+              notification.hashCode,
+              notification.title,
+              notification.body,
+              const NotificationDetails(
+                android: AndroidNotificationDetails(
+                  'high_importance_channel',
+                  'high_importance_notification',
+                  importance: Importance.max,
+                  icon: 'ic_notification',
+                  ticker: 'ticker',
+                  color: Colors.black,
+                  ongoing: true,
+                  showWhen: true,
+                ),
+                iOS: DarwinNotificationDetails(),
               ),
-              iOS: DarwinNotificationDetails(),
-            ),
-            payload: "gameId=$gameId&pushId=$pushId&topic=$topic");
+              payload: "gameId=$gameId&pushId=$pushId&topic=$topic");
+        }
+
         final secureProvider = ref.read(secureStorageProvider);
         final String? storagePushCnt =
             await secureProvider.read(key: 'pushCnt');
