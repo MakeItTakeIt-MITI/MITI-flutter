@@ -219,14 +219,11 @@ class SettlementCard extends StatelessWidget {
     final game = model.game;
 
     final st = DateTime.parse(game.startdate);
-    final et = DateTime.parse(game.startdate);
     final fe = DateFormat('yyyy년 MM월 dd일 (E)', 'ko');
 
     final startDate = fe.format(st);
-    final endDate = fe.format(et);
-    final period = game.startdate == game.enddate
-        ? "$startDate ${game.starttime.substring(0, 5)}~${game.endtime.substring(0, 5)}"
-        : "$startDate ${game.starttime.substring(0, 5)} ~\n$endDate ${game.endtime.substring(0, 5)}";
+    final period =
+        "$startDate ${game.starttime.substring(0, 5)} ~ ${game.endtime.substring(0, 5)}";
     return SettlementCard(
       title: game.title,
       datetime: period,
