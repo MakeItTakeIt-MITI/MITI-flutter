@@ -99,10 +99,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // FirebaseMessaging messaging = FirebaseMessaging.instance;
-  // await messaging.getAPNSToken();
-  // final token = await messaging.getToken();
-  // log('token!! = $token');
 
   runApp(
     ProviderScope(

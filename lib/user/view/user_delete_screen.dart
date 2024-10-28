@@ -6,14 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/auth/view/signup/signup_screen.dart';
 import 'package:miti/common/model/default_model.dart';
+import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/common/provider/router_provider.dart';
 import 'package:miti/court/view/court_map_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:miti/user/model/user_model.dart';
 import 'package:miti/user/provider/user_provider.dart';
 
 import '../../auth/provider/delete_provider.dart';
@@ -72,7 +75,7 @@ class _UserDeleteScreenState extends ConsumerState<UserDeleteScreen> {
         button: TextButton(
           onPressed: valid
               ? () async {
-                  _throttler.setValue(throttleCnt+1);
+                  _throttler.setValue(throttleCnt + 1);
                 }
               : () {},
           style: TextButton.styleFrom(
@@ -150,6 +153,14 @@ class _UserDeleteScreenState extends ConsumerState<UserDeleteScreen> {
         UserError.fromModel(model: result)
             .responseError(context, UserApiType.delete, ref);
       } else {
+        final authType =
+            (ref.read(userInfoProvider) as ResponseModel<UserModel>)
+                .data!
+                .signup_method;
+        if (authType == AuthType.kakao) {
+          UserApi.instance.unlink();
+        }
+
         Future.delayed(const Duration(milliseconds: 200), () {
           showModalBottomSheet(
               context: rootNavKey.currentState!.context!,
