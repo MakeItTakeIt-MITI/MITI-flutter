@@ -99,7 +99,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:host="kakaolink"
-                    android:scheme="kakao6c982be35c0f15be99a90f823b7da8f5" />
+                    android:scheme="kakao${KAKAO_NATIVE_APP_KEY}" />
             </intent-filter>
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
@@ -144,20 +144,20 @@
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
-        <!-- apple login -->
-        <activity
-            android:name="com.aboutyou.dart_packages.sign_in_with_apple.SignInWithAppleCallback"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+<!--        &lt;!&ndash; apple login &ndash;&gt;-->
+<!--        <activity-->
+<!--            android:name="com.aboutyou.dart_packages.sign_in_with_apple.SignInWithAppleCallback"-->
+<!--            android:exported="true">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.VIEW" />-->
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                <category android:name="android.intent.category.BROWSABLE" />-->
 
-                <data android:scheme="signinwithapple" />
-                <data android:path="callback" />
-            </intent-filter>
-        </activity>
+<!--                <data android:scheme="signinwithapple" />-->
+<!--                <data android:path="callback" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
 
         <activity
             android:name="com.kakao.sdk.flutter.AuthCodeCustomTabsActivity"
@@ -171,7 +171,7 @@
                 <!-- Redirect URI, "kakao${YOUR_NATIVE_APP_KEY}://oauth" 형식 -->
                 <data
                     android:host="oauth"
-                    android:scheme="kakao6c982be35c0f15be99a90f823b7da8f5" />
+                    android:scheme="kakao${KAKAO_NATIVE_APP_KEY}" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

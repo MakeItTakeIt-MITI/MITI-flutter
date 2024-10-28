@@ -26,6 +26,9 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+def KAKAO_NATIVE_APP_KEY = localProperties.getProperty("KAKAO_NATIVE_APP_KEY")
+
+
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file('app/key.properties')
 if (keystorePropertiesFile.exists()) {
@@ -76,6 +79,7 @@ android {
         versionCode 13
         versionName "1.0.1"
         multiDexEnabled true
+        manifestPlaceholders += [KAKAO_NATIVE_APP_KEY: KAKAO_NATIVE_APP_KEY]
     }
 
 //    buildTypes {
