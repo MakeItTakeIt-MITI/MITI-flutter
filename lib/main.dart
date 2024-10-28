@@ -48,24 +48,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   log("Handling a background category: ${message.category}");
 }
 
-Future<void> getFcmToken(WidgetRef ref) async {
-  String? token;
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-  log('FCM Token 가져오기');
-
-  // 플랫폼 별 토큰 가져오기
-  if (defaultTargetPlatform == TargetPlatform.iOS) {
-    final apnToken = await messaging.getAPNSToken();
-    print("apnToken : $apnToken");
-    token = await messaging.getToken();
-  } else {
-    token = await messaging.getToken();
-  }
-  ref.read(fcmTokenProvider.notifier).update((state) => token);
-  print("FCM Token: $token");
-  log('FCM Token: $token');
-}
-
 void _foregroundRouting(NotificationResponse details) async {
   /// foreground 상태일 때 만 fcm 알림 내용 받기 가능
   /// terminated, background 상태일 때는 null
@@ -117,6 +99,10 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // FirebaseMessaging messaging = FirebaseMessaging.instance;
+  // await messaging.getAPNSToken();
+  // final token = await messaging.getToken();
+  // log('token!! = $token');
 
   runApp(
     ProviderScope(
@@ -143,10 +129,42 @@ class _MyAppState extends ConsumerState<MyApp> {
   void initState() {
     super.initState();
     _notificationSetting();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      getFcmToken(ref);
-    });
+    getFcmToken(ref);
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {});
     initDeepLinks();
+  }
+
+  Future<void> getFcmToken(WidgetRef ref) async {
+    String? token;
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    log('FCM Token 가져오기');
+
+    // 플랫폼 별 토큰 가져오기
+    if (Platform.isIOS) {
+      String? apnsToken = await messaging.getAPNSToken();
+      print("apnToken : $apnsToken");
+      if (apnsToken != null) {
+        token = await messaging.getToken();
+      } else {
+        await Future<void>.delayed(
+          const Duration(
+            seconds: 3,
+          ),
+        );
+        apnsToken = await messaging.getAPNSToken();
+        if (apnsToken != null) {
+          token = await messaging.getToken();
+          ref.read(fcmTokenProvider.notifier).update((state) => token);
+        }
+      }
+    } else {
+      token = await messaging.getToken();
+    }
+
+    ref.read(fcmTokenProvider.notifier).update((state) => token);
+    print("FCM Token: $token");
+    log('FCM Token: $token');
   }
 
   void _notificationSetting() async {

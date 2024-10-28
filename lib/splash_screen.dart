@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 
 import 'package:miti/auth/provider/auth_provider.dart';
+import 'package:miti/notification_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 
 import 'common/model/entity_enum.dart';
@@ -40,7 +41,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   Future<void> startApp() async {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Future.delayed(const Duration(milliseconds: 1500), () {
+      Future.delayed(const Duration(milliseconds: 1500), () async {
+        final fcmToken = ref.read(fcmTokenProvider);
+        if (fcmToken == null) {
+          await Future.delayed(const Duration(seconds: 3));
+        }
         if (mounted) {
           if (widget.pushModel != null) {
             log("push routing!!!");
