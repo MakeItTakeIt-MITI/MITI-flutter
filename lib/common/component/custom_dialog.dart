@@ -26,56 +26,59 @@ class CustomDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.center,
-      child: Container(
-        width: 333.w,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20.r),
-          color: MITIColor.gray700,
-        ),
-        padding:
-            EdgeInsets.only(left: 20.w, right: 20.w, top: 30.h, bottom: 20.h),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              title,
-              style: MITITextStyle.mdBold.copyWith(
-                color: MITIColor.gray100,
+    return Material(
+      color: Colors.transparent,
+      child: Align(
+        alignment: Alignment.center,
+        child: Container(
+          width: 333.w,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20.r),
+            color: MITIColor.gray700,
+          ),
+          padding:
+              EdgeInsets.only(left: 20.w, right: 20.w, top: 30.h, bottom: 20.h),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                title,
+                style: MITITextStyle.mdBold.copyWith(
+                  color: MITIColor.gray100,
+                ),
               ),
-            ),
-            SizedBox(height: 16.h),
-            Text(
-              content,
-              textAlign: TextAlign.center,
-              style: MITITextStyle.xxsmLight150.copyWith(
-                color: MITIColor.gray300,
+              SizedBox(height: 16.h),
+              Text(
+                content,
+                textAlign: TextAlign.center,
+                style: MITITextStyle.xxsmLight150.copyWith(
+                  color: MITIColor.gray300,
+                ),
               ),
-            ),
-            SizedBox(height: 30.h),
-            if (button == null)
-              ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: 48.h, minHeight: 48.h),
-                child: TextButton(
-                  onPressed: onPressed ??
-                      () => Navigator.of(context, rootNavigator: true)
-                          .pop('dialog'),
-                  style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.r))),
-                  child: Text(
-                    btnDesc,
-                    style: MITITextStyle.mdBold.copyWith(
-                      color: MITIColor.gray800,
+              SizedBox(height: 30.h),
+              if (button == null)
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxHeight: 48.h, minHeight: 48.h),
+                  child: TextButton(
+                    onPressed: onPressed ??
+                        () => Navigator.of(context, rootNavigator: true)
+                            .pop('dialog'),
+                    style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.r))),
+                    child: Text(
+                      btnDesc,
+                      style: MITITextStyle.mdBold.copyWith(
+                        color: MITIColor.gray800,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            if (button != null) button!
-          ],
+              if (button != null) button!
+            ],
+          ),
         ),
       ),
     );

@@ -24,18 +24,26 @@ import '../model/find_info_model.dart';
 import '../view/oauth_error_screen.dart';
 
 enum AuthApiType {
+  /// 로그인 API
   login,
+  /// 로그아웃 API
   logout,
+
+  /// 회원가입 API
   signup,
   signup_check,
+
+  /// 인증 코드 입력 API - 회원가입, 이메일, 비밀번호
   send_code,
   request_code,
+
+  /// 인증 코드 전송 요청 API
   requestSMS,
   oauth,
   reissue,
-  findInfo,
+
+  /// 사용자 정보 수정 토큰 발급 API
   tokenForPassword,
-  resetPassword,
 }
 
 class AuthError extends ErrorBase {
@@ -87,9 +95,6 @@ class AuthError extends ErrorBase {
         break;
       case AuthApiType.tokenForPassword:
         _tokenForPassword(context, ref);
-        break;
-      case AuthApiType.resetPassword:
-        _resetPassword(context, ref);
         break;
       default:
         break;
@@ -302,7 +307,8 @@ class AuthError extends ErrorBase {
     } else if (this.status_code == Forbidden && this.error_code == 540) {
       /// 비회원 Oauth 사용자 ?
       final extra = type;
-      context.goNamed(SignUpScreen.routeName, extra: extra);
+      WidgetsBinding.instance.addPostFrameCallback(
+          (s) => context.goNamed(SignUpScreen.routeName, extra: extra));
     } else if (this.status_code == Forbidden && this.error_code == 140) {
       /// 로그인 불가 사용자
       String oauthProvider = type == AuthType.kakao ? '애플' : '카카오';
@@ -368,7 +374,8 @@ class AuthError extends ErrorBase {
           });
     } else if (this.status_code == Forbidden && this.error_code == 361) {
       /// 일반 로그인 사용자
-      context.pushNamed(OauthErrorScreen.routeName);
+      WidgetsBinding.instance.addPostFrameCallback(
+          (s) => context.pushNamed(OauthErrorScreen.routeName));
     } else if (this.status_code == NotFound && this.error_code == 950) {
       /// 지원하지 않는 oauth 서비스
       showDialog(
@@ -716,95 +723,4 @@ class AuthError extends ErrorBase {
     }
   }
 
-  void _resetPassword(BuildContext context, WidgetRef ref) {
-    if (this.status_code == BadRequest && this.error_code == 420) {
-      /// 요청 유효시간 초과
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '비밀번호 변경 실패',
-            content: '요청시간이 지났습니다.\n다시 시도해주세요.',
-          );
-        },
-      );
-    } else if (this.status_code == BadRequest && this.error_code == 960) {
-      /// 토큰 타입 불일치
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '비밀번호 변경 실패',
-            content: '다시 시도해주세요.',
-          );
-        },
-      );
-    } else if (this.status_code == BadRequest && this.error_code == 961) {
-      /// 인증 미완료 토큰
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '비밀번호 변경 실패',
-            content: '인증되지 않은 사용자입니다.',
-          );
-        },
-      );
-    } else if (this.status_code == BadRequest && this.error_code == 962) {
-      /// 토큰 만료
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '비밀번호 변경 실패',
-            content: '다시 시도해주세요.',
-          );
-        },
-      );
-    } else if (this.status_code == BadRequest && this.error_code == 101) {
-      /// 비밀번호 유효성 검증 실패
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '비밀번호 변경 실패',
-            content: '유효하지 않은 비밀번호입니다.',
-          );
-        },
-      );
-    } else if (this.status_code == BadRequest && this.error_code == 120) {
-      /// 비밀번호 불일치
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '비밀번호 변경 실패',
-            content: '비밀번호가 일치하지 않습니다.',
-          );
-        },
-      );
-    } else if (this.status_code == NotFound && this.error_code == 960) {
-      /// 요청 조회 실패
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '비밀번호 변경 실패',
-            content: '사용자를 찾을 수 없습니다.',
-          );
-        },
-      );
-    } else {
-      /// 서버 오류
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '비밀번호 변경 실패',
-            content: '서버가 불안정해 잠시후 다시 이용해주세요.',
-          );
-        },
-      );
-    }
-  }
 }

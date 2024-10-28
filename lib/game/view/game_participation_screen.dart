@@ -18,6 +18,7 @@ import 'package:miti/theme/text_theme.dart';
 import 'package:miti/util/util.dart';
 
 import '../../common/component/default_appbar.dart';
+import '../../common/error/view/error_screen.dart';
 import '../../common/model/entity_enum.dart';
 import '../../user/view/review_detail_screen.dart';
 import '../component/skeleton/game_participation_review_skeleton.dart';
@@ -68,7 +69,7 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
         },
         body: CustomScrollView(
           slivers: [
-            SliverToBoxAdapter(
+            SliverFillRemaining(
               child: Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   final result =
@@ -76,6 +77,8 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
                   if (result is LoadingModel) {
                     return const GameParticipationReviewSkeleton();
                   } else if (result is ErrorModel) {
+                    WidgetsBinding.instance.addPostFrameCallback((s) =>
+                        context.pushReplacementNamed(ErrorScreen.routeName));
                     return const Column(
                       children: [
                         Text('에러'),
@@ -89,6 +92,17 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
 
                   /// 본인 리뷰 제거
                   model.participations.removeWhere((e) => e.userId == userId);
+
+                  if (model.participations.isEmpty) {
+                    return Center(
+                      child: Text(
+                        '리뷰를 작성할\n플레이어가 없습니다.',
+                        style: MITITextStyle.xxl140
+                            .copyWith(color: MITIColor.white),
+                        textAlign: TextAlign.center,
+                      ),
+                    );
+                  }
 
                   return Column(
                     children: [

@@ -36,6 +36,7 @@ import '../../support/view/faq_screen.dart';
 import '../../support/view/support_screen.dart';
 import '../../theme/color_theme.dart';
 import '../component/skeleton/receive_review_skeleton.dart';
+import '../error/user_error.dart';
 import '../model/user_model.dart';
 import '../provider/user_provider.dart';
 import '../../util/util.dart';
@@ -321,7 +322,10 @@ class _ReviewComponent extends ConsumerWidget {
     if (result is LoadingModel) {
       return const ReceiveReviewSkeleton();
     } else if (result is ErrorModel) {
-      return Text("error");
+      WidgetsBinding.instance.addPostFrameCallback((s) =>
+          UserError.fromModel(model: result)
+              .responseError(context, UserApiType.get, ref));
+      return const Text("error");
     }
     final model = (result as ResponseModel<UserModel>).data!.rating;
     model.guest_rating;
@@ -501,7 +505,10 @@ class _ProfileComponent extends ConsumerWidget {
     if (result is LoadingModel) {
       return const ProfileSkeleton();
     } else if (result is ErrorModel) {
-      return Text("error");
+      WidgetsBinding.instance.addPostFrameCallback((s) =>
+          UserError.fromModel(model: result)
+              .responseError(context, UserApiType.get, ref));
+      return const Text("error");
     }
     final model = (result as ResponseModel<UserModel>).data!;
 

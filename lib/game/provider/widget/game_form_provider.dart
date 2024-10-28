@@ -12,6 +12,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../common/component/custom_text_form_field.dart';
 import '../../../common/model/entity_enum.dart';
 import '../../../common/provider/widget/datetime_provider.dart';
+import '../../../common/provider/widget/form_provider.dart';
+import '../../../theme/color_theme.dart';
 import '../../model/game_recent_host_model.dart';
 
 part 'game_form_provider.g.dart';
@@ -162,6 +164,17 @@ class GameForm extends _$GameForm {
     return false;
   }
 
+  bool validFee() {
+    if (state.fee.isNotEmpty) {
+      final fee = int.parse(state.fee);
+      if (!(fee == 0 || fee >= 500)) {
+
+        return false;
+      }
+    }
+    return true;
+  }
+
   bool validDatetime() {
     if (state.startdate.isNotEmpty &&
         state.starttime.isNotEmpty &&
@@ -246,7 +259,7 @@ class GameForm extends _$GameForm {
         // ValidRegExp.gameAddressDetail(state.court.address_detail) &
         ValidRegExp.courtName(state.court.name);
     log("formvalid = $formValid");
-    return validInvitation() && validDatetime() && formValid;
+    return validFee() && validInvitation() && validDatetime() && formValid;
   }
 }
 

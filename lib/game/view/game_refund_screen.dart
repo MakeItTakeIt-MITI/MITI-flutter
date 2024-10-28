@@ -199,8 +199,11 @@ class _RefundInfoComponent extends ConsumerWidget {
     if (result is LoadingModel) {
       return const SliverToBoxAdapter(child: CircularProgressIndicator());
     } else if (result is ErrorModel) {
-      GameError.fromModel(model: result)
-          .responseError(context, GameApiType.getRefundInfo, ref);
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        GameError.fromModel(model: result)
+            .responseError(context, GameApiType.getRefundInfo, ref);
+      });
+
       return const SliverToBoxAdapter(child: Text('에러'));
     }
     final model = (result as ResponseModel<RefundModel>).data!;

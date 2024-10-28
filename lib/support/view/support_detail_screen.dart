@@ -66,8 +66,10 @@ class _SupportDetailScreenState extends State<SupportDetailScreen> {
                   if (result is LoadingModel) {
                     return const SupportDetailSkeleton();
                   } else if (result is ErrorModel) {
-                    SupportError.fromModel(model: result)
-                        .responseError(context, SupportApiType.get, ref);
+                    WidgetsBinding.instance.addPostFrameCallback((s) {
+                      SupportError.fromModel(model: result)
+                          .responseError(context, SupportApiType.get, ref);
+                    });
                     return Text('에러');
                   }
                   final model = (result as ResponseModel<QuestionModel>).data!;

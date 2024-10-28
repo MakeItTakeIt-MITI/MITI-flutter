@@ -212,7 +212,7 @@ class _AuthComponentState extends ConsumerState<_AuthComponent> {
                           ' 로그아웃 시, 모집하거나 참여한 경기에\n해당하는 알람을 받을 수 없습니다.\n그래도 로그아웃 하시겠습니까?',
                       btn: TextButton(
                         onPressed: () async {
-                          _throttler.setValue(throttleCnt+1);
+                          _throttler.setValue(throttleCnt + 1);
                         },
                         child: const Text("로그아웃 하기"),
                       ),
@@ -264,7 +264,7 @@ class _AuthComponentState extends ConsumerState<_AuthComponent> {
     if (context.mounted) {
       if (result is ErrorModel) {
         AuthError.fromModel(model: result)
-            .responseError(context, AuthApiType.login, ref);
+            .responseError(context, AuthApiType.logout, ref);
       } else {
         AppBadgePlus.updateBadge(0);
         context.pop();

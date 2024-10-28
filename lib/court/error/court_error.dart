@@ -53,12 +53,16 @@ class CourtError extends ErrorBase {
   void _get(BuildContext context, WidgetRef ref) {
     if (this.status_code == NotFound && this.error_code == 940) {
       /// 정산 기록 조회 실패
-      const extra = ErrorScreenType.notFound;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.pushReplacementNamed(ErrorScreen.routeName);
+      });
     } else {
       /// 서버 오류
-      const extra = ErrorScreenType.server;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.pushReplacementNamed(ErrorScreen.routeName);
+      });
     }
   }
 }

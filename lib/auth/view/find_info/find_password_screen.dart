@@ -12,6 +12,7 @@ import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/provider/user_provider.dart';
 
 import '../../../common/component/default_appbar.dart';
+import '../../../user/error/user_error.dart';
 import '../../../user/param/user_profile_param.dart';
 import '../../provider/widget/sign_up_form_provider.dart';
 import '../signup/signup_screen.dart';
@@ -64,29 +65,12 @@ class ResetPasswordScreen extends StatelessWidget {
                           .read(updatePasswordProvider(userId, param).future);
                       if (context.mounted) {
                         if (result is ErrorModel) {
+                          UserError.fromModel(model: result).responseError(
+                              context, UserApiType.updatePassword, ref);
                         } else {
                           context.goNamed(CompleteRestPasswordScreen.routeName);
                         }
                       }
-
-                      // final reissueToken =
-                      //     await ref.read(reissueForPasswordProvider.future);
-                      // if (context.mounted) {
-                      //   if (reissueToken is ErrorModel) {
-                      //     AuthError.fromModel(model: reissueToken)
-                      //         .responseError(
-                      //             context, AuthApiType.tokenForPassword, ref);
-                      //   } else {
-                      //
-                      //     if (result is ErrorModel) {
-                      //       AuthError.fromModel(model: result).responseError(
-                      //           context, AuthApiType.resetPassword, ref);
-                      //     } else {
-                      //       context
-                      //           .goNamed(CompleteRestPasswordScreen.routeName);
-                      //     }
-                      //   }
-                      // }
                     },
                     style: TextButton.styleFrom(
                         backgroundColor:

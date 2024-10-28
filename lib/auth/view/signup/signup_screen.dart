@@ -1255,7 +1255,6 @@ class _NextButtonState extends ConsumerState<_NextButton> {
         await ref.read(signUpProvider(type: widget.type, param: param).future);
 
     if (result is ErrorModel) {
-      log('error');
       if (context.mounted) {
         AuthError.fromModel(model: result)
             .responseError(context, AuthApiType.signup, ref);

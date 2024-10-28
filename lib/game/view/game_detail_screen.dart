@@ -32,6 +32,7 @@ import 'package:miti/theme/text_theme.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../account/model/account_model.dart';
 import '../../common/component/share_fab_component.dart';
+import '../../common/error/view/error_screen.dart';
 import '../../common/model/entity_enum.dart';
 import '../../court/view/court_map_screen.dart';
 import '../../default_screen.dart';
@@ -143,7 +144,10 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
             if (result is LoadingModel) {
               return const SingleChildScrollView(child: GameDetailSkeleton());
             } else if (result is ErrorModel) {
-              return Text('에러');
+              WidgetsBinding.instance.addPostFrameCallback((s) =>
+                  GameError.fromModel(model: result)
+                      .responseError(context, GameApiType.get, ref));
+              return Text('에러입니다.');
             }
             result as ResponseModel<GameDetailModel>;
             final model = result.data!;
@@ -222,7 +226,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                             Expanded(
                                 child: TextButton(
                                     onPressed: () {
-                                      _throttler.setValue(throttleCnt+1);
+                                      _throttler.setValue(throttleCnt + 1);
                                     },
                                     style: ButtonStyle(
                                         backgroundColor:

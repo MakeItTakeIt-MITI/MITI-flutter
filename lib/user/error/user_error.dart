@@ -97,16 +97,15 @@ class UserError extends ErrorBase {
       );
     } else if (this.status_code == Forbidden && this.error_code == 501) {
       /// 요청 권한 오류
-      const extra = ErrorScreenType.unAuthorization;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      context.pushReplacementNamed(ErrorScreen.routeName);
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 사용자 정보 조회 실패
-      const extra = ErrorScreenType.notFound;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      context.pushReplacementNamed(ErrorScreen.routeName);
+
     } else {
       /// 서버 오류
-      const extra = ErrorScreenType.server;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      context.pushReplacementNamed(ErrorScreen.routeName);
+
     }
   }
 
@@ -190,8 +189,8 @@ class UserError extends ErrorBase {
           });
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 사용자 정보 조회 실패
-      const extra = ErrorScreenType.notFound;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      context.pushReplacementNamed(ErrorScreen.routeName);
+
     } else {
       /// 서버 오류
       showDialog(
@@ -234,16 +233,16 @@ class UserError extends ErrorBase {
       );
     } else if (this.status_code == Forbidden && this.error_code == 940) {
       /// 요청 권한 없음(review 작성자 x)
-      const extra = ErrorScreenType.unAuthorization;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      context.pushReplacementNamed(ErrorScreen.routeName);
+
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 리뷰 조회 결과 없음
-      const extra = ErrorScreenType.notFound;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      context.pushReplacementNamed(ErrorScreen.routeName);
+
     } else {
       /// 서버 오류
-      const extra = ErrorScreenType.server;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      context.pushReplacementNamed(ErrorScreen.routeName);
+
     }
   }
 
@@ -255,16 +254,16 @@ class UserError extends ErrorBase {
       /// 엑세스 토큰 오류
     } else if (this.status_code == Forbidden && this.error_code == 940) {
       /// 요청 권한 없음(reviewee x)
-      const extra = ErrorScreenType.unAuthorization;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      context.pushReplacementNamed(ErrorScreen.routeName);
+
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 리뷰 조회 결과 없음
-      const extra = ErrorScreenType.notFound;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      context.pushReplacementNamed(ErrorScreen.routeName);
+
     } else {
       /// 서버 오류
-      const extra = ErrorScreenType.server;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      context.pushReplacementNamed(ErrorScreen.routeName);
+
     }
   }
 

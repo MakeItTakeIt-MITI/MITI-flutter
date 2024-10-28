@@ -289,7 +289,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           parentNavigatorKey: rootNavKey,
           name: ErrorScreen.routeName,
           builder: (context, state) {
-            ErrorScreenType extra = state.extra as ErrorScreenType;
             return const ErrorScreen();
           },
         ),

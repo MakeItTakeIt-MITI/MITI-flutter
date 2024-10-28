@@ -76,12 +76,10 @@ class SupportError extends ErrorBase {
       );
     } else if (this.status_code == NotFound && this.error_code == 901) {
       /// 문의 고유 번호 오류
-      const extra = ErrorScreenType.notFound;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      context.pushReplacementNamed(ErrorScreen.routeName);
     } else {
       /// 서버 오류
-      const extra = ErrorScreenType.server;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      context.pushReplacementNamed(ErrorScreen.routeName);
     }
   }
 

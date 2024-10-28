@@ -59,8 +59,10 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
 
               if (mounted) {
                 if (result is ErrorModel) {
-                  PayError.fromModel(model: result)
-                      .responseError(context, PayApiType.approval, ref);
+                  WidgetsBinding.instance.addPostFrameCallback((s) {
+                    PayError.fromModel(model: result)
+                        .responseError(context, PayApiType.approval, ref);
+                  });
                 } else if (result is ResponseModel<PayApprovalModel>) {
                   ref
                       .read(gameDetailProvider(gameId: widget.gameId).notifier)
