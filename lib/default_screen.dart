@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -48,56 +50,61 @@ class _DefaultShellScreenState extends ConsumerState<DefaultShellScreen> {
   @override
   Widget build(BuildContext context) {
     final index = getIndex(context);
+
     return Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: MITIColor.gray800,
         body: widget.body,
-        bottomNavigationBar: CustomBottomNavigationBar(
-          index: index,
-          onTap: (int page) {
-            if (page == 0) {
-              if (GoRouterState.of(context)
-                  .matchedLocation
-                  .startsWith('/home')) {
-                // controller[0].animateTo(0,
-                //     duration: const Duration(milliseconds: 500),
-                //     curve: Curves.easeInOut);
-              } else {
-                context.goNamed(CourtMapScreen.routeName);
-              }
-            } else if (page == 1) {
-              if (GoRouterState.of(context)
-                  .matchedLocation
-                  .startsWith('/game')) {
-                // controller[1].animateTo(0,
-                //     duration: const Duration(milliseconds: 500),
-                //     curve: Curves.easeInOut);
-              } else {
-                context.goNamed(GameScreen.routeName);
-              }
-            } else if (page == 2) {
-              if (GoRouterState.of(context)
-                  .matchedLocation
-                  .startsWith('/court')) {
-                // controller[2].animateTo(0,
-                //     duration: const Duration(milliseconds: 500),
-                //     curve: Curves.easeInOut);
-              } else {
-                context.goNamed(CourtSearchListScreen.routeName);
-              }
-            } else {
-              if (GoRouterState.of(context)
-                  .matchedLocation
-                  .startsWith('/menu')) {
-                // controller[3].animateTo(0,
-                //     duration: const Duration(milliseconds: 500),
-                //     curve: Curves.easeInOut);
-              } else {
-                context.goNamed(ProfileBody.routeName);
-              }
-            }
+        bottomNavigationBar: Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final scrollController = ref.watch(scrollControllerProvider);
+            return CustomBottomNavigationBar(
+              index: index,
+              onTap: (int page) {
+                if (page == 0) {
+                  if (GoRouterState.of(context)
+                      .matchedLocation
+                      .startsWith('/home')) {
+
+                  } else {
+                    context.goNamed(CourtMapScreen.routeName);
+                  }
+                } else if (page == 1) {
+                  if (GoRouterState.of(context)
+                      .matchedLocation
+                      .startsWith('/game')) {
+                    _scrollTop(scrollController);
+                  } else {
+                    context.goNamed(GameScreen.routeName);
+                  }
+                } else if (page == 2) {
+                  if (GoRouterState.of(context)
+                      .matchedLocation
+                      .startsWith('/court')) {
+                    _scrollTop(scrollController);
+                  } else {
+                    context.goNamed(CourtSearchListScreen.routeName);
+                  }
+                } else {
+                  if (GoRouterState.of(context)
+                      .matchedLocation
+                      .startsWith('/menu')) {
+                    _scrollTop(scrollController);
+                  } else {
+                    context.goNamed(ProfileBody.routeName);
+                  }
+                }
+              },
+            );
           },
         ));
+  }
+
+  void _scrollTop(ScrollController? scrollController) {
+    if (scrollController != null && scrollController.position.pixels > 0) {
+      scrollController.animateTo(0,
+          duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+    }
   }
 }
 

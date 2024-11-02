@@ -9,6 +9,7 @@ import 'package:lottie/lottie.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/common/model/default_model.dart';
+import 'package:miti/court/view/court_map_screen.dart';
 import 'package:miti/court/view/court_search_screen.dart';
 import 'package:miti/notification/model/unread_push_model.dart';
 import 'package:miti/notification/provider/notification_provider.dart';
@@ -41,7 +42,7 @@ import '../model/user_model.dart';
 import '../provider/user_provider.dart';
 import '../../util/util.dart';
 
-class ProfileBody extends StatefulWidget {
+class ProfileBody extends ConsumerStatefulWidget {
   static String get routeName => 'profile';
 
   const ProfileBody({
@@ -49,13 +50,33 @@ class ProfileBody extends StatefulWidget {
   });
 
   @override
-  State<ProfileBody> createState() => _ProfileBodyState();
+  ConsumerState<ProfileBody> createState() => _ProfileBodyState();
 }
 
-class _ProfileBodyState extends State<ProfileBody> {
+class _ProfileBodyState extends ConsumerState<ProfileBody> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    WidgetsBinding.instance.addPostFrameCallback((s) {
+      ref
+          .read(scrollControllerProvider.notifier)
+          .update((s) => _scrollController);
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return NestedScrollView(
+      controller: _scrollController,
       headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
         return [
           DefaultAppBar(

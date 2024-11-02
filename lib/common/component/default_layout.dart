@@ -33,7 +33,6 @@ class _DefaultLayoutState extends State<DefaultLayout> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
-      onPanDown: (v) => FocusScope.of(context).unfocus(),
       child: Scaffold(
         backgroundColor: MITIColor.gray800,
         body: widget.body,

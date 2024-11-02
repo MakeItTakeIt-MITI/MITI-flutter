@@ -30,6 +30,7 @@ import '../../common/component/sliver_delegate.dart';
 import '../component/court_search_card.dart';
 import '../component/skeleton/court_list_skeleton.dart';
 import '../model/court_model.dart';
+import 'court_map_screen.dart';
 
 class CourtSearchListScreen extends ConsumerStatefulWidget {
   static String get routeName => 'courtSearch';
@@ -54,6 +55,11 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
   void initState() {
     super.initState();
     controller = ScrollController();
+    WidgetsBinding.instance.addPostFrameCallback((s) {
+      ref
+          .read(scrollControllerProvider.notifier)
+          .update((s) => controller);
+    });
   }
 
   Future<void> refresh() async {

@@ -19,6 +19,7 @@ import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
 import '../../common/provider/pagination_provider.dart';
 import '../../common/repository/base_pagination_repository.dart';
+import '../../court/view/court_map_screen.dart';
 import '../../game/component/game_list_component.dart';
 import '../../game/component/skeleton/game_list_skeleton.dart';
 import '../../game/model/game_model.dart';
@@ -48,6 +49,11 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    WidgetsBinding.instance.addPostFrameCallback((s) {
+      ref
+          .read(scrollControllerProvider.notifier)
+          .update((s) => _scrollController);
+    });
   }
 
   @override

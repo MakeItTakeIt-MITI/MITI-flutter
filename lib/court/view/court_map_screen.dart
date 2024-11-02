@@ -35,7 +35,7 @@ import '../model/court_model.dart';
 final selectGameListProvider =
     StateProvider.autoDispose<List<GameModel>>((ref) => []);
 final selectMakerProvider = StateProvider.autoDispose<int?>((ref) => null);
-final draggableScrollController =
+final scrollControllerProvider =
     StateProvider.autoDispose<ScrollController?>((ref) => null);
 final showFilterProvider = StateProvider.autoDispose((ref) => false);
 
@@ -65,6 +65,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     super.initState();
     log('page init!!');
     _draggableScrollableController = DraggableScrollableController();
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       startApp();
     });
@@ -87,6 +88,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
   @override
   void dispose() {
     _draggableScrollableController.dispose();
+    _mapController?.dispose();
     super.dispose();
   }
 
