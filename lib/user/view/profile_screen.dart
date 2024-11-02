@@ -231,10 +231,10 @@ class _MenuComponent extends StatelessWidget {
           onTap: () => context.pushNamed(TcPolicyScreen.routeName),
           title: '약관 및 정책',
         ),
-        _MenuItem(
-          onTap: () => context.pop(),
-          title: '앱 정보',
-        ),
+        // _MenuItem(
+        //   onTap: () => context.pop(),
+        //   title: '앱 정보',
+        // ),
       ],
     };
     return gameMenu;
