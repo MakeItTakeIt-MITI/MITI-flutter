@@ -40,20 +40,20 @@ android {
     compileSdkVersion 34
     ndkVersion flutter.ndkVersion
 
-//    flavorDimensions "app"
+    flavorDimensions "miti"
 
-//    productFlavors {
-//        dev {
-//            dimension "app"
-//            applicationId "com.dev.miti"
-//            resValue "string", "app_name", "DEV miti"
-//        }
-//        product {
-//            dimension "app"
-//            applicationId "com.miti.miti"
-//            resValue "string", "app_name", "flavor miti"
-//        }
-//    }
+    productFlavors {
+        dev {
+            dimension "miti"
+            applicationId "com.dev.miti"
+            resValue "string", "devMiti", "DEV flavor miti"
+        }
+        product {
+            dimension "miti"
+            applicationId "com.miti.miti"
+            resValue "string", "proMiti", "PRODUCT flavor miti"
+        }
+    }
 
     compileOptions {
         // Flag to enable support for the new language APIs

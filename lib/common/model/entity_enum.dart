@@ -360,7 +360,9 @@ enum PushNotificationTopicType {
   host_report_reporter('호스트 신고 알림 to 신고 사용자', false),
   host_report_dismissed('호스트 신고 기각 알림', false),
   host_report_dismissed_reportee('호스트 신고 기각 알림 to 호스트', false),
-  host_report_dismissed_reporter('호스트 신고 기각 알림 to 신고 사용자', false);
+  host_report_dismissed_reporter('호스트 신고 기각 알림 to 신고 사용자', false),
+  host_user_penalized('호스트 사용자 부정 사용 인정 처리 알림',false);
+
 
   const PushNotificationTopicType(this.displayName, this.canSetting);
 
