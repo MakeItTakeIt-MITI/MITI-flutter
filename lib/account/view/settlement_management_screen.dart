@@ -22,7 +22,7 @@ import '../component/skeleton/settlement_skeleton.dart';
 import '../model/account_model.dart';
 import '../model/transfer_model.dart';
 import '../provider/account_pagination_provider.dart';
-import 'bank_transfer_screen.dart';
+import '../component/bank_transfer_card.dart';
 
 class SettlementManagementScreen extends StatefulWidget {
   static String get routeName => 'settlementManagement';

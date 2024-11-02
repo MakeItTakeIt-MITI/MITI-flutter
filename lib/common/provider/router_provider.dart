@@ -28,7 +28,7 @@ import 'package:miti/user/view/user_profile_form_screen.dart';
 import 'package:miti/user/view/review_detail_screen.dart';
 
 import '../../account/view/bank_transfer_form_screen.dart';
-import '../../account/view/bank_transfer_screen.dart';
+import '../../account/component/bank_transfer_card.dart';
 import '../../account/view/settlement_detail_screen.dart';
 import '../../account/view/settlement_screen.dart';
 import '../../auth/provider/auth_provider.dart';
@@ -649,19 +649,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                           },
                         ),
                       ]),
-                  GoRoute(
-                    path: 'bankTransfer',
-                    parentNavigatorKey: rootNavKey,
-                    name: BankTransferScreen.routeName,
-                    builder: (context, state) {
-                      final int bottomIdx =
-                          int.parse(state.uri.queryParameters['bottomIdx']!);
 
-                      return BankTransferScreen(
-                        bottomIdx: bottomIdx,
-                      );
-                    },
-                  ),
                   GoRoute(
                       path: 'settlements',
                       parentNavigatorKey: rootNavKey,

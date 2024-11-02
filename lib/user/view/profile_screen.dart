@@ -21,7 +21,7 @@ import 'package:miti/user/view/nickname_update_screen.dart';
 import 'package:miti/user/view/user_payment_screen.dart';
 import 'package:miti/user/view/user_profile_update_screen.dart';
 
-import '../../account/view/bank_transfer_screen.dart';
+import '../../account/component/bank_transfer_card.dart';
 import '../../account/view/settlement_management_screen.dart';
 import '../../account/view/settlement_screen.dart';
 import '../../common/component/default_appbar.dart';
