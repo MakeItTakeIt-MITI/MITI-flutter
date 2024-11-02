@@ -120,7 +120,7 @@ class _UserDeleteScreenState extends ConsumerState<UserDeleteScreen> {
                   SizedBox(height: 12.h),
                   CustomCheckBox(
                       title:
-                          '탈퇴하시는 경우, 해당 계정 정보는 즉시 삭제되며\n입금되지 않은 송금요쳥과 보유금 전부 삭제됩니다.',
+                          '완료되지 않은 경기 일정이 있는 경우 탈퇴가 거절됩니다',
                       textStyle: MITITextStyle.sm150
                           .copyWith(color: MITIColor.gray200),
                       check: true,
