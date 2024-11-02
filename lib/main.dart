@@ -478,6 +478,19 @@ class _MyAppState extends ConsumerState<MyApp> {
       // child: const HomeScreen(), // LoginScreen(),
     );
   }
+
+  Future<void> fcmPermission() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+  }
 }
 
 class MyHttpOverrides extends HttpOverrides {

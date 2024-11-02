@@ -229,7 +229,7 @@ class SettlementCard extends StatelessWidget {
       datetime: period,
       address: '${game.court.address} ${game.court.address_detail ?? ''}',
       id: model.id,
-      fee: NumberUtil.format(game.fee.toString()),
+      fee: NumberUtil.format(model.settlementAmount.toString()),
       status: model.status,
     );
   }
