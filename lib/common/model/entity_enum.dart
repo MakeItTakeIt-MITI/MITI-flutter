@@ -342,7 +342,7 @@ enum BankType {
 
   static BankType stringToEnum({required String value}) {
     return BankType.values.firstWhere((e) {
-     return e.displayName == value;
+      return e.displayName == value;
     });
   }
 
@@ -361,8 +361,7 @@ enum PushNotificationTopicType {
   host_report_dismissed('호스트 신고 기각 알림', false),
   host_report_dismissed_reportee('호스트 신고 기각 알림 to 호스트', false),
   host_report_dismissed_reporter('호스트 신고 기각 알림 to 신고 사용자', false),
-  host_user_penalized('호스트 사용자 부정 사용 인정 처리 알림',false);
-
+  host_user_penalized('호스트 사용자 부정 사용 인정 처리 알림', false);
 
   const PushNotificationTopicType(this.displayName, this.canSetting);
 
@@ -417,7 +416,8 @@ enum PaymentCancelType {
   game_cancelation('경기 모집 실패로 인한 취소'),
   converted_to_free_game('무료 경기 전환으로 인한 취소'),
   failed_to_participate_game('경기 참가 실패로 인한 취소'),
-  payment_incomplement('최종 결제 미완료로 인한 결제 취소');
+  payment_incomplement('최종 결제 미완료로 인한 결제 취소'),
+  report_result('신고 인정으로 인한 환불 처리');
 
   const PaymentCancelType(
     this.displayName,
