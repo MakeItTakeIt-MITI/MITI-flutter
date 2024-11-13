@@ -840,9 +840,9 @@ class AddressComponent extends StatelessWidget {
                           MaterialPageRoute(
                             builder: (_) => KpostalView(
                               callback: (Kpostal kpostal) async {
-                                log('result  =${kpostal}');
+                                log('result  =${kpostal.roadAddress}');
                                 final newCourt =
-                                    court.copyWith(address: kpostal.address);
+                                    court.copyWith(address: kpostal.roadAddress);
                                 ref
                                     .read(gameFormProvider.notifier)
                                     .update(court: newCourt);
