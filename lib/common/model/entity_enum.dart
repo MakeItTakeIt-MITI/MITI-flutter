@@ -53,15 +53,15 @@ enum PaymentRequestStatus {
 }
 
 enum PaymentResultStatus {
-  @JsonValue('생성')
+  @JsonValue('create')
   create('생성'),
-  @JsonValue('요청')
+  @JsonValue('request')
   request('요청'),
-  @JsonValue('승인')
-  complete('승인'),
-  @JsonValue('취소')
+  @JsonValue('approved')
+  approved('승인'),
+  @JsonValue('cancel')
   cancel('취소'),
-  @JsonValue('실패')
+  @JsonValue('fail')
   fail('실패');
 
   const PaymentResultStatus(this.name);
@@ -281,7 +281,9 @@ enum PasswordFormType { password, passwordCheck, newPassword, newPasswordCheck }
 
 enum PaymentMethodType {
   empty_pay('더미 결제 수단'),
-  kakao_pay('카카오페이');
+  kakao_pay('카카오페이'),
+  card('card'),
+  bank('bank');
 
   final String displayName;
 

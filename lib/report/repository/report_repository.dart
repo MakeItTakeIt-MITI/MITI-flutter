@@ -20,7 +20,7 @@ final reportRepositoryProvider = Provider<ReportRepository>((ref) {
   return ReportRepository(dio);
 });
 
-@RestApi(baseUrl: serverURL)
+@RestApi(baseUrl: devServerURL)
 abstract class ReportRepository {
   factory ReportRepository(Dio dio) = _ReportRepository;
 

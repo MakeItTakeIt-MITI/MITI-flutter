@@ -21,4 +21,10 @@ abstract class Environment {
   static final String kakaoPaySecretKey = _Environment.kakaoPaySecretKey;
   @EnviedField(varName: 'KAKAO_PAY_SECRET_KEY_DEV', obfuscate: true)
   static final String kakaoPaySecretKeyDev = _Environment.kakaoPaySecretKeyDev;
+  @EnviedField(varName: 'BOOT_PAY_JAVA_SCRIPT_KEY', obfuscate: true)
+  static final String bootPayJavaScriptKey = _Environment.bootPayJavaScriptKey;
+  @EnviedField(varName: 'BOOT_PAY_ANDROID_KEY', obfuscate: true)
+  static final String bootPayAndroidKey = _Environment.bootPayAndroidKey;
+  @EnviedField(varName: 'BOOT_PAY_IOS_KEY', obfuscate: true)
+  static final String bootPayIosKey = _Environment.bootPayIosKey;
 }

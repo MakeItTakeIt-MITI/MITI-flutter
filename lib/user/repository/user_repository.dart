@@ -23,7 +23,7 @@ final userRepositoryProvider = Provider<UserRepository>((ref) {
   return UserRepository(dio);
 });
 
-@RestApi(baseUrl: serverURL)
+@RestApi(baseUrl: devServerURL)
 abstract class UserRepository {
   factory UserRepository(Dio dio) = _UserRepository;
 
@@ -68,7 +68,7 @@ final userParticipationPRepositoryProvider =
   return UserParticipationPRepository(dio);
 });
 
-@RestApi(baseUrl: serverURL)
+@RestApi(baseUrl: devServerURL)
 abstract class UserParticipationPRepository
     extends IBasePaginationRepository<GameListByDateModel, UserGameParam> {
   factory UserParticipationPRepository(Dio dio) = _UserParticipationPRepository;
@@ -89,7 +89,7 @@ final userWrittenReviewsPRepositoryProvider =
   return UserWrittenReviewsPRepository(dio);
 });
 
-@RestApi(baseUrl: serverURL)
+@RestApi(baseUrl: devServerURL)
 abstract class UserWrittenReviewsPRepository
     extends IBasePaginationRepository<WrittenReviewModel, UserReviewParam> {
   factory UserWrittenReviewsPRepository(Dio dio) =
@@ -111,7 +111,7 @@ final userReceiveReviewsPRepositoryProvider =
   return UserReceiveReviewsPRepository(dio);
 });
 
-@RestApi(baseUrl: serverURL)
+@RestApi(baseUrl: devServerURL)
 abstract class UserReceiveReviewsPRepository
     extends IBasePaginationRepository<ReceiveReviewModel, UserReviewParam> {
   factory UserReceiveReviewsPRepository(Dio dio) =
@@ -132,7 +132,7 @@ final userHostingPRepositoryProvider = Provider<UserHostingPRepository>((ref) {
   return UserHostingPRepository(dio);
 });
 
-@RestApi(baseUrl: serverURL)
+@RestApi(baseUrl: devServerURL)
 abstract class UserHostingPRepository
     extends IBasePaginationRepository<GameListByDateModel, UserGameParam> {
   factory UserHostingPRepository(Dio dio) = _UserHostingPRepository;
@@ -152,7 +152,7 @@ final userPaymentPRepositoryProvider = Provider<UserPaymentPRepository>((ref) {
   return UserPaymentPRepository(dio);
 });
 
-@RestApi(baseUrl: serverURL)
+@RestApi(baseUrl: devServerURL)
 abstract class UserPaymentPRepository
     extends IBasePaginationRepository<MyPaymentModel, UserPaymentParam> {
   factory UserPaymentPRepository(Dio dio) = _UserPaymentPRepository;

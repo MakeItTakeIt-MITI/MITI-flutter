@@ -7,7 +7,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../auth/provider/auth_provider.dart';
 import '../common/logger/custom_logger.dart';
 
-const String serverURL = "https://dev.makeittakeit.kr";
+const String devServerURL = "https://api.makeittakeit.kr";
+const String prodServerURL = "https://dev.makeittakeit.kr";
 
 // https://api.makeittakeit.kr
 class CustomDioInterceptor extends Interceptor {

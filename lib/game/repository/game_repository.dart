@@ -22,7 +22,7 @@ final gameRepositoryProvider = Provider<GameRepository>((ref) {
   return GameRepository(dio);
 });
 
-@RestApi(baseUrl: serverURL)
+@RestApi(baseUrl: devServerURL)
 abstract class GameRepository {
   factory GameRepository(Dio dio) = _GameRepository;
 

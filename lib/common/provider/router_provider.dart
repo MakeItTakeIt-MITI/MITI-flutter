@@ -16,6 +16,8 @@ import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/game/view/game_payment_screen.dart';
 import 'package:miti/game/view/game_update_screen.dart';
 import 'package:miti/game/view/review_form_screen.dart';
+import 'package:miti/kakaopay/view/boot_pay_screen.dart';
+import 'package:miti/kakaopay/view/nice_payment_screen.dart';
 import 'package:miti/notification/model/push_model.dart';
 import 'package:miti/notification/view/notification_detail_screen.dart';
 import 'package:miti/notification/view/notification_screen.dart';
@@ -488,6 +490,34 @@ final routerProvider = Provider<GoRouter>((ref) {
                                     return PaymentScreen(
                                       gameId: gameId,
                                       redirectUrl: redirectUrl,
+                                    );
+                                  },
+                                ),
+                                GoRoute(
+                                  path: 'nicePayment',
+                                  parentNavigatorKey: rootNavKey,
+                                  name: NicePaymentScreen.routeName,
+                                  builder: (context, state) {
+                                    final int gameId = int.parse(
+                                        state.pathParameters['gameId']!);
+                                    // final String redirectUrl = state
+                                    //     .uri.queryParameters['redirectUrl']!;
+                                    return NicePaymentScreen(
+                                      gameId: gameId,
+                                    );
+                                  },
+                                ),
+                                GoRoute(
+                                  path: 'bootPay',
+                                  parentNavigatorKey: rootNavKey,
+                                  name: BootPayScreen.routeName,
+                                  builder: (context, state) {
+                                    final int gameId = int.parse(
+                                        state.pathParameters['gameId']!);
+                                    // final String redirectUrl = state
+                                    //     .uri.queryParameters['redirectUrl']!;
+                                    return BootPayScreen(
+                                      gameId: gameId,
                                     );
                                   },
                                 ),

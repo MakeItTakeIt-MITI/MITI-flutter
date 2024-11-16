@@ -7,6 +7,7 @@ import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
 import '../../game/provider/game_provider.dart';
 import '../model/pay_model.dart';
+import '../param/boot_pay_approve_param.dart';
 
 part 'pay_provider.g.dart';
 
@@ -31,6 +32,8 @@ Future<BaseModel> readyPay(ReadyPayRef ref,
             .get(gameId: gameId);
 
         break;
+      default:
+        break;
     }
     return value;
   }).catchError((e) {
@@ -51,12 +54,51 @@ Future<BaseModel> approvalPay(ApprovalPayRef ref,
     logger.i('approvalPay = !');
     final model = value.data!;
 
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
+}
+
+@Riverpod()
+Future<BaseModel> requestBootPay(RequestBootPayRef ref,
+    {required int gameId, required PaymentMethodType paymentMethod}) async {
+  final repository = ref.watch(payRepositoryProvider);
+  return repository
+      .requestBootPay(gameId: gameId, paymentMethod: paymentMethod)
+      .then<BaseModel>((value) async {
+    logger.i('requestBootPay!');
+    final model = value.data!;
 
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
     logger.e(
         'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
+}
+
+
+@Riverpod()
+Future<BaseModel> approveBootPay(ApproveBootPayRef ref,
+    {required BootPayApproveParam param }) async {
+  final repository = ref.watch(payRepositoryProvider);
+  return repository
+      .approveBootPay(param)
+      .then<BaseModel>((value) async {
+    logger.i('requestBootPay!');
+    final model = value.data!;
+
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    print( 'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
     return error;
   });
 }

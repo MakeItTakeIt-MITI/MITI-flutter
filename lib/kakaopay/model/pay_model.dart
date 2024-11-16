@@ -118,3 +118,5 @@ class PayResultModel extends IModelWithId {
   factory PayResultModel.fromJson(Map<String, dynamic> json) =>
       _$PayResultModelFromJson(json);
 }
+
+
