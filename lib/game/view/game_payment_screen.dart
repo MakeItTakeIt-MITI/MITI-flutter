@@ -112,7 +112,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
     final fee = model?.payment_information.final_payment_amount;
     type = fee != null && fee == 0
         ? PaymentMethodType.empty_pay
-        : PaymentMethodType.kakao_pay;
+        : PaymentMethodType.kakao;
 
     return Scaffold(
       backgroundColor: MITIColor.gray750,
@@ -437,7 +437,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
 //           .responseError(context, PayApiType.ready, ref);
 //     } else {
 //       switch (type) {
-//         case PaymentMethodType.kakao_pay:
+//         case PaymentMethodType.kakao:
 //           final model = (result as ResponseModel<PayBaseModel>).data!;
 //           model as PayReadyModel;
 //           // log('model = ${model.runtimeType}');
@@ -733,16 +733,16 @@ class PayWayButton extends ConsumerWidget {
                     onPressed: () {
                       ref
                           .read(paymentWayProvider.notifier)
-                          .update((state) => PaymentMethodType.kakao_pay);
+                          .update((state) => PaymentMethodType.kakao);
                     },
                     style: TextButton.styleFrom(
-                      backgroundColor: paymentWay == PaymentMethodType.kakao_pay
+                      backgroundColor: paymentWay == PaymentMethodType.kakao
                           ? const Color(0xFFFFF100)
                           : MITIColor.gray800,
                       fixedSize: Size(double.infinity, 44.h),
                       shape: RoundedRectangleBorder(
                         side: BorderSide(
-                          color: paymentWay == PaymentMethodType.kakao_pay
+                          color: paymentWay == PaymentMethodType.kakao
                               ? const Color(0xFFFFF100)
                               : MITIColor.gray700,
                         ),
@@ -753,7 +753,7 @@ class PayWayButton extends ConsumerWidget {
                       AssetUtil.getAssetPath(
                           type: AssetType.icon, name: 'kakaopay'),
                       colorFilter: ColorFilter.mode(
-                          paymentWay == PaymentMethodType.kakao_pay
+                          paymentWay == PaymentMethodType.kakao
                               ? const Color(0xFF040000)
                               : const Color(0xFFFFF100),
                           BlendMode.srcIn),

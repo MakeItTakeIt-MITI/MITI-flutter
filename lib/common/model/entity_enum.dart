@@ -281,9 +281,9 @@ enum PasswordFormType { password, passwordCheck, newPassword, newPasswordCheck }
 
 enum PaymentMethodType {
   empty_pay('더미 결제 수단'),
-  kakao_pay('카카오페이'),
-  card('card'),
-  bank('bank');
+  kakao('카카오페이'),
+  card('신용카드'),
+  bank('계좌이체');
 
   final String displayName;
 

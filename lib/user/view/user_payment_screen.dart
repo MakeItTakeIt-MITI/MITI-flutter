@@ -104,23 +104,30 @@ class _PaymentCard extends StatelessWidget {
   final PaymentResultType status;
   final ItemType item_type;
   final PaymentMethodType payment_method;
-  final PaymentCancelType? cancelation_reason;
-  final String created_at;
-  final String approved_at;
+  final String order_id;
   final int total_amount;
-  final String partner_order_id;
+  final int tax_free_amount;
+  final int? canceled_total_amount;
+  final int? canceled_tax_free_amount;
+  final PaymentCancelType? cancelation_reason;
+  final String approved_at;
+  final String? canceled_at;
 
-  const _PaymentCard(
-      {super.key,
-      required this.status,
-      required this.item_type,
-      required this.payment_method,
-      this.cancelation_reason,
-      required this.created_at,
-      required this.approved_at,
-      required this.total_amount,
-      required this.partner_order_id,
-      required this.id});
+  const _PaymentCard({
+    super.key,
+    required this.id,
+    required this.status,
+    required this.item_type,
+    required this.payment_method,
+    required this.order_id,
+    required this.total_amount,
+    required this.tax_free_amount,
+    this.canceled_total_amount,
+    this.canceled_tax_free_amount,
+    this.cancelation_reason,
+    required this.approved_at,
+    this.canceled_at,
+  });
 
   factory _PaymentCard.fromModel({required MyPaymentModel model}) {
     return _PaymentCard(
@@ -129,10 +136,10 @@ class _PaymentCard extends StatelessWidget {
       item_type: model.item_type,
       payment_method: model.payment_method,
       cancelation_reason: model.cancelation_reason,
-      created_at: model.created_at,
       approved_at: model.approved_at,
       total_amount: model.total_amount,
-      partner_order_id: model.partner_order_id,
+      order_id: model.order_id,
+      tax_free_amount: model.tax_free_amount,
     );
   }
 
@@ -170,7 +177,7 @@ class _PaymentCard extends StatelessWidget {
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  partner_order_id,
+                  order_id,
                   style: MITITextStyle.xxsm.copyWith(
                     color: MITIColor.gray100,
                   ),

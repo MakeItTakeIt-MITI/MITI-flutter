@@ -16,27 +16,47 @@ import 'package:miti/common/model/model_id.dart';
 
 part 'my_payment_model.g.dart';
 
+/*
+    "id": 16,
+    "status": "approved",
+    "item_type": "pickup_game",
+    "payment_method": "empty_pay",
+    "order_id": "NXdXQTPcqhEjH5u3nE77QK",
+    "total_amount": 0,
+    "tax_free_amount": 0,
+    "canceled_total_amount": null,
+    "canceled_tax_free_amount": null,
+    "cancelation_reason": null,
+    "approved_at": "2024-11-18T00:29:52.923875+09:00",
+    "canceled_at": null
+ */
 @JsonSerializable()
 class MyPaymentModel extends IModelWithId {
   final PaymentResultType status;
   final ItemType item_type;
   final PaymentMethodType payment_method;
-  final PaymentCancelType? cancelation_reason;
-  final String created_at;
-  final String approved_at;
+  final String order_id;
   final int total_amount;
-  final String partner_order_id;
+  final int tax_free_amount;
+  final int? canceled_total_amount;
+  final int? canceled_tax_free_amount;
+  final PaymentCancelType? cancelation_reason;
+  final String approved_at;
+  final String? canceled_at;
 
   MyPaymentModel({
     required super.id,
     required this.status,
     required this.item_type,
     required this.payment_method,
-    required this.cancelation_reason,
-    required this.created_at,
-    required this.approved_at,
+    required this.order_id,
     required this.total_amount,
-    required this.partner_order_id,
+    required this.tax_free_amount,
+    required this.canceled_total_amount,
+    required this.canceled_tax_free_amount,
+    required this.cancelation_reason,
+    required this.approved_at,
+    required this.canceled_at,
   });
 
   factory MyPaymentModel.fromJson(Map<String, dynamic> json) =>
