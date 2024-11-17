@@ -8,7 +8,7 @@ part 'game_payment_model.g.dart';
 
 @JsonSerializable()
 class GamePaymentModel extends IModelWithId {
-  final CourtDetailModel court;
+  final CourtGameModel court;
   final GameStatus game_status;
   final String title;
   final String startdate;

@@ -7,7 +7,7 @@ part 'boot_pay_approve_model.g.dart';
 class BootPayApproveModel {
   final PaymentResultStatus status;
   @JsonKey(name: 'payment_method')
-  final PaymentMethodType paymentMethod;
+  final String paymentMethod;
   @JsonKey(name: 'total_amount')
   final int totalAmount;
   @JsonKey(name: 'tax_free_amount')

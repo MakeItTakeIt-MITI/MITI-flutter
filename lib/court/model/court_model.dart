@@ -26,17 +26,15 @@ class CourtModel extends IModelWithId {
 }
 
 @JsonSerializable()
-class CourtDetailModel extends CourtModel {
-  final String name;
-  final String? info;
+class CourtDetailModel extends CourtGameModel {
   final List<GameHostModel> soonest_games;
 
   CourtDetailModel( {
     required super.id,
     required super.address,
     required super.address_detail,
-    required this.name,
-    required this.info,
+    required super.name,
+    required super.info,
     required super.latitude,
     required super.longitude,
     required this.soonest_games,
@@ -62,6 +60,26 @@ class CourtAddressModel extends IModelWithId {
 
   factory CourtAddressModel.fromJson(Map<String, dynamic> json) =>
       _$CourtAddressModelFromJson(json);
+}
+
+
+@JsonSerializable()
+class CourtGameModel extends CourtModel {
+  final String name;
+  final String? info;
+
+  CourtGameModel( {
+    required super.id,
+    required super.address,
+    required super.address_detail,
+    required this.name,
+    required this.info,
+    required super.latitude,
+    required super.longitude,
+  });
+
+  factory CourtGameModel.fromJson(Map<String, dynamic> json) =>
+      _$CourtGameModelFromJson(json);
 }
 
 @JsonSerializable()

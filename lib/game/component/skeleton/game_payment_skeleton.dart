@@ -29,12 +29,12 @@ class GamePaymentSkeleton extends StatelessWidget {
         const SummarySkeleton(),
         getDivider(),
         const PaymentSkeleton(),
-        Column(
-          children: [
-            getDivider(),
-            const PayWayButton(),
-          ],
-        ),
+        // Column(
+        //   children: [
+        //     getDivider(),
+        //     const PayWayButton(),
+        //   ],
+        // ),
         getDivider(),
         const PaymentAndRefundPolicyComponent(
           title: '결제 및 환불 정책',

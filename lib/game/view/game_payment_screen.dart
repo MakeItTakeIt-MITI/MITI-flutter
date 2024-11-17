@@ -40,6 +40,7 @@ import '../../auth/view/signup/signup_screen.dart';
 import '../../common/view/operation_term_screen.dart';
 import '../../env/environment.dart';
 import '../../kakaopay/param/boot_pay_approve_param.dart';
+import '../../kakaopay/provider/widget/payment_way_provider.dart';
 import '../../kakaopay/view/approval_screen.dart';
 import '../../kakaopay/view/boot_pay_screen.dart';
 import '../../kakaopay/view/nice_payment_screen.dart';
@@ -134,9 +135,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
             }
           }
 
-          final valid = fee == null || fee != 0
-              ? ref.watch(checkProvider(1)) && validCheckBox
-              : validCheckBox;
+          final valid = validCheckBox;
           return BottomButton(
             button: TextButton(
               onPressed: valid
@@ -200,14 +199,14 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
                         getDivider(),
                         PaymentComponent.fromModel(
                             model: model.payment_information),
-                        Visibility(
-                            visible: visiblePay,
-                            child: Column(
-                              children: [
-                                getDivider(),
-                                const PayWayButton(),
-                              ],
-                            )),
+                        // Visibility(
+                        //     visible: visiblePay,
+                        //     child: Column(
+                        //       children: [
+                        //         getDivider(),
+                        //         const PayWayButton(),
+                        //       ],
+                        //     )),
                         getDivider(),
                         const PaymentAndRefundPolicyComponent(
                           title: '결제 및 환불 정책',
@@ -232,22 +231,39 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
 
   Future<void> onBootPay(
       WidgetRef ref, BuildContext context, PaymentMethodType type) async {
-    final result = await ref.read(requestBootPayProvider(
-            gameId: widget.gameId, paymentMethod: PaymentMethodType.bank)
-        .future);
+    final result = await ref
+        .read(readyPayProvider(gameId: widget.gameId, type: type).future);
     if (context.mounted) {
       if (result is ErrorModel) {
         PayError.fromModel(model: result)
             .responseError(context, PayApiType.ready, ref);
       } else {
-        final model = (result as ResponseModel<BootPayRequestModel>).data!;
+        final payBaseModel = (result as ResponseModel<PayBaseModel>).data!;
+
+        switch (type) {
+          case PaymentMethodType.empty_pay:
+            log("무료 경기 참여 완료");
+            Map<String, String> pathParameters = {
+              'gameId': widget.gameId.toString()
+            };
+            const GameCompleteType extra = GameCompleteType.payment;
+
+            context.goNamed(
+              GameCompleteScreen.routeName,
+              pathParameters: pathParameters,
+              extra: extra,
+            );
+            break;
+          default:
+            final model = payBaseModel as BootPayRequestModel;
+            bootpayReqeustDataInit(model);
+            goBootpayTest(context);
+            break;
+        }
 
         // payload.pg = '나이스페이';
         // payload.method = model.method.name;
         // payload.methods = ['card', 'phone', 'vbank', 'bank', 'kakao'];
-
-        bootpayReqeustDataInit(model);
-        goBootpayTest(context);
       }
     }
   }
@@ -351,7 +367,9 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
       // },
       onDone: (String data) {
         print('------- onDone: $data');
-
+        ref
+            .read(gameDetailProvider(gameId: widget.gameId).notifier)
+            .get(gameId: widget.gameId);
         Map<String, String> pathParameters = {
           'gameId': widget.gameId.toString()
         };
@@ -409,50 +427,50 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
     }
   }
 
-  Future<void> onPay(
-      WidgetRef ref, BuildContext context, PaymentMethodType type) async {
-    final result = await ref
-        .read(readyPayProvider(gameId: widget.gameId, type: type).future);
-    if (context.mounted) {
-      if (result is ErrorModel) {
-        PayError.fromModel(model: result)
-            .responseError(context, PayApiType.ready, ref);
-      } else {
-        switch (type) {
-          case PaymentMethodType.kakao_pay:
-            final model = (result as ResponseModel<PayBaseModel>).data!;
-            model as PayReadyModel;
-            // log('model = ${model.runtimeType}');
-
-            final pathParameters = {'gameId': widget.gameId.toString()};
-            final queryParameters = {
-              'redirectUrl': model.next_redirect_mobile_url
-            };
-            context.goNamed(
-              BootPayScreen.routeName,
-              pathParameters: pathParameters,
-              queryParameters: queryParameters,
-            );
-            break;
-          case PaymentMethodType.empty_pay:
-            log("무료 경기 참여 완료");
-            Map<String, String> pathParameters = {
-              'gameId': widget.gameId.toString()
-            };
-            const GameCompleteType extra = GameCompleteType.payment;
-
-            context.goNamed(
-              GameCompleteScreen.routeName,
-              pathParameters: pathParameters,
-              extra: extra,
-            );
-            break;
-          default:
-            break;
-        }
-      }
-    }
-  }
+// Future<void> onPay(
+//     WidgetRef ref, BuildContext context, PaymentMethodType type) async {
+//   final result = await ref
+//       .read(readyPayProvider(gameId: widget.gameId, type: type).future);
+//   if (context.mounted) {
+//     if (result is ErrorModel) {
+//       PayError.fromModel(model: result)
+//           .responseError(context, PayApiType.ready, ref);
+//     } else {
+//       switch (type) {
+//         case PaymentMethodType.kakao_pay:
+//           final model = (result as ResponseModel<PayBaseModel>).data!;
+//           model as PayReadyModel;
+//           // log('model = ${model.runtimeType}');
+//
+//           final pathParameters = {'gameId': widget.gameId.toString()};
+//           final queryParameters = {
+//             'redirectUrl': model.next_redirect_mobile_url
+//           };
+//           context.goNamed(
+//             BootPayScreen.routeName,
+//             pathParameters: pathParameters,
+//             queryParameters: queryParameters,
+//           );
+//           break;
+//         case PaymentMethodType.empty_pay:
+//           log("무료 경기 참여 완료");
+//           Map<String, String> pathParameters = {
+//             'gameId': widget.gameId.toString()
+//           };
+//           const GameCompleteType extra = GameCompleteType.payment;
+//
+//           context.goNamed(
+//             GameCompleteScreen.routeName,
+//             pathParameters: pathParameters,
+//             extra: extra,
+//           );
+//           break;
+//         default:
+//           break;
+//       }
+//     }
+//   }
+// }
 }
 
 class PaymentCheckForm extends ConsumerStatefulWidget {
@@ -691,7 +709,8 @@ class PayWayButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selected = ref.watch(checkProvider(1));
+    // final selected = ref.watch(checkProvider(1));
+    final paymentWay = ref.watch(paymentWayProvider);
     return Padding(
       padding:
           EdgeInsets.only(top: 24.h, left: 21.w, right: 21.w, bottom: 28.h),
@@ -707,30 +726,135 @@ class PayWayButton extends ConsumerWidget {
           SizedBox(height: 20.h),
           SizedBox(
             height: 44.h,
-            child: TextButton(
-              onPressed: () {
-                ref.read(checkProvider(1).notifier).update((state) => !state);
-              },
-              style: TextButton.styleFrom(
-                backgroundColor:
-                    selected ? const Color(0xFFFFF100) : MITIColor.gray800,
-                fixedSize: Size(double.infinity, 44.h),
-                shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                    color:
-                        selected ? const Color(0xFFFFF100) : MITIColor.gray700,
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                    onPressed: () {
+                      ref
+                          .read(paymentWayProvider.notifier)
+                          .update((state) => PaymentMethodType.kakao_pay);
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: paymentWay == PaymentMethodType.kakao_pay
+                          ? const Color(0xFFFFF100)
+                          : MITIColor.gray800,
+                      fixedSize: Size(double.infinity, 44.h),
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(
+                          color: paymentWay == PaymentMethodType.kakao_pay
+                              ? const Color(0xFFFFF100)
+                              : MITIColor.gray700,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(8.r)),
+                      ),
+                    ),
+                    child: SvgPicture.asset(
+                      AssetUtil.getAssetPath(
+                          type: AssetType.icon, name: 'kakaopay'),
+                      colorFilter: ColorFilter.mode(
+                          paymentWay == PaymentMethodType.kakao_pay
+                              ? const Color(0xFF040000)
+                              : const Color(0xFFFFF100),
+                          BlendMode.srcIn),
+                    ),
                   ),
-                  borderRadius: BorderRadius.all(Radius.circular(8.r)),
                 ),
-              ),
-              child: SvgPicture.asset(
-                AssetUtil.getAssetPath(type: AssetType.icon, name: 'kakaopay'),
-                colorFilter: ColorFilter.mode(
-                    selected
-                        ? const Color(0xFF040000)
-                        : const Color(0xFFFFF100),
-                    BlendMode.srcIn),
-              ),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: TextButton(
+                    onPressed: () {
+                      ref
+                          .read(paymentWayProvider.notifier)
+                          .update((state) => PaymentMethodType.card);
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: paymentWay == PaymentMethodType.card
+                          ? MITIColor.primary
+                          : MITIColor.gray800,
+                      fixedSize: Size(double.infinity, 44.h),
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(
+                          color: paymentWay == PaymentMethodType.card
+                              ? MITIColor.primary
+                              : MITIColor.gray700,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(8.r)),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          AssetUtil.getAssetPath(
+                              type: AssetType.icon, name: 'card'),
+                          colorFilter: ColorFilter.mode(
+                              paymentWay == PaymentMethodType.card
+                                  ? MITIColor.black
+                                  : MITIColor.gray400,
+                              BlendMode.srcIn),
+                        ),
+                        SizedBox(width: 2.w),
+                        Text(
+                          '신용카드',
+                          style: MITITextStyle.xxsmSemiBold.copyWith(
+                            color: paymentWay == PaymentMethodType.card
+                                ? MITIColor.black
+                                : MITIColor.gray400,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: TextButton(
+                    onPressed: () {
+                      ref
+                          .read(paymentWayProvider.notifier)
+                          .update((state) => PaymentMethodType.bank);
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: paymentWay == PaymentMethodType.bank
+                          ? MITIColor.primary
+                          : MITIColor.gray800,
+                      fixedSize: Size(double.infinity, 44.h),
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(
+                          color: paymentWay == PaymentMethodType.bank
+                              ? MITIColor.primary
+                              : MITIColor.gray700,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(8.r)),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          AssetUtil.getAssetPath(
+                              type: AssetType.icon, name: 'account_transfer'),
+                          colorFilter: ColorFilter.mode(
+                              paymentWay == PaymentMethodType.bank
+                                  ? MITIColor.black
+                                  : MITIColor.gray400,
+                              BlendMode.srcIn),
+                        ),
+                        SizedBox(width: 2.w),
+                        Text(
+                          '계좌이체',
+                          style: MITITextStyle.xxsmSemiBold.copyWith(
+                            color: paymentWay == PaymentMethodType.bank
+                                ? MITIColor.black
+                                : MITIColor.gray400,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

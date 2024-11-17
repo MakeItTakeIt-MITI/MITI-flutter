@@ -24,11 +24,11 @@ final payRepositoryProvider = Provider<PayRepository>((ref) {
 abstract class PayRepository {
   factory PayRepository(Dio dio) = _PayRepository;
 
-  @Headers({'token': 'true'})
-  @POST('/games/{gameId}/participations')
-  Future<ResponseModel<PayBaseModel>> readyPay(
-      {@Path() required int gameId,
-      @Query('payment_method') required PaymentMethodType type});
+  // @Headers({'token': 'true'})
+  // @POST('/games/{gameId}/participations')
+  // Future<ResponseModel<PayBaseModel>> readyPay(
+  //     {@Path() required int gameId,
+  //     @Query('payment_method') required PaymentMethodType type});
 
   @Headers({'token': 'true'})
   @POST('/payments/kakao/approve/{requestId}')
@@ -38,8 +38,8 @@ abstract class PayRepository {
 
   @Headers({'token': 'true'})
   @POST('/games/{gameId}/participations')
-  Future<ResponseModel<BootPayRequestModel>> requestBootPay(
-      {@Query('payment_method') required PaymentMethodType paymentMethod,
+  Future<ResponseModel<PayBaseModel>> requestBootPay(
+      {
       @Path() required int gameId});
 
   @Headers({'token': 'true'})

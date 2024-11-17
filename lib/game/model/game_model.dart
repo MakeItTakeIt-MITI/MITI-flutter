@@ -234,7 +234,7 @@ class ParticipationModel extends IModelWithId {
 @JsonSerializable()
 class GameDetailModel extends IModelWithId {
   final UserReviewModel host;
-  final CourtDetailModel court;
+  final CourtGameModel court;
 
   final GameStatus game_status;
   final String title;

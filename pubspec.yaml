@@ -162,7 +162,6 @@ flutter:
     - assets/images/v2/logo/
     - assets/images/v2/logo/bank/
     - assets/images/v2/gif/
-    - assets/goPay.js
   #   - images/a_dot_ham.jpeg
   #  flavorDimensions:
   #    - environment
