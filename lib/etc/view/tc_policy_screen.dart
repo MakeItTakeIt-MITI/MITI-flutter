@@ -12,6 +12,8 @@ import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../notification/view/notification_detail_screen.dart';
+import '../component/skeleton/tc_policy_detail_skeleton.dart';
+import '../component/skeleton/tc_policy_skeleton.dart';
 
 class TcPolicyScreen extends StatelessWidget {
   static String get routeName => 'tcPolicy';
@@ -33,7 +35,7 @@ class TcPolicyScreen extends StatelessWidget {
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
             final result = ref.watch(tcPolicyListProvider);
             if (result is LoadingModel) {
-              return CircularProgressIndicator();
+              return const TcPolicySkeleton();
             } else if (result is ErrorModel) {
               return Text('error');
             }
@@ -83,7 +85,7 @@ class TcPolicyDetailScreen extends ConsumerWidget {
     final result = ref.watch(tcPolicyProvider(policyId: policyId));
     if (result is LoadingModel) {
       return const Dialog.fullscreen(
-        child: Scaffold(body: Center(child: CircularProgressIndicator())),
+        child: TcPolicyDetailSkeleton(),
       );
     } else if (result is ErrorModel) {
       return const Dialog.fullscreen(

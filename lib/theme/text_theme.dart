@@ -144,7 +144,7 @@ class MITITextStyle {
     fontSize: 12.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w300,
-    height: 1,
+    height: 1.5,
   );
 
   static final TextStyle xxsmBold = TextStyle(

@@ -83,7 +83,7 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
               return TextButton(
                 onPressed: valid
                     ? () async {
-                        _throttler.setValue(throttleCnt+1);
+                        _throttler.setValue(throttleCnt + 1);
                       }
                     : () {},
                 style: TextButton.styleFrom(
@@ -160,44 +160,45 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
     final result = await ref.read(
         createReportProvider(gameId: widget.gameId, category: widget.type)
             .future);
-
-    if (result is ErrorModel) {
-      ReportError.fromModel(model: result)
-          .responseError(context, ReportApiType.report, ref);
-    } else {
-      final model = (ref.read(gameDetailProvider(gameId: widget.gameId))
-              as ResponseModel<GameDetailModel>)
-          .data!;
-      Map<String, String> pathParameters = {'gameId': model.id.toString()};
-      context.goNamed(GameDetailScreen.routeName,
-          pathParameters: pathParameters);
-      Future.delayed(const Duration(milliseconds: 200), () {
-        showModalBottomSheet(
-            isDismissible: false,
-            context: rootNavKey.currentState!.context!,
-            builder: (_) {
-              return BottomDialog(
-                title: '경기 신고 완료',
-                content: '‘${model.title}’ 경기의 신고가 접수되었습니다.',
-                btn: Consumer(
-                  builder:
-                      (BuildContext context, WidgetRef ref, Widget? child) {
-                    return TextButton(
-                      onPressed: () async {
-                        context.pop();
-                      },
-                      style: TextButton.styleFrom(
-                        fixedSize: Size(double.infinity, 48.h),
-                      ),
-                      child: const Text(
-                        "확인",
-                      ),
-                    );
-                  },
-                ),
-              );
-            });
-      });
+    if (context.mounted) {
+      if (result is ErrorModel) {
+        ReportError.fromModel(model: result)
+            .responseError(context, ReportApiType.report, ref);
+      } else {
+        final model = (ref.read(gameDetailProvider(gameId: widget.gameId))
+                as ResponseModel<GameDetailModel>)
+            .data!;
+        Map<String, String> pathParameters = {'gameId': model.id.toString()};
+        context.goNamed(GameDetailScreen.routeName,
+            pathParameters: pathParameters);
+        Future.delayed(const Duration(milliseconds: 200), () {
+          showModalBottomSheet(
+              isDismissible: false,
+              context: rootNavKey.currentState!.context!,
+              builder: (_) {
+                return BottomDialog(
+                  title: '경기 신고 완료',
+                  content: '‘${model.title}’ 경기의 신고가 접수되었습니다.',
+                  btn: Consumer(
+                    builder:
+                        (BuildContext context, WidgetRef ref, Widget? child) {
+                      return TextButton(
+                        onPressed: () async {
+                          context.pop();
+                        },
+                        style: TextButton.styleFrom(
+                          fixedSize: Size(double.infinity, 48.h),
+                        ),
+                        child: const Text(
+                          "확인",
+                        ),
+                      );
+                    },
+                  ),
+                );
+              });
+        });
+      }
     }
   }
 }

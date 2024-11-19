@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,15 +6,10 @@ import 'package:go_router/go_router.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/common/error/view/error_screen.dart';
 import 'package:miti/dio/response_code.dart';
-import 'package:miti/game/provider/widget/game_form_provider.dart';
 
 import '../../common/component/custom_dialog.dart';
-import '../../common/component/custom_text_form_field.dart';
 import '../../common/error/common_error.dart';
 import '../../common/model/default_model.dart';
-import '../../common/model/entity_enum.dart';
-import '../../common/provider/form_util_provider.dart';
-import '../../common/provider/router_provider.dart';
 
 enum AccountApiType { getSettlementInfo, requestTransfer, getAccountInfo }
 

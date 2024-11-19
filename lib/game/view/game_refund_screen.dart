@@ -125,32 +125,52 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
           return [
             const DefaultAppBar(
               isSliver: true,
-              title: '참여 경기 취소',
+              title: '경기 환불 정보',
               backgroundColor: MITIColor.gray750,
             ),
           ];
         },
-        body: CustomScrollView(
-          slivers: [
-            getDivider(),
-            _RefundInfoComponent(
-              gameId: widget.gameId,
-              participationId: widget.participationId,
-            ),
-            getDivider(),
-            const SliverToBoxAdapter(
-              child: PaymentAndRefundPolicyComponent(
-                title: '참여 취소 수수료 규정',
-              ),
-            ),
-            getDivider(),
-            SliverToBoxAdapter(
-              child: PaymentCheckForm(
-                type: AgreementRequestType.participation_refund,
+        body: Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final result = ref.watch(refundInfoProvider(
                 gameId: widget.gameId,
-              ),
-            ),
-          ],
+                participationId: widget.participationId));
+            if (result is LoadingModel) {
+              return Container();
+            } else if (result is ErrorModel) {
+              WidgetsBinding.instance.addPostFrameCallback((s) {
+                GameError.fromModel(model: result)
+                    .responseError(context, GameApiType.getRefundInfo, ref);
+              });
+
+              return const SliverToBoxAdapter(child: Text('에러'));
+            }
+            final model = (result as ResponseModel<RefundModel>).data!;
+
+            return CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                    child: SummaryComponent.fromRefundModel(model: model.game)),
+                getDivider(),
+                _RefundInfoComponent(
+                  model: model,
+                ),
+                getDivider(),
+                const SliverToBoxAdapter(
+                  child: PaymentAndRefundPolicyComponent(
+                    title: '참여 취소 수수료 규정',
+                  ),
+                ),
+                getDivider(),
+                SliverToBoxAdapter(
+                  child: PaymentCheckForm(
+                    type: AgreementRequestType.participation_refund,
+                    gameId: widget.gameId,
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -179,13 +199,11 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
 }
 
 class _RefundInfoComponent extends ConsumerWidget {
-  final int gameId;
-  final int participationId;
+  final RefundModel model;
 
   const _RefundInfoComponent({
     super.key,
-    required this.gameId,
-    required this.participationId,
+    required this.model,
   });
 
   String formatFee(int fee) {
@@ -194,19 +212,6 @@ class _RefundInfoComponent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final result = ref.watch(
-        refundInfoProvider(gameId: gameId, participationId: participationId));
-    if (result is LoadingModel) {
-      return const SliverToBoxAdapter(child: CircularProgressIndicator());
-    } else if (result is ErrorModel) {
-      WidgetsBinding.instance.addPostFrameCallback((s) {
-        GameError.fromModel(model: result)
-            .responseError(context, GameApiType.getRefundInfo, ref);
-      });
-
-      return const SliverToBoxAdapter(child: Text('에러'));
-    }
-    final model = (result as ResponseModel<RefundModel>).data!;
     return SliverToBoxAdapter(
       child: Padding(
         padding:

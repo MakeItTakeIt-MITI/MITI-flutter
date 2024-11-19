@@ -18,13 +18,15 @@ class GameParticipationReviewSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const HostSkeleton(),
-        getDivider(),
-        const GuestSkeleton(),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const HostSkeleton(),
+          getDivider(),
+          const GuestSkeleton(),
+        ],
+      ),
     );
   }
 }

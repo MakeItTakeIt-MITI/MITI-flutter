@@ -16,7 +16,6 @@ class SettlementPaginationParam extends DefaultParam {
   @override
   List<Object?> get props => [status];
 
-  @override
   Map<String, dynamic> toJson() => _$SettlementPaginationParamToJson(this);
 
   @override
@@ -34,7 +33,6 @@ class BankTransferPaginationParam extends DefaultParam {
   @override
   List<Object?> get props => [status];
 
-  @override
   Map<String, dynamic> toJson() => _$BankTransferPaginationParamToJson(this);
 
   @override
@@ -78,7 +76,6 @@ class BankTransferParam extends DefaultParam {
   List<Object?> get props =>
       [amount, account_bank, account_holder, account_number];
 
-  @override
   Map<String, dynamic> toJson() => _$BankTransferParamToJson(this);
 
   @override

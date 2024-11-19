@@ -41,6 +41,7 @@ import '../../user/view/profile_screen.dart';
 import '../../user/model/review_model.dart';
 import '../../util/util.dart';
 import '../component/skeleton/game_detail_skeleton.dart';
+import '../model/game_refund_model.dart';
 import 'game_payment_screen.dart';
 import 'game_screen.dart';
 import 'game_update_screen.dart';
@@ -784,6 +785,32 @@ class SummaryComponent extends StatelessWidget {
           model.payment_information.payment_amount.game_fee_amount.toString()),
       max_invitation: model.max_invitation,
       num_of_confirmed_participations: model.num_of_confirmed_participations,
+      duration: end.difference(start).inMinutes.toString(),
+    );
+  }
+
+  factory SummaryComponent.fromRefundModel({required GameRefundModel model}) {
+    final start = DateTime.parse("${model.startdate} ${model.starttime}");
+    final end = DateTime.parse("${model.enddate} ${model.endtime}");
+    final startDate = model.startdate.replaceAll('-', '. ');
+    final endDate = model.startdate.replaceAll('-', '. ');
+
+    final time =
+        '${model.starttime.substring(0, 5)} ~ ${model.endtime.substring(0, 5)}';
+    final gameDate = startDate == endDate
+        ? '$startDate $time'
+        : '$startDate ${model.starttime.substring(0, 5)} ~ $endDate ${model.endtime.substring(0, 5)}';
+    final address =
+        '${model.court.address} ${model.court.address_detail ?? ''}';
+    return SummaryComponent(
+      gameStatus: model.game_status,
+      title: model.title,
+      gameDate: gameDate,
+      address: address,
+      // fee: NumberUtil.format(
+      //     model.payment_information.payment_amount.game_fee_amount.toString()),
+      max_invitation: model.max_invitation,
+      num_of_confirmed_participations: model.num_of_participations,
       duration: end.difference(start).inMinutes.toString(),
     );
   }

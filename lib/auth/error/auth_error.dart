@@ -1,14 +1,9 @@
-import 'dart:developer';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/auth/provider/widget/find_info_provider.dart';
-import 'package:miti/auth/provider/widget/sign_up_form_provider.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/auth/view/signup/signup_screen.dart';
-import 'package:miti/common/provider/router_provider.dart';
 import 'package:miti/common/provider/widget/form_provider.dart';
 import 'package:miti/dio/response_code.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
@@ -19,7 +14,6 @@ import '../../common/component/custom_text_form_field.dart';
 import '../../common/error/common_error.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
-import '../../common/provider/form_util_provider.dart';
 import '../model/find_info_model.dart';
 import '../view/oauth_error_screen.dart';
 

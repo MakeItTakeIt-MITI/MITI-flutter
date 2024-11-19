@@ -15,6 +15,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../common/component/default_appbar.dart';
 import '../../common/param/pagination_param.dart';
+import '../../etc/component/skeleton/tc_policy_detail_skeleton.dart';
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
 import '../provider/notification_pagination_provider.dart';
@@ -61,7 +62,7 @@ class _PushDetailScreenState extends ConsumerState<NoticeDetailScreen> {
         : ref.watch(noticeProvider(notificationId: widget.id));
     if (result is LoadingModel) {
       return const Dialog.fullscreen(
-        child: Scaffold(body: Center(child: CircularProgressIndicator())),
+        child: TcPolicyDetailSkeleton(),
       );
     } else if (result is ErrorModel) {
       return const Dialog.fullscreen(

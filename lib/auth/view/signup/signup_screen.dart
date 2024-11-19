@@ -10,17 +10,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:miti/auth/param/signup_param.dart';
 import 'package:miti/auth/provider/signup_provider.dart';
-import 'package:miti/auth/provider/widget/phone_auth_provider.dart';
 import 'package:miti/auth/provider/widget/sign_up_form_provider.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/provider/secure_storage_provider.dart';
 import 'package:miti/common/provider/widget/form_provider.dart';
-import 'package:miti/court/view/court_map_screen.dart';
-import 'package:miti/game/view/game_create_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 

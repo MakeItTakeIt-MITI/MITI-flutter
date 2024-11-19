@@ -871,12 +871,12 @@ class PaymentAndRefundPolicyComponent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<String> contents = [
-      '• 경기 시작 48시간 전 : 무료취소',
-      '• 경기 시작 24시간 전 : 80% 환급',
-      '• 경기 시작 12시간 전 : 50% 환급',
-      '• 경기 시작 6시간 전 : 40% 환급',
-      '• 경기 시작 2시간 전 : 20% 환급',
-      '경기 시작 2시간 이내인 경기에 참여할 경우 참여 취소가 불가능하니 유의해주세요!',
+      '• 경기 시작 48시간 전 : 전액 환불',
+      '• 경기 시작 24시간 전 : 80% 환불',
+      '• 경기 시작 12시간 전 : 60% 환불',
+      '• 경기 시작 6시간 전 : 40% 환불',
+      '• 경기 시작 2시간 전 : 20% 환불',
+      '• 경기 시작 2이내 : 참여 취소 불가',
     ];
 
     return Padding(
@@ -888,6 +888,20 @@ class PaymentAndRefundPolicyComponent extends StatelessWidget {
           Text(
             title,
             style: MITITextStyle.mdBold.copyWith(
+              color: MITIColor.gray100,
+            ),
+          ),
+          SizedBox(height: 20.h),
+          Text(
+            '경기 참가비 결제의 모든 관리와 책임의 주체는 MITI 이며, MITI는 서비스 이용 과정에서 발생하는 불만이나 분쟁을 해결하기 위하여 원이 및 피해 파악 등 필요한 조치를 시행할 것입니다.',
+            style: MITITextStyle.xxsmLight150.copyWith(
+              color: MITIColor.gray100,
+            ),
+          ),
+          SizedBox(height: 12.h),
+          Text(
+            '환불은 참여자가 지불한 참가비가 취소되는 방식으로 진행되며, 결제 취소 금액은 환불 정책에 따라 책정됩니다.',
+            style: MITITextStyle.xxsmLight150.copyWith(
               color: MITIColor.gray100,
             ),
           ),
@@ -906,18 +920,51 @@ class PaymentAndRefundPolicyComponent extends StatelessWidget {
               itemBuilder: (_, idx) {
                 return Text(
                   contents[idx],
-                  style: MITITextStyle.xxsmLight150.copyWith(
-                    height: 1,
-                    color: contents.length - 1 != idx
-                        ? MITIColor.gray100
-                        : MITIColor.error,
-                  ),
+                  style: MITITextStyle.xxsmLight150
+                      .copyWith(color: MITIColor.gray100),
                 );
               },
               separatorBuilder: (_, idx) => SizedBox(
                     height: 8.h,
                   ),
               itemCount: contents.length),
+          SizedBox(height: 20.h),
+          Text(
+            '유의 사항',
+            style: MITITextStyle.smSemiBold.copyWith(
+              color: MITIColor.gray100,
+            ),
+          ),
+          SizedBox(height: 12.h),
+          Text.rich(
+            TextSpan(children: [
+              TextSpan(
+                text: '• 경기 시작까지 2시간 미만 남은 경기는 참여 완료시 ',
+                style: MITITextStyle.xxsmLight.copyWith(
+                  color: MITIColor.gray100,
+                ),
+              ),
+              TextSpan(
+                text: '참여 취소가 불가능',
+                style: MITITextStyle.xxsmLight.copyWith(
+                  color: MITIColor.error,
+                ),
+              ),
+              TextSpan(
+                text: '합니다.',
+                style: MITITextStyle.xxsmLight.copyWith(
+                  color: MITIColor.gray100,
+                ),
+              ),
+            ]),
+          ),
+          SizedBox(height: 8.h),
+          Text(
+            '• 참여가 어려운 경우, [게스트 경기 목록]에서 참여를 취소해주세요.',
+            style: MITITextStyle.xxsmLight.copyWith(
+              color: MITIColor.gray100,
+            ),
+          )
         ],
       ),
     );

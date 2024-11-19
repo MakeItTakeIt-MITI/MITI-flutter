@@ -1,19 +1,13 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lottie/lottie.dart';
-import 'package:miti/auth/provider/auth_provider.dart';
-import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/court/view/court_map_screen.dart';
-import 'package:miti/court/view/court_search_screen.dart';
 import 'package:miti/notification/model/unread_push_model.dart';
 import 'package:miti/notification/provider/notification_provider.dart';
-import 'package:miti/notification/provider/widget/unconfirmed_provider.dart';
 import 'package:miti/notification/view/notification_screen.dart';
 import 'package:miti/support/view/guide_screen.dart';
 import 'package:miti/theme/text_theme.dart';
@@ -22,14 +16,11 @@ import 'package:miti/user/view/nickname_update_screen.dart';
 import 'package:miti/user/view/user_payment_screen.dart';
 import 'package:miti/user/view/user_profile_update_screen.dart';
 
-import '../../account/component/bank_transfer_card.dart';
 import '../../account/view/settlement_management_screen.dart';
-import '../../account/view/settlement_screen.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/model/entity_enum.dart';
 import '../../etc/view/tc_policy_screen.dart';
 import '../../game/model/game_model.dart';
-import '../../game/view/game_create_screen.dart';
 import '../../notification/view/notification_setting_screen.dart';
 import '../../review/view/receive_review_list_screen.dart';
 import '../../review/view/written_review_list_screen.dart';

@@ -104,7 +104,7 @@ class _PaymentCard extends StatelessWidget {
   final PaymentResultType status;
   final ItemType item_type;
   final PaymentMethodType payment_method;
-  final String order_id;
+  final String item_name;
   final int total_amount;
   final int tax_free_amount;
   final int? canceled_total_amount;
@@ -119,7 +119,7 @@ class _PaymentCard extends StatelessWidget {
     required this.status,
     required this.item_type,
     required this.payment_method,
-    required this.order_id,
+    required this.item_name,
     required this.total_amount,
     required this.tax_free_amount,
     this.canceled_total_amount,
@@ -138,7 +138,7 @@ class _PaymentCard extends StatelessWidget {
       cancelation_reason: model.cancelation_reason,
       approved_at: model.approved_at,
       total_amount: model.total_amount,
-      order_id: model.order_id,
+      item_name: model.item_name,
       tax_free_amount: model.tax_free_amount,
     );
   }
@@ -177,7 +177,7 @@ class _PaymentCard extends StatelessWidget {
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  order_id,
+                  item_name,
                   style: MITITextStyle.xxsm.copyWith(
                     color: MITIColor.gray100,
                   ),

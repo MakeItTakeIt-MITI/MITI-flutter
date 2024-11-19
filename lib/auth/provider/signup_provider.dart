@@ -1,7 +1,3 @@
-import 'package:miti/auth/model/auth_model.dart';
-import 'package:miti/auth/provider/auth_provider.dart';
-import 'package:miti/auth/provider/login_provider.dart';
-import 'package:miti/auth/provider/widget/phone_auth_provider.dart';
 import 'package:miti/auth/repository/auth_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -9,7 +5,6 @@ import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/provider/secure_storage_provider.dart';
-import '../model/signup_model.dart';
 import '../param/signup_param.dart';
 
 part 'signup_provider.g.dart';

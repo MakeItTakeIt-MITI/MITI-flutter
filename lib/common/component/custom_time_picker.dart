@@ -81,7 +81,7 @@ class _CustomDateTimePickerState extends ConsumerState<CustomDateTimePicker> {
   List<Widget> generateDateItems() {
     List<Widget> items = [];
     DateTime startDate = DateTime.now();
-    DateTime endDate = DateTime(2100);
+    DateTime endDate = DateTime.now().add(const Duration(days: 31));
 
     int idx = 0;
     for (DateTime date = startDate;

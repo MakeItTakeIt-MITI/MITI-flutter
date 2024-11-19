@@ -3,6 +3,7 @@ import 'package:miti/common/model/model_id.dart';
 
 import '../../common/model/entity_enum.dart';
 import '../../court/model/court_model.dart';
+import 'game_refund_model.dart';
 
 part 'game_payment_model.g.dart';
 
@@ -34,7 +35,6 @@ class GamePaymentModel extends IModelWithId {
     required this.info,
     required this.num_of_confirmed_participations,
     required this.court,
-
     required this.payment_information,
   });
 
@@ -58,7 +58,6 @@ class PaymentModel {
       _$PaymentModelFromJson(json);
 }
 
-
 @JsonSerializable()
 class PaymentFeeModel {
   final int game_fee_amount;
@@ -76,6 +75,7 @@ class PaymentFeeModel {
   factory PaymentFeeModel.fromJson(Map<String, dynamic> json) =>
       _$PaymentFeeModelFromJson(json);
 }
+
 @JsonSerializable()
 class DiscountFeeModel {
   final int promotion_amount;
@@ -90,21 +90,64 @@ class DiscountFeeModel {
       _$DiscountFeeModelFromJson(json);
 }
 
+/*
+   "data": {
+        "participation_id": 27,
+        "quantity": 1,
+        "item_type": "pickup_game",
+        "partner_user_id": "2_testuser2",
+        "game": {
+            "id": 21,
+            "game_status": "open",
+            "title": "MITI 픽업게임",
+            "startdate": "2024-11-19",
+            "starttime": "23:30:00",
+            "enddate": "2024-11-19",
+            "endtime": "23:40:00",
+            "court": {
+                "id": 1,
+                "address": "경기 오산시 동부대로568번길 87-15",
+                "address_detail": null,
+                "latitude": "37.1529123326082",
+                "longitude": "127.088354885662"
+            },
+            "fee": 1000,
+            "num_of_participations": 1,
+            "min_invitation": 1,
+            "max_invitation": 12
+        },
+        "payment_amount": {
+            "total_amount": 1000,
+            "vat_amount": 0,
+            "tax_free_amount": 1000,
+            "point_amount": null,
+            "discount_amount": null,
+            "green_deposit_amount": null
+        },
+        "commission_amount": {
+            "payment_commission_amount": 0,
+            "cancelation_commission_amount": 400.0,
+            "total_amount": 400
+        },
+        "final_refund_amount": 600
+    }
+ */
 @JsonSerializable()
 class RefundModel {
+  final int participation_id;
+  final GameRefundModel game;
   final int quantity;
   final ItemType item_type;
-  final String partner_order_id;
   final String partner_user_id;
   final RefundPaymentModel payment_amount;
   final RefundCommissionModel commission_amount;
   final int final_refund_amount;
 
-
   RefundModel({
+    required this.participation_id,
+    required this.game,
     required this.quantity,
     required this.item_type,
-    required this.partner_order_id,
     required this.partner_user_id,
     required this.payment_amount,
     required this.commission_amount,
@@ -120,10 +163,9 @@ class RefundPaymentModel {
   final int total_amount;
   final int vat_amount;
   final int tax_free_amount;
-  final int point_amount;
-  final int discount_amount;
-  final int green_deposit_amount;
-
+  final int? point_amount;
+  final int? discount_amount;
+  final int? green_deposit_amount;
 
   RefundPaymentModel({
     required this.total_amount,
@@ -143,8 +185,6 @@ class RefundCommissionModel {
   final int payment_commission_amount;
   final int cancelation_commission_amount;
   final int total_amount;
-
-
 
   RefundCommissionModel({
     required this.payment_commission_amount,

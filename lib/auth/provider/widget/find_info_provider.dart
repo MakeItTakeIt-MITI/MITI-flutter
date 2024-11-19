@@ -1,11 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:miti/auth/param/signup_param.dart';
 import 'package:miti/auth/provider/widget/phone_auth_provider.dart';
 import 'package:miti/auth/provider/widget/sign_up_form_provider.dart';
 import 'package:miti/auth/repository/auth_repository.dart';
-import 'package:miti/auth/view/find_info/find_info_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../common/logger/custom_logger.dart';
