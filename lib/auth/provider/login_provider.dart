@@ -51,6 +51,7 @@ Future<BaseModel> login(LoginRef ref,
     {required LoginBaseParam param, required AuthType type}) async {
   final fcmToken = ref.read(fcmTokenProvider)!;
   print("login fcm_token ${fcmToken}");
+  print(type);
 
   return await ref
       .watch(authRepositoryProvider)
@@ -68,6 +69,10 @@ Future<BaseModel> login(LoginRef ref,
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
+    print('error!!');
+    print(error.status_code);
+    print(error.error_code);
+    print(error.message);
     logger.e(
         'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
     return error;
@@ -87,29 +92,34 @@ Future<void> saveUserInfo(FlutterSecureStorage storage, LoginModel model,
   ]);
   await ref.read(authProvider.notifier).autoLogin();
 }
-
-@riverpod
-Future<BaseModel> oauthLogin(OauthLoginRef ref,
-    {required LoginBaseParam param, required AuthType type}) async {
-  final fcmToken = ref.read(fcmTokenProvider)!;
-  print("login fcm_token ${fcmToken}");
-  return await ref
-      .watch(authRepositoryProvider)
-      .oauthLogin(param: param, provider: type, fcmToken: fcmToken)
-      .then<BaseModel>((value) async {
-    logger.i('oauthLogin $param!');
-    final model = value.data!;
-    final storage = ref.read(secureStorageProvider);
-    log('refreshToken = ${model.token.refresh}');
-    await saveUserInfo(storage, model, ref);
-
-    final refresh = await storage.read(key: 'refreshToken');
-    log('refreshrefresh = ${refresh}');
-    return value;
-  }).catchError((e) {
-    final error = ErrorModel.respToError(e);
-    logger.e(
-        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
-    return error;
-  });
-}
+//
+// @riverpod
+// Future<BaseModel> oauthLogin(OauthLoginRef ref,
+//     {required LoginBaseParam param, required AuthType type}) async {
+//   final fcmToken = ref.read(fcmTokenProvider)!;
+//   print("oauth login fcm_token ${fcmToken}");
+//   return await ref
+//       .watch(authRepositoryProvider)
+//       .oauthLogin(param: param, provider: type, fcmToken: fcmToken)
+//       .then<BaseModel>((value) async {
+//         print('oauthLogin');
+//     logger.i('oauthLogin $param!');
+//     final model = value.data!;
+//     final storage = ref.read(secureStorageProvider);
+//     log('refreshToken = ${model.token.refresh}');
+//     await saveUserInfo(storage, model, ref);
+//
+//     final refresh = await storage.read(key: 'refreshToken');
+//     log('refreshrefresh = ${refresh}');
+//     return value;
+//   }).catchError((e) {
+//     final error = ErrorModel.respToError(e);
+//     print('error!!');
+//     print(error.status_code);
+//     print(error.error_code);
+//     print(error.message);
+//     logger.e(
+//         'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+//     return error;
+//   });
+// }

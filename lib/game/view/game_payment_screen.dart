@@ -40,15 +40,9 @@ import '../../auth/view/signup/signup_screen.dart';
 import '../../common/view/operation_term_screen.dart';
 import '../../env/environment.dart';
 import '../../kakaopay/param/boot_pay_approve_param.dart';
-import '../../kakaopay/provider/widget/payment_way_provider.dart';
-import '../../kakaopay/view/approval_screen.dart';
-import '../../kakaopay/view/boot_pay_screen.dart';
-import '../../kakaopay/view/nice_payment_screen.dart';
-import '../../kakaopay/view/payment_screen.dart';
 import '../component/skeleton/game_payment_skeleton.dart';
 import '../error/game_error.dart';
 import 'game_create_complete_screen.dart';
-import 'game_create_screen.dart';
 import 'game_detail_screen.dart';
 import 'package:collection/collection.dart';
 
@@ -90,7 +84,6 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
     _throttler.values.listen((int s) {
       // onPay(ref, context, type);
       onBootPay(ref, context, type);
-
       throttleCnt++;
     });
   }
@@ -119,7 +112,6 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
       bottomNavigationBar: Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
           bool validCheckBox = true;
-
           final result = ref.watch(agreementPolicyProvider(
               type: AgreementRequestType.game_participation));
           final isCheckBoxes = ref.watch(
@@ -210,6 +202,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
                         getDivider(),
                         const PaymentAndRefundPolicyComponent(
                           title: '결제 및 환불 정책',
+                          isPayment: true,
                         ),
                         getDivider(),
                         PaymentCheckForm(
@@ -384,25 +377,19 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
   }
 
   Future<void> approvePay(String data, BuildContext context) async {
-    print("approvePay");
     Map<String, dynamic> json = jsonDecode(data);
-
     final param = BootPayApproveParam.fromJson(json);
-    print(param);
     final result = await ref.read(approveBootPayProvider(param: param).future);
     if (context.mounted) {
       if (result is ErrorModel) {
-        print(result.message);
-        print(result.data);
-        print(result.status_code);
+        PayError.fromModel(model: result, object: widget.gameId)
+            .responseError(context, PayApiType.bootPayApproval, ref);
       } else {
         final model = (result as ResponseModel<BootPayApproveModel>).data!;
-
         switch (model.status) {
           case PaymentResultStatus.approved:
             {
               Bootpay().transactionConfirm();
-
               // Bootpay().dismiss(context); //명시적으로 부트페이 뷰 종료 호출
               break;
             }
@@ -704,169 +691,171 @@ class PaymentComponent extends StatelessWidget {
   }
 }
 
-class PayWayButton extends ConsumerWidget {
-  const PayWayButton({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // final selected = ref.watch(checkProvider(1));
-    final paymentWay = ref.watch(paymentWayProvider);
-    return Padding(
-      padding:
-          EdgeInsets.only(top: 24.h, left: 21.w, right: 21.w, bottom: 28.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            '결제 수단',
-            style: MITITextStyle.mdBold.copyWith(
-              color: MITIColor.gray100,
-            ),
-          ),
-          SizedBox(height: 20.h),
-          SizedBox(
-            height: 44.h,
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextButton(
-                    onPressed: () {
-                      ref
-                          .read(paymentWayProvider.notifier)
-                          .update((state) => PaymentMethodType.kakao);
-                    },
-                    style: TextButton.styleFrom(
-                      backgroundColor: paymentWay == PaymentMethodType.kakao
-                          ? const Color(0xFFFFF100)
-                          : MITIColor.gray800,
-                      fixedSize: Size(double.infinity, 44.h),
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(
-                          color: paymentWay == PaymentMethodType.kakao
-                              ? const Color(0xFFFFF100)
-                              : MITIColor.gray700,
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(8.r)),
-                      ),
-                    ),
-                    child: SvgPicture.asset(
-                      AssetUtil.getAssetPath(
-                          type: AssetType.icon, name: 'kakaopay'),
-                      colorFilter: ColorFilter.mode(
-                          paymentWay == PaymentMethodType.kakao
-                              ? const Color(0xFF040000)
-                              : const Color(0xFFFFF100),
-                          BlendMode.srcIn),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 10.w),
-                Expanded(
-                  child: TextButton(
-                    onPressed: () {
-                      ref
-                          .read(paymentWayProvider.notifier)
-                          .update((state) => PaymentMethodType.card);
-                    },
-                    style: TextButton.styleFrom(
-                      backgroundColor: paymentWay == PaymentMethodType.card
-                          ? MITIColor.primary
-                          : MITIColor.gray800,
-                      fixedSize: Size(double.infinity, 44.h),
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(
-                          color: paymentWay == PaymentMethodType.card
-                              ? MITIColor.primary
-                              : MITIColor.gray700,
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(8.r)),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          AssetUtil.getAssetPath(
-                              type: AssetType.icon, name: 'card'),
-                          colorFilter: ColorFilter.mode(
-                              paymentWay == PaymentMethodType.card
-                                  ? MITIColor.black
-                                  : MITIColor.gray400,
-                              BlendMode.srcIn),
-                        ),
-                        SizedBox(width: 2.w),
-                        Text(
-                          '신용카드',
-                          style: MITITextStyle.xxsmSemiBold.copyWith(
-                            color: paymentWay == PaymentMethodType.card
-                                ? MITIColor.black
-                                : MITIColor.gray400,
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(width: 10.w),
-                Expanded(
-                  child: TextButton(
-                    onPressed: () {
-                      ref
-                          .read(paymentWayProvider.notifier)
-                          .update((state) => PaymentMethodType.bank);
-                    },
-                    style: TextButton.styleFrom(
-                      backgroundColor: paymentWay == PaymentMethodType.bank
-                          ? MITIColor.primary
-                          : MITIColor.gray800,
-                      fixedSize: Size(double.infinity, 44.h),
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(
-                          color: paymentWay == PaymentMethodType.bank
-                              ? MITIColor.primary
-                              : MITIColor.gray700,
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(8.r)),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          AssetUtil.getAssetPath(
-                              type: AssetType.icon, name: 'account_transfer'),
-                          colorFilter: ColorFilter.mode(
-                              paymentWay == PaymentMethodType.bank
-                                  ? MITIColor.black
-                                  : MITIColor.gray400,
-                              BlendMode.srcIn),
-                        ),
-                        SizedBox(width: 2.w),
-                        Text(
-                          '계좌이체',
-                          style: MITITextStyle.xxsmSemiBold.copyWith(
-                            color: paymentWay == PaymentMethodType.bank
-                                ? MITIColor.black
-                                : MITIColor.gray400,
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+// class PayWayButton extends ConsumerWidget {
+//   const PayWayButton({super.key});
+//
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     // final selected = ref.watch(checkProvider(1));
+//     final paymentWay = ref.watch(paymentWayProvider);
+//     return Padding(
+//       padding:
+//           EdgeInsets.only(top: 24.h, left: 21.w, right: 21.w, bottom: 28.h),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.stretch,
+//         children: [
+//           Text(
+//             '결제 수단',
+//             style: MITITextStyle.mdBold.copyWith(
+//               color: MITIColor.gray100,
+//             ),
+//           ),
+//           SizedBox(height: 20.h),
+//           SizedBox(
+//             height: 44.h,
+//             child: Row(
+//               children: [
+//                 Expanded(
+//                   child: TextButton(
+//                     onPressed: () {
+//                       ref
+//                           .read(paymentWayProvider.notifier)
+//                           .update((state) => PaymentMethodType.kakao);
+//                     },
+//                     style: TextButton.styleFrom(
+//                       backgroundColor: paymentWay == PaymentMethodType.kakao
+//                           ? const Color(0xFFFFF100)
+//                           : MITIColor.gray800,
+//                       fixedSize: Size(double.infinity, 44.h),
+//                       shape: RoundedRectangleBorder(
+//                         side: BorderSide(
+//                           color: paymentWay == PaymentMethodType.kakao
+//                               ? const Color(0xFFFFF100)
+//                               : MITIColor.gray700,
+//                         ),
+//                         borderRadius: BorderRadius.all(Radius.circular(8.r)),
+//                       ),
+//                     ),
+//                     child: SvgPicture.asset(
+//                       AssetUtil.getAssetPath(
+//                           type: AssetType.icon, name: 'kakaopay'),
+//                       colorFilter: ColorFilter.mode(
+//                           paymentWay == PaymentMethodType.kakao
+//                               ? const Color(0xFF040000)
+//                               : const Color(0xFFFFF100),
+//                           BlendMode.srcIn),
+//                     ),
+//                   ),
+//                 ),
+//                 SizedBox(width: 10.w),
+//                 Expanded(
+//                   child: TextButton(
+//                     onPressed: () {
+//                       ref
+//                           .read(paymentWayProvider.notifier)
+//                           .update((state) => PaymentMethodType.card);
+//                     },
+//                     style: TextButton.styleFrom(
+//                       backgroundColor: paymentWay == PaymentMethodType.card
+//                           ? MITIColor.primary
+//                           : MITIColor.gray800,
+//                       fixedSize: Size(double.infinity, 44.h),
+//                       shape: RoundedRectangleBorder(
+//                         side: BorderSide(
+//                           color: paymentWay == PaymentMethodType.card
+//                               ? MITIColor.primary
+//                               : MITIColor.gray700,
+//                         ),
+//                         borderRadius: BorderRadius.all(Radius.circular(8.r)),
+//                       ),
+//                     ),
+//                     child: Row(
+//                       mainAxisAlignment: MainAxisAlignment.center,
+//                       children: [
+//                         SvgPicture.asset(
+//                           AssetUtil.getAssetPath(
+//                               type: AssetType.icon, name: 'card'),
+//                           colorFilter: ColorFilter.mode(
+//                               paymentWay == PaymentMethodType.card
+//                                   ? MITIColor.black
+//                                   : MITIColor.gray400,
+//                               BlendMode.srcIn),
+//                         ),
+//                         SizedBox(width: 2.w),
+//                         Text(
+//                           '신용카드',
+//                           style: MITITextStyle.xxsmSemiBold.copyWith(
+//                             color: paymentWay == PaymentMethodType.card
+//                                 ? MITIColor.black
+//                                 : MITIColor.gray400,
+//                           ),
+//                         )
+//                       ],
+//                     ),
+//                   ),
+//                 ),
+//                 SizedBox(width: 10.w),
+//                 // Expanded(
+//                 //   child: TextButton(
+//                 //     onPressed: () {
+//                 //       ref
+//                 //           .read(paymentWayProvider.notifier)
+//                 //           .update((state) => PaymentMethodType.bank);
+//                 //     },
+//                 //     style: TextButton.styleFrom(
+//                 //       backgroundColor: paymentWay == PaymentMethodType.bank
+//                 //           ? MITIColor.primary
+//                 //           : MITIColor.gray800,
+//                 //       fixedSize: Size(double.infinity, 44.h),
+//                 //       shape: RoundedRectangleBorder(
+//                 //         side: BorderSide(
+//                 //           color: paymentWay == PaymentMethodType.bank
+//                 //               ? MITIColor.primary
+//                 //               : MITIColor.gray700,
+//                 //         ),
+//                 //         borderRadius: BorderRadius.all(Radius.circular(8.r)),
+//                 //       ),
+//                 //     ),
+//                 //     child: Row(
+//                 //       mainAxisAlignment: MainAxisAlignment.center,
+//                 //       children: [
+//                 //         SvgPicture.asset(
+//                 //           AssetUtil.getAssetPath(
+//                 //               type: AssetType.icon, name: 'account_transfer'),
+//                 //           colorFilter: ColorFilter.mode(
+//                 //               paymentWay == PaymentMethodType.bank
+//                 //                   ? MITIColor.black
+//                 //                   : MITIColor.gray400,
+//                 //               BlendMode.srcIn),
+//                 //         ),
+//                 //         SizedBox(width: 2.w),
+//                 //         Text(
+//                 //           '계좌이체',
+//                 //           style: MITITextStyle.xxsmSemiBold.copyWith(
+//                 //             color: paymentWay == PaymentMethodType.bank
+//                 //                 ? MITIColor.black
+//                 //                 : MITIColor.gray400,
+//                 //           ),
+//                 //         )
+//                 //       ],
+//                 //     ),
+//                 //   ),
+//                 // ),
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class PaymentAndRefundPolicyComponent extends StatelessWidget {
+  final bool isPayment;
   final String title;
 
-  const PaymentAndRefundPolicyComponent({super.key, required this.title});
+  const PaymentAndRefundPolicyComponent(
+      {super.key, required this.title, required this.isPayment});
 
   @override
   Widget build(BuildContext context) {
@@ -877,6 +866,7 @@ class PaymentAndRefundPolicyComponent extends StatelessWidget {
       '• 경기 시작 6시간 전 : 40% 환불',
       '• 경기 시작 2시간 전 : 20% 환불',
       '• 경기 시작 2이내 : 참여 취소 불가',
+      '• 위의 환불 수수료 정책에 따른 환불 수수료가 300원 미만인 경우, 최소 환불 수수료인 300원이 적용됩니다.'
     ];
 
     return Padding(
@@ -928,43 +918,51 @@ class PaymentAndRefundPolicyComponent extends StatelessWidget {
                     height: 8.h,
                   ),
               itemCount: contents.length),
-          SizedBox(height: 20.h),
-          Text(
-            '유의 사항',
-            style: MITITextStyle.smSemiBold.copyWith(
-              color: MITIColor.gray100,
+          Visibility(
+            visible: isPayment,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: 20.h),
+                Text(
+                  '유의 사항',
+                  style: MITITextStyle.smSemiBold.copyWith(
+                    color: MITIColor.gray100,
+                  ),
+                ),
+                SizedBox(height: 12.h),
+                Text.rich(
+                  TextSpan(children: [
+                    TextSpan(
+                      text: '• 경기 시작까지 2시간 미만 남은 경기는 참여 완료시 ',
+                      style: MITITextStyle.xxsmLight.copyWith(
+                        color: MITIColor.gray100,
+                      ),
+                    ),
+                    TextSpan(
+                      text: '참여 취소가 불가능',
+                      style: MITITextStyle.xxsmLight.copyWith(
+                        color: MITIColor.error,
+                      ),
+                    ),
+                    TextSpan(
+                      text: '합니다.',
+                      style: MITITextStyle.xxsmLight.copyWith(
+                        color: MITIColor.gray100,
+                      ),
+                    ),
+                  ]),
+                ),
+                SizedBox(height: 8.h),
+                Text(
+                  '• 참여가 어려운 경우, [게스트 경기 목록]에서 참여를 취소해주세요.',
+                  style: MITITextStyle.xxsmLight.copyWith(
+                    color: MITIColor.gray100,
+                  ),
+                )
+              ],
             ),
           ),
-          SizedBox(height: 12.h),
-          Text.rich(
-            TextSpan(children: [
-              TextSpan(
-                text: '• 경기 시작까지 2시간 미만 남은 경기는 참여 완료시 ',
-                style: MITITextStyle.xxsmLight.copyWith(
-                  color: MITIColor.gray100,
-                ),
-              ),
-              TextSpan(
-                text: '참여 취소가 불가능',
-                style: MITITextStyle.xxsmLight.copyWith(
-                  color: MITIColor.error,
-                ),
-              ),
-              TextSpan(
-                text: '합니다.',
-                style: MITITextStyle.xxsmLight.copyWith(
-                  color: MITIColor.gray100,
-                ),
-              ),
-            ]),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            '• 참여가 어려운 경우, [게스트 경기 목록]에서 참여를 취소해주세요.',
-            style: MITITextStyle.xxsmLight.copyWith(
-              color: MITIColor.gray100,
-            ),
-          )
         ],
       ),
     );

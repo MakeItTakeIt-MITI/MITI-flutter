@@ -90,7 +90,7 @@ enum ReviewType {
 
 // @JsonEnum(valueField: 'value')
 enum ItemType {
-  pickup_game('pickup_game');
+  pickup_game('경기 참가비');
 
   const ItemType(this.value);
 
@@ -280,10 +280,10 @@ enum InputFormType {
 enum PasswordFormType { password, passwordCheck, newPassword, newPasswordCheck }
 
 enum PaymentMethodType {
-  empty_pay('더미 결제 수단'),
+  empty_pay('무료결제'),
   kakao('카카오페이'),
-  card('신용카드'),
-  bank('계좌이체');
+  npay('네이버페이'),
+  card('카드 결제');
 
   final String displayName;
 
@@ -414,12 +414,12 @@ enum FAQType {
 }
 
 enum PaymentCancelType {
-  simple_cancelation('단순 변심에 의한 참가 취소'),
-  game_cancelation('경기 모집 실패로 인한 취소'),
-  converted_to_free_game('무료 경기 전환으로 인한 취소'),
-  failed_to_participate_game('경기 참가 실패로 인한 취소'),
-  payment_incomplement('최종 결제 미완료로 인한 결제 취소'),
-  report_result('신고 인정으로 인한 환불 처리');
+  simple_cancelation('참여 취소'),
+  game_cancelation('경기 취소'),
+  converted_to_free_game('무료 경기 전환'),
+  failed_to_participate_game('참가 실패'),
+  payment_incomplement('결제 실패'),
+  report_result('신고 처리 결과');
 
   const PaymentCancelType(
     this.displayName,
@@ -429,9 +429,9 @@ enum PaymentCancelType {
 }
 
 enum PaymentResultType {
-  created('결제 결과 생성'),
-  requested('결제 승인 요청'),
-  approved('결제 승인'),
+  created('결제 요청'),
+  requested('결제 요청 완료'),
+  approved('결제 완료'),
   failed('결제 실패'),
   canceled('결제 취소');
 

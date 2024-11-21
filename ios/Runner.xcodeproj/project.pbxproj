@@ -16,6 +16,7 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		C2E3F502270F659DC4570554 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0232326E1CC4BD81CAA65EAA /* Pods_Runner.framework */; };
+		F29190DD2CEF920B003F3BF5 /* config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F29190DC2CEF920B003F3BF5 /* config.xcconfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +64,7 @@
 		AF4D8503A110192BB8A54679 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		B8A1E76D4164F6737F853E44 /* GoogleService-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Runner/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F25029E02C22E2B8006E24BB /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
+		F29190DC2CEF920B003F3BF5 /* config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = config.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,6 +133,7 @@
 				3DE75871825326F1D03EF26B /* Pods */,
 				7FB2B6132C18AC1902A76AA1 /* Frameworks */,
 				B8A1E76D4164F6737F853E44 /* GoogleService-Info.plist */,
+				F29190DC2CEF920B003F3BF5 /* config.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -256,6 +259,7 @@
 			files = (
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
+				F29190DD2CEF920B003F3BF5 /* config.xcconfig in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 				2FA5D66745ABAD10BA9B4676 /* GoogleService-Info.plist in Resources */,
@@ -619,6 +623,7 @@
 		};
 		97C147041CF9000F007C117D /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F29190DC2CEF920B003F3BF5 /* config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

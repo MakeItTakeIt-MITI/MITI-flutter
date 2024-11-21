@@ -23,7 +23,8 @@ enum UserApiType {
   get,
   writtenReviewDetail,
   receiveReviewDetail,
-  updatePassword
+  updatePassword,
+  paymentResultDetail,
 }
 
 class UserError extends ErrorBase {
@@ -64,6 +65,9 @@ class UserError extends ErrorBase {
       case UserApiType.updatePassword:
         _updatePassword(context, ref);
         break;
+      case UserApiType.paymentResultDetail:
+        _getPaymentResultDetail(context, ref);
+        break;
       default:
         break;
     }
@@ -101,11 +105,9 @@ class UserError extends ErrorBase {
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 사용자 정보 조회 실패
       context.pushReplacementNamed(ErrorScreen.routeName);
-
     } else {
       /// 서버 오류
       context.pushReplacementNamed(ErrorScreen.routeName);
-
     }
   }
 
@@ -190,7 +192,6 @@ class UserError extends ErrorBase {
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 사용자 정보 조회 실패
       context.pushReplacementNamed(ErrorScreen.routeName);
-
     } else {
       /// 서버 오류
       showDialog(
@@ -234,15 +235,12 @@ class UserError extends ErrorBase {
     } else if (this.status_code == Forbidden && this.error_code == 940) {
       /// 요청 권한 없음(review 작성자 x)
       context.pushReplacementNamed(ErrorScreen.routeName);
-
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 리뷰 조회 결과 없음
       context.pushReplacementNamed(ErrorScreen.routeName);
-
     } else {
       /// 서버 오류
       context.pushReplacementNamed(ErrorScreen.routeName);
-
     }
   }
 
@@ -250,20 +248,19 @@ class UserError extends ErrorBase {
   void _getReceiveReviewDetail(BuildContext context, WidgetRef ref) {
     if (this.status_code == UnAuthorized && this.error_code == 501) {
       /// 토큰 미제공
+      context.pushReplacementNamed(ErrorScreen.routeName);
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
+      context.pushReplacementNamed(ErrorScreen.routeName);
     } else if (this.status_code == Forbidden && this.error_code == 940) {
       /// 요청 권한 없음(reviewee x)
       context.pushReplacementNamed(ErrorScreen.routeName);
-
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 리뷰 조회 결과 없음
       context.pushReplacementNamed(ErrorScreen.routeName);
-
     } else {
       /// 서버 오류
       context.pushReplacementNamed(ErrorScreen.routeName);
-
     }
   }
 
@@ -429,6 +426,31 @@ class UserError extends ErrorBase {
           );
         },
       );
+    }
+  }
+
+  /// 내 리뷰 상세 조회 API
+  void _getPaymentResultDetail(BuildContext context, WidgetRef ref) {
+    if (this.status_code == Forbidden && this.error_code == 940) {
+      /// 결제 결과 조회 권한 없음
+      WidgetsBinding.instance.addPostFrameCallback(
+          (s) => context.pushReplacementNamed(ErrorScreen.routeName));
+    } else if (this.status_code == Forbidden && this.error_code == 941) {
+      /// 결제 결과 조회 권한 없음
+      WidgetsBinding.instance.addPostFrameCallback(
+          (s) => context.pushReplacementNamed(ErrorScreen.routeName));
+    } else if (this.status_code == Forbidden && this.error_code == 942) {
+      /// 조회할 수 없는 결제 결과
+      WidgetsBinding.instance.addPostFrameCallback(
+          (s) => context.pushReplacementNamed(ErrorScreen.routeName));
+    } else if (this.status_code == NotFound && this.error_code == 940) {
+      /// 리뷰 조회 결과 없음
+      WidgetsBinding.instance.addPostFrameCallback(
+          (s) => context.pushReplacementNamed(ErrorScreen.routeName));
+    } else {
+      /// 서버 오류
+      WidgetsBinding.instance.addPostFrameCallback(
+          (s) => context.pushReplacementNamed(ErrorScreen.routeName));
     }
   }
 }

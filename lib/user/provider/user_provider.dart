@@ -160,3 +160,29 @@ Future<BaseModel> updatePassword(
     return error;
   });
 }
+
+@riverpod
+class PaymentDetail extends _$PaymentDetail {
+  @override
+  BaseModel build({required int paymentResultId}) {
+    getDetail(paymentResultId: paymentResultId);
+    return LoadingModel();
+  }
+
+  void getDetail({required int paymentResultId}) async {
+    state = LoadingModel();
+    final repository = ref.watch(userRepositoryProvider);
+    final id = ref.read(authProvider)!.id!;
+    await repository
+        .getPaymentResultDetail(userId: id, paymentResultId: paymentResultId)
+        .then((value) {
+      logger.i(value);
+      state = value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state = error;
+    });
+  }
+}

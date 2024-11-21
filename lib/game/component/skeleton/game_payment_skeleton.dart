@@ -37,7 +37,7 @@ class GamePaymentSkeleton extends StatelessWidget {
         // ),
         getDivider(),
         const PaymentAndRefundPolicyComponent(
-          title: '결제 및 환불 정책',
+          title: '결제 및 환불 정책', isPayment: true,
         ),
         getDivider(),
         // PaymentCheckForm(

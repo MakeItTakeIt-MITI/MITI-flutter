@@ -20,6 +20,7 @@ import '../view/oauth_error_screen.dart';
 enum AuthApiType {
   /// 로그인 API
   login,
+
   /// 로그아웃 API
   logout,
 
@@ -301,8 +302,8 @@ class AuthError extends ErrorBase {
     } else if (this.status_code == Forbidden && this.error_code == 540) {
       /// 비회원 Oauth 사용자 ?
       final extra = type;
-      WidgetsBinding.instance.addPostFrameCallback(
-          (s) => context.goNamed(SignUpScreen.routeName, extra: extra));
+      print("not oauth user");
+    context.goNamed(SignUpScreen.routeName, extra: extra);
     } else if (this.status_code == Forbidden && this.error_code == 140) {
       /// 로그인 불가 사용자
       String oauthProvider = type == AuthType.kakao ? '애플' : '카카오';
@@ -368,8 +369,7 @@ class AuthError extends ErrorBase {
           });
     } else if (this.status_code == Forbidden && this.error_code == 361) {
       /// 일반 로그인 사용자
-      WidgetsBinding.instance.addPostFrameCallback(
-          (s) => context.pushNamed(OauthErrorScreen.routeName));
+      context.pushNamed(OauthErrorScreen.routeName);
     } else if (this.status_code == NotFound && this.error_code == 950) {
       /// 지원하지 않는 oauth 서비스
       showDialog(
@@ -716,5 +716,4 @@ class AuthError extends ErrorBase {
       );
     }
   }
-
 }

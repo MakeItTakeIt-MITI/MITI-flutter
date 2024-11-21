@@ -15,6 +15,7 @@ import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
+import '../../common/component/defalut_flashbar.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
 import '../../common/provider/router_provider.dart';
@@ -159,6 +160,7 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
                 const SliverToBoxAdapter(
                   child: PaymentAndRefundPolicyComponent(
                     title: '참여 취소 수수료 규정',
+                    isPayment: false,
                   ),
                 ),
                 getDivider(),
@@ -193,6 +195,9 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
           GameDetailScreen.routeName,
           pathParameters: pathParameters,
         );
+        Future.delayed(const Duration(milliseconds: 100), () {
+          FlashUtil.showFlash(context, '경기 참여가 취소되었습니다.');
+        });
       }
     }
   }

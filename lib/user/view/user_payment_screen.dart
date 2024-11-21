@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:miti/account/error/account_error.dart';
 import 'package:miti/user/model/my_payment_model.dart';
+import 'package:miti/user/view/user_payment_detail_screen.dart';
 import 'package:miti/util/util.dart';
 
 import '../../auth/provider/auth_provider.dart';
@@ -65,7 +68,17 @@ class _UserPaymentScreenState extends ConsumerState<UserPaymentScreen> {
                 itemBuilder: (BuildContext context, int index, Base pModel) {
                   pModel as MyPaymentModel;
 
-                  return _PaymentCard.fromModel(model: pModel);
+                  return GestureDetector(
+                      onTap: () {
+                        Map<String, String> pathParameters = {
+                          'paymentResultId': pModel.id.toString()
+                        };
+                        context.pushNamed(
+                          UserPaymentDetailScreen.routeName,
+                          pathParameters: pathParameters,
+                        );
+                      },
+                      child: PaymentCard.fromModel(model: pModel));
                 },
                 skeleton: const PaymentCardListSkeleton(),
                 param: UserPaymentParam(),
@@ -99,7 +112,7 @@ class _UserPaymentScreenState extends ConsumerState<UserPaymentScreen> {
   }
 }
 
-class _PaymentCard extends StatelessWidget {
+class PaymentCard extends StatelessWidget {
   final int id;
   final PaymentResultType status;
   final ItemType item_type;
@@ -113,7 +126,7 @@ class _PaymentCard extends StatelessWidget {
   final String approved_at;
   final String? canceled_at;
 
-  const _PaymentCard({
+  const PaymentCard({
     super.key,
     required this.id,
     required this.status,
@@ -129,8 +142,8 @@ class _PaymentCard extends StatelessWidget {
     this.canceled_at,
   });
 
-  factory _PaymentCard.fromModel({required MyPaymentModel model}) {
-    return _PaymentCard(
+  factory PaymentCard.fromModel({required MyPaymentModel model}) {
+    return PaymentCard(
       id: model.id,
       status: model.status,
       item_type: model.item_type,
@@ -142,6 +155,7 @@ class _PaymentCard extends StatelessWidget {
       tax_free_amount: model.tax_free_amount,
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -170,7 +184,7 @@ class _PaymentCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  '참여 비용',
+                  item_type.value,
                   style: MITITextStyle.xxsm.copyWith(
                     color: MITIColor.gray100,
                   ),

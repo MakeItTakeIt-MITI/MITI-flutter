@@ -60,6 +60,13 @@ abstract class UserRepository {
     @Path() required String reviewType,
     @Path() required int reviewId,
   });
+
+  @Headers({'token': 'true'})
+  @GET('/users/{userId}/payment-results/{paymentResultId}')
+  Future<ResponseModel<MyPaymentDetailModel>> getPaymentResultDetail({
+    @Path() required int userId,
+    @Path() required int paymentResultId,
+  });
 }
 
 final userParticipationPRepositoryProvider =

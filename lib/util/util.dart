@@ -38,6 +38,11 @@ class DateTimeUtil {
     return dateFormat.format(dateTime);
   }
 
+  static String parseDateTime(String dateTime) {
+    return DateFormat('yyyy년 MM월 dd일 hh:mm', 'ko')
+        .format(DateTime.parse(dateTime));
+  }
+
   static int getMonth({required String dateTime}) {
     return int.parse(DateFormat('MM').format(DateTime.parse(dateTime)));
   }

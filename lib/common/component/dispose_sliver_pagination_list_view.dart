@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/common/component/pagination_list_view.dart';
+import 'package:miti/common/error/view/error_screen.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../user/param/user_profile_param.dart';
@@ -86,6 +87,10 @@ class _PaginationListViewState<T extends Base>
     }
     // 에러
     if (state is ErrorModel) {
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.pushReplacementNamed(ErrorScreen.routeName);
+      });
+
       return SliverToBoxAdapter(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

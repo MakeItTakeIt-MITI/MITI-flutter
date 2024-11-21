@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:miti/account/view/settlement_management_screen.dart';
 import 'package:miti/auth/view/find_info/find_password_screen.dart';
 import 'package:miti/auth/view/login_screen.dart';
+import 'package:miti/common/error/view/pay_error_screen.dart';
 import 'package:miti/court/view/court_detail_screen.dart';
 import 'package:miti/court/view/court_game_list_screen.dart';
 import 'package:miti/etc/view/tc_policy_screen.dart';
@@ -16,8 +17,6 @@ import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/game/view/game_payment_screen.dart';
 import 'package:miti/game/view/game_update_screen.dart';
 import 'package:miti/game/view/review_form_screen.dart';
-import 'package:miti/kakaopay/view/boot_pay_screen.dart';
-import 'package:miti/kakaopay/view/nice_payment_screen.dart';
 import 'package:miti/notification/model/push_model.dart';
 import 'package:miti/notification/view/notification_detail_screen.dart';
 import 'package:miti/notification/view/notification_screen.dart';
@@ -46,7 +45,6 @@ import '../../default_screen.dart';
 import '../../court/view/court_map_screen.dart';
 import '../../game/view/game_screen.dart';
 import '../../kakaopay/view/approval_screen.dart';
-import '../../kakaopay/view/payment_screen.dart';
 import '../../notification/view/notification_setting_screen.dart';
 import '../../report/view/report_form_screen.dart';
 import '../../report/view/report_list_screen.dart';
@@ -61,6 +59,7 @@ import '../../support/view/support_detail_screen.dart';
 import '../../support/view/support_screen.dart';
 import '../../user/provider/user_provider.dart';
 import '../../user/view/user_participation_screen.dart';
+import '../../user/view/user_payment_detail_screen.dart';
 import '../../user/view/user_profile_update_screen.dart';
 import '../../user/view/user_review_screen.dart';
 import '../error/view/error_screen.dart';
@@ -471,6 +470,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                               parentNavigatorKey: rootNavKey,
                               name: GamePaymentScreen.routeName,
                               builder: (context, state) {
+
                                 final int gameId =
                                     int.parse(state.pathParameters['gameId']!);
                                 return GamePaymentScreen(
@@ -479,48 +479,20 @@ final routerProvider = Provider<GoRouter>((ref) {
                               },
                               routes: [
                                 GoRoute(
-                                  path: 'payment',
-                                  parentNavigatorKey: rootNavKey,
-                                  name: PaymentScreen.routeName,
-                                  builder: (context, state) {
-                                    final int gameId = int.parse(
-                                        state.pathParameters['gameId']!);
-                                    final String redirectUrl = state
-                                        .uri.queryParameters['redirectUrl']!;
-                                    return PaymentScreen(
-                                      gameId: gameId,
-                                      redirectUrl: redirectUrl,
-                                    );
-                                  },
-                                ),
-                                GoRoute(
-                                  path: 'nicePayment',
-                                  parentNavigatorKey: rootNavKey,
-                                  name: NicePaymentScreen.routeName,
-                                  builder: (context, state) {
-                                    final int gameId = int.parse(
-                                        state.pathParameters['gameId']!);
-                                    // final String redirectUrl = state
-                                    //     .uri.queryParameters['redirectUrl']!;
-                                    return NicePaymentScreen(
-                                      gameId: gameId,
-                                    );
-                                  },
-                                ),
-                                GoRoute(
-                                  path: 'bootPay',
-                                  parentNavigatorKey: rootNavKey,
-                                  name: BootPayScreen.routeName,
-                                  builder: (context, state) {
-                                    final int gameId = int.parse(
-                                        state.pathParameters['gameId']!);
-                                    // final String redirectUrl = state
-                                    //     .uri.queryParameters['redirectUrl']!;
-                                    return BootPayScreen(
-                                      gameId: gameId,
-                                    );
-                                  },
-                                ),
+                                    path: 'error',
+                                    parentNavigatorKey: rootNavKey,
+                                    name: PayErrorScreen.routeName,
+                                    builder: (context, state) {
+                                      final canParticipation =
+                                          state.extra! as bool;
+                                      final int gameId = int.parse(
+                                          state.pathParameters['gameId']!);
+                                      return PayErrorScreen(
+                                        gameId: gameId,
+                                        canParticipation: canParticipation,
+                                      );
+                                    },
+                                    routes: []),
                               ]),
                           GoRoute(
                             path: 'review',
@@ -679,7 +651,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                           },
                         ),
                       ]),
-
                   GoRoute(
                       path: 'settlements',
                       parentNavigatorKey: rootNavKey,
@@ -745,6 +716,20 @@ final routerProvider = Provider<GoRouter>((ref) {
                     builder: (context, state) {
                       return const UserPaymentScreen();
                     },
+                    routes: [
+                      GoRoute(
+                        path: ':paymentResultId',
+                        parentNavigatorKey: rootNavKey,
+                        name: UserPaymentDetailScreen.routeName,
+                        builder: (context, state) {
+                          final int paymentResultId = int.parse(
+                              state.pathParameters['paymentResultId']!);
+                          return UserPaymentDetailScreen(
+                            paymentResultId: paymentResultId,
+                          );
+                        },
+                      ),
+                    ],
                   ),
                   GoRoute(
                     path: 'notification',

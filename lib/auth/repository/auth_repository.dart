@@ -77,12 +77,12 @@ abstract class AuthRepository {
     @Body() required LoginBaseParam param,
     @Header("fcm-token") required String fcmToken,
   });
-
-  @POST('/auth/oauth//login')
-  Future<ResponseModel<LoginModel>> oauthLogin(
-      {@Path() required AuthType provider,
-      @Header("fcm-token") required String fcmToken,
-      @Body() required LoginBaseParam param});
+  //
+  // @POST('/auth/oauth//login')
+  // Future<ResponseModel<LoginModel>> oauthLogin(
+  //     {@Path() required AuthType provider,
+  //     @Header("fcm-token") required String fcmToken,
+  //     @Body() required LoginBaseParam param});
 
   @POST('/auth/signup/{provider}')
   Future<ResponseModel<SignUpModel>> signUp({
