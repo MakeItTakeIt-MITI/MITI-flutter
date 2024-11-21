@@ -491,20 +491,11 @@ class HelpComponent extends StatelessWidget {
           children: [
             InkWell(
               onTap: () async {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return const CustomDialog(
-                      title: '정산 내역 조회 실패',
-                      content: '다시 로그인 해주세요.',
-                    );
-                  },
-                );
-                // final uri = Uri.parse(
-                //     'https://www.makeittakeit.kr/support/inquiries/new');
-                // if (await canLaunchUrl(uri)) {
-                //   await launchUrl(uri);
-                // }
+                final uri = Uri.parse(
+                    'https://www.makeittakeit.kr/support/inquiries/new');
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(uri);
+                }
               },
               child: Text(
                 '고객센터',
