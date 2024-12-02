@@ -4,9 +4,9 @@
 가까운 동네 사람들과 함께 농구 경기를 진행해보세요!<br/>
 
 ## 📽️ 프로젝트 소개
-### Web : https://about.makeittakeit.kr
-### Android: [https://play.google.com/store/apps/details?id=com.project.pllcare&hl=en-KR](https://play.google.com/store/apps/details?id=com.miti.miti&hl=ko)
-### IOS: 디자인 수정이 필요하여 일시적으로 내린 상황
+### Web : https://www.makeittakeit.kr/
+### Android: https://play.google.com/store/apps/details?id=com.miti.miti&hl=ko&pli=1
+### IOS: https://apps.apple.com/us/app/miti/id6503062372
 
 ![MITI 메인](https://github.com/user-attachments/assets/0a64736d-c40a-45a4-aff8-12f976748aa4)
 <br />
