@@ -997,7 +997,7 @@ class _AddressFormState extends ConsumerState<_AddressForm> {
               log("focus Node");
               FocusScope.of(context).requestFocus(widget.focusNodes[2]);
             },
-            hintText: '상세 주소를 입력해주세요.',
+            hintText: '(선택) 상세 주소를 입력해주세요.',
             label: '경기 상세 주소',
             textEditingController: addressDetailController,
             onChanged: (val) {
