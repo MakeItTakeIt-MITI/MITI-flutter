@@ -2,12 +2,19 @@ import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:miti/common/model/default_model.dart';
 import 'package:miti/game/param/game_param.dart';
+import 'package:miti/report/model/agreement_policy_model.dart';
+import 'package:miti/report/provider/report_provider.dart';
 import 'package:miti/util/util.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../common/component/custom_text_form_field.dart';
+import '../../../common/model/entity_enum.dart';
 import '../../../common/provider/widget/datetime_provider.dart';
+import '../../../common/provider/widget/form_provider.dart';
+import '../../../theme/color_theme.dart';
+import '../../model/game_recent_host_model.dart';
 
 part 'game_form_provider.g.dart';
 
@@ -28,6 +35,27 @@ final interactionDescProvider = StateProvider.autoDispose
 class GameForm extends _$GameForm {
   @override
   GameCreateParam build() {
+    final result = ref.watch(
+        agreementPolicyProvider(type: AgreementRequestType.game_hosting));
+    if (result is ResponseListModel<AgreementPolicyModel>) {
+      // final model = result as
+      final List<bool> checkBoxes =
+          List.generate(result.data!.length + 1, (e) => false);
+      return GameCreateParam(
+        title: '',
+        startdate: '',
+        starttime: '',
+        enddate: '',
+        endtime: '',
+        min_invitation: '',
+        max_invitation: '',
+        info: '',
+        fee: '',
+        court: const GameCourtParam(name: '', address: '', address_detail: ''),
+        checkBoxes: checkBoxes,
+      );
+      ;
+    }
     return const GameCreateParam(
       title: '',
       startdate: '',
@@ -39,38 +67,57 @@ class GameForm extends _$GameForm {
       info: '',
       fee: '',
       court: GameCourtParam(name: '', address: '', address_detail: ''),
+      checkBoxes: [false, false, false, false],
+    );
+  }
+
+  void selectGameHistory({required GameRecentHostModel model}) {
+    GameCourtParam court = GameCourtParam(
+      name: model.court.name,
+      address: model.court.address,
+      address_detail: model.court.address_detail,
+    );
+    state = state.copyWith(
+      title: model.title,
+      court: court,
+      min_invitation: model.min_invitation.toString(),
+      max_invitation: model.max_invitation.toString(),
+      info: model.info,
+      fee: model.fee.toString(),
     );
   }
 
   void update({
     String? title,
-    DateTime? startDateTime,
-    DateTime? endDateTime,
+    // DateTime? startDateTime,
+    // DateTime? endDateTime,
+    String? startdate,
+    String? starttime,
+    String? enddate,
+    String? endtime,
     String? min_invitation,
     String? max_invitation,
     String? info,
     String? fee,
     GameCourtParam? court,
+    List<bool>? checkBoxes,
   }) {
     if (fee != null) {
       fee = fee.replaceAll(',', '');
     }
-    String? startdate;
-    String? starttime;
-    String? enddate;
-    String? endtime;
-    if (startDateTime != null) {
-      final dateFormat = DateFormat('yyyy-MM-dd');
-      final timeFormat = DateFormat('HH:mm');
-      startdate = dateFormat.format(startDateTime);
-      starttime = timeFormat.format(startDateTime);
-    }
-    if (endDateTime != null) {
-      final dateFormat = DateFormat('yyyy-MM-dd');
-      final timeFormat = DateFormat('HH:mm');
-      enddate = dateFormat.format(endDateTime);
-      endtime = timeFormat.format(endDateTime);
-    }
+
+    // if (startDateTime != null) {
+    //   final dateFormat = DateFormat('yyyy-MM-dd');
+    //   final timeFormat = DateFormat('HH:mm');
+    //   startdate = dateFormat.format(startDateTime);
+    //   starttime = timeFormat.format(startDateTime);
+    // }
+    // if (endDateTime != null) {
+    //   final dateFormat = DateFormat('yyyy-MM-dd');
+    //   final timeFormat = DateFormat('HH:mm');
+    //   enddate = dateFormat.format(endDateTime);
+    //   endtime = timeFormat.format(endDateTime);
+    // }
 
     state = state.copyWith(
       title: title,
@@ -83,7 +130,25 @@ class GameForm extends _$GameForm {
       info: info,
       fee: fee,
       court: court,
+      checkBoxes: checkBoxes,
     );
+  }
+
+  void updateCheckBox(int idx) {
+    List<bool> newCheckBoxes = state.checkBoxes.toList();
+    newCheckBoxes[idx] = !newCheckBoxes[idx];
+    if (idx == 0) {
+      newCheckBoxes.fillRange(0, newCheckBoxes.length, newCheckBoxes[0]);
+    } else {
+      final isAllChecked = newCheckBoxes.sublist(1).contains(false);
+      if (!isAllChecked) {
+        newCheckBoxes.fillRange(0, newCheckBoxes.length, true);
+      } else {
+        newCheckBoxes[0] = false;
+      }
+    }
+    state = state.copyWith(checkBoxes: newCheckBoxes);
+    formValid();
   }
 
   bool validInvitation() {
@@ -97,6 +162,17 @@ class GameForm extends _$GameForm {
       }
     }
     return false;
+  }
+
+  bool validFee() {
+    if (state.fee.isNotEmpty) {
+      final fee = int.parse(state.fee);
+      if (!(fee == 0 || fee >= 500)) {
+
+        return false;
+      }
+    }
+    return true;
   }
 
   bool validDatetime() {
@@ -121,15 +197,15 @@ class GameForm extends _$GameForm {
           currentDateTime.isBefore(endDateTime)) {
         return false;
       } else {
-        ref
-            .read(interactionDescProvider(InteractionType.date).notifier)
-            .update((state) => null);
+        // ref
+        //     .read(interactionDescProvider(InteractionType.date).notifier)
+        //     .update((state) => null);
         return true;
       }
     }
-    ref
-        .read(interactionDescProvider(InteractionType.date).notifier)
-        .update((state) => null);
+    // ref
+    //     .read(interactionDescProvider(InteractionType.date).notifier)
+    //     .update((state) => null);
     return false;
   }
 
@@ -147,32 +223,32 @@ class GameForm extends _$GameForm {
       // Checking if startDateTime is equal to or after endDateTime
       if (startDateTime.isAtSameMomentAs(endDateTime) ||
           startDateTime.isAfter(endDateTime)) {
-        ref.read(interactionDescProvider(InteractionType.date).notifier).update(
-            (state) => InteractionDesc(
-                isSuccess: false, desc: '시작 시간이 종료 시간보다 같거나 이후일 수 없습니다.'));
+        // ref.read(interactionDescProvider(InteractionType.date).notifier).update(
+        //     (state) => InteractionDesc(
+        //         isSuccess: false, desc: '시작 시간이 종료 시간보다 같거나 이후일 수 없습니다.'));
         return false;
       } else if (startDateTime.isBefore(currentDateTime) &&
           endDateTime.isBefore(currentDateTime)) {
-        ref.read(interactionDescProvider(InteractionType.date).notifier).update(
-            (state) => InteractionDesc(
-                isSuccess: false, desc: '경기 시간이 현재 시간보다 이전일 수 없습니다.'));
+        // ref.read(interactionDescProvider(InteractionType.date).notifier).update(
+        //     (state) => InteractionDesc(
+        //         isSuccess: false, desc: '경기 시간이 현재 시간보다 이전일 수 없습니다.'));
         return false;
       } else if (currentDateTime.isAfter(startDateTime) &&
           currentDateTime.isBefore(endDateTime)) {
-        ref.read(interactionDescProvider(InteractionType.date).notifier).update(
-            (state) => InteractionDesc(
-                isSuccess: false, desc: '현재 시간이 경시 시간 사이에 있을 수 없습니다.'));
+        // ref.read(interactionDescProvider(InteractionType.date).notifier).update(
+        //     (state) => InteractionDesc(
+        //         isSuccess: false, desc: '현재 시간이 경시 시간 사이에 있을 수 없습니다.'));
         return false;
       } else {
-        ref
-            .read(interactionDescProvider(InteractionType.date).notifier)
-            .update((state) => null);
+        // ref
+        //     .read(interactionDescProvider(InteractionType.date).notifier)
+        //     .update((state) => null);
         return true;
       }
     }
-    ref
-        .read(interactionDescProvider(InteractionType.date).notifier)
-        .update((state) => null);
+    // ref
+    //     .read(interactionDescProvider(InteractionType.date).notifier)
+    //     .update((state) => null);
     return false;
   }
 
@@ -180,10 +256,10 @@ class GameForm extends _$GameForm {
     log('validInvitation() = ${validInvitation()} validDatetime() = ${validDatetime()}');
     final formValid = ValidRegExp.gameTitle(state.title) &
         ValidRegExp.gameAddress(state.court.address) &
-        ValidRegExp.gameAddressDetail(state.court.address_detail) &
+        // ValidRegExp.gameAddressDetail(state.court.address_detail) &
         ValidRegExp.courtName(state.court.name);
-
-    return validInvitation() && validDatetime() && formValid;
+    log("formvalid = $formValid");
+    return validFee() && validInvitation() && validDatetime() && formValid;
   }
 }
 
@@ -192,8 +268,9 @@ class ReviewForm extends _$ReviewForm {
   @override
   GameReviewParam build() {
     return const GameReviewParam(
-      rating: null,
+      rating: 0,
       comment: '',
+      tags: [],
     );
   }
 
@@ -205,9 +282,88 @@ class ReviewForm extends _$ReviewForm {
     state = state.copyWith(comment: comment);
   }
 
+  void updateChip(PlayerReviewTagType chip) {
+    if (state.tags.contains(chip)) {
+      final newTags = state.tags.toList();
+      newTags.remove(chip);
+      state = state.copyWith(tags: newTags);
+    } else {
+      final newTags = state.tags.toList();
+      newTags.add(chip);
+      state = state.copyWith(tags: newTags);
+    }
+  }
+
   bool valid() {
     log('state.rating = ${state.rating}');
-    log('state.comment.isNotEmpty = ${state.comment.isNotEmpty}');
-    return state.rating != null && state.comment.isNotEmpty;
+    // log('state.comment.isNotEmpty = ${state.comment.isNotEmpty}');
+    return state.tags.length > 1;
+  }
+}
+
+@riverpod
+class GameParticipationForm extends _$GameParticipationForm {
+  @override
+  GameParticipationParam build(
+      {required int gameId, required PaymentMethodType type}) {
+    final result = ref.watch(
+        agreementPolicyProvider(type: AgreementRequestType.game_participation));
+    if (result is ResponseListModel<AgreementPolicyModel>) {
+      final List<bool> checkBoxes =
+          List.generate(result.data!.length, (e) => false);
+      return GameParticipationParam(
+          gameId: gameId, type: type, isCheckBoxes: checkBoxes);
+    }
+    return GameParticipationParam(
+        gameId: gameId, type: type, isCheckBoxes: const [false, false, false]);
+  }
+
+  void update({
+    int? gameId,
+    PaymentMethodType? type,
+    List<bool>? isCheckBoxes,
+  }) {
+    state = state.copyWith(
+      gameId: gameId,
+      type: type,
+      isCheckBoxes: isCheckBoxes,
+    );
+  }
+
+  List<bool> onCheck(int idx) {
+    List<bool> newCheckBoxes = state.isCheckBoxes.toList();
+    newCheckBoxes[idx] = !newCheckBoxes[idx];
+    state = state.copyWith(isCheckBoxes: newCheckBoxes);
+    return state.isCheckBoxes;
+  }
+}
+
+@riverpod
+class GameRefundForm extends _$GameRefundForm {
+  @override
+  GameRefundParam build() {
+    final result = ref.watch(agreementPolicyProvider(
+        type: AgreementRequestType.participation_refund));
+    if (result is ResponseListModel<AgreementPolicyModel>) {
+      final List<bool> checkBoxes =
+          List.generate(result.data!.length, (e) => false);
+      return GameRefundParam(isCheckBoxes: checkBoxes);
+    }
+    return const GameRefundParam(isCheckBoxes: [false, false, false]);
+  }
+
+  void update({
+    List<bool>? isCheckBoxes,
+  }) {
+    state = state.copyWith(
+      isCheckBoxes: isCheckBoxes,
+    );
+  }
+
+  List<bool> onCheck(int idx) {
+    List<bool> newCheckBoxes = state.isCheckBoxes.toList();
+    newCheckBoxes[idx] = !newCheckBoxes[idx];
+    state = state.copyWith(isCheckBoxes: newCheckBoxes);
+    return state.isCheckBoxes;
   }
 }

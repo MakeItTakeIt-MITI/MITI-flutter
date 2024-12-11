@@ -6,25 +6,31 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
+import 'package:miti/common/component/custom_time_picker.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/game/model/game_player_model.dart';
-import 'package:miti/game/provider/game_provider.dart';
+import 'package:miti/game/model/widget/user_reivew_short_info_model.dart';
+import 'package:miti/game/provider/game_provider.dart' hide Rating;
 import 'package:miti/game/view/review_form_screen.dart';
+import 'package:miti/review/view/review_list_screen.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:miti/util/util.dart';
 
 import '../../common/component/default_appbar.dart';
-import '../../common/component/default_layout.dart';
+import '../../common/error/view/error_screen.dart';
 import '../../common/model/entity_enum.dart';
+import '../../user/view/review_detail_screen.dart';
+import '../component/skeleton/game_participation_review_skeleton.dart';
 import '../model/game_model.dart';
+import 'package:collection/collection.dart';
 
 class GameParticipationScreen extends StatefulWidget {
   final int gameId;
-  final int bottomIdx;
 
   static String get routeName => 'participation';
 
-  const GameParticipationScreen(
-      {super.key, required this.gameId, required this.bottomIdx});
+  const GameParticipationScreen({super.key, required this.gameId});
 
   @override
   State<GameParticipationScreen> createState() =>
@@ -48,9 +54,8 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultLayout(
-      bottomIdx: widget.bottomIdx,
-      scrollController: _scrollController,
+    return Scaffold(
+      backgroundColor: MITIColor.gray750,
       body: NestedScrollView(
         controller: _scrollController,
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -58,45 +63,66 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
             const DefaultAppBar(
               title: '경기 리뷰 남기기',
               isSliver: true,
+              backgroundColor: MITIColor.gray750,
             )
           ];
         },
         body: CustomScrollView(
           slivers: [
-            SliverToBoxAdapter(
+            SliverFillRemaining(
               child: Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   final result =
                       ref.watch(gamePlayersProvider(gameId: widget.gameId));
                   if (result is LoadingModel) {
-                    return CircularProgressIndicator();
+                    return const GameParticipationReviewSkeleton();
                   } else if (result is ErrorModel) {
-                    return Column(
+                    WidgetsBinding.instance.addPostFrameCallback((s) =>
+                        context.pushReplacementNamed(ErrorScreen.routeName));
+                    return const Column(
                       children: [
                         Text('에러'),
                       ],
                     );
                   }
+
                   final model =
-                      (result as ResponseModel<GamePlayerListModel>).data!;
+                      (result as ResponseModel<GameRevieweesModel>).data!;
                   final userId = ref.read(authProvider)?.id ?? 0;
 
                   /// 본인 리뷰 제거
-                  model.participations.removeWhere((e) => e.user.id == userId);
+                  model.participations.removeWhere((e) => e.userId == userId);
+
+                  if (model.participations.isEmpty) {
+                    return Center(
+                      child: Text(
+                        '리뷰를 작성할\n플레이어가 없습니다.',
+                        style: MITITextStyle.xxl140
+                            .copyWith(color: MITIColor.white),
+                        textAlign: TextAlign.center,
+                      ),
+                    );
+                  }
 
                   return Column(
                     children: [
-                      if (model.host != null && model.host?.id != userId)
+                      if (model.host != null && model.host?.userId != userId)
                         _HostReviewComponent(
                           host: model.host!,
                           gameId: widget.gameId,
-                          bottomIdx: widget.bottomIdx,
                         ),
-                      _GuestReviewComponent(
-                        participated_users: model.participations,
-                        gameId: widget.gameId,
-                        bottomIdx: widget.bottomIdx,
-                      ),
+                      if ((model.host != null &&
+                              model.host?.userId != userId) &&
+                          model.participations.isNotEmpty)
+                        Container(
+                          color: MITIColor.gray800,
+                          height: 4.h,
+                        ),
+                      if (model.participations.isNotEmpty)
+                        _GuestReviewComponent(
+                          participated_users: model.participations,
+                          gameId: widget.gameId,
+                        ),
                     ],
                   );
                 },
@@ -110,46 +136,46 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
 }
 
 class _PlayerComponent extends StatelessWidget {
-  final int id;
+  final String nickname;
   final ParticipationStatus? participation_status;
-  final GamePlayerModel user;
   final int gameId;
   final int? participationId;
-  final int bottomIdx;
+  final Rating rating;
+  final List<ReviewerModel> reviews;
 
-  const _PlayerComponent(
-      {super.key,
-      required this.id,
-      this.participation_status,
-      required this.user,
-      this.participationId,
-      required this.gameId,
-      required this.bottomIdx});
+  const _PlayerComponent({
+    super.key,
+    this.participation_status,
+    this.participationId,
+    required this.gameId,
+    required this.nickname,
+    required this.rating,
+    required this.reviews,
+  });
 
-  factory _PlayerComponent.fromParticipationModel(
-      {required GameParticipationModel model,
-      required int gameId,
-      required int bottomIdx}) {
+  factory _PlayerComponent.fromParticipationModel({
+    required GameParticipationModel model,
+    required int gameId,
+  }) {
     return _PlayerComponent(
-      id: model.id,
       participation_status: model.participation_status,
-      user: model.user,
       gameId: gameId,
       participationId: model.id,
-      bottomIdx: bottomIdx,
+      nickname: model.nickname,
+      rating: model.guest_rating,
+      reviews: model.guest_reviews,
     );
   }
 
   factory _PlayerComponent.fromHostModel({
-    required GamePlayerModel model,
+    required ReviewHostModel model,
     required int gameId,
-    required int bottomIdx,
   }) {
     return _PlayerComponent(
-      id: model.id,
-      user: model,
       gameId: gameId,
-      bottomIdx: bottomIdx,
+      nickname: model.nickname,
+      rating: model.host_rating,
+      reviews: model.host_reviews,
     );
   }
 
@@ -162,12 +188,12 @@ class _PlayerComponent extends StatelessWidget {
         flag = decimalPoint != 0;
       }
       final String star = flag
-          ? 'half_star'
+          ? 'Star_half_v2'
           : rating >= i + 1
               ? 'fill_star'
               : 'unfill_star';
       result.add(SvgPicture.asset(
-        'assets/images/icon/$star.svg',
+        AssetUtil.getAssetPath(type: AssetType.icon, name: star),
         height: 14.r,
         width: 14.r,
       ));
@@ -177,114 +203,172 @@ class _PlayerComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        Map<String, String> pathParameters = {
-          'gameId': gameId.toString(),
-        };
-        Map<String, String> queryParameters = {
-          'bottomIdx': bottomIdx.toString()
-        };
-        if (participationId != null) {
-          queryParameters['participationId'] = participationId.toString();
-        }
-        queryParameters['ratingId'] = user.rating.id.toString();
-        context.pushNamed(
-          ReviewScreen.routeName,
-          pathParameters: pathParameters,
-          queryParameters: queryParameters,
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8.r),
-            border: Border.all(color: const Color(0xFFE8E8E8))),
-        padding: EdgeInsets.all(12.r),
-        child: Row(
-          children: [
-            SvgPicture.asset(
-              'assets/images/icon/user_thum.svg',
-              width: 40.r,
-              height: 40.r,
-            ),
-            SizedBox(width: 10.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    user.nickname,
-                    style: MITITextStyle.nicknameCardStyle
-                        .copyWith(color: const Color(0xFF444444)),
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12.r),
+          color: MITIColor.gray700,
+          border: Border.all(color: MITIColor.gray600)),
+      padding: EdgeInsets.all(16.r),
+      alignment: Alignment.center,
+      child: Row(
+        children: [
+          SvgPicture.asset(
+            'assets/images/icon/user_thum.svg',
+            width: 36.r,
+            height: 36.r,
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  nickname,
+                  style:
+                      MITITextStyle.smBold.copyWith(color: MITIColor.gray100),
+                ),
+                SizedBox(height: 4.h),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const NeverScrollableScrollPhysics(),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ...getStar(rating.average_rating ?? 0),
+                      SizedBox(width: 6.w),
+                      Text(
+                        (rating.average_rating ?? 0).toStringAsFixed(1),
+                        style: MITITextStyle.sm.copyWith(
+                          color: MITIColor.gray100,
+                        ),
+                      ),
+                      SizedBox(width: 6.w),
+                      Text(
+                        '리뷰 ${rating.num_of_reviews}',
+                        style: MITITextStyle.sm.copyWith(
+                          color: MITIColor.gray100,
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 5.h),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        ...getStar(user.rating.average_rating),
-                        SizedBox(width: 3.w),
-                        Text(
-                          user.rating.average_rating.toStringAsFixed(1),
-                          style: MITITextStyle.gameTimePlainStyle.copyWith(
-                            color: const Color(0xFF222222),
-                          ),
-                        ),
-                        SizedBox(width: 9.w),
-                        Text(
-                          '후기 ${user.rating.num_of_reviews}',
-                          style: MITITextStyle.gameTimePlainStyle.copyWith(
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ],
+                ),
+              ],
+            ),
+          ),
+          // Spacer(),
+          Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              final userId = ref.watch(authProvider.select((user) => user?.id));
+              final valid =
+                  reviews.singleWhereOrNull((r) => r.reviewer == userId);
+
+              return TextButton(
+                  onPressed: () {
+                    Map<String, String> queryParameters = {};
+                    if (participationId != null) {
+                      queryParameters = {
+                        'participationId': participationId.toString()
+                      };
+                    }
+
+                    /// 리뷰 쓰기
+                    if (valid == null) {
+                      Map<String, String> pathParameters = {
+                        'gameId': gameId.toString(),
+                      };
+                      final model = UserReviewShortInfoModel(
+                          nickname: nickname, rating: rating);
+
+                      context.pushNamed(
+                        ReviewScreen.routeName,
+                        pathParameters: pathParameters,
+                        queryParameters: queryParameters,
+                        extra: model,
+                      );
+                    } else {
+                      /// 리뷰 내역 보기
+                      Map<String, String> queryParameters = {};
+                      if (participationId != null) {
+                        queryParameters = {
+                          'participationId': participationId.toString()
+                        };
+                      }
+                      Map<String, String> pathParameters = {
+                        'gameId': gameId.toString(),
+                      };
+
+                      context.pushNamed(
+                        ReviewListScreen.routeName,
+                        queryParameters: queryParameters,
+                        pathParameters: pathParameters,
+                      );
+                      // Map<String, String> pathParameters = {
+                      //   'reviewId': valid.id.toString(),
+                      //   'gameId': gameId.toString(),
+                      // };
+                      //
+                      // context.pushNamed(
+                      //   ReviewDetailScreen.routeName,
+                      //   pathParameters: pathParameters,
+                      //   queryParameters: queryParameters,
+                      // );
+                    }
+                  },
+                  style: TextButton.styleFrom(
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      padding: EdgeInsets.symmetric(horizontal: 12.w),
+                      minimumSize: Size(75.w, 30.h),
+                      maximumSize: Size(90.w, 30.h),
+                      backgroundColor:
+                          valid == null ? MITIColor.primary : MITIColor.gray800,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.r))),
+                  child: Text(
+                    valid == null ? "리뷰 쓰기" : "리뷰 보기",
+                    style: MITITextStyle.smSemiBold.copyWith(
+                      color:
+                          valid == null ? MITIColor.gray800 : MITIColor.primary,
                     ),
-                  ),
-                ],
-              ),
-            ),
-            SvgPicture.asset(
-              'assets/images/icon/chevron_right.svg',
-              height: 14.h,
-              width: 7.w,
-            ),
-          ],
-        ),
+                  ));
+            },
+          )
+        ],
       ),
     );
   }
 }
 
 class _HostReviewComponent extends StatelessWidget {
-  final GamePlayerModel host;
+  final ReviewHostModel host;
   final int gameId;
-  final int bottomIdx;
 
-  const _HostReviewComponent(
-      {super.key,
-      required this.host,
-      required this.gameId,
-      required this.bottomIdx});
+  const _HostReviewComponent({
+    super.key,
+    required this.host,
+    required this.gameId,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(12.r),
+      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            '호스트 리뷰',
-            style: MITITextStyle.sectionTitleStyle.copyWith(
-              color: const Color(0xff0d0000),
+          Padding(
+            padding: EdgeInsets.only(left: 12.w),
+            child: Text(
+              '호스트',
+              style: MITITextStyle.mdBold.copyWith(
+                color: MITIColor.gray100,
+              ),
             ),
           ),
           SizedBox(height: 12.h),
           _PlayerComponent.fromHostModel(
             model: host,
             gameId: gameId,
-            bottomIdx: bottomIdx,
           ),
         ],
       ),
@@ -295,25 +379,27 @@ class _HostReviewComponent extends StatelessWidget {
 class _GuestReviewComponent extends StatelessWidget {
   final List<GameParticipationModel> participated_users;
   final int gameId;
-  final int bottomIdx;
 
-  const _GuestReviewComponent(
-      {super.key,
-      required this.participated_users,
-      required this.gameId,
-      required this.bottomIdx});
+  const _GuestReviewComponent({
+    super.key,
+    required this.participated_users,
+    required this.gameId,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(12.r),
+      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            '게스트 리뷰',
-            style: MITITextStyle.sectionTitleStyle.copyWith(
-              color: const Color(0xff0d0000),
+          Padding(
+            padding: EdgeInsets.only(left: 12.w),
+            child: Text(
+              '게스트',
+              style: MITITextStyle.mdBold.copyWith(
+                color: MITIColor.gray100,
+              ),
             ),
           ),
           if (participated_users.isEmpty) getEmptyWidget(),
@@ -326,8 +412,6 @@ class _GuestReviewComponent extends StatelessWidget {
                   return _PlayerComponent.fromParticipationModel(
                     model: participated_users[idx],
                     gameId: gameId,
-                    // participationId: participationId,
-                    bottomIdx: bottomIdx,
                   );
                 },
                 separatorBuilder: (_, idx) {

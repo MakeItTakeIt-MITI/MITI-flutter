@@ -1,23 +1,29 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../common/model/entity_enum.dart';
+
 part 'phone_auth_provider.g.dart';
 
 class PhoneAuthModel {
-  final String user_info_token;
+  final PhoneAuthType type;
+  final String authentication_token;
   final String code;
 
   PhoneAuthModel({
-    required this.user_info_token,
+    required this.type,
+    required this.authentication_token,
     required this.code,
   });
 
   PhoneAuthModel copyWith({
-    String? user_info_token,
+    PhoneAuthType? type,
+    String? authentication_token,
     String? code,
   }) {
     return PhoneAuthModel(
-      user_info_token: user_info_token ?? this.user_info_token,
+      authentication_token: authentication_token ?? this.authentication_token,
       code: code ?? this.code,
+      type: type ?? this.type,
     );
   }
 }
@@ -25,14 +31,23 @@ class PhoneAuthModel {
 @riverpod
 class PhoneAuth extends _$PhoneAuth {
   @override
-  PhoneAuthModel build() {
-    return PhoneAuthModel(user_info_token: '', code: '');
+  PhoneAuthModel build({required PhoneAuthType type}) {
+    return PhoneAuthModel(
+      authentication_token: '',
+      code: '',
+      type: type,
+    );
   }
 
   void update({
-    String? user_info_token,
+    String? authentication_token,
     String? code,
+    PhoneAuthType? type,
   }) {
-    state = state.copyWith(user_info_token: user_info_token, code: code);
+    state = state.copyWith(
+      authentication_token: authentication_token,
+      code: code,
+      type: type,
+    );
   }
 }

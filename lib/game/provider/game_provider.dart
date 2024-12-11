@@ -1,16 +1,18 @@
 import 'dart:developer';
 
-import 'package:dio/dio.dart';
-import 'package:intl/intl.dart';
-import 'package:miti/game/model/game_model.dart';
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:miti/game/param/game_param.dart';
+import 'package:miti/game/provider/widget/game_filter_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:miti/game/repository/game_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../auth/provider/auth_provider.dart';
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
+import '../../common/param/pagination_param.dart';
 import '../../court/view/court_map_screen.dart';
+import '../../user/provider/user_pagination_provider.dart';
 
 part 'game_provider.g.dart';
 
@@ -18,13 +20,14 @@ part 'game_provider.g.dart';
 class GameList extends _$GameList {
   @override
   BaseModel build() {
-    getList(param: GameListParam());
+    getList();
     return LoadingModel();
   }
 
-  Future<void> getList({required GameListParam param}) async {
+  Future<void> getList() async {
     state = LoadingModel();
     final repository = ref.watch(gameRepositoryProvider);
+    final param = ref.read(gameFilterProvider);
     repository.getGameList(param: param).then((value) {
       logger.i(value);
       ref.read(selectGameListProvider.notifier).update((state) => value.data!);
@@ -49,10 +52,10 @@ class GameDetail extends _$GameDetail {
 
   Future<void> get({required int gameId}) async {
     final repository = ref.watch(gameRepositoryProvider);
-    final response =
-        await Dio().request('https://dev.makeittakeit.kr/games/1229');
-    final data = response.data['data'];
-    log('data $data');
+    // final response =
+    //     await Dio().request('https://dev.makeittakeit.kr/games/1229');
+    // final data = response.data['data'];
+    // log('data $data');
 
     repository.getGameDetail(gameId: gameId).then((value) {
       logger.i(value);
@@ -74,6 +77,14 @@ Future<BaseModel> gameCreate(GameCreateRef ref) async {
 
   return await repository.createGame(param: param).then<BaseModel>((value) {
     logger.i(value);
+    final userId = ref.read(authProvider)!.id!;
+    ref
+        .read(userHostingPProvider(PaginationStateParam(path: userId)).notifier)
+        .paginate(
+          path: userId,
+          forceRefetch: true,
+          paginationParams: const PaginationParam(page: 1),
+        );
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
@@ -93,6 +104,26 @@ Future<BaseModel> gameUpdate(GameUpdateRef ref, {required int gameId}) async {
       .then<BaseModel>((value) {
     logger.i(value);
     ref.read(gameDetailProvider(gameId: gameId).notifier).get(gameId: gameId);
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
+}
+
+@riverpod
+Future<BaseModel> gameFree(GameFreeRef ref, {required int gameId}) async {
+  final repository = ref.watch(gameRepositoryProvider);
+
+  return await repository
+      .freeGame(gameId: gameId)
+      .then<BaseModel>((value) async {
+    logger.i(value);
+    await ref
+        .read(gameDetailProvider(gameId: gameId).notifier)
+        .get(gameId: gameId);
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
@@ -161,6 +192,7 @@ class Payment extends _$Payment {
       final error = ErrorModel.respToError(e);
       logger.e(
           'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state = error;
       return error;
     });
   }
@@ -205,7 +237,7 @@ class GamePlayers extends _$GamePlayers {
   Future<void> getPlayers({required int gameId}) async {
     state = LoadingModel();
     final repository = ref.watch(gameRepositoryProvider);
-    repository.getPlayers(gameId: gameId).then((value) {
+    repository.getReviewees(gameId: gameId).then((value) {
       logger.i(value);
       state = value;
     }).catchError((e) {
@@ -242,8 +274,8 @@ class Rating extends _$Rating {
 }
 
 @riverpod
-Future<BaseModel> guestReview(
-  GuestReviewRef ref, {
+Future<BaseModel> createGuestReview(
+  CreateGuestReviewRef ref, {
   required int gameId,
   required int participationId,
 }) async {
@@ -265,8 +297,8 @@ Future<BaseModel> guestReview(
 }
 
 @riverpod
-Future<BaseModel> hostReview(
-  HostReviewRef ref, {
+Future<BaseModel> createHostReview(
+  CreateHostReviewRef ref, {
   required int gameId,
 }) async {
   final repository = ref.watch(gameRepositoryProvider);
@@ -286,4 +318,101 @@ Future<BaseModel> hostReview(
         'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
     return error;
   });
+}
+
+@riverpod
+Future<BaseModel> gameRecentHosting(GameRecentHostingRef ref) async {
+  final repository = ref.watch(gameRepositoryProvider);
+  final userId = ref.read(authProvider)!.id!;
+  return await repository
+      .getRecentHostings(userId: userId)
+      .then<BaseModel>((value) {
+    logger.i(value);
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
+}
+
+@riverpod
+Future<BaseModel> cancelRecruitGame(CancelRecruitGameRef ref,
+    {required int gameId}) async {
+  final repository = ref.watch(gameRepositoryProvider);
+  return await repository
+      .cancelRecruitGame(gameId: gameId)
+      .then<BaseModel>((value) {
+    logger.i(value);
+    final userId = ref.read(authProvider)?.id!;
+
+    ref
+        .read(userHostingPProvider(PaginationStateParam(path: userId)).notifier)
+        .paginate(
+          path: userId,
+          forceRefetch: true,
+          paginationParams: const PaginationParam(page: 1),
+        );
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
+}
+
+@riverpod
+class ReviewDetail extends _$ReviewDetail {
+  @override
+  BaseModel build(
+      {required int gameId, int? participationId, required int reviewId}) {
+    if (participationId != null) {
+      getGuestReview(
+          gameId: gameId, reviewId: reviewId, participationId: participationId);
+    } else {
+      getHostReview(gameId: gameId, reviewId: reviewId);
+    }
+
+    return LoadingModel();
+  }
+
+  void getHostReview({required int gameId, required int reviewId}) {
+    final repository = ref.watch(gameRepositoryProvider);
+    repository
+        .getHostReview(gameId: gameId, reviewId: reviewId)
+        .then<BaseModel>((value) {
+      logger.i(value);
+      state = value;
+      return value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      return error;
+    });
+  }
+
+  void getGuestReview(
+      {required int gameId,
+      required int participationId,
+      required int reviewId}) {
+    final repository = ref.watch(gameRepositoryProvider);
+    repository
+        .getGuestReview(
+            gameId: gameId,
+            reviewId: reviewId,
+            participationId: participationId)
+        .then<BaseModel>((value) {
+      logger.i(value);
+      state = value;
+      return value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      return error;
+    });
+  }
 }

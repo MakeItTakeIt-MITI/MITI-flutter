@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart' hide Headers;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:miti/user/model/my_payment_model.dart';
 import 'package:miti/user/model/review_model.dart';
 import 'package:miti/user/model/user_model.dart';
 import 'package:miti/user/param/user_profile_param.dart';
@@ -22,7 +23,7 @@ final userRepositoryProvider = Provider<UserRepository>((ref) {
   return UserRepository(dio);
 });
 
-@RestApi(baseUrl: serverURL)
+@RestApi(baseUrl: devServerURL)
 abstract class UserRepository {
   factory UserRepository(Dio dio) = _UserRepository;
 
@@ -31,17 +32,13 @@ abstract class UserRepository {
   Future<ResponseModel<UserModel>> getUserInfo({@Path() required int userId});
 
   @Headers({'token': 'true'})
-  @DELETE('/users/{userId}')
-  Future<ResponseModel<UserModel>> deleteUser({@Path() required int userId});
-
-  @Headers({'token': 'true'})
-  @PATCH('/users/{userId}/update-nickname')
-  Future<ResponseModel<UserNicknameModel>> updateNickname({
+  @PATCH('/users/{userId}/update-profile')
+  Future<ResponseModel<UserInfoModel>> updateNickname({
     @Path() required int userId,
     @Body() required UserNicknameParam param,
   });
 
-  @Headers({'token': 'true'})
+  // @Headers({'token': 'true'})
   @PATCH('/users/{userId}/update-password')
   Future<ResponseModel<UserNicknameModel>> updatePassword({
     @Path() required int userId,
@@ -49,53 +46,26 @@ abstract class UserRepository {
   });
 
   @Headers({'token': 'true'})
-  @GET('/users/{userId}/my-reviews')
-  Future<ResponseModel<PaginationModel<WrittenReviewModel>>> getWrittenReviews({
+  @GET('/users/{userId}/written-reviews/{reviewType}/{reviewId}')
+  Future<ResponseModel<MyWrittenReviewDetailModel>> getWrittenReview({
     @Path() required int userId,
-    @Queries() required PaginationParam paginationParam,
-    @Query('review_type') ReviewType? reviewType,
-  });
-
-  @Headers({'token': 'true'})
-  @GET('/users/{userId}/my-reviews/{reviewId}')
-  Future<ResponseModel<WrittenReviewDetailModel>> getWrittenReview({
-    @Path() required int userId,
+    @Path() required String reviewType,
     @Path() required int reviewId,
   });
 
   @Headers({'token': 'true'})
-  @GET('/users/{userId}/reviews')
-  Future<ResponseModel<PaginationModel<ReceiveReviewModel>>> getReceiveReviews({
+  @GET('/users/{userId}/received-reviews/{reviewType}/{reviewId}')
+  Future<ResponseModel<MyReceiveReviewDetailModel>> getReceiveReview({
     @Path() required int userId,
-    @Queries() required PaginationParam paginationParam,
-    @Query('review_type') ReviewType? reviewType,
-  });
-
-  @Headers({'token': 'true'})
-  @GET('/users/{userId}/reviews/{reviewId}')
-  Future<ResponseModel<ReceiveReviewDetailModel>> getReceiveReview({
-    @Path() required int userId,
+    @Path() required String reviewType,
     @Path() required int reviewId,
   });
-}
 
-final userHostingPRepositoryProvider = Provider<UserHostingPRepository>((ref) {
-  final dio = ref.watch(dioProvider);
-  return UserHostingPRepository(dio);
-});
-
-@RestApi(baseUrl: serverURL)
-abstract class UserHostingPRepository
-    extends IBasePaginationRepository<GameListByDateModel, UserGameParam> {
-  factory UserHostingPRepository(Dio dio) = _UserHostingPRepository;
-
-  @override
   @Headers({'token': 'true'})
-  @GET('/users/{userId}/hostings')
-  Future<ResponseModel<PaginationModel<GameListByDateModel>>> paginate({
-    @Queries() required PaginationParam paginationParams,
-    @Queries() UserGameParam? param,
-    @Path('userId') int? path,
+  @GET('/users/{userId}/payment-results/{paymentResultId}')
+  Future<ResponseModel<MyPaymentDetailModel>> getPaymentResultDetail({
+    @Path() required int userId,
+    @Path() required int paymentResultId,
   });
 }
 
@@ -105,7 +75,7 @@ final userParticipationPRepositoryProvider =
   return UserParticipationPRepository(dio);
 });
 
-@RestApi(baseUrl: serverURL)
+@RestApi(baseUrl: devServerURL)
 abstract class UserParticipationPRepository
     extends IBasePaginationRepository<GameListByDateModel, UserGameParam> {
   factory UserParticipationPRepository(Dio dio) = _UserParticipationPRepository;
@@ -126,7 +96,7 @@ final userWrittenReviewsPRepositoryProvider =
   return UserWrittenReviewsPRepository(dio);
 });
 
-@RestApi(baseUrl: serverURL)
+@RestApi(baseUrl: devServerURL)
 abstract class UserWrittenReviewsPRepository
     extends IBasePaginationRepository<WrittenReviewModel, UserReviewParam> {
   factory UserWrittenReviewsPRepository(Dio dio) =
@@ -134,7 +104,7 @@ abstract class UserWrittenReviewsPRepository
 
   @override
   @Headers({'token': 'true'})
-  @GET('/users/{userId}/my-reviews')
+  @GET('/users/{userId}/written-reviews')
   Future<ResponseModel<PaginationModel<WrittenReviewModel>>> paginate({
     @Queries() required PaginationParam paginationParams,
     @Queries() UserReviewParam? param,
@@ -148,7 +118,7 @@ final userReceiveReviewsPRepositoryProvider =
   return UserReceiveReviewsPRepository(dio);
 });
 
-@RestApi(baseUrl: serverURL)
+@RestApi(baseUrl: devServerURL)
 abstract class UserReceiveReviewsPRepository
     extends IBasePaginationRepository<ReceiveReviewModel, UserReviewParam> {
   factory UserReceiveReviewsPRepository(Dio dio) =
@@ -156,10 +126,50 @@ abstract class UserReceiveReviewsPRepository
 
   @override
   @Headers({'token': 'true'})
-  @GET('/users/{userId}/reviews')
+  @GET('/users/{userId}/received-reviews')
   Future<ResponseModel<PaginationModel<ReceiveReviewModel>>> paginate({
     @Queries() required PaginationParam paginationParams,
     @Queries() UserReviewParam? param,
+    @Path('userId') int? path,
+  });
+}
+
+final userHostingPRepositoryProvider = Provider<UserHostingPRepository>((ref) {
+  final dio = ref.watch(dioProvider);
+  return UserHostingPRepository(dio);
+});
+
+@RestApi(baseUrl: devServerURL)
+abstract class UserHostingPRepository
+    extends IBasePaginationRepository<GameListByDateModel, UserGameParam> {
+  factory UserHostingPRepository(Dio dio) = _UserHostingPRepository;
+
+  @override
+  @Headers({'token': 'true'})
+  @GET('/users/{userId}/hosted-games')
+  Future<ResponseModel<PaginationModel<GameListByDateModel>>> paginate({
+    @Queries() required PaginationParam paginationParams,
+    @Queries() UserGameParam? param,
+    @Path('userId') int? path,
+  });
+}
+
+final userPaymentPRepositoryProvider = Provider<UserPaymentPRepository>((ref) {
+  final dio = ref.watch(dioProvider);
+  return UserPaymentPRepository(dio);
+});
+
+@RestApi(baseUrl: devServerURL)
+abstract class UserPaymentPRepository
+    extends IBasePaginationRepository<MyPaymentModel, UserPaymentParam> {
+  factory UserPaymentPRepository(Dio dio) = _UserPaymentPRepository;
+
+  @override
+  @Headers({'token': 'true'})
+  @GET('/users/{userId}/payment-results')
+  Future<ResponseModel<PaginationModel<MyPaymentModel>>> paginate({
+    @Queries() required PaginationParam paginationParams,
+    @Queries() UserPaymentParam? param,
     @Path('userId') int? path,
   });
 }

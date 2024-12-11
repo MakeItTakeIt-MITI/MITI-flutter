@@ -1,28 +1,36 @@
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:lottie/lottie.dart';
+
 import 'package:miti/auth/provider/auth_provider.dart';
-import 'package:miti/common/provider/secure_storage_provider.dart';
-import 'package:miti/permission_screen.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:miti/notification_provider.dart';
+import 'package:miti/theme/color_theme.dart';
+
+import 'common/model/entity_enum.dart';
+import 'game/view/game_detail_screen.dart';
+import 'notification/model/push_model.dart';
+import 'notification/provider/notification_provider.dart';
+import 'notification/view/notification_detail_screen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   static String get routeName => 'splash';
+  final PushDataModel? pushModel;
 
-  const SplashScreen({super.key});
+  const SplashScreen({
+    super.key,
+    this.pushModel,
+  });
 
   @override
   ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
-  late final Box<bool> permissionBox;
-
   @override
   void initState() {
     super.initState();
@@ -32,183 +40,71 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> startApp() async {
-    permissionBox = Hive.box('permission');
-    final display = permissionBox.get('permission');
-    // final display = await _permission();
-    if (display == null || !display) {
-      if (mounted) {
-        context.goNamed(PermissionScreen.routeName);
-      }
-    } else {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        ref.read(authProvider.notifier).autoLogin(context: context);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Future.delayed(const Duration(milliseconds: 1500), () async {
+        final fcmToken = ref.read(fcmTokenProvider);
+        if (fcmToken == null) {
+          await Future.delayed(const Duration(seconds: 3));
+        }
+        if (mounted) {
+          if (widget.pushModel != null) {
+            log("push routing!!!");
+            ref.read(authProvider.notifier).autoLogin();
+            _handleMessage(widget.pushModel!);
+          } else {
+            ref.read(authProvider.notifier).autoLogin(context: context);
+          }
+        }
       });
+    });
+  }
+
+  void _handleMessage(PushDataModel model) {
+    switch (model.topic) {
+      case PushNotificationTopicType.general:
+        Map<String, String> pathParameters = {'id': model.pushId.toString()};
+        context.goNamed(
+          NoticeDetailScreen.routeName,
+          pathParameters: pathParameters,
+          extra: NoticeScreenType.notification,
+        );
+      case PushNotificationTopicType.game_status_changed:
+      case PushNotificationTopicType.new_participation:
+      case PushNotificationTopicType.game_fee_changed:
+        ref
+            .read(pushProvider(pushId: int.parse(model.pushId)).notifier)
+            .get(pushId: int.parse(model.pushId));
+        Map<String, String> pathParameters = {
+          'gameId': model.gameId.toString()
+        };
+        context.goNamed(
+          GameDetailScreen.routeName,
+          pathParameters: pathParameters,
+        );
+        break;
+      default:
+        Map<String, String> pathParameters = {'id': model.pushId.toString()};
+        context.goNamed(
+          NoticeDetailScreen.routeName,
+          pathParameters: pathParameters,
+          extra: NoticeScreenType.push,
+        );
     }
   }
-
-  Future<bool> _permission() async {
-    var requestStatus = await Permission.location.request();
-    var status = await Permission.location.status;
-    log('requestStatus = $requestStatus, status = $status');
-
-    if (requestStatus.isPermanentlyDenied ||
-        status.isPermanentlyDenied) {
-      // 권한 요청 거부, 해당 권한에 대한 요청에 대해 다시 묻지 않음 선택하여 설정화면에서 변경해야함. android
-      print("isPermanentlyDenied");
-      return false;
-    } else if (status.isRestricted) {
-      // 권한 요청 거부, 해당 권한에 대한 요청을 표시하지 않도록 선택하여 설정화면에서 변경해야함. ios
-      print("isRestricted");
-      return false;
-    } else if (status.isDenied) {
-      // 권한 요청 거절
-      print("isDenied");
-      return false;
-    }
-    print("requestStatus ${requestStatus.name}");
-    print("status ${status.name}");
-    // final storage = ref.read(secureStorageProvider);
-    // await storage.write(key: 'firstJoin', value: 'true');
-    return true;
-  }
-
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  double shake(double value) =>
-      2 * (0.5 - (0.5 - Curves.bounceOut.transform(value)).abs());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SizedBox(
-        width: double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: 320.h),
-            Container(
-              width: 88.w,
-              height: 28.h,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/logo/MITI.png'),
-                ),
-              ),
-            ),
-            SizedBox(height: 8.h),
-            Text(
-              'Make it, Take it!',
-              style: TextStyle(
-                fontSize: 14.sp,
-                letterSpacing: -0.25.sp,
-                fontWeight: FontWeight.w400,
-                height: 22 / 14,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 30.h),
-            Container(
-              width: 100.w,
-              height: 2.h,
-              decoration: const BoxDecoration(color: Color(0xFFF2F2F2)),
-              alignment: Alignment.centerLeft,
-              child: const LoadingAnimation(),
-            )
-          ],
+      backgroundColor: MITIColor.black,
+      body: Center(
+        child: Lottie.asset(
+          'assets/lottie/splash.json',
+          height: 84.h,
+          width: 160.w,
+          fit: BoxFit.fill,
+          repeat: false,
         ),
       ),
-    );
-  }
-}
-
-class LoadingAnimation extends StatefulWidget {
-  const LoadingAnimation({
-    super.key,
-  });
-
-  @override
-  State<LoadingAnimation> createState() => _LoadingAnimationState();
-}
-
-class _LoadingAnimationState extends State<LoadingAnimation>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _startWidth;
-  late final Animation<double> _offset;
-  late final Animation<double> _endWidth;
-
-  @override
-  void initState() {
-    _controller = AnimationController(
-      duration: const Duration(seconds: 1),
-      vsync: this,
-    )
-      ..forward()
-      ..addListener(() {
-        if (_controller.isCompleted) {
-          _controller.repeat();
-        }
-      });
-
-    /// 로딩 bar
-    /// 1. width 를 늘리기
-    /// 2. bar를 이동 끝까지 이동
-    /// 3. width 를 줄이기
-
-    _startWidth = Tween<double>(
-      begin: 0.0,
-      end: 20.w,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.25, curve: Curves.easeIn),
-      ),
-    );
-    _offset = Tween<double>(
-      begin: 0.w,
-      end: 100.w,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0, 1, curve: Curves.easeIn),
-      ),
-    );
-    _endWidth = Tween<double>(
-      begin: 0.w,
-      end: 20.w,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.75, 1, curve: Curves.easeIn),
-      ),
-    );
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (BuildContext context, Widget? child) {
-        return Transform.translate(
-          offset: Offset(_offset.value, 0),
-          child: Container(
-            width: _startWidth.value - _endWidth.value,
-            color: const Color(0xFF969696),
-          ),
-        );
-      },
     );
   }
 }

@@ -1,5 +1,8 @@
 plugins {
     id "com.android.application"
+    // START: FlutterFire Configuration
+    id 'com.google.gms.google-services'
+    // END: FlutterFire Configuration
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
     id 'kotlin-parcelize'
@@ -23,6 +26,9 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+def KAKAO_NATIVE_APP_KEY = localProperties.getProperty("KAKAO_NATIVE_APP_KEY")
+
+
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file('app/key.properties')
 if (keystorePropertiesFile.exists()) {
@@ -31,33 +37,34 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.miti.miti"
-    compileSdk 34
+    compileSdkVersion 34
     ndkVersion flutter.ndkVersion
 
-//    flavorDimensions "app"
-
+//    flavorDimensions "miti"
+//
 //    productFlavors {
 //        dev {
-//            dimension "app"
+//            dimension "miti"
 //            applicationId "com.dev.miti"
-//            resValue "string", "app_name", "DEV miti"
+//            resValue "string", "devMiti", "DEV flavor miti"
 //        }
 //        product {
-//            dimension "app"
+//            dimension "miti"
 //            applicationId "com.miti.miti"
-//            resValue "string", "app_name", "flavor miti"
+//            resValue "string", "proMiti", "PRODUCT flavor miti"
 //        }
 //    }
 
     compileOptions {
+        // Flag to enable support for the new language APIs
+        coreLibraryDesugaringEnabled true
+        // Sets Java compatibility to Java 8
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+        kotlinOptions {
+            jvmTarget = '1.8'
+        }
     }
-
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
-
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
@@ -67,10 +74,12 @@ android {
         applicationId "com.miti.miti"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 23
-        targetSdkVersion flutter.targetSdkVersion
-        versionCode 3
-        versionName "1.0.0"
+        minSdkVersion 34
+        targetSdkVersion 34 //flutter.targetSdkVersion
+        versionCode 16
+        versionName "1.0.2"
+        multiDexEnabled true
+        manifestPlaceholders += [KAKAO_NATIVE_APP_KEY: KAKAO_NATIVE_APP_KEY]
     }
 
 //    buildTypes {
@@ -108,4 +117,8 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.2.2'
+    implementation 'androidx.window:window:1.0.0'
+    implementation 'androidx.window:window-java:1.0.0'
+}

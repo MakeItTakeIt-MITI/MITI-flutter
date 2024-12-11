@@ -3,9 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
 import '../../common/provider/pagination_provider.dart';
-import '../../court/param/court_pagination_param.dart';
 import '../model/account_model.dart';
-import '../model/bank_model.dart';
+import '../model/transfer_model.dart';
 import '../param/account_param.dart';
 import '../repository/account_repository.dart';
 
@@ -49,7 +48,7 @@ final bankTransferPageProvider = StateNotifierProvider.family.autoDispose<
   );
 });
 
-class BankTransferPageStateNotifier extends PaginationProvider<BankModel,
+class BankTransferPageStateNotifier extends PaginationProvider<TransferModel,
     BankTransferPaginationParam, BankTransferPaginationRepository> {
   BankTransferPageStateNotifier({
     required super.repository,

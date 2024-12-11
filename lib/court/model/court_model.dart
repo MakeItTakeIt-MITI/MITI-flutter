@@ -2,6 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
+import '../../game/model/game_model.dart';
 
 part 'court_model.g.dart';
 
@@ -25,23 +26,24 @@ class CourtModel extends IModelWithId {
 }
 
 @JsonSerializable()
-class CourtDetailModel extends CourtModel {
-  final String name;
-  final String? info;
+class CourtDetailModel extends CourtGameModel {
+  final List<GameHostModel> soonest_games;
 
-  CourtDetailModel({
+  CourtDetailModel( {
     required super.id,
     required super.address,
     required super.address_detail,
-    required this.name,
-    required this.info,
+    required super.name,
+    required super.info,
     required super.latitude,
     required super.longitude,
+    required this.soonest_games,
   });
 
   factory CourtDetailModel.fromJson(Map<String, dynamic> json) =>
       _$CourtDetailModelFromJson(json);
 }
+
 
 @JsonSerializable()
 class CourtAddressModel extends IModelWithId {
@@ -58,6 +60,26 @@ class CourtAddressModel extends IModelWithId {
 
   factory CourtAddressModel.fromJson(Map<String, dynamic> json) =>
       _$CourtAddressModelFromJson(json);
+}
+
+
+@JsonSerializable()
+class CourtGameModel extends CourtModel {
+  final String name;
+  final String? info;
+
+  CourtGameModel( {
+    required super.id,
+    required super.address,
+    required super.address_detail,
+    required this.name,
+    required this.info,
+    required super.latitude,
+    required super.longitude,
+  });
+
+  factory CourtGameModel.fromJson(Map<String, dynamic> json) =>
+      _$CourtGameModelFromJson(json);
 }
 
 @JsonSerializable()

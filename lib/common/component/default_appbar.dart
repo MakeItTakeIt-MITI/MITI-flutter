@@ -5,7 +5,9 @@ import 'package:flutter/src/foundation/diagnostics.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:miti/util/util.dart';
 
 class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
@@ -13,39 +15,66 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isSliver;
   final List<Widget>? actions;
   final Color? backgroundColor;
+  final String leadingIcon;
+  final bool hasBorder;
 
-  const DefaultAppBar(
-      {super.key,
-      this.title,
-      this.bottom,
-      this.isSliver = false,
-      this.actions,
-      this.backgroundColor});
+  const DefaultAppBar({
+    super.key,
+    this.title,
+    this.bottom,
+    this.isSliver = false,
+    this.actions,
+    this.backgroundColor,
+    this.leadingIcon = "back_arrow",
+    this.hasBorder = true,
+  });
 
   @override
   Widget build(BuildContext context) {
-    log('context.canPop() = ${context.canPop()}');
+    // log('context.canPop() = ${context.canPop()}');
     if (isSliver) {
       return SliverAppBar(
+        toolbarHeight: 44.h,
+        leadingWidth: 24.r + 13.w,
         title: Text(
           title ?? '',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w700,
-            letterSpacing: -0.25.sp,
+          style: MITITextStyle.mdBold.copyWith(
+            color: MITIColor.white,
           ),
         ),
-        backgroundColor: backgroundColor ?? Colors.white,
-
+        backgroundColor: backgroundColor ?? MITIColor.gray800,
+        floating: false, // AppBar가 떠 있지 않게 설정
+        expandedHeight: null, // 확장되지 않도록 설정
+        flexibleSpace: null,  // 유연한 공간을 설정하지 않음
         /// 앱바 pinned 시 surface 컬러
-        surfaceTintColor: backgroundColor ?? Colors.white,
-        shape: const Border(bottom: BorderSide(color: Color(0xFFE8E8E8))),
+        surfaceTintColor: backgroundColor ?? MITIColor.gray800,
+        shape: hasBorder
+            ? const Border(
+                bottom: BorderSide(color: MITIColor.gray600),
+              )
+            : null,
         centerTitle: true,
+
         leading: context.canPop()
-            ? IconButton(
-                onPressed: () => context.pop(),
-                icon: SvgPicture.asset('assets/images/icon/chevron_left.svg'),
+            ? Padding(
+                padding: EdgeInsets.only(left: 13.w),
+                child: IconButton(
+                  constraints: BoxConstraints.tight(Size(24.r, 24.r)),
+                  padding: EdgeInsets.zero,
+                  onPressed: () => context.pop(),
+                  style: IconButton.styleFrom(
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                  icon: SvgPicture.asset(
+                    AssetUtil.getAssetPath(
+                      type: AssetType.icon,
+                      name: leadingIcon,
+                    ),
+                    height: 24.r,
+                    width: 24.r,
+                  ),
+                ),
               )
             : null,
         bottom: bottom,
@@ -54,20 +83,44 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
       );
     }
     return AppBar(
+      toolbarHeight: 44.h,
+      leadingWidth: 24.r + 13.w,
+      shape: hasBorder
+          ? const Border(
+              bottom: BorderSide(color: MITIColor.gray600),
+            )
+          : null,
       title: Text(
         title ?? '',
-        style: MITITextStyle.pageNameStyle.copyWith(
-          color: Colors.black,
+        style: MITITextStyle.mdBold.copyWith(
+          color: MITIColor.white,
         ),
       ),
-      surfaceTintColor: Colors.white,
-      backgroundColor: backgroundColor ?? Colors.white,
-      shape: const Border(bottom: BorderSide(color: Color(0xFFE8E8E8))),
+      backgroundColor: backgroundColor ?? MITIColor.gray800,
+
+      /// 앱바 pinned 시 surface 컬러
+      surfaceTintColor: backgroundColor ?? MITIColor.gray800,
       centerTitle: true,
       leading: context.canPop()
-          ? IconButton(
-              onPressed: () => context.pop(),
-              icon: SvgPicture.asset('assets/images/icon/chevron_left.svg'),
+          ? Padding(
+              padding: EdgeInsets.only(left: 13.w),
+              child: IconButton(
+                constraints: BoxConstraints.tight(Size(24.r, 24.r)),
+                padding: EdgeInsets.zero,
+                onPressed: () => context.pop(),
+                style: IconButton.styleFrom(
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                ),
+                icon: SvgPicture.asset(
+                  AssetUtil.getAssetPath(
+                    type: AssetType.icon,
+                    name: leadingIcon,
+                  ),
+                  height: 24.r,
+                  width: 24.r,
+                ),
+              ),
             )
           : null,
       bottom: bottom,
@@ -76,7 +129,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize {
-    final bottomHeight = bottom != null ? bottom!.preferredSize.height : 0;
-    return Size.fromHeight(48.h + bottomHeight);
+    final bottomHeight = bottom != null ? 44.h : 0;
+    return Size.fromHeight(44.h + bottomHeight);
   }
 }

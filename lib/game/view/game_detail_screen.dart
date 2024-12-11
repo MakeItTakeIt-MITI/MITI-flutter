@@ -1,99 +1,158 @@
 import 'dart:developer';
 
+import 'package:debounce_throttle/debounce_throttle.dart';
+import 'package:flash/flash.dart';
+import 'package:flash/flash_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:miti/common/component/custom_dialog.dart';
+import 'package:miti/common/component/defalut_flashbar.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/component/default_layout.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/game/component/game_state_label.dart';
+import 'package:miti/game/error/game_error.dart';
 import 'package:miti/game/model/game_model.dart';
 import 'package:miti/game/model/game_payment_model.dart';
-import 'package:miti/game/provider/game_provider.dart';
+import 'package:miti/game/model/widget/user_reivew_short_info_model.dart';
+import 'package:miti/game/provider/game_provider.dart' hide Rating;
 import 'package:collection/collection.dart';
 import 'package:miti/game/view/game_participation_screen.dart';
 import 'package:miti/game/view/game_refund_screen.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../account/model/account_model.dart';
+import '../../common/component/share_fab_component.dart';
+import '../../common/error/view/error_screen.dart';
 import '../../common/model/entity_enum.dart';
 import '../../court/view/court_map_screen.dart';
 import '../../default_screen.dart';
-import '../../menu/view/menu_screen.dart';
+import '../../report/view/report_list_screen.dart';
+import '../../user/view/profile_screen.dart';
 import '../../user/model/review_model.dart';
-import '../../user/view/user_info_screen.dart';
 import '../../util/util.dart';
+import '../component/skeleton/game_detail_skeleton.dart';
+import '../model/game_refund_model.dart';
 import 'game_payment_screen.dart';
 import 'game_screen.dart';
 import 'game_update_screen.dart';
 
-class GameDetailScreen extends StatefulWidget {
+class GameDetailScreen extends ConsumerStatefulWidget {
   static String get routeName => 'gameDetail';
   final int gameId;
-  final int bottomIdx;
 
-  const GameDetailScreen(
-      {super.key, required this.gameId, required this.bottomIdx});
+  const GameDetailScreen({
+    super.key,
+    required this.gameId,
+  });
 
   @override
-  State<GameDetailScreen> createState() => _GameDetailScreenState();
+  ConsumerState<GameDetailScreen> createState() => _GameDetailScreenState();
 }
 
-class _GameDetailScreenState extends State<GameDetailScreen> {
+class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
   int? participationId;
+  final fabKey = GlobalKey<ExpandableFabState>();
   late final ScrollController _scrollController;
+  late Throttle<int> _throttler;
+  int throttleCnt = 0;
 
   @override
   void initState() {
     super.initState();
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: 0,
+      checkEquality: true,
+    );
+    _throttler.values.listen((int s) {
+      _cancel(ref, context);
+      throttleCnt++;
+    });
     _scrollController = ScrollController();
   }
 
   @override
   void dispose() {
+    _throttler.cancel();
     _scrollController.dispose();
+    fabKey.currentState?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultLayout(
-      bottomIdx: widget.bottomIdx,
-      scrollController: _scrollController,
+    return Scaffold(
+      backgroundColor: MITIColor.gray750,
+      floatingActionButtonLocation: ExpandableFab.location,
+      floatingActionButton: Consumer(
+        builder: (BuildContext context, WidgetRef ref, Widget? child) {
+          GameDetailModel? model;
+          final result = ref.watch(gameDetailProvider(gameId: widget.gameId));
+          if (result is ResponseModel<GameDetailModel>) {
+            model = result.data!;
+          }
+          return ShareFabComponent(
+            id: widget.gameId,
+            type: ShareType.games,
+            globalKey: fabKey,
+            model: model,
+          );
+        },
+      ),
+      bottomNavigationBar: Consumer(
+        builder: (BuildContext context, WidgetRef ref, Widget? child) {
+          final result = ref.watch(gameDetailProvider(gameId: widget.gameId));
+          if (result is LoadingModel) {
+            // todo skeleton
+            return const SizedBox(height: 0);
+          } else if (result is ErrorModel) {
+            return const SizedBox(height: 0);
+          }
+          result as ResponseModel<GameDetailModel>;
+          final model = result.data!;
+          final button = getBottomButton(model, ref, context);
+          return button != null
+              ? BottomButton(
+                  button: button,
+                )
+              : const SizedBox();
+        },
+      ),
       body: NestedScrollView(
         controller: _scrollController,
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
-            DefaultAppBar(
-              title: '경기 상세',
+            const DefaultAppBar(
+              title: '경기 상세 정보',
               isSliver: true,
-              actions: [
-                // IconButton(
-                //   onPressed: () {},
-                //   icon: const Icon(Icons.more_horiz),
-                // )
-              ],
+              backgroundColor: MITIColor.gray750,
             ),
           ];
         },
         body: Consumer(
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
             final result = ref.watch(gameDetailProvider(gameId: widget.gameId));
-
             if (result is LoadingModel) {
-              // todo skeleton
-              return CustomScrollView(
-                slivers: [],
-              );
+              return const SingleChildScrollView(child: GameDetailSkeleton());
             } else if (result is ErrorModel) {
-              return Text('에러');
+              WidgetsBinding.instance.addPostFrameCallback((s) =>
+                  GameError.fromModel(model: result)
+                      .responseError(context, GameApiType.get, ref));
+              return Text('에러입니다.');
             }
             result as ResponseModel<GameDetailModel>;
             final model = result.data!;
-            log('model is_host ${model.is_host} model.is_participated = ${model.is_participated}');
+            // log('model is_host ${model.is_host} model.is_participated = ${model.is_participated}');
             participationId = model.participation?.id;
             return CustomScrollView(
               slivers: [
@@ -107,7 +166,23 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
                             getDivider(),
                             ParticipationComponent.fromModel(model: model),
                             getDivider(),
-                            HostComponent.fromModel(model: model.host),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                SizedBox(height: 20.h),
+                                Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 21.w),
+                                  child: Text(
+                                    '호스트 소개',
+                                    style: MITITextStyle.mdBold
+                                        .copyWith(color: MITIColor.gray100),
+                                  ),
+                                ),
+                                UserShortInfoComponent.fromHostModel(
+                                    model: model.host),
+                              ],
+                            ),
                             getDivider(),
                             InfoComponent(
                               info: model.info,
@@ -116,7 +191,6 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
                           ],
                         ),
                       ),
-                      getBottomButton(model, ref, context),
                     ],
                   ),
                 ),
@@ -128,33 +202,81 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
     );
   }
 
-  Widget getBottomButton(
+  Widget? getBottomButton(
       GameDetailModel model, WidgetRef ref, BuildContext context) {
     Widget? button;
     final buttonTextStyle = MITITextStyle.btnTextBStyle.copyWith(
       color: Colors.white,
       height: 1,
     );
-    final editButton = TextButton(
-      onPressed: () {
-        Map<String, String> pathParameters = {'gameId': model.id.toString()};
-        final Map<String, String> queryParameters = {
-          'bottomIdx': widget.bottomIdx.toString()
-        };
-        context.pushNamed(
-          GameUpdateScreen.routeName,
-          pathParameters: pathParameters,
-          queryParameters: queryParameters,
-        );
-      },
-      style: TextButton.styleFrom(
-        fixedSize: Size(double.infinity, 48.h),
-        backgroundColor: const Color(0xFF52A2D0),
-      ),
-      child: Text(
-        '경기 수정하기',
-        style: buttonTextStyle,
-      ),
+    final editButton = Row(
+      children: [
+        SizedBox(
+          width: 98.w,
+          child: TextButton(
+            onPressed: () {
+              showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return BottomDialog(
+                        title: "경기 취소",
+                        content:
+                            "경기 취소 시, 모집 완료된 참가자와 경기 정보가 모두 삭제됩니다.\n경기를 취소하시겠습니까?",
+                        btn: Row(
+                          children: [
+                            Expanded(
+                                child: TextButton(
+                                    onPressed: () {
+                                      _throttler.setValue(throttleCnt + 1);
+                                    },
+                                    style: ButtonStyle(
+                                        backgroundColor:
+                                            WidgetStateProperty.all(
+                                                MITIColor.gray800)),
+                                    child: Text(
+                                      "취소하기",
+                                      style: MITITextStyle.mdBold.copyWith(
+                                        color: MITIColor.primary,
+                                      ),
+                                    ))),
+                            SizedBox(width: 6.w),
+                            Expanded(
+                                child: TextButton(
+                                    onPressed: () => context.pop(),
+                                    child: const Text("경기 유지하기"))),
+                          ],
+                        ));
+                  });
+            },
+            style: ButtonStyle(
+              backgroundColor: WidgetStateProperty.all(MITIColor.gray700),
+            ),
+            child: Text(
+              "경기 취소",
+              style: MITITextStyle.md.copyWith(color: MITIColor.error),
+            ),
+          ),
+        ),
+        SizedBox(width: 12.w),
+        Expanded(
+          child: TextButton(
+            onPressed: () {
+              Map<String, String> pathParameters = {
+                'gameId': model.id.toString()
+              };
+
+              context.pushNamed(
+                GameUpdateScreen.routeName,
+                pathParameters: pathParameters,
+              );
+            },
+            style: TextButton.styleFrom(
+              fixedSize: Size(double.infinity, 48.h),
+            ),
+            child: const Text('경기 수정하기'),
+          ),
+        ),
+      ],
     );
     final cancelButton = TextButton(
       onPressed: () async {
@@ -162,13 +284,10 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
           'gameId': widget.gameId.toString(),
           'participationId': participationId!.toString(),
         };
-        final Map<String, String> queryParameters = {
-          'bottomIdx': widget.bottomIdx.toString(),
-        };
+
         context.pushNamed(
           GameRefundScreen.routeName,
           pathParameters: pathParameters,
-          queryParameters: queryParameters,
         );
       },
       style: TextButton.styleFrom(
@@ -180,17 +299,14 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
         style: buttonTextStyle,
       ),
     );
-    final cancelDisableButton = TextButton(
-      onPressed: () {},
-      style: TextButton.styleFrom(
-        fixedSize: Size(double.infinity, 48.h),
-        backgroundColor: const Color(0xFFE8E8E8),
-      ),
-      child: Text(
-        '참여 취소하기',
-        style: buttonTextStyle.copyWith(
-          color: const Color(0xff969696),
-          height: 1,
+    final cancelDisableButton = Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 17.h),
+        child: Text(
+          '경기 시간 2시간 이내에는 참여 취소가 불가능합니다.',
+          style: MITITextStyle.sm.copyWith(
+            color: MITIColor.gray50,
+          ),
         ),
       ),
     );
@@ -203,31 +319,69 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
       style: TextButton.styleFrom(
         fixedSize: Size(double.infinity, 48.h),
       ),
-      child: Text(
-        '경기 참가하기',
-        style: buttonTextStyle,
+      child: const Text(
+        '경기 참여하기',
       ),
     );
     final reviewButton = TextButton(
       onPressed: () {
         Map<String, String> pathParameters = {'gameId': model.id.toString()};
-        Map<String, String> queryParameters = {
-          'bottomIdx': widget.bottomIdx.toString()
-        };
+
         context.pushNamed(
           GameParticipationScreen.routeName,
           pathParameters: pathParameters,
-          queryParameters: queryParameters,
         );
       },
       style: TextButton.styleFrom(
         fixedSize: Size(double.infinity, 48.h),
+        maximumSize: Size(double.infinity, 48.h),
+        minimumSize: Size(double.infinity, 48.h),
       ),
-      child: Text(
-        '리뷰 작성하기',
-        style: buttonTextStyle,
-      ),
+      child: const Text('리뷰 작성하기'),
     );
+    final reportButton = TextButton(
+        onPressed: () {
+          showModalBottomSheet(
+              context: context,
+              builder: (_) {
+                return BottomDialog(
+                  title: '경기 신고하기',
+                  content: '‘${model.title}’ 경기를 신고하시겠습니까?',
+                  btn: TextButton(
+                    style:
+                        TextButton.styleFrom(backgroundColor: MITIColor.error),
+                    onPressed: () {
+                      Map<String, String> pathParameters = {
+                        'gameId': model.id.toString()
+                      };
+                      context.pop();
+                      context.pushNamed(
+                        ReportListScreen.routeName,
+                        pathParameters: pathParameters,
+                      );
+                    },
+                    child: Text(
+                      "신고하기",
+                      style: MITITextStyle.mdBold
+                          .copyWith(color: MITIColor.gray100),
+                    ),
+                  ),
+                );
+              });
+        },
+        style: TextButton.styleFrom(
+          fixedSize: Size(98.w, 48.h),
+          maximumSize: Size(98.w, 48.h),
+          minimumSize: Size(98.w, 48.h),
+          backgroundColor: MITIColor.gray700,
+        ),
+        child: Text(
+          "신고하기",
+          style: MITITextStyle.md.copyWith(
+            color: MITIColor.error,
+          ),
+        ));
+
     final gameStatus = model.game_status;
     final startTime = DateTime.parse('${model.startdate} ${model.starttime}');
     final policyValid = DateTime.now().difference(startTime).inHours <= -2;
@@ -261,20 +415,43 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
         break;
       case GameStatus.completed:
         if (model.is_participated || model.is_host) {
-          button = reviewButton;
+          button = Align(
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                if (!model.is_host) reportButton,
+                if (!model.is_host) SizedBox(width: 12.w),
+                Expanded(child: reviewButton)
+              ],
+            ),
+          );
         }
         break;
     }
+    return button;
+  }
 
-    return button != null
-        ? Positioned(bottom: 8.h, right: 16.w, left: 16.w, child: button)
-        : Container();
+  Future<void> _cancel(WidgetRef ref, BuildContext context) async {
+    final result =
+        await ref.read(cancelRecruitGameProvider(gameId: widget.gameId).future);
+
+    if (result is ErrorModel) {
+      if (context.mounted) {
+        GameError.fromModel(model: result)
+            .responseError(context, GameApiType.cancel, ref);
+        context.pop();
+      }
+    } else {
+      if (context.mounted) {
+        context.goNamed(GameScreen.routeName);
+      }
+    }
   }
 
   Widget getDivider() {
     return Container(
-      height: 5.h,
-      color: const Color(0xFFF8F8F8),
+      height: 4.h,
+      color: MITIColor.gray800,
     );
   }
 }
@@ -287,20 +464,20 @@ class InfoComponent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(12.r),
+      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
             '모집 정보',
-            style: MITITextStyle.sectionTitleStyle.copyWith(
-              color: const Color(0xFF222222),
+            style: MITITextStyle.mdBold.copyWith(
+              color: MITIColor.gray100,
             ),
           ),
-          SizedBox(height: 14.h),
+          SizedBox(height: 20.h),
           Text(
             info,
-            style: MITITextStyle.gameInfoStyle,
+            style: MITITextStyle.sm150.copyWith(color: MITIColor.gray100),
           )
         ],
       ),
@@ -308,27 +485,32 @@ class InfoComponent extends StatelessWidget {
   }
 }
 
-class HostComponent extends StatelessWidget {
+class UserShortInfoComponent extends StatelessWidget {
   final String nickname;
-  final RatingModel rating;
-  final List<WrittenReviewModel> reviews;
-  final bool isHost;
+  final Rating rating;
 
-  const HostComponent({
+  // final bool isHost;
+
+  const UserShortInfoComponent({
     super.key,
     required this.nickname,
     required this.rating,
-    required this.reviews,
-    this.isHost = true,
+    // this.isHost = true,
   });
 
-  factory HostComponent.fromModel(
-      {required UserReviewModel model, bool isHost = true}) {
-    return HostComponent(
+  factory UserShortInfoComponent.fromModel(
+      {required UserReviewShortInfoModel model}) {
+    return UserShortInfoComponent(
       nickname: model.nickname,
       rating: model.rating,
-      reviews: model.reviews,
-      isHost: isHost,
+    );
+  }
+
+  factory UserShortInfoComponent.fromHostModel(
+      {required UserReviewModel model}) {
+    return UserShortInfoComponent(
+      nickname: model.nickname,
+      rating: model.rating.host_rating,
     );
   }
 
@@ -341,14 +523,17 @@ class HostComponent extends StatelessWidget {
         flag = decimalPoint != 0;
       }
       final String star = flag
-          ? 'half_star'
+          ? 'Star_half_v2'
           : rating >= i + 1
-              ? 'fill_star'
-              : 'unfill_star';
-      result.add(SvgPicture.asset(
-        'assets/images/icon/$star.svg',
-        height: 14.r,
-        width: 14.r,
+              ? 'fill_star2'
+              : 'unfill_star2';
+      result.add(Padding(
+        padding: EdgeInsets.only(right: 2.w),
+        child: SvgPicture.asset(
+          AssetUtil.getAssetPath(type: AssetType.icon, name: star),
+          height: 16.r,
+          width: 16.r,
+        ),
       ));
     }
     return result;
@@ -356,104 +541,79 @@ class HostComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(12.r),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            isHost ? "호스트 소개" : '게스트 소개',
-            style: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xff222222),
-              height: 18 / 16,
-            ),
-          ),
-          SizedBox(height: 19.h),
-          Consumer(
-            builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              return Column(
+    return Consumer(
+      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
+          child: Column(
+            children: [
+              Row(
                 children: [
-                  Row(
-                    children: [
-                      SvgPicture.asset(
-                        'assets/images/icon/user_thum.svg',
-                        width: 40.r,
-                        height: 40.r,
-                      ),
-                      SizedBox(width: 10.w),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                nickname,
-                                style: MITITextStyle.nicknameTextStyle
-                                    .copyWith(color: const Color(0xFF444444)),
-                              ),
-                              SizedBox(width: 5.w),
-                              SvgPicture.asset(
-                                'assets/images/icon/authentication.svg',
-                                width: 14.r,
-                                height: 14.r,
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 5.h),
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                ...getStar(rating.average_rating),
-                                SizedBox(width: 3.w),
-                                Text(
-                                  rating.average_rating.toStringAsFixed(1),
-                                  style:
-                                      MITITextStyle.gameTimePlainStyle.copyWith(
-                                    color: const Color(0xFF222222),
-                                  ),
-                                ),
-                                SizedBox(width: 9.w),
-                                Text(
-                                  '후기 ${rating.num_of_reviews}',
-                                  style:
-                                      MITITextStyle.gameTimePlainStyle.copyWith(
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
+                  SvgPicture.asset(
+                    AssetUtil.getAssetPath(
+                        type: AssetType.icon, name: "user_thum"),
+                    width: 36.r,
+                    height: 36.r,
                   ),
-                  SizedBox(height: 19.h),
-                  ListView.separated(
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (_, idx) {
-                        return Text(
-                          reviews[idx].comment,
-                          overflow: TextOverflow.ellipsis,
-                          style: MITITextStyle.reviewSummaryStyle
-                              .copyWith(color: const Color(0xFF666666)),
-                        );
-                      },
-                      separatorBuilder: (_, idx) {
-                        return SizedBox(height: 8.h);
-                      },
-                      itemCount: reviews.length),
+                  SizedBox(width: 12.w),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "$nickname 님",
+                        style: MITITextStyle.smBold
+                            .copyWith(color: MITIColor.gray100),
+                      ),
+                      SizedBox(height: 4.h),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            ...getStar(rating.average_rating ?? 0),
+                            SizedBox(width: 6.w),
+                            Text(
+                              rating.average_rating?.toStringAsFixed(1) ?? '0',
+                              style: MITITextStyle.sm.copyWith(
+                                color: MITIColor.gray100,
+                              ),
+                            ),
+                            SizedBox(width: 6.w),
+                            Text(
+                              '리뷰 ${rating.num_of_reviews}',
+                              style: MITITextStyle.sm.copyWith(
+                                  color: MITIColor.gray100,
+                                  decoration: TextDecoration.underline,
+                                  decorationColor: MITIColor.gray100),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
                 ],
-              );
-            },
+              ),
+              // SizedBox(height: 19.h),
+              // ListView.separated(
+              //     padding: EdgeInsets.zero,
+              //     shrinkWrap: true,
+              //     physics: const NeverScrollableScrollPhysics(),
+              //     itemBuilder: (_, idx) {
+              //       return Text(
+              //         reviews[idx].comment,
+              //         overflow: TextOverflow.ellipsis,
+              //         style: MITITextStyle.reviewSummaryStyle
+              //             .copyWith(color: const Color(0xFF666666)),
+              //       );
+              //     },
+              //     separatorBuilder: (_, idx) {
+              //       return SizedBox(height: 8.h);
+              //     },
+              //     itemCount: reviews.length),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -480,18 +640,16 @@ class ParticipationComponent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(12.r),
+      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            "참가 완료된 게스트 ($num_of_confirmed_participations/$max_invitation)",
-            style: MITITextStyle.sectionTitleStyle.copyWith(
-              color: const Color(0xff222222),
-            ),
+            "참가 완료된 게스트 ($num_of_confirmed_participations / $max_invitation)",
+            style: MITITextStyle.mdBold.copyWith(color: MITIColor.gray100),
             textAlign: TextAlign.left,
           ),
-          SizedBox(height: 10.h),
+          SizedBox(height: 20.h),
           if (confimed_participations.isNotEmpty)
             SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -502,20 +660,16 @@ class ParticipationComponent extends StatelessWidget {
                             _GuestTile(
                               name: confimed_participations[idx].nickname,
                             ),
-                            SizedBox(width: 16.w),
+                            SizedBox(width: 12.w),
                           ],
                         )),
                   ],
                 )),
           if (confimed_participations.isEmpty)
-            Padding(
-              padding: EdgeInsets.all(24.r),
-              child: Text(
-                "경기의 첫번째 플레이어가 되어보세요!",
-                style: MITITextStyle.plainTextMStyle.copyWith(
-                  color: const Color(0xff999999),
-                ),
-                textAlign: TextAlign.center,
+            Text(
+              "아직 참여한 게스트가 없습니다.",
+              style: MITITextStyle.xxsm.copyWith(
+                color: MITIColor.gray100,
               ),
             )
         ],
@@ -535,25 +689,16 @@ class _GuestTile extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // CircleAvatar(
-        //   backgroundImage: NetworkImage(imageUrl),
-        //   radius: 20.r,
-        // ),
         SvgPicture.asset(
-          'assets/images/icon/user_thum.svg',
-          width: 40.r,
-          height: 40.r,
+          AssetUtil.getAssetPath(type: AssetType.icon, name: "user_thum"),
+          width: 36.r,
+          height: 36.r,
         ),
-        SizedBox(height: 4.h),
+        SizedBox(height: 8.h),
         Text(
           "$subName 님",
-          style: TextStyle(
-            fontFamily: "Pretendard",
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w500,
-            color: const Color(0xff666666),
-            letterSpacing: -0.25.sp,
-            height: 20 / 14,
+          style: MITITextStyle.xxsm.copyWith(
+            color: MITIColor.gray100,
           ),
         )
       ],
@@ -567,9 +712,12 @@ class SummaryComponent extends StatelessWidget {
   final String title;
   final String gameDate;
   final String address;
-  final String fee;
+  final String? fee;
+  final String duration;
   final int max_invitation;
   final int num_of_confirmed_participations;
+  final int? gameId;
+  final bool isUpdateForm;
 
   const SummaryComponent(
       {super.key,
@@ -577,12 +725,20 @@ class SummaryComponent extends StatelessWidget {
       required this.title,
       required this.gameDate,
       required this.address,
-      required this.fee,
+      this.fee,
       required this.max_invitation,
       required this.num_of_confirmed_participations,
-      this.bankStatus});
+      this.bankStatus,
+      required this.duration,
+      this.gameId,
+      this.isUpdateForm = false});
 
-  factory SummaryComponent.fromDetailModel({required GameDetailModel model}) {
+  factory SummaryComponent.fromDetailModel(
+      {required GameDetailModel model, bool isUpdateForm = false}) {
+    final start = DateTime.parse("${model.startdate} ${model.starttime}");
+    final end = DateTime.parse("${model.enddate} ${model.endtime}");
+
+    log("start $start");
     final startDate = model.startdate.replaceAll('-', '. ');
     final endDate = model.startdate.replaceAll('-', '. ');
 
@@ -594,6 +750,7 @@ class SummaryComponent extends StatelessWidget {
     final address =
         '${model.court.address} ${model.court.address_detail ?? ''}';
     return SummaryComponent(
+      gameId: model.id,
       gameStatus: model.game_status,
       title: model.title,
       gameDate: gameDate,
@@ -601,10 +758,14 @@ class SummaryComponent extends StatelessWidget {
       fee: NumberUtil.format(model.fee.toString()),
       max_invitation: model.max_invitation,
       num_of_confirmed_participations: model.num_of_confirmed_participations,
+      duration: end.difference(start).inMinutes.toString(),
+      isUpdateForm: isUpdateForm,
     );
   }
 
   factory SummaryComponent.fromPaymentModel({required GamePaymentModel model}) {
+    final start = DateTime.parse("${model.startdate} ${model.starttime}");
+    final end = DateTime.parse("${model.enddate} ${model.endtime}");
     final startDate = model.startdate.replaceAll('-', '. ');
     final endDate = model.startdate.replaceAll('-', '. ');
 
@@ -624,114 +785,200 @@ class SummaryComponent extends StatelessWidget {
           model.payment_information.payment_amount.game_fee_amount.toString()),
       max_invitation: model.max_invitation,
       num_of_confirmed_participations: model.num_of_confirmed_participations,
+      duration: end.difference(start).inMinutes.toString(),
     );
   }
 
-  factory SummaryComponent.fromSettlementModel(
-      {required SettlementDetailModel model}) {
-    final game = model.game;
-    final startDate = game.startdate.replaceAll('-', '. ');
-    final endDate = game.startdate.replaceAll('-', '. ');
+  factory SummaryComponent.fromRefundModel({required GameRefundModel model}) {
+    final start = DateTime.parse("${model.startdate} ${model.starttime}");
+    final end = DateTime.parse("${model.enddate} ${model.endtime}");
+    final startDate = model.startdate.replaceAll('-', '. ');
+    final endDate = model.startdate.replaceAll('-', '. ');
 
     final time =
-        '${game.starttime.substring(0, 5)} ~ ${game.endtime.substring(0, 5)}';
+        '${model.starttime.substring(0, 5)} ~ ${model.endtime.substring(0, 5)}';
     final gameDate = startDate == endDate
         ? '$startDate $time'
-        : '$startDate ${game.starttime.substring(0, 5)} ~ $endDate ${game.endtime.substring(0, 5)}';
-    final address = '${game.court.address} ${game.court.address_detail ?? ''}';
+        : '$startDate ${model.starttime.substring(0, 5)} ~ $endDate ${model.endtime.substring(0, 5)}';
+    final address =
+        '${model.court.address} ${model.court.address_detail ?? ''}';
     return SummaryComponent(
-      bankStatus: model.status,
-      title: game.title,
+      gameStatus: model.game_status,
+      title: model.title,
       gameDate: gameDate,
       address: address,
-      fee: NumberUtil.format(game.fee.toString()),
-      max_invitation: game.max_invitation,
-      num_of_confirmed_participations: game.num_of_confirmed_participations,
+      // fee: NumberUtil.format(
+      //     model.payment_information.payment_amount.game_fee_amount.toString()),
+      max_invitation: model.max_invitation,
+      num_of_confirmed_participations: model.num_of_participations,
+      duration: end.difference(start).inMinutes.toString(),
     );
+  }
+
+  Row gameInfoComponent({required String title, required String svgPath}) {
+    return Row(children: [
+      SvgPicture.asset(
+        width: 16.r,
+        height: 16.r,
+        colorFilter: const ColorFilter.mode(MITIColor.gray100, BlendMode.srcIn),
+        AssetUtil.getAssetPath(
+          type: AssetType.icon,
+          name: svgPath,
+        ),
+      ),
+      SizedBox(width: 8.w),
+      Expanded(
+        child: Text(
+          title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
+          textAlign: TextAlign.left,
+        ),
+      )
+    ]);
+  }
+
+  Widget _freeChip({required String title}) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(100.r),
+        color: MITIColor.gray600,
+      ),
+      padding: EdgeInsets.symmetric(
+        horizontal: 16.w,
+        vertical: 8.h,
+      ),
+      child: Text(
+        title,
+        style: MITITextStyle.smBold.copyWith(
+          color: MITIColor.primary,
+        ),
+      ),
+    );
+  }
+
+  Widget feeComponent(BuildContext context) {
+    if (fee == "0") {
+      return _freeChip(title: "무료 경기");
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "참가비 $fee 원",
+          style: MITITextStyle.mdBold.copyWith(
+            color: MITIColor.primary,
+          ),
+          textAlign: TextAlign.left,
+        ),
+        if (isUpdateForm)
+          GestureDetector(
+            onTap: () {
+              showModalBottomSheet(
+                  context: context,
+                  builder: (_) {
+                    return BottomDialog(
+                      hasPop: true,
+                      title: '경기 참가비 무료로 전환',
+                      content:
+                          '무료 경기로 변경 시, 기존 참가자의 결제는 자동으로 취소되며\n이후 참가비 변경이 불가능합니다.',
+                      btn: Consumer(
+                        builder: (BuildContext context, WidgetRef ref,
+                            Widget? child) {
+                          final throttler = Throttle(
+                            const Duration(seconds: 1),
+                            initialValue: false,
+                            checkEquality: true,
+                          );
+                          throttler.values.listen((bool s) {
+                            _changeFree(ref, context);
+                          });
+                          return TextButton(
+                            onPressed: () async {
+                              throttler.setValue(true);
+                            },
+                            child: const Text("무료 경기로 전환"),
+                          );
+                        },
+                      ),
+                    );
+                  });
+            },
+            child: _freeChip(title: "무료 경기로 전환하기"),
+          ),
+      ],
+    );
+  }
+
+  Future<void> _changeFree(WidgetRef ref, BuildContext context) async {
+    final result = await ref.read(gameFreeProvider(gameId: gameId!).future);
+
+    if (context.mounted) {
+      if (result is ErrorModel) {
+        GameError.fromModel(model: result)
+            .responseError(context, GameApiType.free, ref);
+      } else {
+        context.pop();
+        Future.delayed(const Duration(milliseconds: 100), () {
+          FlashUtil.showFlash(context, '무료 경기로 전환되었습니다.');
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final desc = [
+      "$duration분 경기",
+      address,
+      "$num_of_confirmed_participations / $max_invitation"
+    ];
+    final svgPath = ["clock", "map_pin", "people"];
+
     return Container(
       width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.all(12.r),
+      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (gameStatus != null) GameStateLabel(gameStatus: gameStatus!),
-          if (bankStatus != null) SettlementLabel(bankType: bankStatus!),
-          SizedBox(height: 13.h),
+          if (bankStatus != null) SettlementLabel(settlementType: bankStatus!),
+          SizedBox(height: 12.h),
           Text(
             title,
-            style: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xff222222),
-              letterSpacing: -0.25.sp,
-              height: 18 / 16,
+            style: MITITextStyle.mdBold.copyWith(
+              color: MITIColor.gray100,
             ),
           ),
-          SizedBox(height: 4.h),
+          SizedBox(height: 8.h),
           Text(
             gameDate,
-            style: TextStyle(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w500,
-              color: const Color(0xff999999),
-              letterSpacing: -0.25.sp,
-              height: 16 / 14,
-            ),
+            style: MITITextStyle.sm.copyWith(color: MITIColor.gray400),
             textAlign: TextAlign.left,
           ),
-          SizedBox(height: 13.h),
-          Row(children: [
-            SvgPicture.asset('assets/images/icon/map_pin.svg'),
-            SizedBox(width: 4.w),
-            Expanded(
-              child: Text(
-                address,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w500,
-                  color: const Color(0xff444444),
-                  letterSpacing: -0.25.sp,
-                  height: 16 / 14,
-                ),
-                textAlign: TextAlign.left,
-              ),
-            )
-          ]),
-          SizedBox(height: 4.h),
-          Row(children: [
-            SvgPicture.asset('assets/images/icon/people.svg'),
-            SizedBox(width: 4.w),
-            Text(
-              "총 $max_invitation명 중 $num_of_confirmed_participations명 모집 완료",
-              style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w500,
-                color: const Color(0xff444444),
-                letterSpacing: -0.25.sp,
-                height: 16 / 14,
-              ),
-              textAlign: TextAlign.left,
-            )
-          ]),
-          SizedBox(height: 13.h),
-          Text(
-            "₩ $fee",
-            style: TextStyle(
-              fontFamily: "Pretendard",
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xff4065f6),
-              letterSpacing: -0.25.sp,
-              height: 18 / 16,
-            ),
-            textAlign: TextAlign.left,
-          )
+          SizedBox(height: 20.h),
+          ListView.separated(
+              padding: EdgeInsets.zero,
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemBuilder: (_, idx) {
+                return gameInfoComponent(
+                  title: desc[idx],
+                  svgPath: svgPath[idx],
+                );
+              },
+              separatorBuilder: (_, idx) => SizedBox(height: 4.h),
+              itemCount: 3),
+          Visibility(
+              visible: gameId != null,
+              child: Column(
+                children: [
+                  SizedBox(height: 20.h),
+                  feeComponent(context),
+                ],
+              ))
         ],
       ),
     );

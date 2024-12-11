@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,15 +6,10 @@ import 'package:go_router/go_router.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/common/error/view/error_screen.dart';
 import 'package:miti/dio/response_code.dart';
-import 'package:miti/game/provider/widget/game_form_provider.dart';
 
 import '../../common/component/custom_dialog.dart';
-import '../../common/component/custom_text_form_field.dart';
 import '../../common/error/common_error.dart';
 import '../../common/model/default_model.dart';
-import '../../common/model/entity_enum.dart';
-import '../../common/provider/form_util_provider.dart';
-import '../../common/provider/router_provider.dart';
 
 enum AccountApiType { getSettlementInfo, requestTransfer, getAccountInfo }
 
@@ -58,40 +52,47 @@ class AccountError extends ErrorBase {
   void _get(BuildContext context, WidgetRef ref) {
     if (this.status_code == UnAuthorized && this.error_code == 501) {
       /// 토큰 미제공
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '정산 내역 조회 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const CustomDialog(
+              title: '정산 내역 조회 실패',
+              content: '다시 로그인 해주세요.',
+            );
+          },
+        );
+      });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '정산 내역 조회 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const CustomDialog(
+              title: '정산 내역 조회 실패',
+              content: '다시 로그인 해주세요.',
+            );
+          },
+        );
+      });
     } else if (this.status_code == Forbidden && this.error_code == 940) {
       /// 사용자 고유 번호 권한 오류	or 정산 계좌 권한 오류
-      const extra = ErrorScreenType.unAuthorization;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.pushReplacementNamed(ErrorScreen.routeName);
+      });
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 정산 기록 조회 실패
-      const extra = ErrorScreenType.notFound;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.pushReplacementNamed(ErrorScreen.routeName);
+      });
     } else {
       /// 서버 오류
-      const extra = ErrorScreenType.server;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.pushReplacementNamed(ErrorScreen.routeName);
+      });
     }
   }
 
@@ -121,40 +122,47 @@ class AccountError extends ErrorBase {
       );
     } else if (this.status_code == UnAuthorized && this.error_code == 501) {
       /// 토큰 미제공
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '송금 요청 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const CustomDialog(
+              title: '송금 요청 실패',
+              content: '다시 로그인 해주세요.',
+            );
+          },
+        );
+      });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '송금 요청 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const CustomDialog(
+              title: '송금 요청 실패',
+              content: '다시 로그인 해주세요.',
+            );
+          },
+        );
+      });
     } else if (this.status_code == Forbidden && this.error_code == 940) {
       /// 요청 권한 오류
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '송금 요청 실패',
-            content: '송금 요청 권한이 없습니다.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const CustomDialog(
+              title: '송금 요청 실패',
+              content: '송금 요청 권한이 없습니다.',
+            );
+          },
+        );
+      });
     } else {
       /// 서버 오류
       showDialog(
@@ -173,40 +181,48 @@ class AccountError extends ErrorBase {
   void _getAccountInfo(BuildContext context, WidgetRef ref) {
     if (this.status_code == UnAuthorized && this.error_code == 501) {
       /// 토큰 미제공
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '계좌 정보 조회 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const CustomDialog(
+              title: '계좌 정보 조회 실패',
+              content: '다시 로그인 해주세요.',
+            );
+          },
+        );
+      });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '계좌 정보 조회 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const CustomDialog(
+              title: '계좌 정보 조회 실패',
+              content: '다시 로그인 해주세요.',
+            );
+          },
+        );
+      });
     } else if (this.status_code == Forbidden && this.error_code == 940) {
       /// 요청 권한 없음
-      const extra = ErrorScreenType.unAuthorization;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.pushReplacementNamed(ErrorScreen.routeName);
+      });
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 일치 계좌 정보 없음
-      const extra = ErrorScreenType.notFound;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.pushReplacementNamed(ErrorScreen.routeName);
+      });
     } else {
       /// 서버 오류
-      const extra = ErrorScreenType.server;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.pushReplacementNamed(ErrorScreen.routeName);
+      });
     }
   }
 }

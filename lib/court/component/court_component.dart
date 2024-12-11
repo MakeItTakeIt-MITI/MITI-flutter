@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
 class CustomMarker {
@@ -23,7 +25,7 @@ class CustomMarker {
         ),
         size: Size(
           130.r,
-          60.r,
+          40.r,
         ),
         context: context);
     return NMarker(
@@ -41,7 +43,7 @@ class CustomMarker {
         ),
         size: Size(
           130.r,
-          60.r,
+          40.r,
         ),
         context: context);
   }
@@ -93,16 +95,86 @@ class _CustomMapMakerState extends ConsumerState<CustomMapMaker> {
   @override
   Widget build(BuildContext context) {
     // final id = ref.watch(selectMakerProvider);
-    final timeTextStyle = MITITextStyle.gameTimeMarkerStyle.copyWith(
-      fontSize: 10.r,
-
-      color: widget.selected ? Colors.white : Colors.black,
+    final timeTextStyle = MITITextStyle.xxxsmLight.copyWith(
+      color: widget.selected ? MITIColor.gray500 : MITIColor.gray700,
     );
-    final costTextStyle = MITITextStyle.feeMakerStyle.copyWith(
-      fontSize: 12.r,
-      color: widget.selected ? Colors.white : Colors.black,
+    final costTextStyle = MITITextStyle.xxsmSemiBold.copyWith(
+      fontWeight: FontWeight.w700,
+      color: MITIColor.gray800,
     );
     late final String marker;
+
+    final desc = RichText(
+      text: TextSpan(
+        text: widget.model.cost,
+        children: [
+          TextSpan(text: " / ${widget.model.time}", style: timeTextStyle),
+        ],
+        style: costTextStyle,
+      ),
+    );
+    final painter = TextPainter(
+        textDirection: TextDirection.ltr,
+        text: TextSpan(
+          text: widget.model.cost,
+          children: [
+            TextSpan(text: " / ${widget.model.time}", style: timeTextStyle),
+          ],
+          style: costTextStyle,
+        ));
+    painter.layout(maxWidth: 130.r);
+    // log('painter.width = ${painter.width}');
+    //
+    // final shadow = BoxShadow(
+    //   color: const Color(0xFF000000).withOpacity(0.12),
+    //   blurRadius: 12.r,
+    //   offset: Offset(0, 8.h),
+    // );
+    return Stack(
+      children: [
+        Positioned(
+          bottom: 0,
+          child: Container(
+            height: 32.h,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20.r),
+                // boxShadow: [shadow],
+                border: Border.all(
+                    color: widget.selected
+                        ? MITIColor.gray600
+                        : MITIColor.gray300),
+                color: widget.selected
+                    ? MITIColor.primaryLight
+                    : MITIColor.gray50),
+            padding: EdgeInsets.symmetric(horizontal: 14.w),
+            alignment: Alignment.center,
+            child: desc,
+          ),
+        ),
+        if (widget.model.moreCnt > 1)
+        Positioned(
+          top: 0,
+          left: painter.width + 14.w,
+          child: Container(
+            decoration: BoxDecoration(
+              // boxShadow: [shadow],
+              shape: BoxShape.circle,
+              color: widget.selected ? MITIColor.gray700 : MITIColor.white,
+              border: Border.all(
+                  color:
+                      widget.selected ? MITIColor.gray700 : MITIColor.gray100),
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 5.h),
+            child: Text(
+              "${widget.model.moreCnt}",
+              style: MITITextStyle.xxxsmBold.copyWith(
+                  color: widget.selected ? MITIColor.white : MITIColor.gray600),
+            ),
+          ),
+        ),
+      ],
+    );
+
     if (widget.model.moreCnt > 1) {
       marker =
           widget.selected ? 'selected_more_marker' : 'unselected_more_marker';

@@ -1,7 +1,26 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 // import 'package:timezone/browser.dart';
+
+const String assetPathIcon = 'assets/images/v2/';
+
+enum AssetType {
+  logo,
+  icon,
+  gif;
+}
+
+class AssetUtil {
+  static String getAssetPath(
+      {required AssetType type,
+      required String name,
+      String extension = 'svg'}) {
+    return '$assetPathIcon${type.name}/$name.$extension';
+  }
+}
 
 class DateTimeUtil {
   // // 기본 타임존을 Asia/Seoul로 지정
@@ -17,6 +36,11 @@ class DateTimeUtil {
   static String parseMd({required DateTime dateTime}) {
     DateFormat dateFormat = DateFormat('MM.dd');
     return dateFormat.format(dateTime);
+  }
+
+  static String parseDateTime(String dateTime) {
+    return DateFormat('yyyy년 MM월 dd일 hh:mm', 'ko')
+        .format(DateTime.parse(dateTime));
   }
 
   static int getMonth({required String dateTime}) {
@@ -167,4 +191,14 @@ class TextStyleUtil {
       letterSpacing: -0.25.sp,
     );
   }
+}
+
+void focusScrollable(int i, List<GlobalKey> formKeys) {
+  log("scrollalble ${i}");
+  Scrollable.ensureVisible(
+    formKeys[i].currentContext!,
+    duration: const Duration(milliseconds: 600),
+    alignment: 0.5,
+    curve: Curves.easeInOut,
+  );
 }

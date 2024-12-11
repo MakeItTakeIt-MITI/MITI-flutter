@@ -7,7 +7,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../auth/provider/auth_provider.dart';
 import '../common/logger/custom_logger.dart';
 
-const String serverURL = "https://dev.makeittakeit.kr";
+const String devServerURL = "https://dev.makeittakeit.kr";
+const String prodServerURL = "https://api.makeittakeit.kr";
 
 // https://api.makeittakeit.kr
 class CustomDioInterceptor extends Interceptor {
@@ -67,12 +68,12 @@ class CustomDioInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     List<String> errorLog = [];
     final noneAuthUrl = [
-      '/auth/send-sms',
-      '/auth/login',
-      '/auth/send-sms/authentication'
+      'auth/login/kakao',
+      'auth/login/apple',
+      '/auth/login/email',
+      'auth/verify-code',
+      '/auth/password-authentication'
     ];
-
-
     log('err.message ${err.message} , err.error = ${err.error}, err.type = ${err.type}');
     final noneAUth = noneAuthUrl.contains(err.requestOptions.uri.path);
 
@@ -89,7 +90,8 @@ class CustomDioInterceptor extends Interceptor {
         !noneAUth) {
       try {
         Dio dio = Dio();
-        final newAccessToken =  await ref.read(authProvider.notifier).reIssueToken();
+        final newAccessToken =
+            await ref.read(authProvider.notifier).reIssueToken();
         // = ref.read(authProvider)?.token?.access;
         err.requestOptions.headers['Authorization'] = 'Bearer $newAccessToken';
         log("[RE-REQUEST] [${err.requestOptions.method}] ${err.requestOptions.baseUrl}${err.requestOptions.path}");
@@ -101,7 +103,7 @@ class CustomDioInterceptor extends Interceptor {
         return handler.resolve(reResponse);
       } on DioException catch (e) {
         // 리프레쉬 토큰 만료 된 경우
-        log("리프레쉬 만료 언어선택으로 이동 !!");
+        log("리프레쉬 만료 !!");
         await ref.read(tokenProvider.notifier).logout();
         return;
       }

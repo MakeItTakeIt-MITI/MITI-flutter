@@ -30,3 +30,28 @@ class SupportParam extends DefaultParam {
   @override
   bool? get stringify => true;
 }
+
+@JsonSerializable()
+class FAQParam extends DefaultParam {
+  final String search;
+
+  FAQParam({
+    required this.search,
+  });
+
+  FAQParam copyWith({
+    String? search,
+  }) {
+    return FAQParam(
+      search: search ?? this.search,
+    );
+  }
+
+  Map<String, dynamic> toJson() => _$FAQParamToJson(this);
+
+  @override
+  List<Object?> get props => [search];
+
+  @override
+  bool? get stringify => true;
+}

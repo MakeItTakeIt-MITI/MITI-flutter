@@ -1,48 +1,268 @@
 import 'dart:developer';
+import 'dart:math' hide log;
 
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/common/component/custom_dialog.dart';
+import 'package:miti/common/component/form/keyboard_visibility_builder.dart';
 import 'package:miti/court/component/court_list_component.dart';
 import 'package:miti/game/error/game_error.dart';
 import 'package:miti/game/model/game_model.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:miti/game/view/game_participation_screen.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:collection/collection.dart';
 
 import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
+import '../../common/error/view/error_screen.dart';
 import '../../common/model/default_model.dart';
+import '../../common/model/entity_enum.dart';
 import '../../common/provider/router_provider.dart';
+import '../../util/util.dart';
+import '../model/widget/user_reivew_short_info_model.dart';
 import 'game_detail_screen.dart';
 
-class ReviewScreen extends StatefulWidget {
+class ReviewScreen extends ConsumerStatefulWidget {
   final int gameId;
-  final int ratingId;
+
+  // final int ratingId;
   final int? participationId;
-  final int bottomIdx;
+  final UserReviewShortInfoModel userInfoModel;
 
   static String get routeName => 'reviewForm';
 
-  const ReviewScreen(
-      {super.key,
-      required this.gameId,
-      this.participationId,
-      required this.ratingId,
-      required this.bottomIdx});
+  const ReviewScreen({
+    super.key,
+    required this.gameId,
+    this.participationId,
+    required this.userInfoModel,
+    // required this.ratingId,
+  });
 
   @override
-  State<ReviewScreen> createState() => _ReviewScreenState();
+  ConsumerState<ReviewScreen> createState() => _ReviewScreenState();
 }
 
-class _ReviewScreenState extends State<ReviewScreen> {
+class _ReviewScreenState extends ConsumerState<ReviewScreen> {
+  late Throttle<int> _throttler;
+  late final ScrollController _scrollController;
+  int throttleCnt = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: 0,
+      checkEquality: true,
+    );
+    _throttler.values.listen((int s) {
+      createReview(ref, context, widget.userInfoModel.nickname);
+      throttleCnt++;
+    });
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _throttler.cancel();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Widget getDivider() {
+    return Container(
+      height: 4.h,
+      color: MITIColor.gray900,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
+    // log("bottomPadding = $bottomPadding");
+    return Scaffold(
+      appBar: DefaultAppBar(
+        title: widget.participationId != null ? '게스트 리뷰' : '호스트 리뷰',
+        backgroundColor: MITIColor.gray750,
+      ),
+      backgroundColor: MITIColor.gray750,
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(bottom: bottomPadding),
+        child: BottomButton(
+          button: Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              final form = ref.watch(reviewFormProvider);
+              final valid = form.rating > 0 && form.tags.length > 1;
+              // log("valid  = $valid");
+
+              return TextButton(
+                onPressed: valid
+                    ? () async {
+                        _throttler.setValue(throttleCnt + 1);
+                      }
+                    : () {},
+                style: TextButton.styleFrom(
+                    backgroundColor:
+                        valid ? MITIColor.primary : MITIColor.gray500),
+                child: Text(
+                  '작성 완료',
+                  style: MITITextStyle.mdBold.copyWith(
+                      color: valid ? MITIColor.gray800 : MITIColor.gray50),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+      body: CustomScrollView(
+        controller: _scrollController,
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        slivers: [
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                UserShortInfoComponent.fromModel(
+                  model: widget.userInfoModel,
+                ),
+                getDivider(),
+                _RatingForm(
+                  participationId: widget.participationId,
+                ),
+                getDivider(),
+                _CommentForm(
+                  participationId: widget.participationId,
+                ),
+                getDivider(),
+                Padding(
+                  padding: EdgeInsets.only(bottom: (200)),
+                  child: _ReviewForm(),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void createReview(
+      WidgetRef ref, BuildContext context, String nickname) async {
+    BaseModel result;
+    if (widget.participationId != null) {
+      result = await ref.read(createGuestReviewProvider(
+              gameId: widget.gameId, participationId: widget.participationId!)
+          .future);
+    } else {
+      result = await ref.read(createHostReviewProvider(
+        gameId: widget.gameId,
+      ).future);
+    }
+    if (result is ErrorModel) {
+      if (context.mounted) {
+        final gameApiType = widget.participationId != null
+            ? GameApiType.createGuestReview
+            : GameApiType.createHostReview;
+        WidgetsBinding.instance.addPostFrameCallback((s) {
+          GameError.fromModel(model: result as ErrorModel)
+              .responseError(context, gameApiType, ref);
+        });
+      }
+    } else {
+      ref
+          .read(gamePlayersProvider(gameId: widget.gameId).notifier)
+          .getPlayers(gameId: widget.gameId);
+      if (context.mounted) {
+        showModalBottomSheet(
+            context: context,
+            isDismissible: false,
+            enableDrag: false,
+            builder: (context) {
+              return BottomDialog(
+                title: '리뷰 작성 완료',
+                content: '$nickname 님의 리뷰를 작성하였습니다.',
+                btn: TextButton(
+                  onPressed: () {
+                    context.pop();
+                    context.pop();
+                  },
+                  child: const Text("확인"),
+                ),
+              );
+            });
+      }
+    }
+  }
+}
+
+class _ReviewForm extends ConsumerWidget {
+  const _ReviewForm({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            "자유로운 후기를 남겨주세요!",
+            style: MITITextStyle.mdBold.copyWith(
+              color: MITIColor.gray100,
+            ),
+          ),
+          SizedBox(height: 20.r),
+          Flexible(
+              child: ConstrainedBox(
+            constraints: BoxConstraints.tight(Size(double.infinity, 100.h)),
+            child: MultiLineTextFormField(
+              onChanged: (val) {
+                ref.read(reviewFormProvider.notifier).updateComment(val);
+              },
+              hint: '리뷰를 작성해주세요.',
+              context: context,
+            ),
+          )),
+        ],
+      ),
+    );
+  }
+}
+
+class MultiLineTextFormField extends StatefulWidget {
+  final String hint;
+  final ValueChanged<String>? onChanged;
+  final BuildContext context;
+  final TextEditingController? editTextController;
+  final FocusNode? focusNode;
+  final VoidCallback? onTap;
+
+  const MultiLineTextFormField(
+      {super.key,
+      this.onChanged,
+      required this.hint,
+      required this.context,
+      this.editTextController,
+      this.focusNode,
+      this.onTap});
+
+  @override
+  State<MultiLineTextFormField> createState() => _MultiLineTextFormFieldState();
+}
+
+class _MultiLineTextFormFieldState extends State<MultiLineTextFormField> {
   late final ScrollController _scrollController;
 
   @override
@@ -53,175 +273,56 @@ class _ReviewScreenState extends State<ReviewScreen> {
 
   @override
   void dispose() {
-    _scrollController.dispose();
     super.dispose();
-  }
-
-  Widget getDivider() {
-    return Container(
-      height: 5.h,
-      color: const Color(0xFFF8F8F8),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final bottomPadding = MediaQuery.of(context).viewInsets.bottom > 80.h
-        ? MediaQuery.of(context).viewInsets.bottom - 80.h
-        : 0.0;
-    return DefaultLayout(
-      bottomIdx: widget.bottomIdx,
-      scrollController: _scrollController,
-      body: NestedScrollView(
-        controller: _scrollController,
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return [
-            DefaultAppBar(
-              title: widget.participationId != null ? '게스트 리뷰' : '호스트 리뷰',
-              isSliver: true,
-            )
-          ];
-        },
-        body: Padding(
-          padding: EdgeInsets.only(bottom: bottomPadding),
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    _PlayerComponent(
-                      participationId: widget.participationId,
-                      ratingId: widget.ratingId,
-                    ),
-                    getDivider(),
-                    _RatingForm(
-                      participationId: widget.participationId,
-                    ),
-                    getDivider(),
-                    _CommentForm(
-                      participationId: widget.participationId,
-                    ),
-                    Consumer(
-                      builder:
-                          (BuildContext context, WidgetRef ref, Widget? child) {
-                        final form = ref.watch(reviewFormProvider);
-                        final valid =
-                            form.rating != null && form.comment.isNotEmpty;
-                        return Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16.w,
-                            vertical: 8.h,
-                          ),
-                          child: TextButton(
-                            onPressed: valid
-                                ? () async {
-                                    final result = ref.read(ratingProvider(
-                                        ratingId: widget.ratingId));
-                                    if (result
-                                        is ResponseModel<UserReviewModel>) {
-                                      final model = (result).data!;
-                                      createReview(
-                                          ref, context, model.nickname);
-                                    } else {
-                                      createReview(ref, context, '닉네임');
-                                    }
-                                  }
-                                : () {},
-                            style: TextButton.styleFrom(
-                                backgroundColor: valid
-                                    ? const Color(0xFF4065F5)
-                                    : const Color(0xFFE8E8E8)),
-                            child: Text(
-                              '리뷰 작성하기',
-                              style: MITITextStyle.btnTextBStyle.copyWith(
-                                  color: valid
-                                      ? Colors.white
-                                      : const Color(0xff969696)),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
+    return KeyboardVisibilityBuilder(
+      onVisibilityChange: (bool isKeyboardVisible) {},
+      child: Align(
+        child: RawScrollbar(
+          controller: _scrollController,
+          thumbColor: MITIColor.gray500,
+          crossAxisMargin: 4.w,
+          thickness: 2.w,
+          radius: Radius.circular(100.r),
+          trackVisibility: true,
+          child: TextField(
+              scrollController: _scrollController,
+              focusNode: widget.focusNode,
+              controller: widget.editTextController,
+              onTap: widget.onTap,
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
+              autocorrect: true,
+              expands: true,
+              style: MITITextStyle.sm150.copyWith(
+                color: MITIColor.gray100,
               ),
-            ],
-          ),
+              textAlignVertical: TextAlignVertical.top,
+              onChanged: widget.onChanged,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                  borderSide: BorderSide.none,
+                ),
+                // constraints: BoxConstraints(
+                //   minHeight: 68.h,
+                //   maxHeight: 200.h,
+                // ),
+                hintText: widget.hint,
+                hintStyle:
+                    MITITextStyle.sm150.copyWith(color: MITIColor.gray500),
+                hintMaxLines: 10,
+                fillColor: MITIColor.gray700,
+                filled: true,
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+                // isDense: true,
+              )),
         ),
       ),
-    );
-  }
-
-  void createReview(
-      WidgetRef ref, BuildContext context, String nickname) async {
-    BaseModel result;
-    if (widget.participationId != null) {
-      result = await ref.read(guestReviewProvider(
-              gameId: widget.gameId, participationId: widget.participationId!)
-          .future);
-    } else {
-      result = await ref.read(hostReviewProvider(
-        gameId: widget.gameId,
-      ).future);
-    }
-    if (result is ErrorModel) {
-      if (context.mounted) {
-        final gameApiType = widget.participationId != null
-            ? GameApiType.createGuestReview
-            : GameApiType.createHostReview;
-        GameError.fromModel(model: result)
-            .responseError(context, gameApiType, ref);
-      }
-    } else {
-      if (context.mounted) {
-        await ref
-            .read(gamePlayersProvider(gameId: widget.gameId).notifier)
-            .getPlayers(gameId: widget.gameId);
-        final extra = CustomDialog(
-          title: '리뷰 작성 완료',
-          content: '$nickname님의 리뷰를 작성하였습니다.',
-          onPressed: () {
-            Map<String, String> pathParameters = {
-              'gameId': widget.gameId.toString()
-            };
-            Map<String, String> queryParameters = {
-              'bottomIdx': widget.bottomIdx.toString()
-            };
-
-            context.goNamed(
-              GameParticipationScreen.routeName,
-              pathParameters: pathParameters,
-              queryParameters: queryParameters,
-            );
-          },
-        );
-        context.pushNamed(DialogPage.routeName, extra: extra);
-      }
-    }
-  }
-}
-
-class _PlayerComponent extends ConsumerWidget {
-  final int? participationId;
-  final int ratingId;
-
-  const _PlayerComponent(
-      {super.key, this.participationId, required this.ratingId});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final result = ref.watch(ratingProvider(ratingId: ratingId));
-    if (result is LoadingModel) {
-      return CircularProgressIndicator();
-    } else if (result is ErrorModel) {
-      GameError.fromModel(model: result)
-          .responseError(context, GameApiType.getReview, ref);
-      return Text('에러');
-    }
-    final model = (result as ResponseModel<UserReviewModel>).data!;
-    return HostComponent.fromModel(
-      model: model,
-      isHost: participationId == null,
     );
   }
 }
@@ -234,30 +335,57 @@ class _RatingForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(12.r),
+      padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 21.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            participationId != null ? '게스트 평점' : '호스트 평점',
-            style: MITITextStyle.sectionTitleStyle.copyWith(
-              color: const Color(0xff222222),
+            // participationId != null ? '게스트 평점' : '호스트 평점',
+            '호스트는 어땠나요?',
+            style: MITITextStyle.mdBold.copyWith(
+              color: MITIColor.gray100,
             ),
           ),
-          SizedBox(height: 12.r),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              getStarForm(1),
-              SizedBox(width: 10.w),
-              getStarForm(2),
-              SizedBox(width: 10.w),
-              getStarForm(3),
-              SizedBox(width: 10.w),
-              getStarForm(4),
-              SizedBox(width: 10.w),
-              getStarForm(5),
-            ],
+          SizedBox(height: 20.r),
+          Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              return Center(
+                child: RatingBar(
+                  ratingWidget: RatingWidget(
+                    full: SvgPicture.asset(
+                      AssetUtil.getAssetPath(
+                          type: AssetType.icon, name: 'fill_star2'),
+
+                      // 'assets/images/icon/fill_star2.svg',
+                      height: 40.r,
+                      width: 40.r,
+                    ),
+                    half: SvgPicture.asset(
+                      AssetUtil.getAssetPath(
+                          type: AssetType.icon, name: 'fill_star2'),
+                      // 'assets/images/icon/fill_star2.svg',
+                      height: 40.r,
+                      width: 40.r,
+                    ),
+                    empty: SvgPicture.asset(
+                      AssetUtil.getAssetPath(
+                          type: AssetType.icon, name: 'unfill_star2'),
+                      // 'assets/images/icon/unfill_star2.svg',
+                      height: 40.r,
+                      width: 40.r,
+                    ),
+                  ),
+                  itemSize: 42.r,
+                  glowColor: const Color(0xffffadd0c),
+                  itemPadding: EdgeInsets.symmetric(horizontal: 5.w),
+                  onRatingUpdate: (v) {
+                    ref
+                        .read(reviewFormProvider.notifier)
+                        .updateRating((v.toInt()));
+                  },
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -297,118 +425,91 @@ class _CommentForm extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    List<String> comments = [
-      '경기 진행이 매끄럽습니다.',
-      '음료수를 제공해주셨어요.',
-      '아주 친절하십니다.',
-      '직접 작성',
-    ];
+    final chips = PlayerReviewTagType.values.toList();
+
     final selected = ref.watch(selectedProvider);
     return Padding(
-      padding: EdgeInsets.all(12.r),
+      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            participationId != null ? '게스트 한줄평' : '호스트 한줄평',
-            style: MITITextStyle.sectionTitleStyle.copyWith(
-              color: const Color(0xff222222),
+            '어떤 점이 좋았나요? (최소 2개)',
+            style: MITITextStyle.mdBold.copyWith(
+              color: MITIColor.gray100,
             ),
           ),
-          SizedBox(height: 12.r),
-          ListView.separated(
-              physics: const NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              itemBuilder: (_, idx) {
-                return getComments(idx, comments[idx]);
-              },
-              separatorBuilder: (_, idx) {
-                return SizedBox(height: 3.h);
-              },
-              itemCount: comments.length),
-          SizedBox(height: 12.r),
-          Scrollbar(
-            child: SingleChildScrollView(
-              // scrollDirection: Axis.vertical,
-              // reverse: true,
-              child: IntrinsicHeight(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: 110.h,
-                    maxHeight: 500.h,
-                  ),
-                  child: TextFormField(
-                    maxLines: null,
-                    expands: true,
-                    enabled: selected == 3,
-                    textAlignVertical: TextAlignVertical.top,
-                    style: MITITextStyle.inputValueMStyle.copyWith(
-                      color: Colors.black,
-                    ),
-                    onChanged: (val) {
-                      ref.read(reviewFormProvider.notifier).updateComment(val);
-                    },
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                        borderSide: BorderSide.none,
-                      ),
+          SizedBox(height: 20.r),
+          Wrap(
+            spacing: 8.w,
+            runSpacing: 8.h,
+            children: [
+              ...chips.map((e) => Consumer(
+                    builder:
+                        (BuildContext context, WidgetRef ref, Widget? child) {
+                      final tags = ref.watch(
+                          reviewFormProvider.select((form) => form.tags));
 
-                      // constraints: BoxConstraints(
-                      //   minHeight: 68.h,
-                      //   maxHeight: 500.h,
-                      // ),
-                      hintText: '리뷰를 작성해주세요.',
-                      hintStyle: MITITextStyle.placeHolderMStyle
-                          .copyWith(color: const Color(0xFF969696)),
-                      hintMaxLines: 10,
-                      fillColor: const Color(0xFFF7F7F7),
-                      filled: true,
-                      contentPadding: EdgeInsets.symmetric(
-                          horizontal: 12.w, vertical: 12.h),
-                      // isDense: true,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+                      return ReviewChip(
+                          selected: tags.contains(e),
+                          onTap: () {
+                            ref.read(reviewFormProvider.notifier).updateChip(e);
+                          },
+                          title: e.name);
+                    },
+                  ))
+            ],
           ),
         ],
       ),
     );
   }
+}
 
-  Consumer getComments(int? idx, String comment) {
-    return Consumer(
-      builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        final selected = ref.watch(selectedProvider);
-        return InkWell(
-          onTap: () {
-            ref.read(selectedProvider.notifier).update((state) => idx);
-            String comments = idx == 3 ? '' : comment;
-            ref.read(reviewFormProvider.notifier).updateComment(comments);
-          },
-          child: Row(children: [
-            SvgPicture.asset(
-              'assets/images/icon/system_success.svg',
-              colorFilter: ColorFilter.mode(
-                  selected == idx
-                      ? const Color(0xFF4065F5)
-                      : const Color(0xFF666666),
-                  BlendMode.srcIn),
-            ),
-            SizedBox(width: 4.5.w),
+class ReviewChip extends StatelessWidget {
+  final bool selected;
+  final VoidCallback onTap;
+  final String title;
+
+  const ReviewChip(
+      {super.key,
+      required this.selected,
+      required this.onTap,
+      required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 34.h,
+        padding: EdgeInsets.symmetric(horizontal: 14.w),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(100.r),
+          gradient: selected
+              ? const LinearGradient(
+                  begin: Alignment.bottomLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                      Color(0xFFAFFEFF),
+                      Color(0xFF7EFDFF),
+                    ])
+              : null,
+          color: selected ? null : MITIColor.gray800,
+        ),
+        // alignment: Alignment(0,0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
             Text(
-              comment,
-              style: MITITextStyle.textChoiceStyle.copyWith(
-                  color: selected == idx
-                      ? const Color(0xff4065f5)
-                      : const Color(0xff666666)),
-            )
-          ]),
-        );
-      },
+              title,
+              style: MITITextStyle.smSemiBold.copyWith(
+                color: selected ? MITIColor.gray800 : MITIColor.gray300,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

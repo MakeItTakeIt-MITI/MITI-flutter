@@ -3,21 +3,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:miti/common/model/default_model.dart';
+import 'package:miti/support/component/qna_label.dart';
 import 'package:miti/support/error/support_error.dart';
 import 'package:miti/support/provider/support_provider.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
+import '../component/skeleton/support_detail_skeleton.dart';
 import '../model/support_model.dart';
 
 class SupportDetailScreen extends StatefulWidget {
   static String get routeName => 'supportDetail';
-  final int bottomIdx;
   final int questionId;
 
-  const SupportDetailScreen(
-      {super.key, required this.questionId, required this.bottomIdx});
+  const SupportDetailScreen({
+    super.key,
+    required this.questionId,
+  });
 
   @override
   State<SupportDetailScreen> createState() => _SupportDetailScreenState();
@@ -40,16 +44,15 @@ class _SupportDetailScreenState extends State<SupportDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultLayout(
-      bottomIdx: widget.bottomIdx,
-      scrollController: _scrollController,
+    return Scaffold(
       body: NestedScrollView(
         controller: _scrollController,
         headerSliverBuilder: ((BuildContext context, bool innerBoxIsScrolled) {
           return [
             const DefaultAppBar(
               isSliver: true,
-              title: '문의 내역',
+              title: '상세 문의 내역',
+              hasBorder: false,
             ),
           ];
         }),
@@ -61,20 +64,29 @@ class _SupportDetailScreenState extends State<SupportDetailScreen> {
                   final result = ref
                       .watch(questionProvider(questionId: widget.questionId));
                   if (result is LoadingModel) {
-                    return CircularProgressIndicator();
+                    return const SupportDetailSkeleton();
                   } else if (result is ErrorModel) {
-                    SupportError.fromModel(model: result)
-                        .responseError(context, SupportApiType.get, ref);
+                    WidgetsBinding.instance.addPostFrameCallback((s) {
+                      SupportError.fromModel(model: result)
+                          .responseError(context, SupportApiType.get, ref);
+                    });
                     return Text('에러');
                   }
                   final model = (result as ResponseModel<QuestionModel>).data!;
-                  return Column(
-                    children: [
-                      _QuestionComponent.fromModel(model: model),
-                      _AnswerComponent(
-                        answers: model.answers,
-                      ),
-                    ],
+                  return Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        QnaLabel(num_of_answers: model.num_of_answers),
+                        SizedBox(height: 20.h),
+                        _QuestionComponent.fromModel(model: model),
+                        _AnswerComponent(
+                          answers: model.answers,
+                        ),
+                      ],
+                    ),
                   );
                 },
               ),
@@ -102,7 +114,7 @@ class _QuestionComponent extends StatelessWidget {
       required this.content});
 
   factory _QuestionComponent.fromModel({required QuestionModel model}) {
-    final created_at = DateFormat('yyyy.MM.dd HH:mm').format(model.created_at);
+    final created_at = DateFormat('yyyy년 MM월 dd일').format(model.created_at);
     return _QuestionComponent(
       title: model.title,
       num_of_answers: model.num_of_answers,
@@ -114,45 +126,30 @@ class _QuestionComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(16.r),
-      child: Container(
-        padding: EdgeInsets.all(12.r),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.r),
-          border: Border.all(
-            color: const Color(0xFFE8E8E8),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          title,
+          style: MITITextStyle.mdBold150.copyWith(color: MITIColor.gray100),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+        SizedBox(height: 8.h),
+        Text(
+          created_at,
+          style: MITITextStyle.xxsmLight.copyWith(
+            color: MITIColor.gray300,
           ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              title,
-              style: MITITextStyle.plainTextMStyle,
-              overflow: TextOverflow.ellipsis,
-            ),
-            Divider(
-              height: 25.h,
-              color: const Color(0xFFE8E8E8),
-            ),
-            Text(
-              content,
-              style: MITITextStyle.plainTextSStyle.copyWith(
-                color: const Color(0xff666666),
-              ),
-            ),
-            SizedBox(height: 12.h),
-            Text(
-              created_at,
-              textAlign: TextAlign.end,
-              style: MITITextStyle.plainTextSStyle.copyWith(
-                color: const Color(0xff666666),
-              ),
-            )
-          ],
+        SizedBox(height: 20.h),
+        Text(
+          content,
+          style: MITITextStyle.sm150.copyWith(
+            color: MITIColor.gray100,
+          ),
         ),
-      ),
+      ],
     );
   }
 }
@@ -168,28 +165,22 @@ class _AnswerComponent extends StatelessWidget {
       return Container();
     }
 
-    return Padding(
-      padding: EdgeInsets.all(16.r),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            '답변',
-            style: MITITextStyle.sectionTitleStyle,
-          ),
-          SizedBox(height: 12.h),
-          ListView.separated(
-            shrinkWrap: true,
-            itemBuilder: (_, idx) {
-              return _AnswerCard.fromModel(model: answers[idx]);
-            },
-            separatorBuilder: (_, idx) {
-              return SizedBox(height: 12.h);
-            },
-            itemCount: answers.length,
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(height: 20.h),
+        ListView.separated(
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          itemBuilder: (_, idx) {
+            return _AnswerCard.fromModel(model: answers[idx]);
+          },
+          separatorBuilder: (_, idx) {
+            return SizedBox(height: 12.h);
+          },
+          itemCount: answers.length,
+        ),
+      ],
     );
   }
 }
@@ -198,51 +189,42 @@ class _AnswerCard extends StatelessWidget {
   final String content;
   final String created_at;
   final DateTime modified_at;
-  final DateTime? deleted_at;
-  final int question;
 
-  const _AnswerCard(
-      {super.key,
-      required this.content,
-      required this.created_at,
-      required this.modified_at,
-      this.deleted_at,
-      required this.question});
+  const _AnswerCard({
+    super.key,
+    required this.content,
+    required this.created_at,
+    required this.modified_at,
+  });
 
   factory _AnswerCard.fromModel({required AnswerModel model}) {
-    final created_at = DateFormat('yyyy.MM.dd HH:mm').format(model.created_at);
+    final created_at = DateFormat('yyyy년 MM월 dd일').format(model.created_at);
     return _AnswerCard(
       content: model.content,
       created_at: created_at,
       modified_at: model.modified_at,
-      question: model.question,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(12.r),
+      padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(
-          color: const Color(0xFFE8E8E8),
-        ),
+        borderRadius: BorderRadius.circular(12.r),
+        color: MITIColor.gray700,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            content,
-            style: MITITextStyle.plainTextSStyle
-                .copyWith(color: const Color(0xff666666)),
-          ),
-          SizedBox(height: 12.h),
-          Text(
             created_at,
-            style: MITITextStyle.plainTextSStyle
-                .copyWith(color: const Color(0xff666666)),
-            textAlign: TextAlign.end,
+            style: MITITextStyle.xxsmLight.copyWith(color: MITIColor.gray300),
+          ),
+          SizedBox(height: 10.h),
+          Text(
+            content,
+            style: MITITextStyle.sm150.copyWith(color: MITIColor.gray100),
           ),
         ],
       ),

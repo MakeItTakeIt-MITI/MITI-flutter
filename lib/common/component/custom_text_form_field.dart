@@ -11,6 +11,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:miti/auth/provider/widget/sign_up_form_provider.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../auth/view/signup/signup_screen.dart';
@@ -34,9 +35,10 @@ class InteractionDesc {
 
 class CustomTextFormField extends StatelessWidget {
   final String? initialValue;
-  final String label;
+  final String? label;
   final String hintText;
   final TextInputAction? textInputAction;
+  final Widget? prefix;
   final Widget? suffixIcon;
   final bool obscureText;
   final FormFieldValidator<String>? validator;
@@ -47,18 +49,22 @@ class CustomTextFormField extends StatelessWidget {
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
   final InteractionDesc? interactionDesc;
-  final bool showAutoComplete;
   final TextAlign textAlign;
   final bool enabled;
   final TextStyle? hintTextStyle;
   final TextStyle? textStyle;
   final TextStyle? labelTextStyle;
+  final Color? borderColor;
+  final BorderRadius? borderRadius;
+  final VoidCallback? onTap;
+  final double height;
+  final bool required;
 
   const CustomTextFormField({
     super.key,
     required this.hintText,
     this.textInputAction,
-    required this.label,
+    this.label,
     this.suffixIcon,
     this.obscureText = false,
     this.validator,
@@ -69,13 +75,18 @@ class CustomTextFormField extends StatelessWidget {
     this.keyboardType,
     this.inputFormatters,
     this.interactionDesc,
-    this.showAutoComplete = false,
     this.textAlign = TextAlign.start,
     this.enabled = true,
     this.initialValue,
     this.hintTextStyle,
     this.textStyle,
     this.labelTextStyle,
+    this.borderColor,
+    this.prefix,
+    this.onTap,
+    this.borderRadius,
+    this.height = 48,
+    this.required = false,
   });
 
   @override
@@ -83,15 +94,39 @@ class CustomTextFormField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (label.isNotEmpty)
-          Text(
-            label,
-            style: labelTextStyle ??
-                MITITextStyle.inputLabelIStyle
-                    .copyWith(color: const Color(0xFF999999)),
+        if (label != null)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label!,
+                style: labelTextStyle ??
+                    MITITextStyle.sm.copyWith(
+                      color: MITIColor.gray300,
+                    ),
+              ),
+              SizedBox(width: 3.w),
+              Visibility(
+                visible: required,
+                child: Container(
+                  height: 6.r,
+                  width: 6.r,
+                  alignment: Alignment.center,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: MITIColor.primary,
+                    ),
+                    width: 4.r,
+                    height: 4.r,
+                  ),
+                ),
+              )
+            ],
           ),
-        if (label.isNotEmpty) SizedBox(height: 12.h),
+        if (label != null) SizedBox(height: 8.h),
         TextFormField(
+          onTap: onTap,
           initialValue: initialValue,
           focusNode: focusNode,
           controller: textEditingController,
@@ -103,67 +138,90 @@ class CustomTextFormField extends StatelessWidget {
           textAlign: textAlign,
           enabled: enabled,
           style: textStyle ??
-              TextStyle(
-                fontWeight: FontWeight.w500,
-                color: const Color(0xFF1C1C1C),
-                fontSize: 16.sp,
-                letterSpacing: -0.25.sp,
+              MITITextStyle.md.copyWith(
+                color: MITIColor.gray100,
               ),
           decoration: InputDecoration(
             contentPadding:
-                EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-            constraints: BoxConstraints(maxHeight: 58.h, minHeight: 50.h),
+                EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+            constraints:
+                BoxConstraints(maxHeight: height.h, minHeight: height.h),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: borderRadius ?? BorderRadius.circular(8.r),
+              borderSide: borderColor == null
+                  ? BorderSide.none
+                  : BorderSide(color: borderColor!),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: borderRadius ?? BorderRadius.circular(8.r),
+              borderSide: borderColor == null
+                  ? BorderSide.none
+                  : BorderSide(color: borderColor!),
+            ),
             border: OutlineInputBorder(
-              borderRadius: showAutoComplete
-                  ? BorderRadius.vertical(top: Radius.circular(8.r))
-                  : BorderRadius.circular(8.r),
-              borderSide: BorderSide.none,
+              borderRadius: borderRadius ?? BorderRadius.circular(8.r),
+              borderSide: borderColor == null
+                  ? BorderSide.none
+                  : BorderSide(color: borderColor!),
             ),
             hintText: hintText,
             hintStyle: hintTextStyle ??
-                MITITextStyle.placeHolderMStyle
-                    .copyWith(color: const Color(0xFF969696)),
-            fillColor: const Color(0xFFF7F7F7),
+                MITITextStyle.md.copyWith(
+                  color: MITIColor.gray500,
+                ),
+            fillColor: MITIColor.gray700,
             filled: true,
-            suffixIcon: suffixIcon,
-            suffixIconConstraints:
-                BoxConstraints.loose(Size(double.infinity, 36.h)),
+            prefixIcon: prefix == null
+                ? null
+                : Padding(
+                    padding: EdgeInsets.only(left: prefix == null ? 0 : 20.w),
+                    child: prefix,
+                  ),
+            prefixIconConstraints: BoxConstraints.loose(
+              Size(double.infinity, 36.h),
+            ),
+            suffixIcon: Padding(
+              padding: EdgeInsets.only(right: suffixIcon == null ? 0 : 20.w),
+              child: suffixIcon,
+            ),
+            suffixIconConstraints: BoxConstraints.loose(
+              Size(double.infinity, 36.h),
+            ),
           ),
           validator: validator,
           onChanged: onChanged,
           onEditingComplete: onNext,
         ),
-        if (showAutoComplete)
-          AutoCompleteComponent(
-            controller: textEditingController!,
-          ),
-        if (interactionDesc != null) SizedBox(height: 8.h),
+        // if (showAutoComplete)
+        //   AutoCompleteComponent(
+        //     controller: textEditingController!,
+        //   ),
+        if (interactionDesc != null) SizedBox(height: 16.h),
         if (interactionDesc != null)
-          Row(
-            children: [
-              SizedBox(
-                height: 14.r,
-                width: 14.r,
-                child: SvgPicture.asset(interactionDesc!.isSuccess
-                    ? 'assets/images/icon/system_success.svg'
-                    : 'assets/images/icon/system_alert.svg'),
-              ),
-              SizedBox(
-                width: 4.w,
-              ),
-              Text(
-                interactionDesc!.desc,
-                style: TextStyle(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w400,
-                  letterSpacing: -0.25.sp,
-                  color: interactionDesc!.isSuccess
-                      ? const Color(0xFF00BA34)
-                      : const Color(0xFFE92C2C),
-                ),
-              ),
-            ],
+          Text(
+            interactionDesc!.desc,
+            style: MITITextStyle.xxsm.copyWith(
+              color: interactionDesc!.isSuccess
+                  ? MITIColor.correct
+                  : MITIColor.error,
+            ),
           ),
+
+        // Row(
+        //   children: [
+        //     SizedBox(
+        //       height: 14.r,
+        //       width: 14.r,
+        //       child: SvgPicture.asset(interactionDesc!.isSuccess
+        //           ? 'assets/images/icon/system_success.svg'
+        //           : 'assets/images/icon/system_alert.svg'),
+        //     ),
+        //     SizedBox(
+        //       width: 4.w,
+        //     ),
+        //
+        //   ],
+        // ),
       ],
     );
   }
@@ -242,11 +300,8 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
           Text(
             widget.label,
             style: widget.labelTextStyle ??
-                TextStyle(
-                  color: const Color(0xFF1C1C1C),
-                  fontWeight: FontWeight.w400,
-                  fontSize: 12.sp,
-                  letterSpacing: -0.25.sp,
+                MITITextStyle.sm.copyWith(
+                  color: MITIColor.gray300,
                 ),
           ),
         if (widget.label.isNotEmpty) SizedBox(height: 8.h),
@@ -271,8 +326,7 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
                       fontSize: 16.sp,
                     ),
                 decoration: InputDecoration(
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
                     constraints:
                         BoxConstraints.loose(Size(double.infinity, 58.h)),
                     border: OutlineInputBorder(
@@ -399,10 +453,10 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
                   //     });
                 },
                 style: ButtonStyle(
-                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                    shape: WidgetStateProperty.all(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.r))),
                     backgroundColor:
-                        MaterialStateProperty.all(const Color(0xFFDFEFFE))),
+                        WidgetStateProperty.all(const Color(0xFFDFEFFE))),
                 // padding: EdgeInsets.all(16.r),
                 icon: Icon(
                   Icons.calendar_today_outlined,
@@ -411,10 +465,10 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
                 )),
           ],
         ),
-        if (widget.showAutoComplete)
-          AutoCompleteComponent(
-            controller: widget.textEditingController!,
-          ),
+        // if (widget.showAutoComplete)
+        //   AutoCompleteComponent(
+        //     controller: widget.textEditingController!,
+        //   ),
         if (widget.interactionDesc != null) SizedBox(height: 8.h),
         if (widget.interactionDesc != null)
           Row(
@@ -447,107 +501,107 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
   }
 }
 
-class AutoCompleteComponent extends ConsumerStatefulWidget {
-  final TextEditingController controller;
-
-  const AutoCompleteComponent({
-    super.key,
-    required this.controller,
-  });
-
-  @override
-  ConsumerState<AutoCompleteComponent> createState() =>
-      _AutoCompleteComponentState();
-}
-
-class _AutoCompleteComponentState extends ConsumerState<AutoCompleteComponent> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    List<String> emailSuffixes = [
-      'naver.com',
-      'gmail.com',
-      'hanmail.net',
-      'daum.net',
-      'nate.com'
-    ];
-    final showAutoComplete =
-        ref.watch(signUpFormProvider.select((form) => form.showAutoComplete));
-    final email = ref.watch(signUpFormProvider).email;
-    final cnt = '@'.allMatches(email).length;
-    if (email.contains('@') && cnt == 1 && showAutoComplete) {
-      final prefixEmail = email.substring(0, email.indexOf('@') + 1);
-      final suffixEmail = email.substring(
-        email.indexOf('@') + 1,
-      );
-      if (suffixEmail.isNotEmpty) {
-        emailSuffixes = emailSuffixes
-            .where((suffix) {
-              return suffix.startsWith(suffixEmail);
-            })
-            .map((e) => e)
-            .toList();
-      }
-
-      return Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-            color: const Color(0xFFF7F7F7),
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(8.r))),
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(color: const Color(0xFFE8E8E8), width: 1.h),
-            ),
-          ),
-          child: Column(
-            children: [
-              SizedBox(height: 10.h),
-              ListView.separated(
-                shrinkWrap: true,
-                itemBuilder: (BuildContext context, int index) {
-                  return InkWell(
-                    onTap: () {
-                      ref
-                          .read(signUpFormProvider.notifier)
-                          .updateForm(showAutoComplete: false);
-                      widget.controller.text =
-                          prefixEmail + emailSuffixes[index];
-                      ref.read(signUpFormProvider.notifier).updateForm(
-                          email: prefixEmail + emailSuffixes[index]);
-                      FocusScope.of(context).requestFocus(FocusNode());
-                    },
-                    child: Text(
-                      prefixEmail + emailSuffixes[index],
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        letterSpacing: -0.25.sp,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFF000000),
-                      ),
-                    ),
-                  );
-                },
-                separatorBuilder: (BuildContext context, int index) {
-                  return SizedBox(height: 14.h);
-                },
-                itemCount: emailSuffixes.length,
-              ),
-              SizedBox(height: 16.h),
-            ],
-          ),
-        ),
-      );
-    } else {
-      return Container();
-    }
-  }
-}
+// class AutoCompleteComponent extends ConsumerStatefulWidget {
+//   final TextEditingController controller;
+//
+//   const AutoCompleteComponent({
+//     super.key,
+//     required this.controller,
+//   });
+//
+//   @override
+//   ConsumerState<AutoCompleteComponent> createState() =>
+//       _AutoCompleteComponentState();
+// }
+//
+// class _AutoCompleteComponentState extends ConsumerState<AutoCompleteComponent> {
+//   @override
+//   void initState() {
+//     super.initState();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     List<String> emailSuffixes = [
+//       'naver.com',
+//       'gmail.com',
+//       'hanmail.net',
+//       'daum.net',
+//       'nate.com'
+//     ];
+//     final showAutoComplete =
+//         ref.watch(signUpFormProvider.select((form) => form.showAutoComplete));
+//     final email = ref.watch(signUpFormProvider).email;
+//     final cnt = '@'.allMatches(email).length;
+//     if (email.contains('@') && cnt == 1 && showAutoComplete) {
+//       final prefixEmail = email.substring(0, email.indexOf('@') + 1);
+//       final suffixEmail = email.substring(
+//         email.indexOf('@') + 1,
+//       );
+//       if (suffixEmail.isNotEmpty) {
+//         emailSuffixes = emailSuffixes
+//             .where((suffix) {
+//               return suffix.startsWith(suffixEmail);
+//             })
+//             .map((e) => e)
+//             .toList();
+//       }
+//
+//       return Container(
+//         width: double.infinity,
+//         decoration: BoxDecoration(
+//             color: const Color(0xFFF7F7F7),
+//             borderRadius: BorderRadius.vertical(bottom: Radius.circular(8.r))),
+//         padding: EdgeInsets.symmetric(horizontal: 16.w),
+//         child: Container(
+//           decoration: BoxDecoration(
+//             border: Border(
+//               top: BorderSide(color: const Color(0xFFE8E8E8), width: 1.h),
+//             ),
+//           ),
+//           child: Column(
+//             children: [
+//               SizedBox(height: 10.h),
+//               ListView.separated(
+//                 shrinkWrap: true,
+//                 itemBuilder: (BuildContext context, int index) {
+//                   return InkWell(
+//                     onTap: () {
+//                       ref
+//                           .read(signUpFormProvider.notifier)
+//                           .updateForm(showAutoComplete: false);
+//                       widget.controller.text =
+//                           prefixEmail + emailSuffixes[index];
+//                       ref.read(signUpFormProvider.notifier).updateForm(
+//                           email: prefixEmail + emailSuffixes[index]);
+//                       FocusScope.of(context).requestFocus(FocusNode());
+//                     },
+//                     child: Text(
+//                       prefixEmail + emailSuffixes[index],
+//                       style: TextStyle(
+//                         fontSize: 16.sp,
+//                         letterSpacing: -0.25.sp,
+//                         fontWeight: FontWeight.w500,
+//                         color: const Color(0xFF000000),
+//                       ),
+//                     ),
+//                   );
+//                 },
+//                 separatorBuilder: (BuildContext context, int index) {
+//                   return SizedBox(height: 14.h);
+//                 },
+//                 itemCount: emailSuffixes.length,
+//               ),
+//               SizedBox(height: 16.h),
+//             ],
+//           ),
+//         ),
+//       );
+//     } else {
+//       return Container();
+//     }
+//   }
+// }
 
 class PhoneNumberFormatter extends TextInputFormatter {
   @override

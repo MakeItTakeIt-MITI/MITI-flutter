@@ -40,7 +40,6 @@ class CourtPageStateNotifier extends PaginationProvider<CourtSearchModel,
     super.path,
   }) {
     searchDebounce.values.listen((CourtPaginationParam state) {
-      log('throttle!!');
       paginate(
           paginationParams: const PaginationParam(page: 1),
           forceRefetch: true,

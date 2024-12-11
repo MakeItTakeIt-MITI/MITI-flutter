@@ -3,19 +3,20 @@ import 'package:miti/common/model/model_id.dart';
 
 import '../../common/model/entity_enum.dart';
 import '../../game/model/game_model.dart';
+import '../../game/param/game_param.dart';
 
 part 'review_model.g.dart';
 
 @JsonSerializable()
-class ReviewBaseModel extends IModelWithId {
-  final int rating;
-  final String comment;
+class ReviewBaseModel extends GameReviewParam implements Base {
+  final int id;
   final ReviewType review_type;
 
-  ReviewBaseModel({
-    required super.id,
-    required this.rating,
-    required this.comment,
+  const ReviewBaseModel({
+    required this.id,
+    required super.rating,
+    required super.comment,
+    required super.tags,
     required this.review_type,
   });
 
@@ -25,16 +26,15 @@ class ReviewBaseModel extends IModelWithId {
 
 @JsonSerializable()
 class WrittenReviewModel extends ReviewBaseModel {
-  final String reviewer_nickname;
-  final String reviewee_nickname;
+  final String reviewee;
 
-  WrittenReviewModel({
+  const WrittenReviewModel({
     required super.id,
-    required this.reviewee_nickname,
+    required this.reviewee,
     required super.rating,
     required super.comment,
     required super.review_type,
-    required this.reviewer_nickname,
+    required super.tags,
   });
 
   factory WrittenReviewModel.fromJson(Map<String, dynamic> json) =>
@@ -42,59 +42,69 @@ class WrittenReviewModel extends ReviewBaseModel {
 }
 
 @JsonSerializable()
-class WrittenReviewDetailModel extends IModelWithId {
-  final UserReviewModel reviewee;
+class MyReviewDetailBaseModel extends GameReviewParam {
+  final int id;
   final ReviewGameModel game;
-  final int rating;
-  final String comment;
-  final ReviewType review_type;
-  final DateTime created_at;
-  final int reviewer;
 
-  WrittenReviewDetailModel({
-    required super.id,
-    required this.reviewee,
+  const MyReviewDetailBaseModel({
+    required this.id,
+    required super.rating,
+    required super.comment,
+    required super.tags,
     required this.game,
-    required this.rating,
-    required this.comment,
-    required this.review_type,
-    required this.created_at,
-    required this.reviewer,
   });
 
-  factory WrittenReviewDetailModel.fromJson(Map<String, dynamic> json) =>
-      _$WrittenReviewDetailModelFromJson(json);
+  factory MyReviewDetailBaseModel.fromJson(Map<String, dynamic> json) =>
+      _$MyReviewDetailBaseModelFromJson(json);
 }
 
-// @JsonSerializable()
-// class RevieweeModel extends IModelWithId {
-//   final String nickname;
-//   final RatingModel rating;
-//   final List<WrittenReviewModel> reviews;
-//
-//   RevieweeModel({
-//     required super.id,
-//     required this.nickname,
-//     required this.rating,
-//     required this.reviews,
-//   });
-//
-//   factory RevieweeModel.fromJson(Map<String, dynamic> json) =>
-//       _$RevieweeModelFromJson(json);
-// }
-
 @JsonSerializable()
-class ReceiveReviewModel extends ReviewBaseModel {
-  final String game_title;
+class MyWrittenReviewDetailModel extends MyReviewDetailBaseModel {
   final String reviewee;
 
-  ReceiveReviewModel({
+  const MyWrittenReviewDetailModel({
     required super.id,
     required this.reviewee,
     required super.rating,
     required super.comment,
+    required super.tags,
+    required super.game,
+  });
+
+  factory MyWrittenReviewDetailModel.fromJson(Map<String, dynamic> json) =>
+      _$MyWrittenReviewDetailModelFromJson(json);
+}
+
+@JsonSerializable()
+class MyReceiveReviewDetailModel extends MyReviewDetailBaseModel {
+  final String reviewer;
+
+  const MyReceiveReviewDetailModel({
+    required super.id,
+    required this.reviewer,
+    required super.rating,
+    required super.comment,
+    required super.tags,
+    required super.game,
+  });
+
+  factory MyReceiveReviewDetailModel.fromJson(Map<String, dynamic> json) =>
+      _$MyReceiveReviewDetailModelFromJson(json);
+}
+
+@JsonSerializable()
+class ReceiveReviewModel extends ReviewBaseModel {
+  final String reviewer;
+  final GameReviewBaseModel game;
+
+  const ReceiveReviewModel({
+    required super.id,
+    required this.reviewer,
+    required super.rating,
+    required super.comment,
     required super.review_type,
-    required this.game_title,
+    required super.tags,
+    required this.game,
   });
 
   factory ReceiveReviewModel.fromJson(Map<String, dynamic> json) =>
@@ -102,24 +112,24 @@ class ReceiveReviewModel extends ReviewBaseModel {
 }
 
 @JsonSerializable()
-class ReceiveReviewDetailModel extends IModelWithId {
-  final ReviewGameModel game;
-  final int rating;
-  final String comment;
-  final String review_type;
-  final DateTime created_at;
-  final int reviewee;
+class GameReviewBaseModel extends IModelWithId {
+  final GameStatus game_status;
+  final String title;
+  final String startdate;
+  final String starttime;
+  final String enddate;
+  final String endtime;
 
-  ReceiveReviewDetailModel({
+  GameReviewBaseModel({
     required super.id,
-    required this.game,
-    required this.rating,
-    required this.comment,
-    required this.review_type,
-    required this.created_at,
-    required this.reviewee,
+    required this.title,
+    required this.game_status,
+    required this.startdate,
+    required this.starttime,
+    required this.enddate,
+    required this.endtime,
   });
 
-  factory ReceiveReviewDetailModel.fromJson(Map<String, dynamic> json) =>
-      _$ReceiveReviewDetailModelFromJson(json);
+  factory GameReviewBaseModel.fromJson(Map<String, dynamic> json) =>
+      _$GameReviewBaseModelFromJson(json);
 }

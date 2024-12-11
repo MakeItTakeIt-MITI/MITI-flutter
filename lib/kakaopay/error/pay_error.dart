@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miti/common/error/view/pay_error_screen.dart';
 
 import '../../auth/view/login_screen.dart';
 import '../../common/component/custom_dialog.dart';
@@ -11,15 +12,19 @@ import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../dio/response_code.dart';
 
-enum PayApiType { ready, approval }
+enum PayApiType { ready, approval, bootPayApproval }
 
 class PayError extends ErrorBase {
-  PayError({required super.status_code, required super.error_code});
+  final Object? object;
 
-  factory PayError.fromModel({required ErrorModel model}) {
+  PayError(
+      {required super.status_code, required super.error_code, this.object});
+
+  factory PayError.fromModel({required ErrorModel model, Object? object}) {
     return PayError(
       status_code: model.status_code,
       error_code: model.error_code,
+      object: object,
     );
   }
 
@@ -31,6 +36,9 @@ class PayError extends ErrorBase {
         break;
       case PayApiType.approval:
         _approval(context, ref);
+        break;
+      case PayApiType.bootPayApproval:
+        _bootPayApproval(context, ref);
         break;
       default:
         break;
@@ -149,32 +157,54 @@ class PayError extends ErrorBase {
   void _approval(BuildContext context, WidgetRef ref) {
     if (this.status_code == BadRequest && this.error_code == 101) {
       /// pg 토큰 유효성 오류
-      const extra = ErrorScreenType.server;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      context.pushReplacementNamed(ErrorScreen.routeName);
     } else if (this.status_code == Forbidden && this.error_code == 440) {
       /// 모집 마감 경기
-      const extra = ErrorScreenType.server;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      context.pushReplacementNamed(ErrorScreen.routeName);
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// payment request 조회 실패
-      const extra = ErrorScreenType.notFound;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      context.pushReplacementNamed(ErrorScreen.routeName);
     } else if (this.status_code == ServerError && this.error_code == 440) {
       /// 경기 참여 실패
-      const extra = ErrorScreenType.server;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      context.pushReplacementNamed(ErrorScreen.routeName);
     } else if (this.status_code == ServerError && this.error_code == 460) {
       /// 결제 완료 api 호출 실패
-      const extra = ErrorScreenType.server;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      context.pushReplacementNamed(ErrorScreen.routeName);
     } else if (this.status_code == ServerError && this.error_code == 461) {
       /// 결제 완료 응답 처리 실패
-      const extra = ErrorScreenType.server;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      context.pushReplacementNamed(ErrorScreen.routeName);
     } else {
       /// 서버 오류
-      const extra = ErrorScreenType.server;
-      context.pushReplacementNamed(ErrorScreen.routeName, extra: extra);
+      context.pushReplacementNamed(ErrorScreen.routeName);
+    }
+  }
+
+  /// 결제 승인 요청 API
+  void _bootPayApproval(BuildContext context, WidgetRef ref) {
+    if (this.status_code == Forbidden && this.error_code == 940) {
+      /// 요청 권한 없음
+      Map<String, String> pathParameters = {'gameId': object.toString()};
+      context.pushReplacementNamed(PayErrorScreen.routeName,
+          extra: true, pathParameters: pathParameters);
+    } else if (this.status_code == Forbidden && this.error_code == 941) {
+      /// 참여 불가 경기
+      Map<String, String> pathParameters = {'gameId': object.toString()};
+      context.pushReplacementNamed(PayErrorScreen.routeName,
+          extra: false, pathParameters: pathParameters);
+    } else if (this.status_code == NotFound && this.error_code == 940) {
+      /// 결제 요청 조회 실패
+      Map<String, String> pathParameters = {'gameId': object.toString()};
+      context.pushReplacementNamed(PayErrorScreen.routeName,
+          extra: false, pathParameters: pathParameters);
+    } else if (this.status_code == ServerError && this.error_code == 940) {
+      /// 결제 승인 요청 실패
+      Map<String, String> pathParameters = {'gameId': object.toString()};
+      context.pushReplacementNamed(PayErrorScreen.routeName,
+          extra: false, pathParameters: pathParameters);
+    }
+    {
+      /// 서버 오류
+      context.pushReplacementNamed(ErrorScreen.routeName);
     }
   }
 }

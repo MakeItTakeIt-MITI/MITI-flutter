@@ -1,28 +1,73 @@
+import 'dart:developer';
+
 import 'package:json_annotation/json_annotation.dart';
 import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/common/model/model_id.dart';
 
+import 'boot_pay_request_model.dart';
+
 part 'pay_model.g.dart';
 
 @JsonSerializable()
-class PayReadyModel {
-  final String next_redirect_app_url;
-  final String next_redirect_mobile_url;
-  final String next_redirect_pc_url;
-  final String android_app_scheme;
-  final String ios_app_scheme;
+class PayBaseModel {
+  PayBaseModel();
 
-  PayReadyModel({
-    required this.next_redirect_app_url,
-    required this.next_redirect_mobile_url,
-    required this.next_redirect_pc_url,
-    required this.android_app_scheme,
-    required this.ios_app_scheme,
+  // 기본 fromJson 메소드
+  factory PayBaseModel.fromJson(Map<String, dynamic> json) {
+    // 타입을 구분할 수 있는 필드를 기준으로 적절한 서브클래스를 반환합니다.
+    if (json.containsKey('order_id')) {
+      log("PayReadyModel");
+      return BootPayRequestModel.fromJson(json);
+    } else if (json.containsKey('game')) {
+      log("PayFreeModel");
+      return PayFreeModel.fromJson(json);
+    } else {
+      // 필요한 경우 기본 PayBaseModel을 반환
+      log("_PayBaseModelFromJson");
+
+      return _$PayBaseModelFromJson(json);
+    }
+  }
+}
+
+@JsonSerializable()
+class PayFreeModel extends PayBaseModel {
+  final int id;
+  final int game;
+  final int user;
+
+  final ParticipationStatus participation_status;
+
+  PayFreeModel({
+    required this.game,
+    required this.participation_status,
+    required this.user,
+    required this.id,
   });
 
-  factory PayReadyModel.fromJson(Map<String, dynamic> json) =>
-      _$PayReadyModelFromJson(json);
+  factory PayFreeModel.fromJson(Map<String, dynamic> json) =>
+      _$PayFreeModelFromJson(json);
 }
+//
+// @JsonSerializable()
+// class PayReadyModel extends PayBaseModel {
+//   final String next_redirect_app_url;
+//   final String next_redirect_mobile_url;
+//   final String next_redirect_pc_url;
+//   final String android_app_scheme;
+//   final String ios_app_scheme;
+//
+//   PayReadyModel({
+//     required this.next_redirect_app_url,
+//     required this.next_redirect_mobile_url,
+//     required this.next_redirect_pc_url,
+//     required this.android_app_scheme,
+//     required this.ios_app_scheme,
+//   });
+//
+//   factory PayReadyModel.fromJson(Map<String, dynamic> json) =>
+//       _$PayReadyModelFromJson(json);
+// }
 
 @JsonSerializable()
 class PayApprovalModel extends IModelWithId {
@@ -75,3 +120,5 @@ class PayResultModel extends IModelWithId {
   factory PayResultModel.fromJson(Map<String, dynamic> json) =>
       _$PayResultModelFromJson(json);
 }
+
+

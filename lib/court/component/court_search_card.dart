@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:miti/theme/color_theme.dart';
 
 import '../../theme/text_theme.dart';
 import '../model/court_model.dart';
@@ -40,10 +41,11 @@ class ResultCard extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(12.r),
+        padding: EdgeInsets.all(16.r),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8.r),
-            border: Border.all(color: const Color(0xFFE8E8E8))),
+            color: MITIColor.gray700,
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(color: MITIColor.gray600)),
         child: Row(
           children: [
             Expanded(
@@ -52,32 +54,32 @@ class ResultCard extends StatelessWidget {
                 children: [
                   Text(
                     name,
-                    style: MITITextStyle.courtNameCardStyle.copyWith(
-                      color: const Color(0xff333333),
+                    style: MITITextStyle.mdBold.copyWith(
+                      color: MITIColor.gray100,
                     ),
                   ),
-                  SizedBox(height: 9.h),
+                  SizedBox(height: 4.h),
                   Text(
                     address,
-                    style: MITITextStyle.courtAddressCardStyle.copyWith(
-                      color: const Color(0xff999999),
+                    style: MITITextStyle.xxsm.copyWith(
+                      color: MITIColor.gray400,
                     ),
                   ),
                 ],
               ),
             ),
-            if (!isShare)
-              SvgPicture.asset(
-                'assets/images/icon/chevron_right.svg',
-                height: 14.h,
-                width: 7.w,
-              ),
-            if (isShare)
-              SvgPicture.asset(
-                'assets/images/icon/share.svg',
-                height: 30.h,
-                width: 30.w,
-              ),
+            // if (!isShare)
+            //   SvgPicture.asset(
+            //     'assets/images/icon/chevron_right.svg',
+            //     height: 14.h,
+            //     width: 7.w,
+            //   ),
+            // if (isShare)
+            //   SvgPicture.asset(
+            //     'assets/images/icon/share.svg',
+            //     height: 30.h,
+            //     width: 30.w,
+            //   ),
           ],
         ),
       ),

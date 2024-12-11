@@ -8,45 +8,6 @@ import '../../game/model/game_model.dart';
 
 part 'user_model.g.dart';
 
-class UserInfoModel extends LoginModel {
-  final String? birthday;
-  final String name;
-  final String phone;
-
-  UserInfoModel({
-    required super.id,
-    required super.email,
-    required super.nickname,
-    required super.is_authenticated,
-    required super.token,
-    required this.birthday,
-    required this.name,
-    required this.phone,
-  });
-
-  UserInfoModel copyWith(
-    int? id,
-    String? email,
-    String? nickname,
-    bool? is_authenticated,
-    TokenModel? token,
-    String? birthday,
-    String? name,
-    String? phone,
-  ) {
-    return UserInfoModel(
-      id: id ?? this.id,
-      email: email ?? this.email,
-      nickname: nickname ?? this.nickname,
-      is_authenticated: is_authenticated ?? this.is_authenticated,
-      token: token ?? this.token,
-      birthday: birthday ?? this.birthday,
-      name: name ?? this.name,
-      phone: phone ?? this.phone,
-    );
-  }
-}
-
 @JsonSerializable()
 class UserModel extends IModelWithId {
   final String email;
@@ -54,8 +15,7 @@ class UserModel extends IModelWithId {
   final String? name;
   final String? birthday;
   final String? phone;
-  final OauthType? oauth;
-  final AccountModel account;
+  final AuthType signup_method;
   final RatingModel rating;
 
   UserModel({
@@ -65,8 +25,7 @@ class UserModel extends IModelWithId {
     required this.name,
     required this.birthday,
     required this.phone,
-    required this.oauth,
-    required this.account,
+    required this.signup_method,
     required this.rating,
   });
 
@@ -80,8 +39,7 @@ class UserModel extends IModelWithId {
     String? name,
     String? birthday,
     String? phone,
-    OauthType? oauth,
-    AccountModel? account,
+    AuthType? signup_method,
     RatingModel? rating,
   }) {
     return UserModel(
@@ -91,21 +49,33 @@ class UserModel extends IModelWithId {
       name: name ?? this.name,
       birthday: birthday ?? this.birthday,
       phone: phone ?? this.phone,
-      oauth: oauth ?? this.oauth,
-      account: account ?? this.account,
+      signup_method: signup_method ?? this.signup_method,
       rating: rating ?? this.rating,
     );
   }
 }
 
+
 @JsonSerializable()
-class UserNicknameModel {
+class UserInfoModel {
   final String email;
   final String nickname;
 
-  UserNicknameModel({
+  UserInfoModel({
     required this.email,
     required this.nickname,
+  });
+
+  factory UserInfoModel.fromJson(Map<String, dynamic> json) =>
+      _$UserInfoModelFromJson(json);
+}
+@JsonSerializable()
+class UserNicknameModel extends IModelWithId {
+  final String email;
+
+  UserNicknameModel({
+    required this.email,
+    required super.id,
   });
 
   factory UserNicknameModel.fromJson(Map<String, dynamic> json) =>

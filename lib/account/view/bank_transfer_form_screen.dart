@@ -1,13 +1,12 @@
 import 'dart:developer';
 
-import 'package:dio/dio.dart';
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/account/error/account_error.dart';
 import 'package:miti/account/model/account_model.dart';
@@ -15,27 +14,30 @@ import 'package:miti/account/provider/account_provider.dart';
 import 'package:miti/account/provider/widget/transfer_form_provider.dart';
 import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
+import 'package:miti/common/component/custom_time_picker.dart';
 import 'package:miti/common/model/default_model.dart';
-import 'package:miti/court/component/court_list_component.dart';
+import 'package:miti/common/provider/widget/form_provider.dart';
 import 'package:miti/game/view/game_refund_screen.dart';
+import 'package:miti/report/model/agreement_policy_model.dart';
+import 'package:miti/report/provider/report_provider.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
-import 'package:miti/user/view/user_info_screen.dart';
+import 'package:miti/user/view/profile_screen.dart';
 
-import '../../common/component/custom_drop_down_button.dart';
+import '../../auth/view/signup/signup_screen.dart';
 import '../../common/component/default_appbar.dart';
-import '../../common/component/default_layout.dart';
-import '../../common/provider/form_util_provider.dart';
-import '../../common/provider/router_provider.dart';
+import '../../common/model/entity_enum.dart';
+import '../../common/view/operation_term_screen.dart';
 import '../../util/util.dart';
+import '../component/bank_card.dart';
+import 'package:collection/collection.dart';
 
 class BankTransferFormScreen extends StatefulWidget {
-  final int accountId;
-  final int bottomIdx;
-
   static String get routeName => 'transferForm';
 
-  const BankTransferFormScreen(
-      {super.key, required this.accountId, required this.bottomIdx});
+  const BankTransferFormScreen({
+    super.key,
+  });
 
   @override
   State<BankTransferFormScreen> createState() => _BankTransferFormScreenState();
@@ -44,52 +46,79 @@ class BankTransferFormScreen extends StatefulWidget {
 class _BankTransferFormScreenState extends State<BankTransferFormScreen> {
   late final ScrollController _scrollController;
 
+  final formKeys = [GlobalKey(), GlobalKey(), GlobalKey()];
+
+  late final List<FocusNode> focusNodes = [
+    FocusNode(),
+    FocusNode(),
+    FocusNode()
+  ];
+
+  void focusScrollable(int i) {
+    log("scrollalble ${i}");
+    Scrollable.ensureVisible(
+      formKeys[i].currentContext!,
+      duration: const Duration(milliseconds: 600),
+      alignment: 0.5,
+      curve: Curves.easeInOut,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    for (int i = 0; i < 3; i++) {
+      focusNodes[i].addListener(() {
+        if (focusNodes[i].hasFocus) {
+          focusScrollable(i);
+        }
+      });
+    }
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    for (int i = 0; i < 3; i++) {
+      focusNodes[i].removeListener(() {
+        focusScrollable(i);
+      });
+    }
     super.dispose();
   }
 
   Widget getDivider() {
-    return Container(
-      height: 5.h,
-      color: const Color(0xFFF8F8F8),
-    );
+    return Container(height: 8.h);
   }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultLayout(
-      bottomIdx: widget.bottomIdx,
-      scrollController: _scrollController,
-      body: NestedScrollView(
-        controller: _scrollController,
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return [
-            const DefaultAppBar(
-              title: '송금 신청',
-              isSliver: true,
-            )
-          ];
-        },
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: const DefaultAppBar(
+          title: '정산금 수령 신청',
+          backgroundColor: MITIColor.gray750,
+          hasBorder: false,
+        ),
         body: CustomScrollView(
+          controller: _scrollController,
           slivers: [
             SliverToBoxAdapter(
               child: Column(
                 children: [
-                  _AccountComponent(
-                    accountId: widget.accountId,
+                  _AccountForm(
+                    globalKeys: formKeys,
+                    focusNodes: focusNodes,
                   ),
                   getDivider(),
-                  _AccountForm(
-                    accountId: widget.accountId,
+                  _TransferAmountForm(
+                    focusNode: focusNodes[2],
+                    globalKey: formKeys[2],
                   ),
+                  getDivider(),
+                  const _AgreementTermForm(),
                 ],
               ),
             ),
@@ -100,98 +129,14 @@ class _BankTransferFormScreenState extends State<BankTransferFormScreen> {
   }
 }
 
-class _AccountComponent extends ConsumerWidget {
-  final int accountId;
-
-  const _AccountComponent({
-    super.key,
-    required this.accountId,
-  });
-
-  Row _getAccountInfo({required String title, required int value}) {
-    final amount = NumberUtil.format(value.toString());
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title,
-          style: MITITextStyle.plainTextMStyle.copyWith(
-            color: const Color(0xff666666),
-          ),
-        ),
-        Text(
-          '₩ $amount',
-          style:
-              MITITextStyle.feeSStyle.copyWith(color: const Color(0xFF333333)),
-        ),
-      ],
-    );
-  }
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final result = ref.watch(accountProvider(accountId: accountId));
-    if (result is LoadingModel) {
-      return CircularProgressIndicator();
-    } else if (result is ErrorModel) {
-      AccountError.fromModel(model: result)
-          .responseError(context, AccountApiType.getAccountInfo, ref);
-      return Text('에러');
-    }
-    final model = (result as ResponseModel<AccountDetailModel>).data!;
-    final requestTransferAmount =
-        NumberUtil.format(model.requestable_transfer_amount.toString());
-    return Padding(
-      padding:
-          EdgeInsets.only(left: 12.r, right: 12.r, top: 12.r, bottom: 20.r),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            '보유 잔고',
-            style: MITITextStyle.sectionTitleStyle.copyWith(
-              color: const Color(0xff222222),
-            ),
-          ),
-          SizedBox(height: 14.h),
-          _getAccountInfo(title: '보유잔고', value: model.balance),
-          SizedBox(height: 12.h),
-          _getAccountInfo(title: '보유 포인트', value: model.point),
-          SizedBox(height: 12.h),
-          _getAccountInfo(
-              title: '대기 송금요청액', value: model.accumulated_requested_amount),
-          Divider(
-            height: 25.h,
-            color: const Color(0xFFE8E8E8),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '총 송금 가능 금액',
-                style: MITITextStyle.gameTitleMainStyle.copyWith(
-                  color: const Color(0xff222222),
-                ),
-              ),
-              Text(
-                '₩ $requestTransferAmount',
-                style: MITITextStyle.feeStyle
-                    .copyWith(color: const Color(0xfff45858)),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _AccountForm extends ConsumerStatefulWidget {
-  final int accountId;
+  final List<GlobalKey> globalKeys;
+  final List<FocusNode> focusNodes;
 
   const _AccountForm({
     super.key,
-    required this.accountId,
+    required this.globalKeys,
+    required this.focusNodes,
   });
 
   @override
@@ -199,160 +144,210 @@ class _AccountForm extends ConsumerStatefulWidget {
 }
 
 class _AccountFormState extends ConsumerState<_AccountForm> {
-  final formKeys = [GlobalKey(), GlobalKey(), GlobalKey()];
-
-  late final List<FocusNode> focusNodes = [
-    FocusNode(),
-    FocusNode(),
-    FocusNode()
-  ];
-
-  final items = [
-    '카카오뱅크',
-    '농협은행',
-    '국민은행',
-    '신한은행',
-    '우리은행',
-    '기업은행',
-    '하나은행',
-    '새마을금고',
-    '우체국',
-    'SC제일은행',
-    '대구은행',
-    '부산은행',
-    '경남은행',
-    '광주은행',
-    '신협',
-    '수협은행',
-    '산업은행',
-    '전북은행',
-    '제주은행',
-    '씨티은행',
-    '케이뱅크',
-    '토스뱅크',
-  ];
-
-  @override
-  void initState() {
-    for (int i = 0; i < 3; i++) {
-      focusNodes[i].addListener(() {
-        focusScrollable(i);
-      });
-    }
-  }
-
-  void focusScrollable(int i) {
-    Scrollable.ensureVisible(
-      formKeys[i].currentContext!,
-      duration: const Duration(milliseconds: 600),
-      curve: Curves.easeInOut,
-    );
-  }
-
-  @override
-  void dispose() {
-    for (int i = 0; i < 3; i++) {
-      focusNodes[i].removeListener(() {
-        focusScrollable(i);
-      });
-    }
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final result = ref.watch(accountProvider(accountId: widget.accountId));
-    if (result is LoadingModel) {
-      return CircularProgressIndicator();
-    } else if (result is ErrorModel) {
-      AccountError.fromModel(model: result)
-          .responseError(context, AccountApiType.getAccountInfo, ref);
-
-      return Text('에러');
-    }
-    final model = (result as ResponseModel<AccountDetailModel>).data!;
-    final check1 = ref.watch(checkProvider(1));
-    final check2 = ref.watch(checkProvider(2));
-    final form = ref.watch(transferFormProvider);
-    final valid = ref
-            .watch(transferFormProvider.notifier)
-            .valid(model.requestable_transfer_amount) &&
-        check1 &&
-        check2;
-    final interactionDesc =
-        ref.watch(formDescProvider(InputFormType.passwordCode));
-    return Padding(
-      padding: EdgeInsets.all(12.r),
+    return Container(
+      color: MITIColor.gray750,
+      padding:
+          EdgeInsets.only(left: 21.w, right: 21.w, top: 24.h, bottom: 28.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            '송금 계좌 정보 입력',
-            style: MITITextStyle.sectionTitleStyle,
+            '이체하실 계좌 정보',
+            style: MITITextStyle.mdBold.copyWith(
+              color: MITIColor.gray100,
+            ),
           ),
-          SizedBox(height: 12.h),
-          Row(
+          SizedBox(height: 20.h),
+          CustomTextFormField(
+            key: widget.globalKeys[0],
+            hintText: '이체할 계좌번호의 예금주를 입력해 주세요.',
+            hintTextStyle: MITITextStyle.sm.copyWith(color: MITIColor.gray500),
+            label: '예금주',
+            textStyle: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
+            focusNode: widget.focusNodes[0],
+            onTap: () {
+              FocusScope.of(context).requestFocus(widget.focusNodes[0]);
+            },
+            onNext: () {
+              FocusScope.of(context).requestFocus(widget.focusNodes[1]);
+            },
+            textInputAction: TextInputAction.next,
+            onChanged: (val) {
+              ref
+                  .read(transferFormProvider.notifier)
+                  .update(account_holder: val);
+            },
+          ),
+          SizedBox(height: 20.h),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      '은행',
-                      style: MITITextStyle.inputLabelIStyle,
-                    ),
-                    SizedBox(height: 10.h),
-                    CustomDropDownButton(
-                      items: items,
-                      height: 50.h,
-                      radius: 8.r,
-                      padding: 16.r,
-                      textStyle: MITITextStyle.inputValueMStyle
-                          .copyWith(height: 1, color: Colors.black),
-                      onChanged: (String? value) {
-                        ref
-                            .read(transferFormProvider.notifier)
-                            .update(account_bank: value);
-                        ref
-                            .read(dropDownValueProvider.notifier)
-                            .update((state) => value);
-                      },
-                    ),
-                  ],
-                ),
+              Text(
+                '은행',
+                style: MITITextStyle.sm.copyWith(color: MITIColor.gray300),
               ),
-              SizedBox(width: 60.w),
-              Expanded(
-                child: CustomTextFormField(
-                  key: formKeys[0],
-                  onChanged: (val) {
-                    ref
-                        .read(transferFormProvider.notifier)
-                        .update(account_holder: val);
-                  },
-                  focusNode: focusNodes[0],
-                  onNext: () {
-                    FocusScope.of(context).requestFocus(focusNodes[1]);
-                  },
-                  hintText: '김미티',
-                  label: '예금주',
-                  textInputAction: TextInputAction.next,
-                  labelTextStyle: MITITextStyle.inputLabelIStyle,
-                  textAlign: TextAlign.center,
+              SizedBox(height: 8.h),
+              GestureDetector(
+                onTap: () {
+                  String selectBank = '';
+                  showModalBottomSheet(
+                      isScrollControlled: true,
+                      context: context,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(20.r),
+                        ),
+                      ),
+                      backgroundColor: MITIColor.gray800,
+                      builder: (context) {
+                        return StatefulBuilder(builder:
+                            (BuildContext context, StateSetter setState) {
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(vertical: 8.h),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: MITIColor.gray100,
+                                    borderRadius: BorderRadius.circular(8.r),
+                                  ),
+                                  width: 60.w,
+                                  height: 4.h,
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(20.r),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    Text(
+                                      '은행',
+                                      style: MITITextStyle.mdBold.copyWith(
+                                        color: MITIColor.gray100,
+                                      ),
+                                    ),
+                                    SizedBox(height: 20.h),
+                                    Wrap(
+                                      spacing: 10.r,
+                                      runSpacing: 10.r,
+                                      children: BankType.values
+                                          .map((b) => GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    if (selectBank ==
+                                                        b.displayName) {
+                                                      selectBank = '';
+                                                    } else {
+                                                      selectBank =
+                                                          b.displayName;
+                                                    }
+                                                  });
+                                                },
+                                                child: BankCard(
+                                                  bank: b,
+                                                  isSelected: selectBank ==
+                                                      b.displayName,
+                                                ),
+                                              ))
+                                          .toList(),
+                                    ),
+                                    SizedBox(height: 20.h),
+                                    TextButton(
+                                        onPressed: selectBank.isNotEmpty
+                                            ? () {
+                                                final selectBankType =
+                                                    BankType.stringToEnum(
+                                                        value: selectBank);
+                                                ref
+                                                    .read(transferFormProvider
+                                                        .notifier)
+                                                    .update(
+                                                        account_bank:
+                                                            selectBankType);
+                                                context.pop();
+                                                FocusScope.of(context)
+                                                    .unfocus();
+                                              }
+                                            : null,
+                                        style: TextButton.styleFrom(
+                                            backgroundColor:
+                                                selectBank.isNotEmpty
+                                                    ? MITIColor.primary
+                                                    : MITIColor.gray500),
+                                        child: Text(
+                                          '확인',
+                                          style: MITITextStyle.mdBold.copyWith(
+                                              color: selectBank.isNotEmpty
+                                                  ? MITIColor.gray800
+                                                  : MITIColor.gray50),
+                                        ))
+                                  ],
+                                ),
+                              )
+                            ],
+                          );
+                        });
+                      });
+                },
+                child: Container(
+                  height: 48.h,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.r),
+                    color: MITIColor.gray700,
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Consumer(
+                        builder: (BuildContext context, WidgetRef ref,
+                            Widget? child) {
+                          final accountBank = ref.watch(transferFormProvider
+                              .select((t) => t.account_bank));
+
+                          final bank = accountBank?.displayName ??
+                              '이체할 계좌번호의 은행사를 선택해주세요.';
+
+                          return Text(
+                            bank,
+                            style: MITITextStyle.sm.copyWith(
+                              color: accountBank == null
+                                  ? MITIColor.gray500
+                                  : MITIColor.gray100,
+                            ),
+                          );
+                        },
+                      ),
+                      Icon(
+                        Icons.keyboard_arrow_down,
+                        color: MITIColor.gray400,
+                        size: 16.r,
+                      )
+                    ],
+                  ),
                 ),
-              ),
+              )
             ],
           ),
-          SizedBox(height: 30.h),
+          SizedBox(height: 20.h),
           CustomTextFormField(
-            key: formKeys[1],
-            hintText: '입금 계좌 번호를 숫자만 기입해주세요.',
-            label: '입금 계좌 번호',
-            focusNode: focusNodes[1],
-            onNext: () {
-              FocusScope.of(context).requestFocus(focusNodes[2]);
+            key: widget.globalKeys[1],
+            hintText: '이체할 계좌번호를 입력해 주세요.',
+            hintTextStyle: MITITextStyle.sm.copyWith(color: MITIColor.gray500),
+            onTap: () {
+              FocusScope.of(context).requestFocus(widget.focusNodes[1]);
             },
-            labelTextStyle: MITITextStyle.inputLabelIStyle,
+            label: '계좌번호',
+            textStyle: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
+            focusNode: widget.focusNodes[1],
+            onNext: () {
+              FocusScope.of(context).requestFocus(widget.focusNodes[2]);
+            },
             keyboardType: TextInputType.number,
             textInputAction: TextInputAction.next,
             inputFormatters: [
@@ -365,17 +360,76 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
                   .update(account_number: val);
             },
           ),
-          SizedBox(height: 30.h),
+        ],
+      ),
+    );
+  }
+}
+
+class _TransferAmountForm extends ConsumerWidget {
+  final GlobalKey globalKey;
+  final FocusNode focusNode;
+
+  const _TransferAmountForm(
+      {super.key, required this.focusNode, required this.globalKey});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final result = ref.watch(accountProvider);
+    if (result is LoadingModel) {
+      return CircularProgressIndicator();
+    } else if (result is ErrorModel) {
+      AccountError.fromModel(model: result)
+          .responseError(context, AccountApiType.getAccountInfo, ref);
+
+      return Text('에러');
+    }
+
+    final model = (result as ResponseModel<AccountDetailModel>).data!;
+
+    final interaction = ref.watch(formInfoProvider(InputFormType.amount));
+    final amount =
+        NumberUtil.format(model.requestableTransferAmount.toString());
+    return Container(
+      color: MITIColor.gray750,
+      padding:
+          EdgeInsets.only(left: 21.w, right: 21.w, top: 24.h, bottom: 28.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            '이체하실 금액',
+            style: MITITextStyle.mdBold.copyWith(color: MITIColor.gray100),
+          ),
+          SizedBox(height: 20.h),
+          Row(
+            children: [
+              Text(
+                '현재 이체 가능한 금액',
+                style: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
+              ),
+              SizedBox(width: 20.w),
+              Text(
+                '$amount 원',
+                style: MITITextStyle.smBold.copyWith(color: MITIColor.primary),
+              ),
+            ],
+          ),
+          SizedBox(height: 20.h),
           CustomTextFormField(
-            key: formKeys[2],
-            hintText: '₩ 송금하실 금액을 입력해주세요.',
-            label: '송금액',
-            focusNode: focusNodes[2],
+            key: globalKey,
+            hintText: '0',
+            hintTextStyle: MITITextStyle.sm.copyWith(color: MITIColor.gray500),
+            focusNode: focusNode,
+            onTap: () {
+              FocusScope.of(context).requestFocus(focusNode);
+            },
+            textStyle: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
             labelTextStyle: MITITextStyle.inputLabelIStyle,
             keyboardType: TextInputType.number,
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,
-              MoneyFormatter(),
+              NumberFormatter(),
             ],
             onChanged: (val) {
               if (val.isEmpty) {
@@ -384,93 +438,184 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
               final value = val.replaceAll(',', '').replaceAll('₩ ', '');
               final amount = int.parse(value);
               ref.read(transferFormProvider.notifier).update(amount: amount);
-              if (amount > model.requestable_transfer_amount) {
+              if (amount > model.requestableTransferAmount) {
                 ref
-                    .read(formDescProvider(InputFormType.passwordCode).notifier)
-                    .update((state) => InteractionDesc(
-                        isSuccess: false, desc: '송금 가능한 금액을 초과하였습니다.'));
+                    .read(formInfoProvider(InputFormType.amount).notifier)
+                    .update(
+                        interactionDesc: InteractionDesc(
+                            isSuccess: false, desc: '이체 가능한 금액을 초과하였습니다.'),
+                        borderColor: MITIColor.error);
               } else {
                 ref
-                    .read(formDescProvider(InputFormType.passwordCode).notifier)
-                    .update((state) => null);
+                    .read(formInfoProvider(InputFormType.amount).notifier)
+                    .reset();
               }
             },
-            interactionDesc: interactionDesc,
-          ),
-          SizedBox(height: 50.h),
-          InkWell(
-            onTap: () {
-              ref.read(checkProvider(1).notifier).update((state) => !state);
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'MITI 송금 규정에 동의합니다.',
-                  style: MITITextStyle.textCheckStyle.copyWith(
-                    color: check1
-                        ? const Color(0xFF4065F5)
-                        : const Color(0xFF999999),
-                  ),
-                ),
-                SvgPicture.asset(
-                  'assets/images/icon/system_success.svg',
-                  colorFilter: ColorFilter.mode(
-                      check1
-                          ? const Color(0xFF4065F5)
-                          : const Color(0xFF999999),
-                      BlendMode.srcIn),
-                )
-              ],
+            borderColor: interaction.borderColor,
+            suffixIcon: Text(
+              '원',
+              style: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
             ),
+            interactionDesc: interaction.interactionDesc,
           ),
-          SizedBox(height: 15.h),
-          InkWell(
-            onTap: () {
-              ref.read(checkProvider(2).notifier).update((state) => !state);
+        ],
+      ),
+    );
+  }
+}
+
+class _AgreementTermForm extends ConsumerStatefulWidget {
+  const _AgreementTermForm({super.key});
+
+  @override
+  ConsumerState<_AgreementTermForm> createState() => _AgreementTermFormState();
+}
+
+class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
+  late Throttle<int> _throttler;
+  int throttleCnt = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: 0,
+      checkEquality: true,
+    );
+    _throttler.values.listen((int s) {
+      requestTransfer(ref, context);
+      throttleCnt++;
+    });
+  }
+
+  @override
+  void dispose() {
+    _throttler.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final result = ref.watch(accountProvider);
+    if (result is LoadingModel) {
+      return CircularProgressIndicator();
+    } else if (result is ErrorModel) {
+      AccountError.fromModel(model: result)
+          .responseError(context, AccountApiType.getAccountInfo, ref);
+
+      return Text('에러');
+    }
+    final model = (result as ResponseModel<AccountDetailModel>).data!;
+
+    List<bool> isCheckBoxes =
+        ref.watch(transferFormProvider.select((value) => value.checkBoxes));
+
+    final checkResult = ref.watch(
+        agreementPolicyProvider(type: AgreementRequestType.transfer_request));
+    bool validCheckBox = true;
+    if (checkResult is ResponseListModel<AgreementPolicyModel>) {
+      final checkModel = checkResult.data!;
+      for (int i = 0; i < isCheckBoxes.length; i++) {
+        if (checkModel[i].is_required && !isCheckBoxes[i]) {
+          validCheckBox = false;
+        }
+      }
+    }
+
+    final form = ref.watch(transferFormProvider);
+    final valid = ref
+            .watch(transferFormProvider.notifier)
+            .valid(model.requestableTransferAmount) &&
+        validCheckBox;
+    return Container(
+      color: MITIColor.gray750,
+      padding:
+          EdgeInsets.only(left: 21.w, right: 21.w, top: 24.h, bottom: 28.h),
+      child: Column(
+        children: [
+          Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              final checkResult = ref.watch(agreementPolicyProvider(
+                  type: AgreementRequestType.transfer_request));
+              if (checkResult is LoadingModel) {
+                return Container();
+              } else if (checkResult is ErrorModel) {
+                return Container();
+              }
+              final model =
+                  (checkResult as ResponseListModel<AgreementPolicyModel>)
+                      .data!;
+
+              final checkBoxes = model.mapIndexed((idx, e) {
+                return CustomCheckBox(
+                    title:
+                        '${e.is_required ? '[필수] ' : '[선택] '} ${e.policy.name}',
+                    textStyle:
+                        MITITextStyle.sm.copyWith(color: MITIColor.gray200),
+                    check: isCheckBoxes[idx],
+                    hasDetail: e.is_required,
+                    showDetail: () {
+                      showDialog(
+                          context: context,
+                          barrierColor: MITIColor.gray800,
+                          builder: (context) {
+                            return OperationTermScreen(
+                              title: model[idx].policy.name,
+                              desc: model[idx].policy.content,
+                              onPressed: () {
+                                if (!isCheckBoxes[idx]) {
+                                  onCheck(ref, idx);
+                                }
+                                context.pop();
+                              },
+                            );
+                          });
+                      // Navigator.of(context).push(TutorialOverlay());
+                    },
+                    onTap: () {
+                      onCheck(ref, idx);
+                    });
+              }).toList();
+              return CheckBoxFormV2(
+                checkBoxes: [...checkBoxes],
+                allTap: () {
+                  ref.read(checkProvider(2).notifier).update((state) => !state);
+                  isCheckBoxes.fillRange(
+                      0, isCheckBoxes.length, ref.read(checkProvider(2)));
+                  ref
+                      .read(transferFormProvider.notifier)
+                      .update(checkBoxes: isCheckBoxes.toList());
+                },
+              );
             },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '송금은 신청일 이후 평일 17시 이후 순차적으로 처리됩니다.',
-                  style: MITITextStyle.textCheckStyle.copyWith(
-                    color: check2
-                        ? const Color(0xFF4065F5)
-                        : const Color(0xFF999999),
-                  ),
-                ),
-                SvgPicture.asset(
-                  'assets/images/icon/system_success.svg',
-                  colorFilter: ColorFilter.mode(
-                      check2
-                          ? const Color(0xFF4065F5)
-                          : const Color(0xFF999999),
-                      BlendMode.srcIn),
-                )
-              ],
-            ),
           ),
           SizedBox(height: 30.h),
           TextButton(
             onPressed: valid
                 ? () async {
-                    await requestTransfer(ref, context);
+                    _throttler.setValue(throttleCnt + 1);
                   }
                 : () {},
             style: TextButton.styleFrom(
-              backgroundColor:
-                  valid ? const Color(0xFF4065F6) : const Color(0xFFE8E8E8),
+              backgroundColor: valid ? MITIColor.primary : MITIColor.gray500,
             ),
             child: Text(
-              '송금 신청하기',
-              style: MITITextStyle.btnTextBStyle.copyWith(
-                  color: valid ? Colors.white : const Color(0xff969696)),
+              '이체 신청하기',
+              style: MITITextStyle.mdBold.copyWith(
+                color: valid ? MITIColor.gray800 : MITIColor.gray50,
+              ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  void onCheck(WidgetRef ref, int idx) {
+    final allChecked =
+        !ref.read(transferFormProvider.notifier).onCheck(idx).contains(false);
+    ref.read(checkProvider(2).notifier).update((state) => allChecked);
   }
 
   Future<void> requestTransfer(WidgetRef ref, BuildContext context) async {
@@ -480,15 +625,32 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
         AccountError.fromModel(model: result)
             .responseError(context, AccountApiType.requestTransfer, ref);
       } else {
-        final extra = CustomDialog(
-          title: '송금 요청 생성 완료',
-          content: '송금 요청이 정상적으로 생성되었습니다.\n송금 내역에서 송금 상태를 확인하세요.',
-          onPressed: () {
-            Navigator.of(context, rootNavigator: true).pop('dialog');
-            context.goNamed(InfoBody.routeName);
-          },
-        );
-        context.pushNamed(DialogPage.routeName, extra: extra);
+        showModalBottomSheet(
+            context: context,
+            isDismissible: false,
+            builder: (_) {
+              return BottomDialog(
+                title: '정산금 이체 신청 완료',
+                content:
+                    '정산금 이체 신청이 완료되었습니다.\n정산 관리 > 정산금 이체 내역에서 정산 현황을 확인해 보세요!',
+                btn: Consumer(
+                  builder:
+                      (BuildContext context, WidgetRef ref, Widget? child) {
+                    return TextButton(
+                      onPressed: () async {
+                        context.goNamed(ProfileBody.routeName);
+                      },
+                      style: TextButton.styleFrom(
+                        fixedSize: Size(double.infinity, 48.h),
+                      ),
+                      child: const Text(
+                        "확인",
+                      ),
+                    );
+                  },
+                ),
+              );
+            });
       }
     }
   }

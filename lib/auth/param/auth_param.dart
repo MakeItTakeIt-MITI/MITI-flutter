@@ -24,21 +24,21 @@ class ResetPasswordParam {
 
   factory ResetPasswordParam.fromModel({required SignFormModel model}) {
     return ResetPasswordParam(
-        new_password: model.password, new_password_check: model.checkPassword);
+        new_password: model.password!, new_password_check: model.checkPassword!);
   }
 
   Map<String, dynamic> toJson() => _$ResetPasswordParamToJson(this);
 }
 
 @JsonSerializable()
-class OauthLoginParam {
-  OauthLoginParam();
+class LoginBaseParam {
+  LoginBaseParam();
 
-  Map<String, dynamic> toJson() => _$OauthLoginParamToJson(this);
+  Map<String, dynamic> toJson() => _$LoginBaseParamToJson(this);
 }
 
 @JsonSerializable()
-class KakaoLoginParam extends OauthLoginParam {
+class KakaoLoginParam extends LoginBaseParam {
   final String access_token;
 
   KakaoLoginParam({
@@ -50,7 +50,7 @@ class KakaoLoginParam extends OauthLoginParam {
 }
 
 @JsonSerializable()
-class AppleLoginParam extends OauthLoginParam {
+class AppleLoginParam extends LoginBaseParam {
   final String? identity_token;
   final String authorization_code;
   final String? email;

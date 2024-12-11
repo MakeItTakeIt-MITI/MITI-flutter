@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miti/auth/view/login_screen.dart';
 
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
+import '../../common/model/entity_enum.dart';
 import '../../common/provider/secure_storage_provider.dart';
 import '../../court/view/court_map_screen.dart';
 import '../model/auth_model.dart';
@@ -34,10 +36,16 @@ class TokenProvider extends ChangeNotifier {
     await ref.read(authProvider.notifier).logout();
   }
 
-  String? redirectLogic(GoRouterState goRouteState) {
+  Future<String?> redirectLogic(GoRouterState goRouteState) async {
     log('redirect start!');
-    final tokens = ref.read(authProvider);
-    final loginIn = goRouteState.path == '/home/login';
+
+    AuthModel? tokens = ref.read(authProvider);
+    if (tokens == null) {
+      await ref.read(authProvider.notifier).autoLogin();
+      tokens = ref.read(authProvider);
+    }
+
+    final loginIn = goRouteState.path == '/login';
 
     // 유저 정보가 없는데
     // 로그인중이면 그대로 로그인 페이지에 두고
@@ -45,9 +53,9 @@ class TokenProvider extends ChangeNotifier {
     if (tokens == null) {
       log("로그인으로 redirect!! ${goRouteState.path}");
       if (goRouteState.path == '/home') {
-        return '/home/login';
+        return '/login';
       }
-      return loginIn ? null : '/home/login';
+      return loginIn ? null : '/login';
     }
 
     if (loginIn) {
@@ -99,7 +107,13 @@ class AuthStateNotifier extends StateNotifier<AuthModel?> {
     final id = await storage.read(key: 'id');
     final email = await storage.read(key: 'email');
     final nickname = await storage.read(key: 'nickname');
-    final is_authenticated = await storage.read(key: 'is_authenticated');
+    final signUpTypeString = await storage.read(key: 'signUpType');
+    if (signUpTypeString != null) {}
+
+    ///todo 수정 필요
+    final signUpType =
+        AuthType.stringToEnum(value: signUpTypeString ?? 'email');
+
     if (accessToken != null) {
       state = AuthModel(
         token: TokenModel(
@@ -107,12 +121,17 @@ class AuthStateNotifier extends StateNotifier<AuthModel?> {
         id: int.parse(id ?? '0'),
         email: email,
         nickname: nickname,
-        is_authenticated: bool.parse(is_authenticated!),
+        signUpType: signUpType,
       );
-    }
-
-    if (context != null && context.mounted) {
-      context.goNamed(CourtMapScreen.routeName);
+      if (context != null && context.mounted) {
+        log("로그인 완료!");
+        context.goNamed(CourtMapScreen.routeName);
+      }
+    } else {
+      if (context != null && context.mounted) {
+        log("로그인 필요합니다!");
+        context.goNamed(LoginScreen.routeName);
+      }
     }
   }
 

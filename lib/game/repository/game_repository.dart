@@ -3,11 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retrofit/http.dart';
 
 import '../../common/model/default_model.dart';
+import '../../common/param/pagination_param.dart';
+import '../../common/repository/base_pagination_repository.dart';
 import '../../dio/dio_interceptor.dart';
 import '../../dio/provider/dio_provider.dart';
+import '../../user/param/user_profile_param.dart';
 import '../model/game_model.dart';
 import '../model/game_payment_model.dart';
 import '../model/game_player_model.dart';
+import '../model/game_recent_host_model.dart';
 import '../model/game_review_model.dart';
 import '../param/game_param.dart';
 
@@ -18,7 +22,7 @@ final gameRepositoryProvider = Provider<GameRepository>((ref) {
   return GameRepository(dio);
 });
 
-@RestApi(baseUrl: serverURL)
+@RestApi(baseUrl: devServerURL)
 abstract class GameRepository {
   factory GameRepository(Dio dio) = _GameRepository;
 
@@ -30,6 +34,11 @@ abstract class GameRepository {
   @Headers({'token': 'true', 'required': 'false'})
   @GET('/games/{gameId}')
   Future<ResponseModel<GameDetailModel>> getGameDetail(
+      {@Path() required int gameId});
+
+  @Headers({'token': 'true'})
+  @PATCH('/games/{gameId}/convert-free-game')
+  Future<ResponseModel<GameDetailModel>> freeGame(
       {@Path() required int gameId});
 
   @Headers({'token': 'true'})
@@ -51,25 +60,11 @@ abstract class GameRepository {
   Future<ResponseModel<GamePaymentModel>> getPayment(
       {@Path() required int gameId});
 
+  /// 경기 피리뷰자 목록 조회 API
   @Headers({'token': 'true'})
-  @GET('/games/{gameId}/players')
-  Future<ResponseModel<GamePlayerListModel>> getPlayers(
+  @GET('/games/{gameId}/reviewees')
+  Future<ResponseModel<GameRevieweesModel>> getReviewees(
       {@Path() required int gameId});
-
-  @Headers({'token': 'true'})
-  @POST('/games/{gameId}/participations/{participationId}/guest-reviews')
-  Future<ResponseModel<GameCreateReviewModel>> createGuestReview({
-    @Path() required int gameId,
-    @Path() required int participationId,
-    @Body() required GameReviewParam param,
-  });
-
-  @Headers({'token': 'true'})
-  @POST('/games/{gameId}/reviews')
-  Future<ResponseModel<GameCreateReviewModel>> createHostReview({
-    @Path() required int gameId,
-    @Body() required GameReviewParam param,
-  });
 
   @Headers({'token': 'true'})
   @DELETE('/games/{gameId}/participations/{participationId}')
@@ -90,4 +85,48 @@ abstract class GameRepository {
   Future<ResponseModel<UserReviewModel>> getRating({
     @Path('ratingId') required int ratingId,
   });
+
+  @Headers({'token': 'true'})
+  @GET('/users/{userId}/recent-hosted-games')
+  Future<ResponseListModel<GameRecentHostModel>> getRecentHostings({
+    @Path('userId') required int userId,
+  });
+
+  @Headers({'token': 'true'})
+  @PUT('/games/{gameId}/cancel')
+  Future<ResponseModel<GameDetailModel>> cancelRecruitGame({
+    @Path('gameId') required int gameId,
+  });
+
+  ///*** 리뷰 관련 api ***
+  /// 경기 게스트 참가자 리뷰 작성 API
+  @Headers({'token': 'true'})
+  @POST('/games/{gameId}/participations/{participationId}/reviews')
+  Future<ResponseModel<GameCreateReviewModel>> createGuestReview({
+    @Path() required int gameId,
+    @Path() required int participationId,
+    @Body() required GameReviewParam param,
+  });
+
+  /// 경기 호스트 리뷰 작성 API
+  @Headers({'token': 'true'})
+  @POST('/games/{gameId}/reviews')
+  Future<ResponseModel<GameCreateReviewModel>> createHostReview({
+    @Path() required int gameId,
+    @Body() required GameReviewParam param,
+  });
+
+  /// 게스트 리뷰 상세 조회 API
+  @Headers({'token': 'true'})
+  @GET('/games/{gameId}/participations/{participationId}/reviews/{reviewId}')
+  Future<ResponseModel<ReviewDetailModel>> getGuestReview(
+      {@Path() required int gameId,
+      @Path() required int participationId,
+      @Path() required int reviewId});
+
+  /// 호스트 리뷰 상세 조회 API
+  @Headers({'token': 'true'})
+  @GET('/games/{gameId}/reviews/{reviewId}')
+  Future<ResponseModel<ReviewDetailModel>> getHostReview(
+      {@Path() required int gameId, @Path() required int reviewId});
 }

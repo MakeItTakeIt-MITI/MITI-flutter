@@ -11,6 +11,7 @@ import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../game/model/game_model.dart';
 import '../model/user_model.dart';
+import '../param/user_profile_param.dart';
 
 part 'user_provider.g.dart';
 
@@ -33,28 +34,58 @@ enum UserReviewType {
 }
 
 @Riverpod(keepAlive: false)
-class Review extends _$Review {
+class MyReview extends _$MyReview {
   @override
-  BaseModel build({required UserReviewType type, required int reviewId}) {
-    getReviews(type: type, reviewId: reviewId);
+  BaseModel build(
+      {required UserReviewType userReviewType,
+      required int reviewId,
+      required ReviewType reviewType}) {
+    getReview(
+      userReviewType: userReviewType,
+      reviewId: reviewId,
+      reviewType: reviewType,
+    );
     return LoadingModel();
   }
 
-  void getReviews({
-    required UserReviewType type,
+  void getReview({
+    required UserReviewType userReviewType,
     required int reviewId,
+    required ReviewType reviewType,
   }) async {
     state = LoadingModel();
     final repository = ref.watch(userRepositoryProvider);
+    final review =
+        reviewType == ReviewType.guest ? 'guest-reviews' : 'host-reviews';
     final id = ref.read(authProvider)!.id!;
-    switch (type) {
+    switch (userReviewType) {
       case UserReviewType.written:
-        state =
-            await repository.getWrittenReview(userId: id, reviewId: reviewId);
+        repository
+            .getWrittenReview(
+                userId: id, reviewId: reviewId, reviewType: review)
+            .then((value) {
+          logger.i(value);
+          state = value;
+        }).catchError((e) {
+          final error = ErrorModel.respToError(e);
+          logger.e(
+              'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+          state = error;
+        });
         break;
       default:
-        state =
-            await repository.getReceiveReview(userId: id, reviewId: reviewId);
+        repository
+            .getReceiveReview(
+                userId: id, reviewId: reviewId, reviewType: review)
+            .then((value) {
+          logger.i(value);
+          state = value;
+        }).catchError((e) {
+          final error = ErrorModel.respToError(e);
+          logger.e(
+              'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+          state = error;
+        });
         break;
     }
   }
@@ -92,24 +123,6 @@ class UserInfo extends _$UserInfo {
 }
 
 @riverpod
-Future<BaseModel> deleteUser(DeleteUserRef ref) async {
-  final userId = ref.watch(authProvider)!.id!;
-  return await ref
-      .watch(userRepositoryProvider)
-      .deleteUser(userId: userId)
-      .then<BaseModel>((value) {
-    logger.i(value);
-    ref.read(authProvider.notifier).logout();
-    return value;
-  }).catchError((e) {
-    final error = ErrorModel.respToError(e);
-    logger.e(
-        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
-    return error;
-  });
-}
-
-@riverpod
 Future<BaseModel> updateNickname(UpdateNicknameRef ref) async {
   final userId = ref.watch(authProvider)!.id!;
   final param = ref.watch(userNicknameFormProvider);
@@ -118,11 +131,7 @@ Future<BaseModel> updateNickname(UpdateNicknameRef ref) async {
       .updateNickname(userId: userId, param: param)
       .then<BaseModel>((value) {
     logger.i(value);
-    final result = ref.watch(userInfoProvider);
-
-    // final model = (result as ResponseModel<UserModel>).data!;
-
-    ref.read(userInfoProvider.notifier).updateNickname(param.nickname!);
+    ref.read(userInfoProvider.notifier).updateNickname(param.nickname);
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
@@ -133,15 +142,16 @@ Future<BaseModel> updateNickname(UpdateNicknameRef ref) async {
 }
 
 @riverpod
-Future<BaseModel> updatePassword(UpdatePasswordRef ref) async {
-  final userId = ref.watch(authProvider)!.id!;
-  final param = ref.watch(userPasswordFormProvider);
+Future<BaseModel> updatePassword(
+    UpdatePasswordRef ref, int userId, UserPasswordParam param) async {
+  // final userId = ref.watch(authProvider)!.id!;
+  // final param = ref.watch(userPasswordFormProvider);
   return await ref
       .watch(userRepositoryProvider)
       .updatePassword(userId: userId, param: param)
       .then<BaseModel>((value) {
     logger.i(value);
-    ref.read(userInfoProvider.notifier).getUserInfo();
+    // ref.read(userInfoProvider.notifier).getUserInfo();
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
@@ -149,4 +159,30 @@ Future<BaseModel> updatePassword(UpdatePasswordRef ref) async {
         'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
     return error;
   });
+}
+
+@riverpod
+class PaymentDetail extends _$PaymentDetail {
+  @override
+  BaseModel build({required int paymentResultId}) {
+    getDetail(paymentResultId: paymentResultId);
+    return LoadingModel();
+  }
+
+  void getDetail({required int paymentResultId}) async {
+    state = LoadingModel();
+    final repository = ref.watch(userRepositoryProvider);
+    final id = ref.read(authProvider)!.id!;
+    await repository
+        .getPaymentResultDetail(userId: id, paymentResultId: paymentResultId)
+        .then((value) {
+      logger.i(value);
+      state = value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state = error;
+    });
+  }
 }

@@ -1,3 +1,7 @@
+import 'dart:developer';
+
+import 'package:debounce_throttle/debounce_throttle.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -9,6 +13,7 @@ import 'package:miti/common/model/default_model.dart';
 import 'package:miti/game/error/game_error.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/default_appbar.dart';
@@ -22,12 +27,10 @@ import 'game_detail_screen.dart';
 class GameUpdateScreen extends ConsumerStatefulWidget {
   static String get routeName => 'gameUpdate';
   final int gameId;
-  final int bottomIdx;
 
   const GameUpdateScreen({
     super.key,
     required this.gameId,
-    required this.bottomIdx,
   });
 
   @override
@@ -36,21 +39,39 @@ class GameUpdateScreen extends ConsumerStatefulWidget {
 
 class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
   late final ScrollController _scrollController;
-  final formKeys = [GlobalKey(), GlobalKey(), GlobalKey()];
+  late Throttle<int> _throttler;
+  int throttleCnt = 0;
+
+  final formKeys = [
+    GlobalKey(),
+    GlobalKey(),
+    GlobalKey(),
+  ];
 
   late final List<FocusNode> focusNodes = [
     FocusNode(),
     FocusNode(),
-    FocusNode()
+    FocusNode(),
   ];
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: 0,
+      checkEquality: true,
+    );
+    _throttler.values.listen((int s) {
+      onUpdate(context);
+      throttleCnt++;
+    });
     for (int i = 0; i < 3; i++) {
       focusNodes[i].addListener(() {
-        focusScrollable(i);
+        if (focusNodes[i].hasFocus) {
+          focusScrollable(i);
+        }
       });
     }
   }
@@ -65,6 +86,7 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
 
   @override
   void dispose() {
+    _throttler.cancel();
     for (int i = 0; i < 3; i++) {
       focusNodes[i].removeListener(() {
         focusScrollable(i);
@@ -84,133 +106,123 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bottomPadding = MediaQuery.of(context).viewInsets.bottom > 80.h
-        ? MediaQuery.of(context).viewInsets.bottom - 80.h
-        : 0.0;
-    return DefaultLayout(
-      bottomIdx: widget.bottomIdx,
-      scrollController: _scrollController,
-      body: NestedScrollView(
-        controller: _scrollController,
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return [
-            const DefaultAppBar(
-              title: '경기 정보 수정',
-              isSliver: true,
-            ),
-          ];
-        },
-        body: Padding(
-          padding:  EdgeInsets.only(bottom: bottomPadding),
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Consumer(
-                  builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                    final result =
-                        ref.watch(gameDetailProvider(gameId: widget.gameId));
-                    if (result is LoadingModel) {
-                      return CircularProgressIndicator();
-                    } else if (result is ErrorModel) {
-                      GameError.fromModel(model: result)
-                          .responseError(context, GameApiType.get, ref);
-                      return Text('에러');
-                    }
-                    result as ResponseModel<GameDetailModel>;
-                    final model = result.data!;
-                    return Column(
-                      children: [
-                        SummaryComponent.fromDetailModel(model: model),
-                        getDivider(),
-                        _GameUpdateFormComponent(
-                          initMaxValue: model.max_invitation.toString(),
-                          initMinValue: model.min_invitation.toString(),
-                          focusNodes: focusNodes,
-                          formKeys: formKeys,
-                        ),
-                        getDivider(),
-                        _InfoComponent(
-                          info: model.info,
-                          focusNodes: focusNodes,
-                          formKeys: formKeys,
-                        ),
-                        SizedBox(height: 80.h),
-                        // const Spacer(),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16.w, vertical: 8.h),
-                          child: TextButton(
-                            onPressed: valid()
-                                ? () async {
-                                    final result = await ref.read(
-                                        gameUpdateProvider(gameId: widget.gameId)
-                                            .future);
-                                    if (result is ErrorModel) {
-                                      if (context.mounted) {
-                                        GameError.fromModel(model: result)
-                                            .responseError(
-                                                context, GameApiType.update, ref);
-                                      }
-                                    } else {
-                                      if (context.mounted) {
-                                        final extra = CustomDialog(
-                                          title: '경기 모집 정보 수정 완료',
-                                          content: '경기 정보가 정상적으로 수정되었습니다.',
-                                          onPressed: () {
-                                            Navigator.of(context,
-                                                    rootNavigator: true)
-                                                .pop('dialog');
-                                            Map<String, String> pathParameters = {
-                                              'gameId': widget.gameId.toString()
-                                            };
-                                            final Map<String, String>
-                                                queryParameters = {
-                                              'bottomIdx':
-                                                  widget.bottomIdx.toString()
-                                            };
-                                            context.goNamed(
-                                              GameDetailScreen.routeName,
-                                              pathParameters: pathParameters,
-                                              queryParameters: queryParameters,
-                                            );
-                                          },
-                                        );
-                                        context.pushNamed(DialogPage.routeName,
-                                            extra: extra);
-                                      }
-                                    }
-                                  }
-                                : () {},
-                            style: TextButton.styleFrom(
-                                backgroundColor: valid()
-                                    ? const Color(0xFF4065F6)
-                                    : const Color(0xFFE8E8E8)),
-                            child: Text(
-                              '저장하기',
-                              style: MITITextStyle.btnTextBStyle.copyWith(
-                                color: valid()
-                                    ? Colors.white
-                                    : const Color(0xff969696),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: const DefaultAppBar(
+          title: '경기 수정하기',
+          backgroundColor: MITIColor.gray750,
+        ),
+        backgroundColor: MITIColor.gray750,
+        bottomNavigationBar: BottomButton(
+          button: TextButton(
+            onPressed: valid()
+                ? () async {
+                    _throttler.setValue(throttleCnt + 1);
+                  }
+                : () {},
+            style: TextButton.styleFrom(
+                backgroundColor:
+                    valid() ? MITIColor.primary : MITIColor.gray500),
+            child: Text(
+              '저장하기',
+              style: MITITextStyle.btnTextBStyle.copyWith(
+                color: valid() ? MITIColor.gray800 : MITIColor.gray50,
               ),
-            ],
+            ),
           ),
+        ),
+        body: CustomScrollView(
+          controller: _scrollController,
+          slivers: [
+            SliverToBoxAdapter(
+              child: Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  final result =
+                      ref.watch(gameDetailProvider(gameId: widget.gameId));
+                  if (result is LoadingModel) {
+                    return CircularProgressIndicator();
+                  } else if (result is ErrorModel) {
+                    GameError.fromModel(model: result)
+                        .responseError(context, GameApiType.get, ref);
+                    return Text('에러');
+                  }
+                  result as ResponseModel<GameDetailModel>;
+                  final model = result.data!;
+                  return Column(
+                    children: [
+                      SummaryComponent.fromDetailModel(
+                        model: model,
+                        isUpdateForm: true,
+                      ),
+                      getDivider(),
+                      _GameUpdateFormComponent(
+                        initMaxValue: model.max_invitation.toString(),
+                        initMinValue: model.min_invitation.toString(),
+                        focusNodes: focusNodes,
+                        formKeys: formKeys,
+                      ),
+                      getDivider(),
+                      _InfoComponent(
+                        info: model.info,
+                        focusNodes: focusNodes,
+                        formKeys: formKeys,
+                      ),
+                      SizedBox(height: 80.h),
+                      // const Spacer(),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
+  Future<void> onUpdate(BuildContext context) async {
+    final result =
+        await ref.read(gameUpdateProvider(gameId: widget.gameId).future);
+    if (result is ErrorModel) {
+      if (context.mounted) {
+        GameError.fromModel(model: result)
+            .responseError(context, GameApiType.update, ref);
+      }
+    } else {
+      if (context.mounted) {
+        showModalBottomSheet(
+            context: context,
+            isDismissible: false,
+            enableDrag: false,
+            builder: (context) {
+              return BottomDialog(
+                title: '경기 모집 정보 수정 완료',
+                content: '경기 정보가 정상적으로 수정되었습니다.',
+                btn: TextButton(
+                  onPressed: () {
+                    Map<String, String> pathParameters = {
+                      'gameId': widget.gameId.toString()
+                    };
+                    context.pop();
+                    FocusScope.of(context).requestFocus(FocusNode());
+                    context.goNamed(
+                      GameDetailScreen.routeName,
+                      pathParameters: pathParameters,
+                    );
+                  },
+                  child: const Text("확인"),
+                ),
+              );
+            });
+      }
+    }
+  }
+
   Widget getDivider() {
     return Container(
       height: 5.h,
-      color: const Color(0xFFF8F8F8),
+      color: MITIColor.gray750,
     );
   }
 }
@@ -249,32 +261,23 @@ class _GameUpdateFormComponentState
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(12.r),
+      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            '경기 수정',
-            style: MITITextStyle.sectionTitleStyle.copyWith(
-              color: const Color(0xff040000),
-            ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
             '참여 인원 수정',
-            style: MITITextStyle.selectionSubtitleStyle.copyWith(
-              color: const Color(0xff040000),
+            style: MITITextStyle.mdBold.copyWith(
+              color: MITIColor.gray100,
             ),
           ),
           SizedBox(height: 20.h),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 19.5.w),
-            child: ApplyForm(
-              initMaxValue: widget.initMaxValue,
-              initMinValue: widget.initMinValue,
-              formKeys: widget.formKeys,
-              focusNodes: widget.focusNodes,
-            ),
+          ApplyForm(
+            initMaxValue: widget.initMaxValue,
+            initMinValue: widget.initMinValue,
+            formKeys: widget.formKeys,
+            focusNodes: widget.focusNodes,
+            isUpdateForm: true,
           ),
         ],
       ),
@@ -310,17 +313,17 @@ class _InfoComponentState extends ConsumerState<_InfoComponent> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(12.r),
+      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
             '모집 정보',
-            style: MITITextStyle.sectionTitleStyle.copyWith(
-              color: const Color(0xFF222222),
+            style: MITITextStyle.mdBold.copyWith(
+              color: MITIColor.gray100,
             ),
           ),
-          SizedBox(height: 22.h),
+          SizedBox(height: 20.h),
           Scrollbar(
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
@@ -331,8 +334,8 @@ class _InfoComponentState extends ConsumerState<_InfoComponent> {
                 initialValue: widget.info,
                 maxLines: null,
                 textAlignVertical: TextAlignVertical.top,
-                style: MITITextStyle.inputValueMStyle.copyWith(
-                  color: Colors.black,
+                style: MITITextStyle.sm150.copyWith(
+                  color: MITIColor.gray100,
                 ),
                 onChanged: (val) {
                   ref.read(gameFormProvider.notifier).update(info: val);
@@ -348,13 +351,14 @@ class _InfoComponentState extends ConsumerState<_InfoComponent> {
                   ),
                   hintText:
                       '주차, 샤워 가능 여부, 경기 진행 방식, 필요한 유니폼 색상 등 참가들에게 공지할 정보들을 입력해주세요',
-                  hintStyle: MITITextStyle.placeHolderMStyle
-                      .copyWith(color: const Color(0xFF969696)),
+                  hintStyle: MITITextStyle.sm150.copyWith(
+                    color: MITIColor.gray500,
+                  ),
                   hintMaxLines: 10,
-                  fillColor: const Color(0xFFF7F7F7),
+                  fillColor: MITIColor.gray700,
                   filled: true,
                   contentPadding:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
                   // isDense: true,
                 ),
               ),

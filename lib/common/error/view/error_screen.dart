@@ -1,52 +1,70 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:miti/theme/color_theme.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../../court/view/court_map_screen.dart';
 import '../../../theme/text_theme.dart';
 import '../../component/default_appbar.dart';
+import '../../component/default_layout.dart';
 import '../../model/entity_enum.dart';
 
 class ErrorScreen extends StatelessWidget {
-  final ErrorScreenType errorType;
 
   static String get routeName => 'error';
 
-  const ErrorScreen({super.key, required this.errorType});
+  const ErrorScreen({super.key,});
 
   @override
   Widget build(BuildContext context) {
-    String content;
-    switch (errorType) {
-      case ErrorScreenType.notFound:
-        content = '해당 페이지를 찾을 수 없습니다.';
-      case ErrorScreenType.unAuthorization:
-        content = '해당 페이지의 권한이 없습니다.';
-      case ErrorScreenType.server:
-        content = '서버가 불안정해 잠시후 다시 이용해주세요.';
-    }
+
     return Scaffold(
-      body: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return [
-            const DefaultAppBar(
-              isSliver: true,
-              title: '오류',
-            )
-          ];
-        },
-        body: CustomScrollView(
-          slivers: [
-            SliverFillRemaining(
-              child: Padding(
-                padding: EdgeInsets.all(12.r),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      content,
-                      style: MITITextStyle.pageMainTextStyle,
-                    ),
-                  ],
+      appBar: const DefaultAppBar(hasBorder: false),
+      bottomNavigationBar: BottomButton(
+          button: SizedBox(
+            height: 48.h,
+            child: TextButton(
+                onPressed: () {
+                  context.goNamed(CourtMapScreen.routeName);
+                },
+                child: const Text(
+                  '홈으로 가기',
+                )),
+          )),
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Spacer(),
+            Text(
+              '서비스 오류',
+              style: MITITextStyle.xxl140.copyWith(color: MITIColor.white),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 20.h),
+            Text(
+              '요청하신 페이지 데이터를 올바르게 가져올 수 없습니다.\n같은 오류가 반복된다면 고객센터로 문의해주세요.',
+              style: MITITextStyle.sm150.copyWith(color: MITIColor.gray300),
+              textAlign: TextAlign.center,
+            ),
+            const Spacer(),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 20.w),
+              child: GestureDetector(
+                onTap: () async {
+                  final uri = Uri.parse(
+                      'https://www.makeittakeit.kr/support/inquiries/new');
+                  if (await canLaunchUrl(uri)) {
+                    await launchUrl(uri);
+                  }
+                },
+                child: Text(
+                  '같은 문제가 반복되시나요?',
+                  style: MITITextStyle.smBold.copyWith(
+                    color: MITIColor.primary,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
               ),
             ),
@@ -56,3 +74,7 @@ class ErrorScreen extends StatelessWidget {
     );
   }
 }
+
+
+
+

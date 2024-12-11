@@ -2,33 +2,41 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/common/model/model_id.dart';
 
+import '../param/game_param.dart';
 import 'game_model.dart';
 
 part 'game_player_model.g.dart';
 
 @JsonSerializable()
-class GamePlayerListModel {
+class GameRevieweesModel {
   final List<GameParticipationModel> participations;
-  final GamePlayerModel? host;
+  final ReviewHostModel? host;
 
-  GamePlayerListModel({
+  GameRevieweesModel({
     required this.participations,
     required this.host,
   });
 
-  factory GamePlayerListModel.fromJson(Map<String, dynamic> json) =>
-      _$GamePlayerListModelFromJson(json);
+  factory GameRevieweesModel.fromJson(Map<String, dynamic> json) =>
+      _$GameRevieweesModelFromJson(json);
 }
 
 @JsonSerializable()
 class GameParticipationModel extends IModelWithId {
+  @JsonKey(name: 'user_id')
+  final int? userId;
+  final String nickname;
   final ParticipationStatus participation_status;
-  final GamePlayerModel user;
+  final Rating guest_rating;
+  final List<ReviewerModel> guest_reviews;
 
   GameParticipationModel({
     required super.id,
+     this.userId,
+    required this.nickname,
     required this.participation_status,
-    required this.user,
+    required this.guest_rating,
+    required this.guest_reviews,
   });
 
   factory GameParticipationModel.fromJson(Map<String, dynamic> json) =>
@@ -36,16 +44,37 @@ class GameParticipationModel extends IModelWithId {
 }
 
 @JsonSerializable()
-class GamePlayerModel extends IModelWithId {
+class ReviewHostModel {
+  @JsonKey(name: 'user_id')
+  final int userId;
   final String nickname;
-  final RatingModel rating;
+  final Rating host_rating;
+  final List<ReviewerModel> host_reviews;
 
-  GamePlayerModel({
-    required super.id,
+  ReviewHostModel({
+    required this.userId,
     required this.nickname,
-    required this.rating,
+    required this.host_rating,
+    required this.host_reviews,
   });
 
-  factory GamePlayerModel.fromJson(Map<String, dynamic> json) =>
-      _$GamePlayerModelFromJson(json);
+  factory ReviewHostModel.fromJson(Map<String, dynamic> json) =>
+      _$ReviewHostModelFromJson(json);
+}
+
+@JsonSerializable()
+class ReviewDetailModel extends GameReviewParam {
+  final String reviewer;
+  final ReviewGameModel game;
+
+  const ReviewDetailModel({
+    required this.reviewer,
+    required super.rating,
+    required super.comment,
+    required super.tags,
+    required this.game,
+  });
+
+  factory ReviewDetailModel.fromJson(Map<String, dynamic> json) =>
+      _$ReviewDetailModelFromJson(json);
 }

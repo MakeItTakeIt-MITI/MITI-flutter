@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/common/component/pagination_list_view.dart';
+import 'package:miti/common/error/view/error_screen.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../user/param/user_profile_param.dart';
@@ -61,9 +62,8 @@ class _PaginationListViewState<T extends Base>
   void _scrollListener() {
     // log("scrolling!!");
     final family = widget.provider.argument as PaginationStateParam;
-
-    if (widget.controller.position.pixels ==
-        widget.controller.position.maxScrollExtent) {
+    if (widget.controller.position.pixels >
+        widget.controller.position.maxScrollExtent - 150) {
       // log("scroll end");
       ref.read(widget.provider.notifier).paginate(
             paginationParams: const PaginationParam(page: 1),
@@ -87,6 +87,10 @@ class _PaginationListViewState<T extends Base>
     }
     // 에러
     if (state is ErrorModel) {
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.pushReplacementNamed(ErrorScreen.routeName);
+      });
+
       return SliverToBoxAdapter(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -115,6 +119,7 @@ class _PaginationListViewState<T extends Base>
     // CursorPaginationRefetching
 
     final cp = state as ResponseModel<PaginationModel<T>>;
+    log('state.data!.page_content = ${state.data!.page_content.length}');
     if (state.data!.page_content.isEmpty) {
       return SliverFillRemaining(child: widget.emptyWidget);
     }
@@ -147,7 +152,8 @@ class _PaginationListViewState<T extends Base>
         );
       },
       separatorBuilder: (_, index) {
-        return SizedBox(
+        return Container(
+          color: Colors.transparent,
           height: widget.separateSize.h,
           width: widget.separateSize.w,
         );
