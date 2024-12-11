@@ -58,33 +58,36 @@ class CustomTextFormField extends StatelessWidget {
   final BorderRadius? borderRadius;
   final VoidCallback? onTap;
   final double height;
+  final bool required;
 
-  const CustomTextFormField(
-      {super.key,
-      required this.hintText,
-      this.textInputAction,
-      this.label,
-      this.suffixIcon,
-      this.obscureText = false,
-      this.validator,
-      this.textEditingController,
-      this.focusNode,
-      this.onChanged,
-      this.onNext,
-      this.keyboardType,
-      this.inputFormatters,
-      this.interactionDesc,
-      this.textAlign = TextAlign.start,
-      this.enabled = true,
-      this.initialValue,
-      this.hintTextStyle,
-      this.textStyle,
-      this.labelTextStyle,
-      this.borderColor,
-      this.prefix,
-      this.onTap,
-      this.borderRadius,
-      this.height = 48});
+  const CustomTextFormField({
+    super.key,
+    required this.hintText,
+    this.textInputAction,
+    this.label,
+    this.suffixIcon,
+    this.obscureText = false,
+    this.validator,
+    this.textEditingController,
+    this.focusNode,
+    this.onChanged,
+    this.onNext,
+    this.keyboardType,
+    this.inputFormatters,
+    this.interactionDesc,
+    this.textAlign = TextAlign.start,
+    this.enabled = true,
+    this.initialValue,
+    this.hintTextStyle,
+    this.textStyle,
+    this.labelTextStyle,
+    this.borderColor,
+    this.prefix,
+    this.onTap,
+    this.borderRadius,
+    this.height = 48,
+    this.required = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -92,12 +95,34 @@ class CustomTextFormField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (label != null)
-          Text(
-            label!,
-            style: labelTextStyle ??
-                MITITextStyle.sm.copyWith(
-                  color: MITIColor.gray300,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label!,
+                style: labelTextStyle ??
+                    MITITextStyle.sm.copyWith(
+                      color: MITIColor.gray300,
+                    ),
+              ),
+              SizedBox(width: 3.w),
+              Visibility(
+                visible: required,
+                child: Container(
+                  height: 6.r,
+                  width: 6.r,
+                  alignment: Alignment.center,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: MITIColor.primary,
+                    ),
+                    width: 4.r,
+                    height: 4.r,
+                  ),
                 ),
+              )
+            ],
           ),
         if (label != null) SizedBox(height: 8.h),
         TextFormField(

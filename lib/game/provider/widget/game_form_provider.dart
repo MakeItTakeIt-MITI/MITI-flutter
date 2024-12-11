@@ -197,15 +197,15 @@ class GameForm extends _$GameForm {
           currentDateTime.isBefore(endDateTime)) {
         return false;
       } else {
-        ref
-            .read(interactionDescProvider(InteractionType.date).notifier)
-            .update((state) => null);
+        // ref
+        //     .read(interactionDescProvider(InteractionType.date).notifier)
+        //     .update((state) => null);
         return true;
       }
     }
-    ref
-        .read(interactionDescProvider(InteractionType.date).notifier)
-        .update((state) => null);
+    // ref
+    //     .read(interactionDescProvider(InteractionType.date).notifier)
+    //     .update((state) => null);
     return false;
   }
 
@@ -223,32 +223,32 @@ class GameForm extends _$GameForm {
       // Checking if startDateTime is equal to or after endDateTime
       if (startDateTime.isAtSameMomentAs(endDateTime) ||
           startDateTime.isAfter(endDateTime)) {
-        ref.read(interactionDescProvider(InteractionType.date).notifier).update(
-            (state) => InteractionDesc(
-                isSuccess: false, desc: '시작 시간이 종료 시간보다 같거나 이후일 수 없습니다.'));
+        // ref.read(interactionDescProvider(InteractionType.date).notifier).update(
+        //     (state) => InteractionDesc(
+        //         isSuccess: false, desc: '시작 시간이 종료 시간보다 같거나 이후일 수 없습니다.'));
         return false;
       } else if (startDateTime.isBefore(currentDateTime) &&
           endDateTime.isBefore(currentDateTime)) {
-        ref.read(interactionDescProvider(InteractionType.date).notifier).update(
-            (state) => InteractionDesc(
-                isSuccess: false, desc: '경기 시간이 현재 시간보다 이전일 수 없습니다.'));
+        // ref.read(interactionDescProvider(InteractionType.date).notifier).update(
+        //     (state) => InteractionDesc(
+        //         isSuccess: false, desc: '경기 시간이 현재 시간보다 이전일 수 없습니다.'));
         return false;
       } else if (currentDateTime.isAfter(startDateTime) &&
           currentDateTime.isBefore(endDateTime)) {
-        ref.read(interactionDescProvider(InteractionType.date).notifier).update(
-            (state) => InteractionDesc(
-                isSuccess: false, desc: '현재 시간이 경시 시간 사이에 있을 수 없습니다.'));
+        // ref.read(interactionDescProvider(InteractionType.date).notifier).update(
+        //     (state) => InteractionDesc(
+        //         isSuccess: false, desc: '현재 시간이 경시 시간 사이에 있을 수 없습니다.'));
         return false;
       } else {
-        ref
-            .read(interactionDescProvider(InteractionType.date).notifier)
-            .update((state) => null);
+        // ref
+        //     .read(interactionDescProvider(InteractionType.date).notifier)
+        //     .update((state) => null);
         return true;
       }
     }
-    ref
-        .read(interactionDescProvider(InteractionType.date).notifier)
-        .update((state) => null);
+    // ref
+    //     .read(interactionDescProvider(InteractionType.date).notifier)
+    //     .update((state) => null);
     return false;
   }
 

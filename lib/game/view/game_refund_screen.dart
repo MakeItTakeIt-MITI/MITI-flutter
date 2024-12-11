@@ -183,8 +183,11 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
             gameId: widget.gameId, participationId: widget.participationId)
         .future);
     if (result is ErrorModel) {
-      GameError.fromModel(model: result)
-          .responseError(context, GameApiType.participationCancel, ref);
+      if (context.mounted) {
+        context.pop();
+        GameError.fromModel(model: result)
+            .responseError(context, GameApiType.participationCancel, ref);
+      }
     } else {
       await ref
           .read(gameDetailProvider(gameId: widget.gameId).notifier)

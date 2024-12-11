@@ -181,6 +181,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     final select = ref.watch(selectMakerProvider);
 
     ref.listen(gameListProvider, (previous, next) {
+      log("listen gameListProvider");
       if (_mapController != null) {
         if (next is LoadingModel) {
         } else if (next is ErrorModel) {

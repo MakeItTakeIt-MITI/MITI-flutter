@@ -19,9 +19,6 @@ import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/component/default_layout.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/model/entity_enum.dart';
-import 'package:miti/common/provider/widget/datetime_provider.dart';
-import 'package:miti/court/model/court_model.dart';
-import 'package:miti/court/provider/court_provider.dart';
 import 'package:miti/game/error/game_error.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
@@ -274,17 +271,26 @@ class _TitleFormState extends State<_TitleForm> {
 
   @override
   Widget build(BuildContext context) {
+    log("title build!!");
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
         ref.listen(gameFormProvider, (previous, next) {
           if (previous?.title != next.title) {
+            /// 중간에 입력할 경우 offset이 맨 뒤로 가는 문제를 방지
+            final prevSelection = titleController.selection;
             titleController.text = next.title;
+
+            titleController.selection = titleController.selection.copyWith(
+              baseOffset: prevSelection.baseOffset,
+              extentOffset: prevSelection.extentOffset,
+            );
           }
         });
         final title =
             ref.watch(gameFormProvider.select((value) => value.title));
         return SliverToBoxAdapter(
             child: CustomTextFormField(
+          required: true,
           textEditingController: titleController,
           hintText: '경기 제목을 입력해주세요.',
           label: '경기 제목',
@@ -320,11 +326,30 @@ class _V2DateFormState extends State<V2DateForm> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            "경기 시간",
-            style: MITITextStyle.sm.copyWith(
-              color: MITIColor.gray300,
-            ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "경기 시간",
+                style: MITITextStyle.sm.copyWith(
+                  color: MITIColor.gray300,
+                ),
+              ),
+              SizedBox(width: 3.w),
+              Container(
+                height: 6.r,
+                width: 6.r,
+                alignment: Alignment.center,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: MITIColor.primary,
+                  ),
+                  width: 4.r,
+                  height: 4.r,
+                ),
+              )
+            ],
           ),
           SizedBox(height: 8.h),
           Row(
@@ -785,11 +810,30 @@ class AddressComponent extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          '경기 주소',
-          style: MITITextStyle.sm.copyWith(
-            color: MITIColor.gray300,
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '경기 주소',
+              style: MITITextStyle.sm.copyWith(
+                color: MITIColor.gray300,
+              ),
+            ),
+            SizedBox(width: 3.w),
+            Container(
+              height: 6.r,
+              width: 6.r,
+              alignment: Alignment.center,
+              child: Container(
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: MITIColor.primary,
+                ),
+                width: 4.r,
+                height: 4.r,
+              ),
+            )
+          ],
         ),
         SizedBox(height: 8.h),
         Row(
@@ -841,8 +885,8 @@ class AddressComponent extends StatelessWidget {
                             builder: (_) => KpostalView(
                               callback: (Kpostal kpostal) async {
                                 log('result  =${kpostal.roadAddress}');
-                                final newCourt =
-                                    court.copyWith(address: kpostal.roadAddress);
+                                final newCourt = court.copyWith(
+                                    address: kpostal.roadAddress);
                                 ref
                                     .read(gameFormProvider.notifier)
                                     .update(court: newCourt);
@@ -913,10 +957,25 @@ class _AddressFormState extends ConsumerState<_AddressForm> {
     ref.listen(gameFormProvider, (previous, next) {
       if (previous?.court != next.court) {
         if (previous?.court.name != next.court.name) {
+          /// 중간에 입력할 경우 offset이 맨 뒤로 가는 문제를 방지
+          final prevSelection = nameController.selection;
           nameController.text = next.court.name;
+
+          nameController.selection = nameController.selection.copyWith(
+            baseOffset: prevSelection.baseOffset,
+            extentOffset: prevSelection.extentOffset,
+          );
         }
         if (previous?.court.address_detail != next.court.address_detail) {
+          /// 중간에 입력할 경우 offset이 맨 뒤로 가는 문제를 방지
+          final prevSelection = addressDetailController.selection;
           addressDetailController.text = next.court.address_detail ?? '';
+
+          addressDetailController.selection =
+              addressDetailController.selection.copyWith(
+            baseOffset: prevSelection.baseOffset,
+            extentOffset: prevSelection.extentOffset,
+          );
         }
       }
     });
@@ -948,6 +1007,7 @@ class _AddressFormState extends ConsumerState<_AddressForm> {
           ),
           SizedBox(height: 32.h),
           CustomTextFormField(
+            required: true,
             key: widget.globalKeys[2],
             focusNode: widget.focusNodes[2],
             textInputAction: TextInputAction.next,
@@ -1013,10 +1073,34 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
   ) {
     ref.listen(gameFormProvider, (previous, next) {
       if (previous?.max_invitation != next.max_invitation) {
-        maxController.text = next.max_invitation;
+        /// 중간에 입력할 경우 offset이 맨 뒤로 가는 문제를 방지
+        // 새로 입력된 값을 포멧
+        final int parsedValue = int.parse(next
+            .max_invitation); // NumberFormat은 숫자 값만 받을 수 있기 때문에 문자를 숫자로 먼저 변환
+        final formatter = NumberFormat
+            .decimalPattern(); // 천단위로 콤마를 표시하고 숫자 앞에 화폐 기호 표시하는 패턴 설정
+        String newText = formatter.format(parsedValue); // 입력된 값을 지정한 패턴으로 포멧
+        maxController.text = newText;
+
+        maxController.selection = maxController.selection.copyWith(
+          baseOffset: newText.length,
+          extentOffset: newText.length,
+        );
       }
       if (previous?.min_invitation != next.min_invitation) {
-        minController.text = next.min_invitation;
+        /// 중간에 입력할 경우 offset이 맨 뒤로 가는 문제를 방지
+        // 새로 입력된 값을 포멧
+        final int parsedValue = int.parse(next
+            .min_invitation); // NumberFormat은 숫자 값만 받을 수 있기 때문에 문자를 숫자로 먼저 변환
+        final formatter = NumberFormat
+            .decimalPattern(); // 천단위로 콤마를 표시하고 숫자 앞에 화폐 기호 표시하는 패턴 설정
+        String newText = formatter.format(parsedValue); // 입력된 값을 지정한 패턴으로 포멧
+        minController.text = newText;
+
+        minController.selection = minController.selection.copyWith(
+          baseOffset: newText.length,
+          extentOffset: newText.length,
+        );
       }
     });
 
@@ -1034,6 +1118,7 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
           children: [
             Expanded(
               child: CustomTextFormField(
+                required: !widget.isUpdateForm,
                 textEditingController: minController,
                 focusNode: widget.focusNodes[0],
                 key: widget.formKeys[0],
@@ -1048,7 +1133,6 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
                 keyboardType: TextInputType.number,
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
-                  NumberFormatter(),
                 ],
                 onChanged: (val) {
                   ref
@@ -1093,7 +1177,6 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
                         : null,
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
-                  NumberFormatter(),
                 ],
                 onChanged: (val) {
                   ref
@@ -1170,13 +1253,26 @@ class _FeeFormState extends ConsumerState<_FeeForm> {
   Widget build(BuildContext context) {
     ref.listen(gameFormProvider, (previous, next) {
       if (previous?.fee != next.fee) {
-        feeController.text = next.fee;
+        /// 중간에 입력할 경우 offset이 맨 뒤로 가는 문제를 방지
+        // 새로 입력된 값을 포멧
+        final int parsedValue = int.parse(
+            next.fee); // NumberFormat은 숫자 값만 받을 수 있기 때문에 문자를 숫자로 먼저 변환
+        final formatter = NumberFormat
+            .decimalPattern(); // 천단위로 콤마를 표시하고 숫자 앞에 화폐 기호 표시하는 패턴 설정
+        String newText = formatter.format(parsedValue); // 입력된 값을 지정한 패턴으로 포멧
+        feeController.text = newText;
+
+        feeController.selection = feeController.selection.copyWith(
+          baseOffset: newText.length,
+          extentOffset: newText.length,
+        );
       }
     });
     final fee = ref.watch(gameFormProvider.select((value) => value.fee));
     final formInfo = ref.watch(formInfoProvider(InputFormType.fee));
     return SliverToBoxAdapter(
         child: CustomTextFormField(
+      required: true,
       textEditingController: feeController,
       hintText: '경기 참가비를 입력해주세요.',
       label: '경기 참가비',
@@ -1189,7 +1285,7 @@ class _FeeFormState extends ConsumerState<_FeeForm> {
       onNext: () => FocusScope.of(context).requestFocus(widget.focusNodes[6]),
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
-        NumberFormatter(),
+        // NumberFormatter(),
       ],
       interactionDesc: formInfo.interactionDesc,
       onChanged: (val) {
@@ -1251,7 +1347,14 @@ class _AdditionalInfoFormState extends ConsumerState<_AdditionalInfoForm> {
   Widget build(BuildContext context) {
     ref.listen(gameFormProvider, (previous, next) {
       if (previous?.info != next.info) {
+        final prevSelection = infoController.selection;
+
         infoController.text = next.info;
+
+        infoController.selection = infoController.selection.copyWith(
+          baseOffset: prevSelection.baseOffset,
+          extentOffset: prevSelection.extentOffset,
+        );
       }
     });
     final info = ref.watch(gameFormProvider.select((value) => value.info));
@@ -1259,9 +1362,28 @@ class _AdditionalInfoFormState extends ConsumerState<_AdditionalInfoForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            '참고사항',
-            style: MITITextStyle.sm.copyWith(color: MITIColor.gray300),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '경기 운영 정보',
+                style: MITITextStyle.sm.copyWith(color: MITIColor.gray300),
+              ),
+              SizedBox(width: 3.w),
+              Container(
+                height: 6.r,
+                width: 6.r,
+                alignment: Alignment.center,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: MITIColor.primary,
+                  ),
+                  width: 4.r,
+                  height: 4.r,
+                ),
+              )
+            ],
           ),
           SizedBox(height: 10.h),
           IntrinsicHeight(
