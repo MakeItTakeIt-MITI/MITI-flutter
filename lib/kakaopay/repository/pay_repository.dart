@@ -20,7 +20,7 @@ final payRepositoryProvider = Provider<PayRepository>((ref) {
   return PayRepository(dio);
 });
 
-@RestApi(baseUrl: devServerURL)
+@RestApi(baseUrl: prodServerURL)
 abstract class PayRepository {
   factory PayRepository(Dio dio) = _PayRepository;
 

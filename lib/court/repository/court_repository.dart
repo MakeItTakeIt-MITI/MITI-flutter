@@ -18,7 +18,7 @@ final courtRepositoryProvider = Provider<CourtRepository>((ref) {
   return CourtRepository(dio);
 });
 
-@RestApi(baseUrl: devServerURL)
+@RestApi(baseUrl: prodServerURL)
 abstract class CourtRepository {
   factory CourtRepository(Dio dio) = _CourtRepository;
 
@@ -40,7 +40,7 @@ final courtPaginationRepositoryProvider =
   return CourtPaginationRepository(dio);
 });
 
-@RestApi(baseUrl: devServerURL)
+@RestApi(baseUrl: prodServerURL)
 abstract class CourtPaginationRepository
     extends IBasePaginationRepository<CourtSearchModel, CourtPaginationParam> {
   factory CourtPaginationRepository(Dio dio) = _CourtPaginationRepository;
@@ -60,7 +60,7 @@ final courtGamePaginationRepositoryProvider =
   return CourtGamePaginationRepository(dio);
 });
 
-@RestApi(baseUrl: devServerURL)
+@RestApi(baseUrl: prodServerURL)
 abstract class CourtGamePaginationRepository extends IBasePaginationRepository<
     GameListByDateModel, CourtPaginationParam> {
   factory CourtGamePaginationRepository(Dio dio) =

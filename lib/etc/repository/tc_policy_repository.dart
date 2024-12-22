@@ -15,7 +15,7 @@ final tcPolicyRepositoryProvider = Provider<TcPolicyRepository>((ref) {
   return TcPolicyRepository(dio);
 });
 
-@RestApi(baseUrl: devServerURL)
+@RestApi(baseUrl: prodServerURL)
 abstract class TcPolicyRepository {
   factory TcPolicyRepository(Dio dio) = _TcPolicyRepository;
 

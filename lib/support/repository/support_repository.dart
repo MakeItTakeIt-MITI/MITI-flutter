@@ -19,7 +19,7 @@ final supportPRepositoryProvider = Provider<SupportPRepository>((ref) {
   return SupportPRepository(dio);
 });
 
-@RestApi(baseUrl: devServerURL)
+@RestApi(baseUrl: prodServerURL)
 abstract class SupportPRepository
     extends IBasePaginationRepository<SupportModel, SupportParam> {
   factory SupportPRepository(Dio dio) = _SupportPRepository;

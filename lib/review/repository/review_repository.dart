@@ -17,7 +17,7 @@ final reviewRepositoryProvider = Provider<ReviewRepository>((ref) {
   return ReviewRepository(dio);
 });
 
-@RestApi(baseUrl: devServerURL)
+@RestApi(baseUrl: prodServerURL)
 abstract class ReviewRepository {
   factory ReviewRepository(Dio dio) = _ReviewRepository;
 

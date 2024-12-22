@@ -20,7 +20,7 @@ final settlementPaginationRepositoryProvider =
   return SettlementPaginationRepository(dio);
 });
 
-@RestApi(baseUrl: devServerURL)
+@RestApi(baseUrl: prodServerURL)
 abstract class SettlementPaginationRepository extends IBasePaginationRepository<
     SettlementModel, SettlementPaginationParam> {
   factory SettlementPaginationRepository(Dio dio) =
@@ -49,7 +49,7 @@ final bankTransferPaginationRepositoryProvider =
   return BankTransferPaginationRepository(dio);
 });
 
-@RestApi(baseUrl: devServerURL)
+@RestApi(baseUrl: prodServerURL)
 abstract class BankTransferPaginationRepository
     extends IBasePaginationRepository<TransferModel, BankTransferPaginationParam> {
   factory BankTransferPaginationRepository(Dio dio) =

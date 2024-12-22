@@ -659,25 +659,76 @@ class DateInputFormatter extends TextInputFormatter {
 class NumberFormatter extends TextInputFormatter {
   NumberFormatter();
 
+  final NumberFormat _formatter = NumberFormat('#,###');
+
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
-    // 아무 값이 없을 경우 (값을 지운경우) 지운 값을 그대로 설정
-    if (newValue.selection.baseOffset == 0) {
-      return newValue;
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    // 새 텍스트에서 콤마 제거
+    final newText = newValue.text.replaceAll(',', '');
+
+    // 입력값이 비어있으면 0으로 유지
+    if (newText.isEmpty) {
+      return const TextEditingValue(
+        text: '0',
+        selection: TextSelection.collapsed(offset: 1), // 0 뒤에 커서 위치
+      );
     }
 
-    // 새로 입력된 값을 포멧
-    final int parsedValue = int.parse(
-        newValue.text); // NumberFormat은 숫자 값만 받을 수 있기 때문에 문자를 숫자로 먼저 변환
-    final formatter =
-        NumberFormat.decimalPattern(); // 천단위로 콤마를 표시하고 숫자 앞에 화폐 기호 표시하는 패턴 설정
-    String newText = formatter.format(parsedValue); // 입력된 값을 지정한 패턴으로 포멧
-
-    return newValue.copyWith(
-        text: newText,
+    // 기존 값이 "0"이고 새로운 입력값이 추가될 때 처리
+    if (oldValue.text == '0') {
+      final appendedText = newValue.text.replaceFirst('0', '');
+      final formattedAppendedText = _formatter.format(int.parse(appendedText));
+      return TextEditingValue(
+        text: formattedAppendedText,
         selection:
-            TextSelection.collapsed(offset: newText.length)); // 커서를 마지막으로 이동
+            TextSelection.collapsed(offset: formattedAppendedText.length),
+      );
+    }
+
+    // 입력값이 10,000,000 이상인 경우 9,999,999로 제한
+    int value = int.tryParse(newText) ?? 0;
+    bool overflow = false;
+    if (value > 9999999999) {
+      value = 9999999999;
+      overflow = true;
+    }
+
+    // 포맷된 텍스트 생성
+    final formattedText = _formatter.format(value);
+
+    // 이전 커서 위치를 기반으로 새로운 커서 위치 계산
+    int newOffset = newValue.selection.baseOffset;
+    int nonCommaCountBeforeCursor = 0;
+
+    // 새 텍스트의 커서 앞부분에서 숫자만 계산
+    for (int i = 0; i < newOffset; i++) {
+      if (i < newText.length) {
+        nonCommaCountBeforeCursor++;
+      }
+    }
+
+    // 포맷된 텍스트에서 새 커서 위치 계산
+    int commaAdjustedOffset = 0;
+    int nonCommaCounter = 0;
+
+    for (int i = 0; i < formattedText.length; i++) {
+      if (formattedText[i] != ',') {
+        nonCommaCounter++;
+      }
+      if (nonCommaCounter == nonCommaCountBeforeCursor) {
+        commaAdjustedOffset = i + 1;
+        break;
+      }
+    }
+
+    return TextEditingValue(
+      text: formattedText,
+      selection: TextSelection.collapsed(
+          offset: overflow ? formattedText.length : commaAdjustedOffset),
+    );
   }
 }
 

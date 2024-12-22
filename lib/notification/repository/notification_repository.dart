@@ -21,7 +21,7 @@ final noticePRepositoryProvider = Provider<NoticePRepository>((ref) {
   return NoticePRepository(dio);
 });
 
-@RestApi(baseUrl: devServerURL)
+@RestApi(baseUrl: prodServerURL)
 abstract class NoticePRepository
     extends IBasePaginationRepository<NoticeModel, NotificationParam> {
   factory NoticePRepository(Dio dio) = _NoticePRepository;
@@ -45,7 +45,7 @@ final pushPRepositoryProvider = Provider<PushPRepository>((ref) {
   return PushPRepository(dio);
 });
 
-@RestApi(baseUrl: devServerURL)
+@RestApi(baseUrl: prodServerURL)
 abstract class PushPRepository
     extends IBasePaginationRepository<PushModel, NotificationParam> {
   factory PushPRepository(Dio dio) = _PushPRepository;

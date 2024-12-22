@@ -25,7 +25,7 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return repository;
 });
 
-@RestApi(baseUrl: devServerURL)
+@RestApi(baseUrl: prodServerURL)
 abstract class AuthRepository {
   factory AuthRepository(Dio dio) = _AuthRepository;
 
