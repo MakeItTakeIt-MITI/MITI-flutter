@@ -76,7 +76,9 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
     );
     _throttler.values.listen((int s) {
       _cancel(ref, context);
-      throttleCnt++;
+      Future.delayed(const Duration(seconds: 1), () {
+        throttleCnt++;
+      });
     });
     _scrollController = ScrollController();
   }

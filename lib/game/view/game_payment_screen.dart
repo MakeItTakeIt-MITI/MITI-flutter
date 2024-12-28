@@ -68,6 +68,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
         webApplicationId, androidApplicationId, iosApplicationId);
   }
 
+  bool isLoading = false;
   late Throttle<int> _throttler;
   late PaymentMethodType type;
 
@@ -81,10 +82,17 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
       initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((int s) {
-      // onPay(ref, context, type);
-      onBootPay(ref, context, type);
-      throttleCnt++;
+    _throttler.values.listen((int s) async {
+      setState(() {
+        isLoading = true;
+      });
+      Future.delayed(const Duration(seconds: 1), () {
+        throttleCnt++;
+      });
+      await onBootPay(ref, context, type);
+      setState(() {
+        isLoading = false;
+      });
     });
   }
 
@@ -130,19 +138,22 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
           final valid = validCheckBox;
           return BottomButton(
             button: TextButton(
-              onPressed: valid
+              onPressed: valid && !isLoading
                   ? () async {
                       _throttler.setValue(throttleCnt + 1);
                     }
                   : () {},
               style: TextButton.styleFrom(
                 fixedSize: Size(double.infinity, 48.h),
-                backgroundColor: valid ? MITIColor.primary : MITIColor.gray700,
+                backgroundColor:
+                    valid && !isLoading ? MITIColor.primary : MITIColor.gray700,
               ),
               child: Text(
                 fee != null && fee == 0 ? '참여하기' : '결제하기',
                 style: MITITextStyle.btnTextBStyle.copyWith(
-                  color: valid ? MITIColor.gray800 : MITIColor.gray50,
+                  color: valid && !isLoading
+                      ? MITIColor.gray800
+                      : MITIColor.gray50,
                 ),
               ),
             ),

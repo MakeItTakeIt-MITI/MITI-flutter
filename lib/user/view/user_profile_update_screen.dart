@@ -190,6 +190,9 @@ class _AuthComponentState extends ConsumerState<_AuthComponent> {
     );
     _throttler.values.listen((int s) {
       _logout(ref, context);
+      Future.delayed(const Duration(seconds: 1), () {
+        throttleCnt++;
+      });
     });
   }
 

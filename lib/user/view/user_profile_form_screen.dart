@@ -101,6 +101,7 @@ class _PasswordFormState extends ConsumerState<_PasswordForm> {
   late Throttle<int> _throttler;
   int throttleCnt = 0;
   final formKeys = [GlobalKey()];
+  bool isLoading = false;
 
   late final List<FocusNode> focusNodes = [
     FocusNode(),
@@ -115,6 +116,9 @@ class _PasswordFormState extends ConsumerState<_PasswordForm> {
       checkEquality: true,
     );
     _throttler.values.listen((int s) {
+      Future.delayed(const Duration(seconds: 1), () {
+        throttleCnt++;
+      });
       getUpdateToken();
     });
     for (int i = 0; i < 1; i++) {
@@ -206,18 +210,21 @@ class _PasswordFormState extends ConsumerState<_PasswordForm> {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
           child: TextButton(
-              onPressed: valid
+              onPressed: valid && !isLoading
                   ? () async {
                       _throttler.setValue(throttleCnt + 1);
                     }
                   : () {},
               style: TextButton.styleFrom(
-                backgroundColor: valid ? MITIColor.primary : MITIColor.gray500,
+                backgroundColor:
+                    valid && !isLoading ? MITIColor.primary : MITIColor.gray500,
               ),
               child: Text(
                 '입력 완료',
                 style: MITITextStyle.mdBold.copyWith(
-                  color: valid ? MITIColor.gray800 : MITIColor.gray50,
+                  color: valid && !isLoading
+                      ? MITIColor.gray800
+                      : MITIColor.gray50,
                 ),
               )),
         ),
@@ -226,9 +233,15 @@ class _PasswordFormState extends ConsumerState<_PasswordForm> {
   }
 
   Future<void> getUpdateToken() async {
+    setState(() {
+      isLoading = true;
+    });
     final result =
         await ref.read(updateTokenProvider(password: password).future);
     if (result is ErrorModel) {
+      setState(() {
+        isLoading = false;
+      });
       if (mounted) {
         AuthError.fromModel(model: result)
             .responseError(context, AuthApiType.tokenForPassword, ref);
@@ -253,6 +266,7 @@ class _NewPasswordFormState extends ConsumerState<_NewPasswordForm> {
   final formKeys = [GlobalKey(), GlobalKey()];
   late Throttle<int> _throttler;
   int throttleCnt = 0;
+  bool isLoading = false;
 
   late final List<FocusNode> focusNodes = [
     FocusNode(),
@@ -267,9 +281,17 @@ class _NewPasswordFormState extends ConsumerState<_NewPasswordForm> {
       initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((int s) {
-      updatePassword(context);
-      throttleCnt++;
+    _throttler.values.listen((int s) async {
+      Future.delayed(const Duration(seconds: 1), () {
+        throttleCnt++;
+      });
+      setState(() {
+        isLoading = true;
+      });
+      await updatePassword(context);
+      setState(() {
+        isLoading = false;
+      });
     });
     for (int i = 0; i < 2; i++) {
       focusNodes[i].addListener(() {
@@ -437,9 +459,11 @@ class _NewPasswordFormState extends ConsumerState<_NewPasswordForm> {
                 FocusScope.of(context).requestFocus(focusNodes[1]);
               });
             },
-            onNext: () {
-              _throttler.setValue(throttleCnt + 1);
-            },
+            onNext: valid && !isLoading
+                ? () async {
+                    _throttler.setValue(throttleCnt + 1);
+                  }
+                : () {},
             onChanged: (val) {
               ref
                   .read(userPasswordFormProvider.notifier)
@@ -475,18 +499,21 @@ class _NewPasswordFormState extends ConsumerState<_NewPasswordForm> {
           ),
           const Spacer(),
           TextButton(
-              onPressed: valid
+              onPressed: valid && !isLoading
                   ? () async {
                       _throttler.setValue(throttleCnt + 1);
                     }
                   : () {},
               style: TextButton.styleFrom(
-                backgroundColor: valid ? MITIColor.primary : MITIColor.gray500,
+                backgroundColor:
+                    valid && !isLoading ? MITIColor.primary : MITIColor.gray500,
               ),
               child: Text(
                 '비밀번호 재설정',
                 style: MITITextStyle.mdBold.copyWith(
-                  color: valid ? MITIColor.gray800 : MITIColor.gray50,
+                  color: valid && !isLoading
+                      ? MITIColor.gray800
+                      : MITIColor.gray50,
                 ),
               )),
         ],
@@ -530,7 +557,6 @@ class _NewPasswordFormState extends ConsumerState<_NewPasswordForm> {
         Future.delayed(const Duration(milliseconds: 100), () {
           FlashUtil.showFlash(context, '비밀번호가 재설정 되었습니다.');
         });
-        //
       }
     }
   }

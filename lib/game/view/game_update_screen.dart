@@ -40,6 +40,7 @@ class GameUpdateScreen extends ConsumerStatefulWidget {
 class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
   late final ScrollController _scrollController;
   late Throttle<int> _throttler;
+  bool isLoading = false;
   int throttleCnt = 0;
 
   final formKeys = [
@@ -63,9 +64,17 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
       initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((int s) {
-      onUpdate(context);
-      throttleCnt++;
+    _throttler.values.listen((int s) async {
+      setState(() {
+        isLoading = true;
+      });
+      Future.delayed(const Duration(seconds: 1), () {
+        throttleCnt++;
+      });
+      await onUpdate(context);
+      setState(() {
+        isLoading = false;
+      });
     });
     for (int i = 0; i < 3; i++) {
       focusNodes[i].addListener(() {
@@ -116,18 +125,21 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
         backgroundColor: MITIColor.gray750,
         bottomNavigationBar: BottomButton(
           button: TextButton(
-            onPressed: valid()
+            onPressed: valid() && !isLoading
                 ? () async {
                     _throttler.setValue(throttleCnt + 1);
                   }
                 : () {},
             style: TextButton.styleFrom(
-                backgroundColor:
-                    valid() ? MITIColor.primary : MITIColor.gray500),
+                backgroundColor: valid() && !isLoading
+                    ? MITIColor.primary
+                    : MITIColor.gray500),
             child: Text(
               '저장하기',
               style: MITITextStyle.btnTextBStyle.copyWith(
-                color: valid() ? MITIColor.gray800 : MITIColor.gray50,
+                color: valid() && !isLoading
+                    ? MITIColor.gray800
+                    : MITIColor.gray50,
               ),
             ),
           ),

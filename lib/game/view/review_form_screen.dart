@@ -58,6 +58,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
   late Throttle<int> _throttler;
   late final ScrollController _scrollController;
   int throttleCnt = 0;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -67,9 +68,17 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
       initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((int s) {
-      createReview(ref, context, widget.userInfoModel.nickname);
-      throttleCnt++;
+    _throttler.values.listen((int s) async {
+      setState(() {
+        isLoading = true;
+      });
+      Future.delayed(const Duration(seconds: 1), () {
+        throttleCnt++;
+      });
+      await createReview(ref, context, widget.userInfoModel.nickname);
+      setState(() {
+        isLoading = false;
+      });
     });
     _scrollController = ScrollController();
   }
@@ -108,18 +117,18 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
               // log("valid  = $valid");
 
               return TextButton(
-                onPressed: valid
+                onPressed: valid && !isLoading
                     ? () async {
                         _throttler.setValue(throttleCnt + 1);
                       }
                     : () {},
                 style: TextButton.styleFrom(
                     backgroundColor:
-                        valid ? MITIColor.primary : MITIColor.gray500),
+                        valid && !isLoading ? MITIColor.primary : MITIColor.gray500),
                 child: Text(
                   '작성 완료',
                   style: MITITextStyle.mdBold.copyWith(
-                      color: valid ? MITIColor.gray800 : MITIColor.gray50),
+                      color: valid && !isLoading ? MITIColor.gray800 : MITIColor.gray50),
                 ),
               );
             },
@@ -145,7 +154,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                   participationId: widget.participationId,
                 ),
                 getDivider(),
-                Padding(
+                const Padding(
                   padding: EdgeInsets.only(bottom: (200)),
                   child: _ReviewForm(),
                 ),
@@ -157,7 +166,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
     );
   }
 
-  void createReview(
+  Future<void> createReview(
       WidgetRef ref, BuildContext context, String nickname) async {
     BaseModel result;
     if (widget.participationId != null) {

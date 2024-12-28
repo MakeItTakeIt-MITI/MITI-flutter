@@ -48,6 +48,7 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
   late Throttle<int> _throttler;
   int throttleCnt = 0;
   GlobalKey key = GlobalKey();
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -57,9 +58,17 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
       initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((int s) {
-      _report(ref, context);
-      throttleCnt++;
+    _throttler.values.listen((int s) async {
+      setState(() {
+        isLoading = true;
+      });
+      Future.delayed(const Duration(seconds: 1), () {
+        throttleCnt++;
+      });
+      await _report(ref, context);
+      setState(() {
+        isLoading = false;
+      });
     });
   }
 
@@ -81,18 +90,21 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
               final form = ref.watch(reportFormProvider(category: widget.type));
               final valid = form.content.isNotEmpty;
               return TextButton(
-                onPressed: valid
+                onPressed: valid && !isLoading
                     ? () async {
                         _throttler.setValue(throttleCnt + 1);
                       }
                     : () {},
                 style: TextButton.styleFrom(
-                  backgroundColor: valid ? MITIColor.error : MITIColor.gray500,
+                  backgroundColor:
+                      valid && !isLoading ? MITIColor.error : MITIColor.gray500,
                 ),
                 child: Text(
                   '신고하기',
                   style: MITITextStyle.btnTextBStyle.copyWith(
-                    color: valid ? MITIColor.gray100 : MITIColor.gray50,
+                    color: valid && !isLoading
+                        ? MITIColor.gray100
+                        : MITIColor.gray50,
                   ),
                 ),
               );

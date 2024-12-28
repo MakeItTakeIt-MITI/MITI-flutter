@@ -633,9 +633,11 @@ class _EmailFormState extends ConsumerState<EmailForm> {
       initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((int s) async {
-      await onSubmit(context);
-      throttleCnt++;
+    _throttler.values.listen((int s)  {
+       onSubmit(context);
+      Future.delayed(const Duration(seconds: 1), () {
+        throttleCnt++;
+      });
     });
   }
 
@@ -1173,7 +1175,9 @@ class _NextButtonState extends ConsumerState<_NextButton> {
     );
     _throttler.values.listen((int s) {
       _signUp(context);
-      throttleCnt++;
+      Future.delayed(const Duration(seconds: 1), () {
+        throttleCnt++;
+      });
     });
   }
 
@@ -1225,6 +1229,7 @@ class _NextButtonState extends ConsumerState<_NextButton> {
   }
 
   Future<void> _signUp(BuildContext context) async {
+    ref.read(progressProvider.notifier).updateValidNext(validNext: false);
     if (AuthType.email != widget.type) {
       final storage = ref.read(secureStorageProvider);
       final userInfoToken = await storage.read(key: "userInfoToken");
@@ -1251,6 +1256,7 @@ class _NextButtonState extends ConsumerState<_NextButton> {
         await ref.read(signUpProvider(type: widget.type, param: param).future);
 
     if (result is ErrorModel) {
+      ref.read(progressProvider.notifier).updateValidNext(validNext: true);
       if (context.mounted) {
         AuthError.fromModel(model: result)
             .responseError(context, AuthApiType.signup, ref);
@@ -1335,100 +1341,104 @@ class SignUpCompleteScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 21.w),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(
-                height: 170.h,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      child: Lottie.asset(
-                        'assets/lottie/success.json',
-                        width: 200,
-                        height: 200,
-                        fit: BoxFit.fill,
-                        repeat: true,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        body: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 21.w),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(
+                  height: 170.h,
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        left: 0,
+                        right: 0,
+                        child: Lottie.asset(
+                          'assets/lottie/success.json',
+                          width: 200,
+                          height: 200,
+                          fit: BoxFit.fill,
+                          repeat: true,
+                        ),
                       ),
-                    ),
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      child: Column(
-                        children: [
-                          SizedBox(height: 52.h),
-                          Text(
-                            '회원가입 완료!',
-                            style: MITITextStyle.xxl140.copyWith(
-                              color: Colors.white,
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: Column(
+                          children: [
+                            SizedBox(height: 52.h),
+                            Text(
+                              '회원가입 완료!',
+                              style: MITITextStyle.xxl140.copyWith(
+                                color: Colors.white,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(height: 10.h),
-                          Text(
-                            '우리 동네 농구 경기에 참여해보세요',
-                            style: MITITextStyle.sm150.copyWith(
-                              color: MITIColor.gray300,
+                            SizedBox(height: 10.h),
+                            Text(
+                              '우리 동네 농구 경기에 참여해보세요',
+                              style: MITITextStyle.sm150.copyWith(
+                                color: MITIColor.gray300,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(height: 52.h),
-                        ],
-                      ),
-                    )
-                  ],
+                            SizedBox(height: 52.h),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-              Text(
-                "MITI에 가입하신 걸 환영합니다!",
-                style: MITITextStyle.md.copyWith(
-                  color: MITIColor.gray100,
+                Text(
+                  "MITI에 가입하신 걸 환영합니다!",
+                  style: MITITextStyle.md.copyWith(
+                    color: MITIColor.gray100,
+                  ),
                 ),
-              ),
-              SizedBox(height: 12.h),
-              Text(
-                "MITI의 다양한 기능을 통해 농구 경기에 참여해보세요.",
-                style: MITITextStyle.sm150.copyWith(
-                  color: MITIColor.gray300,
+                SizedBox(height: 12.h),
+                Text(
+                  "MITI의 다양한 기능을 통해 농구 경기에 참여해보세요.",
+                  style: MITITextStyle.sm150.copyWith(
+                    color: MITIColor.gray300,
+                  ),
                 ),
-              ),
-              SizedBox(height: 25.h),
-              Container(
-                padding: EdgeInsets.all(20.r),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20.r),
-                  color: MITIColor.gray700,
-                ),
-                child: ListView.separated(
-                    shrinkWrap: true,
-                    itemBuilder: (_, idx) {
-                      return appDescComponent(idx);
-                    },
-                    separatorBuilder: (_, idx) => SizedBox(height: 32.h),
-                    itemCount: 3),
-              ),
-              const Spacer(),
-              Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  return TextButton(
-                      onPressed: () async {
-                        await ref
-                            .read(authProvider.notifier)
-                            .autoLogin(context: context);
+                SizedBox(height: 25.h),
+                Container(
+                  padding: EdgeInsets.all(20.r),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.r),
+                    color: MITIColor.gray700,
+                  ),
+                  child: ListView.separated(
+                      shrinkWrap: true,
+                      itemBuilder: (_, idx) {
+                        return appDescComponent(idx);
                       },
-                      child: const Text("홈으로 가기"));
-                },
-              ),
-              SizedBox(height: 41.h),
-            ],
+                      separatorBuilder: (_, idx) => SizedBox(height: 32.h),
+                      itemCount: 3),
+                ),
+                const Spacer(),
+                Consumer(
+                  builder:
+                      (BuildContext context, WidgetRef ref, Widget? child) {
+                    return TextButton(
+                        onPressed: () async {
+                          await ref
+                              .read(authProvider.notifier)
+                              .autoLogin(context: context);
+                        },
+                        child: const Text("홈으로 가기"));
+                  },
+                ),
+                SizedBox(height: 41.h),
+              ],
+            ),
           ),
         ),
       ),

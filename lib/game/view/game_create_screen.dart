@@ -166,17 +166,12 @@ class _GameQuillComponentState extends State<GameQuillComponent> {
                 const VerticalDivider(),
                 QuillToolbarLinkStyleButton(controller: controller),
                 QuillToolbar.simple(
-
                   controller: controller,
-
                   configurations: QuillSimpleToolbarConfigurations(
                     dialogTheme: dialogTheme,
                     embedButtons: FlutterQuillEmbeds.toolbarButtons(
-                      imageButtonOptions: QuillToolbarImageButtonOptions(
-                        dialogTheme: dialogTheme,
-                        tooltip: "imageTooltip"
-                      )
-                    ),
+                        imageButtonOptions: QuillToolbarImageButtonOptions(
+                            dialogTheme: dialogTheme, tooltip: "imageTooltip")),
                   ),
                 ),
               ],
@@ -215,6 +210,7 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
   late Throttle<int> _throttler;
   int throttleCnt = 0;
   late final ScrollController _scrollController;
+  bool isLoading = false;
   final formKeys = [
     GlobalKey(),
     GlobalKey(),
@@ -243,9 +239,17 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
       initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((int s) {
-      _onCreate(ref, context);
-      throttleCnt++;
+    _throttler.values.listen((int s) async {
+      setState(() {
+        isLoading = true;
+      });
+      Future.delayed(const Duration(seconds: 1), () {
+        throttleCnt++;
+      });
+      await _onCreate(ref, context);
+      setState(() {
+        isLoading = false;
+      });
     });
     _scrollController = ScrollController();
     for (int i = 0; i < formKeys.length; i++) {
@@ -356,19 +360,22 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
                 button: SizedBox(
               height: 48.h,
               child: TextButton(
-                  onPressed: valid
+                  onPressed: valid && !isLoading
                       ? () async {
                           _throttler.setValue(throttleCnt + 1);
                         }
                       : () {},
                   style: TextButton.styleFrom(
-                      backgroundColor:
-                          valid ? MITIColor.primary : MITIColor.gray500,
+                      backgroundColor: valid && !isLoading
+                          ? MITIColor.primary
+                          : MITIColor.gray500,
                       fixedSize: Size(double.infinity, 48.h)),
                   child: Text(
                     '경기 생성하기',
                     style: TextStyle(
-                      color: valid ? MITIColor.gray800 : MITIColor.gray50,
+                      color: valid && !isLoading
+                          ? MITIColor.gray800
+                          : MITIColor.gray50,
                     ),
                   )),
             ));

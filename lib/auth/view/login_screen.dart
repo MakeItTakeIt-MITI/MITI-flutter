@@ -116,9 +116,11 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
       initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((int s) async {
-      await login();
-      throttleCnt++;
+    _throttler.values.listen((int s)  {
+       login();
+      Future.delayed(const Duration(seconds: 1), () {
+        throttleCnt++;
+      });
     });
     for (var focusNode in focusNodes) {
       focusNode.addListener(() {

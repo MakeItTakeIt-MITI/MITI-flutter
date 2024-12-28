@@ -17,6 +17,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Color? backgroundColor;
   final String leadingIcon;
   final bool hasBorder;
+  final bool canPop;
 
   const DefaultAppBar({
     super.key,
@@ -27,6 +28,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.backgroundColor,
     this.leadingIcon = "back_arrow",
     this.hasBorder = true,
+    this.canPop = true,
   });
 
   @override
@@ -43,9 +45,12 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
         backgroundColor: backgroundColor ?? MITIColor.gray800,
-        floating: false, // AppBar가 떠 있지 않게 설정
-        expandedHeight: null, // 확장되지 않도록 설정
-        flexibleSpace: null,  // 유연한 공간을 설정하지 않음
+        floating: false,
+        // AppBar가 떠 있지 않게 설정
+        expandedHeight: null,
+        // 확장되지 않도록 설정
+        flexibleSpace: null,
+        // 유연한 공간을 설정하지 않음
         /// 앱바 pinned 시 surface 컬러
         surfaceTintColor: backgroundColor ?? MITIColor.gray800,
         shape: hasBorder
@@ -55,7 +60,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
             : null,
         centerTitle: true,
 
-        leading: context.canPop()
+        leading: context.canPop() && canPop
             ? Padding(
                 padding: EdgeInsets.only(left: 13.w),
                 child: IconButton(
@@ -101,7 +106,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
       /// 앱바 pinned 시 surface 컬러
       surfaceTintColor: backgroundColor ?? MITIColor.gray800,
       centerTitle: true,
-      leading: context.canPop()
+      leading: context.canPop() && canPop
           ? Padding(
               padding: EdgeInsets.only(left: 13.w),
               child: IconButton(

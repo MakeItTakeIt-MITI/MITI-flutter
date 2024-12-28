@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -28,63 +30,81 @@ class ResetPasswordScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: const DefaultAppBar(
-        title: '회원 정보 찾기',
-        hasBorder: false,
-      ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 21.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(height: 20.h),
-            Text(
-              '비밀번호를 입력해주세요.',
-              style: MITITextStyle.xxl140.copyWith(
-                color: MITIColor.white,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: const DefaultAppBar(
+          title: '회원 정보 찾기',
+          hasBorder: false,
+          canPop: false,
+        ),
+        body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 21.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: 20.h),
+              Text(
+                '비밀번호를 입력해주세요.',
+                style: MITITextStyle.xxl140.copyWith(
+                  color: MITIColor.white,
+                ),
               ),
-            ),
-            const PasswordForm(),
-            const Spacer(),
-            Consumer(
-              builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                final progressModel = ref.watch(progressProvider);
-                final validNext = progressModel.validNext;
-                return TextButton(
-                    onPressed: () async {
-                      final newPassword = ref.read(signUpFormProvider).password;
-                      final checkPassword =
-                          ref.read(signUpFormProvider).checkPassword;
-                      final param = UserPasswordParam(
-                          new_password_check: checkPassword,
-                          new_password: newPassword,
-                          password_update_token: password_update_token);
-                      final result = await ref
-                          .read(updatePasswordProvider(userId, param).future);
-                      if (context.mounted) {
-                        if (result is ErrorModel) {
-                          UserError.fromModel(model: result).responseError(
-                              context, UserApiType.updatePassword, ref);
-                        } else {
-                          context.goNamed(CompleteRestPasswordScreen.routeName);
-                        }
-                      }
-                    },
-                    style: TextButton.styleFrom(
-                        backgroundColor:
-                            validNext ? MITIColor.primary : MITIColor.gray500),
-                    child: Text(
-                      '비밀번호 재설정',
-                      style: MITITextStyle.mdBold.copyWith(
-                        color: validNext ? MITIColor.gray800 : MITIColor.gray50,
-                      ),
-                    ));
-              },
-            ),
-            SizedBox(height: 41.h),
-          ],
+              const PasswordForm(),
+              const Spacer(),
+              Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  final progressModel = ref.watch(progressProvider);
+                  final validNext = progressModel.validNext;
+                  return TextButton(
+                      onPressed: validNext
+                          ? () async {
+                              final newPassword =
+                                  ref.read(signUpFormProvider).password;
+                              final checkPassword =
+                                  ref.read(signUpFormProvider).checkPassword;
+                              final param = UserPasswordParam(
+                                  new_password_check: checkPassword,
+                                  new_password: newPassword,
+                                  password_update_token: password_update_token);
+                              ref
+                                  .read(progressProvider.notifier)
+                                  .updateValidNext(validNext: false);
+
+                              final result = await ref.read(
+                                  updatePasswordProvider(userId, param).future);
+                              if (context.mounted) {
+                                if (result is ErrorModel) {
+                                  ref
+                                      .read(progressProvider.notifier)
+                                      .updateValidNext(validNext: true);
+                                  UserError.fromModel(model: result)
+                                      .responseError(context,
+                                          UserApiType.updatePassword, ref);
+                                } else {
+                                  context.goNamed(
+                                      CompleteRestPasswordScreen.routeName);
+                                }
+                              }
+                            }
+                          : () {},
+                      style: TextButton.styleFrom(
+                          backgroundColor: validNext
+                              ? MITIColor.primary
+                              : MITIColor.gray500),
+                      child: Text(
+                        '비밀번호 재설정',
+                        style: MITITextStyle.mdBold.copyWith(
+                          color:
+                              validNext ? MITIColor.gray800 : MITIColor.gray50,
+                        ),
+                      ));
+                },
+              ),
+              SizedBox(height: 41.h),
+            ],
+          ),
         ),
       ),
     );
@@ -98,48 +118,52 @@ class CompleteRestPasswordScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: const DefaultAppBar(
-        title: '회원 정보 찾기',
-        hasBorder: false,
-      ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 21.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: 200.h),
-            Lottie.asset(
-              'assets/lottie/success2.json',
-              width: 100.r,
-              height: 100.r,
-              fit: BoxFit.fill,
-              repeat: false,
-            ),
-            SizedBox(
-              height: 20.h,
-            ),
-            Text(
-              '비밀번호 설정 완료',
-              style: MITITextStyle.xxl140.copyWith(
-                color: MITIColor.white,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: const DefaultAppBar(
+          title: '회원 정보 찾기',
+          hasBorder: false,
+          canPop: false,
+        ),
+        body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 21.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(height: 200.h),
+              Lottie.asset(
+                'assets/lottie/success2.json',
+                width: 100.r,
+                height: 100.r,
+                fit: BoxFit.fill,
+                repeat: false,
               ),
-            ),
-            SizedBox(height: 40.h),
-            Text(
-              '변경된 비밀번호로 로그인하시길 바랍니다.',
-              style: MITITextStyle.sm150.copyWith(
-                color: MITIColor.gray300,
+              SizedBox(
+                height: 20.h,
               ),
-            ),
-            const Spacer(),
-            TextButton(
-              onPressed: () => context.goNamed(LoginScreen.routeName),
-              child: const Text('로그인 하러 가기'),
-            ),
-            SizedBox(height: 41.h),
-          ],
+              Text(
+                '비밀번호 설정 완료',
+                style: MITITextStyle.xxl140.copyWith(
+                  color: MITIColor.white,
+                ),
+              ),
+              SizedBox(height: 40.h),
+              Text(
+                '변경된 비밀번호로 로그인하시길 바랍니다.',
+                style: MITITextStyle.sm150.copyWith(
+                  color: MITIColor.gray300,
+                ),
+              ),
+              const Spacer(),
+              TextButton(
+                onPressed: () => context.goNamed(LoginScreen.routeName),
+                child: const Text('로그인 하러 가기'),
+              ),
+              SizedBox(height: 41.h),
+            ],
+          ),
         ),
       ),
     );

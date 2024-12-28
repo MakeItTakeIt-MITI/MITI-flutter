@@ -96,117 +96,120 @@ class GameCompleteScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 21.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(
-                height: 170.h,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      child: Lottie.asset(
-                        'assets/lottie/success.json',
-                        width: 200,
-                        height: 200,
-                        fit: BoxFit.fill,
-                        repeat: true,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        body: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 21.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(
+                  height: 170.h,
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        left: 0,
+                        right: 0,
+                        child: Lottie.asset(
+                          'assets/lottie/success.json',
+                          width: 200,
+                          height: 200,
+                          fit: BoxFit.fill,
+                          repeat: true,
+                        ),
                       ),
-                    ),
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      child: Column(
-                        // crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          SizedBox(height: 52.h),
-                          Text(
-                            type == GameCompleteType.create
-                                ? '경기 생성 완료!'
-                                : '경기 참가 완료!',
-                            style: MITITextStyle.xxl140.copyWith(
-                              color: Colors.white,
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: Column(
+                          // crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            SizedBox(height: 52.h),
+                            Text(
+                              type == GameCompleteType.create
+                                  ? '경기 생성 완료!'
+                                  : '경기 참가 완료!',
+                              style: MITITextStyle.xxl140.copyWith(
+                                color: Colors.white,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(height: 10.h),
-                          Text(
-                            '경기 정보를 확인해 보세요.',
-                            style: MITITextStyle.sm150.copyWith(
-                              color: MITIColor.gray300,
+                            SizedBox(height: 10.h),
+                            Text(
+                              '경기 정보를 확인해 보세요.',
+                              style: MITITextStyle.sm150.copyWith(
+                                color: MITIColor.gray300,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(height: 52.h),
-                        ],
-                      ),
-                    )
-                  ],
+                            SizedBox(height: 52.h),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-              Text(
-                type == GameCompleteType.create
-                    ? "새로운 경기를 생성하셨습니다."
-                    : '경기 참여가 확정되었습니다.',
-                style: MITITextStyle.md.copyWith(
-                  color: MITIColor.gray100,
+                Text(
+                  type == GameCompleteType.create
+                      ? "새로운 경기를 생성하셨습니다."
+                      : '경기 참여가 확정되었습니다.',
+                  style: MITITextStyle.md.copyWith(
+                    color: MITIColor.gray100,
+                  ),
                 ),
-              ),
-              SizedBox(height: 12.h),
-              Text(
-                "경기에 참여하시기 전에 아래의 내용을 확인하세요.",
-                style: MITITextStyle.sm150.copyWith(
-                  color: MITIColor.gray300,
+                SizedBox(height: 12.h),
+                Text(
+                  "경기에 참여하시기 전에 아래의 내용을 확인하세요.",
+                  style: MITITextStyle.sm150.copyWith(
+                    color: MITIColor.gray300,
+                  ),
                 ),
-              ),
-              SizedBox(height: 25.h),
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 20.w,
-                  vertical: 30.h,
+                SizedBox(height: 25.h),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 20.w,
+                    vertical: 30.h,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.r),
+                    color: MITIColor.gray700,
+                  ),
+                  child: ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (_, idx) {
+                        return info(idx);
+                      },
+                      separatorBuilder: (_, idx) {
+                        return SizedBox(height: 32.h);
+                      },
+                      itemCount: 3),
                 ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20.r),
-                  color: MITIColor.gray700,
-                ),
-                child: ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (_, idx) {
-                      return info(idx);
-                    },
-                    separatorBuilder: (_, idx) {
-                      return SizedBox(height: 32.h);
-                    },
-                    itemCount: 3),
-              ),
-              const Spacer(),
-              SizedBox(
-                height: 48.h,
-                child: TextButton(
-                  onPressed: () {
-                    Map<String, String> pathParameters = {
-                      'gameId': gameId.toString()
-                    };
+                const Spacer(),
+                SizedBox(
+                  height: 48.h,
+                  child: TextButton(
+                    onPressed: () {
+                      Map<String, String> pathParameters = {
+                        'gameId': gameId.toString()
+                      };
 
-                    context.goNamed(
-                      GameDetailScreen.routeName,
-                      pathParameters: pathParameters,
-                    );
-                  },
-                  style: TextButton.styleFrom(
-                      fixedSize: Size(double.infinity, 48.h)),
-                  child: const Text('경기 상세 정보 보기'),
+                      context.goNamed(
+                        GameDetailScreen.routeName,
+                        pathParameters: pathParameters,
+                      );
+                    },
+                    style: TextButton.styleFrom(
+                        fixedSize: Size(double.infinity, 48.h)),
+                    child: const Text('경기 상세 정보 보기'),
+                  ),
                 ),
-              ),
-              SizedBox(height: 20.h),
-            ],
+                SizedBox(height: 20.h),
+              ],
+            ),
           ),
         ),
       ),

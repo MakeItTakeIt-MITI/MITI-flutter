@@ -26,14 +26,18 @@ class FindEmailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const DefaultAppBar(
-        title: '회원 정보 찾기',
-        hasBorder: false,
-      ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 21.w),
-        child: _EmailComponent(email: findEmail),
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: const DefaultAppBar(
+          title: '회원 정보 찾기',
+          hasBorder: false,
+          canPop: false,
+        ),
+        body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 21.w),
+          child: _EmailComponent(email: findEmail),
+        ),
       ),
     );
   }
@@ -49,16 +53,20 @@ class OtherAccountScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const DefaultAppBar(
-        title: '회원 정보 찾기',
-        hasBorder: false,
-      ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 21.w),
-        child: _OauthComponent(
-          authType: authType,
-          phoneType: phoneType,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: const DefaultAppBar(
+          title: '회원 정보 찾기',
+          hasBorder: false,
+          canPop: false,
+        ),
+        body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 21.w),
+          child: _OauthComponent(
+            authType: authType,
+            phoneType: phoneType,
+          ),
         ),
       ),
     );
@@ -72,39 +80,43 @@ class NotFoundAccountScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const DefaultAppBar(
-        title: '회원 정보 찾기',
-        hasBorder: false,
-      ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 21.w),
-        child: Column(
-          children: [
-            const Spacer(),
-            Text(
-              "유저 정보 없음",
-              style: MITITextStyle.xxl140.copyWith(
-                color: MITIColor.white,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: const DefaultAppBar(
+          title: '회원 정보 찾기',
+          hasBorder: false,
+          canPop: false,
+        ),
+        body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 21.w),
+          child: Column(
+            children: [
+              const Spacer(),
+              Text(
+                "유저 정보 없음",
+                style: MITITextStyle.xxl140.copyWith(
+                  color: MITIColor.white,
+                ),
               ),
-            ),
-            SizedBox(height: 40.h),
-            Text(
-              "일치하는 사용자 정보가 존재하지 않습니다.\n회원가입시 입력한 전화번호를 확인해주세요.",
-              style: MITITextStyle.sm150.copyWith(
-                color: MITIColor.gray300,
+              SizedBox(height: 40.h),
+              Text(
+                "일치하는 사용자 정보가 존재하지 않습니다.\n회원가입시 입력한 전화번호를 확인해주세요.",
+                style: MITITextStyle.sm150.copyWith(
+                  color: MITIColor.gray300,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-            const Spacer(),
-            TextButton(
-              onPressed: () {
-                context.goNamed(SignUpSelectScreen.routeName);
-              },
-              child: const Text("회원가입 하기"),
-            ),
-            SizedBox(height: 41.h),
-          ],
+              const Spacer(),
+              TextButton(
+                onPressed: () {
+                  context.goNamed(SignUpSelectScreen.routeName);
+                },
+                child: const Text("회원가입 하기"),
+              ),
+              SizedBox(height: 41.h),
+            ],
+          ),
         ),
       ),
     );

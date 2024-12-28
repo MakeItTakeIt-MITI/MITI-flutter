@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,6 +29,7 @@ class NicknameUpdateScreen extends ConsumerStatefulWidget {
 }
 
 class _NicknameUpdateScreenState extends ConsumerState<NicknameUpdateScreen> {
+  bool isLoading = false;
   late Throttle<int> _throttler;
   int throttleCnt = 0;
 
@@ -38,8 +41,17 @@ class _NicknameUpdateScreenState extends ConsumerState<NicknameUpdateScreen> {
       initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((int s) {
-      _updateNickname(ref, context);
+    _throttler.values.listen((int s) async {
+      setState(() {
+        isLoading = true;
+      });
+      Future.delayed(const Duration(seconds: 1), () {
+        throttleCnt++;
+      });
+      await _updateNickname(ref, context);
+      setState(() {
+        isLoading = false;
+      });
     });
   }
 
@@ -84,19 +96,22 @@ class _NicknameUpdateScreenState extends ConsumerState<NicknameUpdateScreen> {
                   final nickname = ref.watch(userNicknameFormProvider).nickname;
                   final valid = ValidRegExp.userNickname(nickname);
                   return TextButton(
-                      onPressed: valid
+                      onPressed: valid && !isLoading
                           ? () async {
-                              _throttler.setValue(throttleCnt+1);
+                              _throttler.setValue(throttleCnt + 1);
                             }
                           : () {},
                       style: TextButton.styleFrom(
-                        backgroundColor:
-                            valid ? MITIColor.primary : MITIColor.gray500,
+                        backgroundColor: valid && !isLoading
+                            ? MITIColor.primary
+                            : MITIColor.gray500,
                       ),
                       child: Text(
                         '저장하기',
                         style: MITITextStyle.mdBold.copyWith(
-                          color: valid ? MITIColor.gray800 : MITIColor.gray50,
+                          color: valid && !isLoading
+                              ? MITIColor.gray800
+                              : MITIColor.gray50,
                         ),
                       ));
                 },

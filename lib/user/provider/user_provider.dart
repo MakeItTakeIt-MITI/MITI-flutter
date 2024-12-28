@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:intl/intl.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/common/param/pagination_param.dart';
@@ -126,6 +128,7 @@ class UserInfo extends _$UserInfo {
 Future<BaseModel> updateNickname(UpdateNicknameRef ref) async {
   final userId = ref.watch(authProvider)!.id!;
   final param = ref.watch(userNicknameFormProvider);
+  log("updateNickname!!");
   return await ref
       .watch(userRepositoryProvider)
       .updateNickname(userId: userId, param: param)

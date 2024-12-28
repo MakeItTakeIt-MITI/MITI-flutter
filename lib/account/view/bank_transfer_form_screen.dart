@@ -474,6 +474,7 @@ class _AgreementTermForm extends ConsumerStatefulWidget {
 class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
   late Throttle<int> _throttler;
   int throttleCnt = 0;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -483,9 +484,17 @@ class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
       initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((int s) {
-      requestTransfer(ref, context);
-      throttleCnt++;
+    _throttler.values.listen((int s) async {
+      setState(() {
+        isLoading = true;
+      });
+      Future.delayed(const Duration(seconds: 1), () {
+        throttleCnt++;
+      });
+      await requestTransfer(ref, context);
+      setState(() {
+        isLoading = false;
+      });
     });
   }
 
@@ -592,18 +601,20 @@ class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
           ),
           SizedBox(height: 30.h),
           TextButton(
-            onPressed: valid
+            onPressed: valid && !isLoading
                 ? () async {
                     _throttler.setValue(throttleCnt + 1);
                   }
                 : () {},
             style: TextButton.styleFrom(
-              backgroundColor: valid ? MITIColor.primary : MITIColor.gray500,
+              backgroundColor:
+                  valid && !isLoading ? MITIColor.primary : MITIColor.gray500,
             ),
             child: Text(
               '이체 신청하기',
               style: MITITextStyle.mdBold.copyWith(
-                color: valid ? MITIColor.gray800 : MITIColor.gray50,
+                color:
+                    valid && !isLoading ? MITIColor.gray800 : MITIColor.gray50,
               ),
             ),
           ),

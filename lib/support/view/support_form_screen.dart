@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +38,9 @@ class _SupportFormScreenState extends ConsumerState<SupportFormScreen> {
   late final ScrollController _scrollController;
   late Throttle<int> _throttler;
 
+  bool isLoading = false;
   int throttleCnt = 0;
+
   @override
   void initState() {
     super.initState();
@@ -45,8 +49,17 @@ class _SupportFormScreenState extends ConsumerState<SupportFormScreen> {
       initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((int s) {
-      _onCreate(ref, context);
+    _throttler.values.listen((int s) async {
+      setState(() {
+        isLoading = true;
+      });
+      Future.delayed(const Duration(seconds: 1), () {
+        throttleCnt++;
+      });
+      await _onCreate(ref, context);
+      setState(() {
+        isLoading = false;
+      });
     });
     _scrollController = ScrollController();
   }
@@ -70,18 +83,21 @@ class _SupportFormScreenState extends ConsumerState<SupportFormScreen> {
               final form = ref.watch(supportFormProvider);
               final valid = form.title.isNotEmpty && form.content.isNotEmpty;
               return TextButton(
-                onPressed: valid
+                onPressed: valid && !isLoading
                     ? () async {
-                        _throttler.setValue(throttleCnt+1);
+                        _throttler.setValue(throttleCnt + 1);
                       }
                     : () {},
                 style: TextButton.styleFrom(
-                    backgroundColor:
-                        valid ? MITIColor.primary : MITIColor.gray500),
+                    backgroundColor: valid && !isLoading
+                        ? MITIColor.primary
+                        : MITIColor.gray500),
                 child: Text(
                   '문의하기',
                   style: MITITextStyle.mdBold.copyWith(
-                      color: valid ? MITIColor.gray800 : MITIColor.gray50),
+                      color: valid && !isLoading
+                          ? MITIColor.gray800
+                          : MITIColor.gray50),
                 ),
               );
             },
