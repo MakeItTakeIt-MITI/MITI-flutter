@@ -8,7 +8,7 @@ import '../auth/provider/auth_provider.dart';
 import '../common/logger/custom_logger.dart';
 
 const String devServerURL = "https://dev.makeittakeit.kr";
-const String prodServerURL = "https://dev.makeittakeit.kr";
+const String prodServerURL = "https://api.makeittakeit.kr";
 
 // https://api.makeittakeit.kr
 class CustomDioInterceptor extends Interceptor {
