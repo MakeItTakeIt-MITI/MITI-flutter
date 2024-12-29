@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart' hide Headers;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retrofit/http.dart';
 
@@ -18,13 +19,15 @@ import '../param/game_param.dart';
 part 'game_repository.g.dart';
 
 final gameRepositoryProvider = Provider<GameRepository>((ref) {
+  final baseUrl =
+      dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
-  return GameRepository(dio);
+  return GameRepository(dio, baseUrl: baseUrl);
 });
 
-@RestApi(baseUrl: prodServerURL)
+@RestApi()
 abstract class GameRepository {
-  factory GameRepository(Dio dio) = _GameRepository;
+  factory GameRepository(Dio dio, {String baseUrl}) = _GameRepository;
 
   // @Headers({'token': 'true'})
   @GET('/games')

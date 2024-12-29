@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart' hide Headers;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retrofit/http.dart';
@@ -16,14 +17,16 @@ part 'account_repository.g.dart';
 
 final settlementPaginationRepositoryProvider =
     Provider<SettlementPaginationRepository>((ref) {
+  final baseUrl =
+      dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
-  return SettlementPaginationRepository(dio);
+  return SettlementPaginationRepository(dio, baseUrl: baseUrl);
 });
 
-@RestApi(baseUrl: prodServerURL)
+@RestApi()
 abstract class SettlementPaginationRepository extends IBasePaginationRepository<
     SettlementModel, SettlementPaginationParam> {
-  factory SettlementPaginationRepository(Dio dio) =
+  factory SettlementPaginationRepository(Dio dio, {String baseUrl}) =
       _SettlementPaginationRepository;
 
   @override
@@ -45,14 +48,17 @@ abstract class SettlementPaginationRepository extends IBasePaginationRepository<
 
 final bankTransferPaginationRepositoryProvider =
     Provider<BankTransferPaginationRepository>((ref) {
+  final baseUrl =
+      dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
-  return BankTransferPaginationRepository(dio);
+  return BankTransferPaginationRepository(dio, baseUrl: baseUrl);
 });
 
-@RestApi(baseUrl: prodServerURL)
+@RestApi()
 abstract class BankTransferPaginationRepository
-    extends IBasePaginationRepository<TransferModel, BankTransferPaginationParam> {
-  factory BankTransferPaginationRepository(Dio dio) =
+    extends IBasePaginationRepository<TransferModel,
+        BankTransferPaginationParam> {
+  factory BankTransferPaginationRepository(Dio dio, {String baseUrl}) =
       _BankTransferPaginationRepository;
 
   @override

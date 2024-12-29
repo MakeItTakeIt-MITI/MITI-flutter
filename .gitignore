@@ -46,6 +46,7 @@ app.*.map.json
 *.g.dart
 
 # api key
+*.env.*
 *.env
 
 

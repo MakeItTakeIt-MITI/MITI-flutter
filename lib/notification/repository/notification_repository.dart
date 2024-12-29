@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miti/dio/provider/dio_provider.dart';
 import 'package:miti/notification/model/notice_model.dart';
@@ -17,14 +18,16 @@ import '../param/push_setting_param.dart';
 part 'notification_repository.g.dart';
 
 final noticePRepositoryProvider = Provider<NoticePRepository>((ref) {
+  final baseUrl =
+      dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
-  return NoticePRepository(dio);
+  return NoticePRepository(dio, baseUrl: baseUrl);
 });
 
-@RestApi(baseUrl: prodServerURL)
+@RestApi()
 abstract class NoticePRepository
     extends IBasePaginationRepository<NoticeModel, NotificationParam> {
-  factory NoticePRepository(Dio dio) = _NoticePRepository;
+  factory NoticePRepository(Dio dio, {String baseUrl}) = _NoticePRepository;
 
   @override
   @GET('/notifications')
@@ -41,14 +44,16 @@ abstract class NoticePRepository
 }
 
 final pushPRepositoryProvider = Provider<PushPRepository>((ref) {
+  final baseUrl =
+      dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
-  return PushPRepository(dio);
+  return PushPRepository(dio, baseUrl: baseUrl);
 });
 
-@RestApi(baseUrl: prodServerURL)
+@RestApi()
 abstract class PushPRepository
     extends IBasePaginationRepository<PushModel, NotificationParam> {
-  factory PushPRepository(Dio dio) = _PushPRepository;
+  factory PushPRepository(Dio dio, {String baseUrl}) = _PushPRepository;
 
   @override
   @Headers({'token': 'true'})

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miti/court/model/court_model.dart';
 import 'package:retrofit/http.dart';
@@ -14,13 +15,15 @@ import '../param/court_pagination_param.dart';
 part 'court_repository.g.dart';
 
 final courtRepositoryProvider = Provider<CourtRepository>((ref) {
+  final baseUrl =
+      dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
-  return CourtRepository(dio);
+  return CourtRepository(dio, baseUrl: baseUrl);
 });
 
-@RestApi(baseUrl: prodServerURL)
+@RestApi()
 abstract class CourtRepository {
-  factory CourtRepository(Dio dio) = _CourtRepository;
+  factory CourtRepository(Dio dio, {String baseUrl}) = _CourtRepository;
 
   @GET('/courts')
   Future<ResponseModel<PaginationModel<CourtSearchModel>>> getCourtList({
@@ -36,14 +39,17 @@ abstract class CourtRepository {
 
 final courtPaginationRepositoryProvider =
     Provider<CourtPaginationRepository>((ref) {
+  final baseUrl =
+      dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
-  return CourtPaginationRepository(dio);
+  return CourtPaginationRepository(dio, baseUrl: baseUrl);
 });
 
-@RestApi(baseUrl: prodServerURL)
+@RestApi()
 abstract class CourtPaginationRepository
     extends IBasePaginationRepository<CourtSearchModel, CourtPaginationParam> {
-  factory CourtPaginationRepository(Dio dio) = _CourtPaginationRepository;
+  factory CourtPaginationRepository(Dio dio, {String baseUrl}) =
+      _CourtPaginationRepository;
 
   @override
   @GET('/courts')
@@ -56,14 +62,16 @@ abstract class CourtPaginationRepository
 
 final courtGamePaginationRepositoryProvider =
     Provider<CourtGamePaginationRepository>((ref) {
+  final baseUrl =
+      dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
-  return CourtGamePaginationRepository(dio);
+  return CourtGamePaginationRepository(dio, baseUrl: baseUrl);
 });
 
-@RestApi(baseUrl: prodServerURL)
+@RestApi()
 abstract class CourtGamePaginationRepository extends IBasePaginationRepository<
     GameListByDateModel, CourtPaginationParam> {
-  factory CourtGamePaginationRepository(Dio dio) =
+  factory CourtGamePaginationRepository(Dio dio, {String baseUrl}) =
       _CourtGamePaginationRepository;
 
   @override

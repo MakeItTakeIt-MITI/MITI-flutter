@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart' hide Headers;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/report/model/agreement_policy_model.dart';
@@ -16,13 +17,15 @@ import '../param/report_param.dart';
 part 'report_repository.g.dart';
 
 final reportRepositoryProvider = Provider<ReportRepository>((ref) {
+  final baseUrl =
+      dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
-  return ReportRepository(dio);
+  return ReportRepository(dio, baseUrl: baseUrl);
 });
 
-@RestApi(baseUrl: prodServerURL)
+@RestApi()
 abstract class ReportRepository {
-  factory ReportRepository(Dio dio) = _ReportRepository;
+  factory ReportRepository(Dio dio, {String baseUrl}) = _ReportRepository;
 
   @Headers({'token': 'true'})
   @GET('/reports/report-reasons')

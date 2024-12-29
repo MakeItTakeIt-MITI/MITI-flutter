@@ -15,17 +15,20 @@ import '../../common/repository/base_pagination_repository.dart';
 import '../../dio/dio_interceptor.dart';
 import '../../dio/provider/dio_provider.dart';
 import '../../game/model/game_model.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 part 'user_repository.g.dart';
 
 final userRepositoryProvider = Provider<UserRepository>((ref) {
+  final baseUrl =
+      dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
-  return UserRepository(dio);
+  return UserRepository(dio, baseUrl: baseUrl);
 });
 
-@RestApi(baseUrl: prodServerURL)
+@RestApi()
 abstract class UserRepository {
-  factory UserRepository(Dio dio) = _UserRepository;
+  factory UserRepository(Dio dio, {String baseUrl}) = _UserRepository;
 
   @Headers({'token': 'true'})
   @GET('/users/{userId}')
@@ -71,14 +74,17 @@ abstract class UserRepository {
 
 final userParticipationPRepositoryProvider =
     Provider<UserParticipationPRepository>((ref) {
+  final baseUrl =
+      dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
-  return UserParticipationPRepository(dio);
+  return UserParticipationPRepository(dio, baseUrl: baseUrl);
 });
 
-@RestApi(baseUrl: prodServerURL)
+@RestApi()
 abstract class UserParticipationPRepository
     extends IBasePaginationRepository<GameListByDateModel, UserGameParam> {
-  factory UserParticipationPRepository(Dio dio) = _UserParticipationPRepository;
+  factory UserParticipationPRepository(Dio dio, {String baseUrl}) =
+      _UserParticipationPRepository;
 
   @override
   @Headers({'token': 'true'})
@@ -92,14 +98,16 @@ abstract class UserParticipationPRepository
 
 final userWrittenReviewsPRepositoryProvider =
     Provider<UserWrittenReviewsPRepository>((ref) {
+  final baseUrl =
+      dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
-  return UserWrittenReviewsPRepository(dio);
+  return UserWrittenReviewsPRepository(dio, baseUrl: baseUrl);
 });
 
-@RestApi(baseUrl: prodServerURL)
+@RestApi()
 abstract class UserWrittenReviewsPRepository
     extends IBasePaginationRepository<WrittenReviewModel, UserReviewParam> {
-  factory UserWrittenReviewsPRepository(Dio dio) =
+  factory UserWrittenReviewsPRepository(Dio dio, {String baseUrl}) =
       _UserWrittenReviewsPRepository;
 
   @override
@@ -114,14 +122,16 @@ abstract class UserWrittenReviewsPRepository
 
 final userReceiveReviewsPRepositoryProvider =
     Provider<UserReceiveReviewsPRepository>((ref) {
+  final baseUrl =
+      dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
-  return UserReceiveReviewsPRepository(dio);
+  return UserReceiveReviewsPRepository(dio, baseUrl: baseUrl);
 });
 
-@RestApi(baseUrl: prodServerURL)
+@RestApi()
 abstract class UserReceiveReviewsPRepository
     extends IBasePaginationRepository<ReceiveReviewModel, UserReviewParam> {
-  factory UserReceiveReviewsPRepository(Dio dio) =
+  factory UserReceiveReviewsPRepository(Dio dio, {String baseUrl}) =
       _UserReceiveReviewsPRepository;
 
   @override
@@ -135,14 +145,17 @@ abstract class UserReceiveReviewsPRepository
 }
 
 final userHostingPRepositoryProvider = Provider<UserHostingPRepository>((ref) {
+  final baseUrl =
+      dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
-  return UserHostingPRepository(dio);
+  return UserHostingPRepository(dio, baseUrl: baseUrl);
 });
 
-@RestApi(baseUrl: prodServerURL)
+@RestApi()
 abstract class UserHostingPRepository
     extends IBasePaginationRepository<GameListByDateModel, UserGameParam> {
-  factory UserHostingPRepository(Dio dio) = _UserHostingPRepository;
+  factory UserHostingPRepository(Dio dio, {String baseUrl}) =
+      _UserHostingPRepository;
 
   @override
   @Headers({'token': 'true'})
@@ -155,14 +168,17 @@ abstract class UserHostingPRepository
 }
 
 final userPaymentPRepositoryProvider = Provider<UserPaymentPRepository>((ref) {
+  final baseUrl =
+      dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
-  return UserPaymentPRepository(dio);
+  return UserPaymentPRepository(dio, baseUrl: baseUrl);
 });
 
-@RestApi(baseUrl: prodServerURL)
+@RestApi()
 abstract class UserPaymentPRepository
     extends IBasePaginationRepository<MyPaymentModel, UserPaymentParam> {
-  factory UserPaymentPRepository(Dio dio) = _UserPaymentPRepository;
+  factory UserPaymentPRepository(Dio dio, {String baseUrl}) =
+      _UserPaymentPRepository;
 
   @override
   @Headers({'token': 'true'})

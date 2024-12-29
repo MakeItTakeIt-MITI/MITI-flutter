@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart' hide Headers;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:retrofit/http.dart';
@@ -13,13 +14,15 @@ import '../model/review_model.dart';
 part 'review_repository.g.dart';
 
 final reviewRepositoryProvider = Provider<ReviewRepository>((ref) {
+  final baseUrl =
+      dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
-  return ReviewRepository(dio);
+  return ReviewRepository(dio, baseUrl: baseUrl);
 });
 
-@RestApi(baseUrl: prodServerURL)
+@RestApi()
 abstract class ReviewRepository {
-  factory ReviewRepository(Dio dio) = _ReviewRepository;
+  factory ReviewRepository(Dio dio, {String baseUrl}) = _ReviewRepository;
 
   @Headers({'token': 'true'})
   @GET('/games/{gameId}/participations/{participationId}/reviews')

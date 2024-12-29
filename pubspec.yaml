@@ -98,6 +98,12 @@ dependencies:
   flutter_quill: ^10.8.5
   flutter_quill_extensions: ^10.8.5
 
+  flutter_dotenv: ^5.2.1
+
+  image_picker: ^1.1.2
+#  image_cropper: ^8.0.2
+  flutter_image_compress: ^2.3.0
+
 dependency_overrides:
   fading_edge_scrollview: ^4.1.1
   http: ^1.2.1
@@ -166,6 +172,8 @@ flutter:
     - assets/images/v2/logo/
     - assets/images/v2/logo/bank/
     - assets/images/v2/gif/
+    - .env.prod
+    - .env.dev
   #   - images/a_dot_ham.jpeg
   #  flavorDimensions:
   #    - environment

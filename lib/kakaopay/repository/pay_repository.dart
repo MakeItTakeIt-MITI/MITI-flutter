@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart' hide Headers;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/kakaopay/model/pay_model.dart';
@@ -16,13 +17,15 @@ import '../param/boot_pay_approve_param.dart';
 part 'pay_repository.g.dart';
 
 final payRepositoryProvider = Provider<PayRepository>((ref) {
+  final baseUrl =
+      dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
-  return PayRepository(dio);
+  return PayRepository(dio, baseUrl: baseUrl);
 });
 
-@RestApi(baseUrl: prodServerURL)
+@RestApi()
 abstract class PayRepository {
-  factory PayRepository(Dio dio) = _PayRepository;
+  factory PayRepository(Dio dio, {String baseUrl}) = _PayRepository;
 
   // @Headers({'token': 'true'})
   // @POST('/games/{gameId}/participations')
@@ -39,8 +42,7 @@ abstract class PayRepository {
   @Headers({'token': 'true'})
   @POST('/games/{gameId}/participations')
   Future<ResponseModel<PayBaseModel>> requestBootPay(
-      {
-      @Path() required int gameId});
+      {@Path() required int gameId});
 
   @Headers({'token': 'true'})
   @POST('/payments/approve')

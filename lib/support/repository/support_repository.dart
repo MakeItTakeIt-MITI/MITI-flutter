@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:miti/support/model/support_model.dart';
 import 'package:retrofit/http.dart';
 import 'package:dio/dio.dart' hide Headers;
@@ -15,14 +16,16 @@ import '../param/support_param.dart';
 part 'support_repository.g.dart';
 
 final supportPRepositoryProvider = Provider<SupportPRepository>((ref) {
+  final baseUrl =
+      dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
-  return SupportPRepository(dio);
+  return SupportPRepository(dio, baseUrl: baseUrl);
 });
 
-@RestApi(baseUrl: prodServerURL)
+@RestApi()
 abstract class SupportPRepository
     extends IBasePaginationRepository<SupportModel, SupportParam> {
-  factory SupportPRepository(Dio dio) = _SupportPRepository;
+  factory SupportPRepository(Dio dio, {String baseUrl}) = _SupportPRepository;
 
   @override
   @Headers({'token': 'true'})

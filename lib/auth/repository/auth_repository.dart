@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart' hide Headers;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miti/auth/param/phone_verify_param.dart';
 import 'package:miti/auth/param/update_token_param.dart';
@@ -20,19 +21,20 @@ import '../param/signup_param.dart';
 part 'auth_repository.g.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  final baseUrl =
+      dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
-  final repository = AuthRepository(dio);
+  final repository = AuthRepository(dio, baseUrl: baseUrl);
   return repository;
 });
 
-@RestApi(baseUrl: prodServerURL)
+@RestApi()
 abstract class AuthRepository {
-  factory AuthRepository(Dio dio) = _AuthRepository;
+  factory AuthRepository(Dio dio, {String baseUrl}) = _AuthRepository;
 
   @POST('/auth/signup-check')
   Future<ResponseModel<SignUpCheckModel>> signUpCheck(
       {@Body() required BaseParam param});
-
 
   @Headers({'token': 'true', 'refresh': 'true'})
   @POST('/auth/logout')
@@ -77,6 +79,7 @@ abstract class AuthRepository {
     @Body() required LoginBaseParam param,
     @Header("fcm-token") required String fcmToken,
   });
+
   //
   // @POST('/auth/oauth//login')
   // Future<ResponseModel<LoginModel>> oauthLogin(

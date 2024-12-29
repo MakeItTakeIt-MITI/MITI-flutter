@@ -9,6 +9,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -29,14 +30,14 @@ import 'package:miti/notification_provider.dart';
 import 'package:miti/splash_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
-import 'common/model/entity_enum.dart';
-import 'common/provider/provider_observer.dart';
-import 'common/provider/router_provider.dart';
-import 'court/view/court_detail_screen.dart';
-import 'firebase_options.dart';
-import 'notification/provider/notification_provider.dart';
-import 'notification/provider/widget/unconfirmed_provider.dart';
-import 'notification/view/notification_screen.dart';
+import '../common/model/entity_enum.dart';
+import '../common/provider/provider_observer.dart';
+import '../common/provider/router_provider.dart';
+import '../court/view/court_detail_screen.dart';
+import '../firebase_options.dart';
+import '../notification/provider/notification_provider.dart';
+import '../notification/provider/widget/unconfirmed_provider.dart';
+import '../notification/view/notification_screen.dart';
 
 //
 @pragma('vm:entry-point')
@@ -81,7 +82,11 @@ void _backgroundRouting(NotificationResponse details) {
   rootNavKey.currentContext!.goNamed(NotificationScreen.routeName);
 }
 
-void main() async {
+void main(List<String> args) async {
+
+  log("Loading environment: .env.prod");
+  await dotenv.load(fileName: ".env.prod");
+
   HttpOverrides.global = MyHttpOverrides();
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
