@@ -477,6 +477,7 @@
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 3YB77XQ2UM;
 				ENABLE_BITCODE = NO;
+				FLUTTER_TARGET = lib/env/main_prod.dart;
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MITI;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
@@ -697,6 +698,7 @@
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 3YB77XQ2UM;
 				ENABLE_BITCODE = NO;
+				FLUTTER_TARGET = lib/env/main_prod.dart;
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MITI;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
@@ -737,6 +739,7 @@
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 3YB77XQ2UM;
 				ENABLE_BITCODE = NO;
+				FLUTTER_TARGET = lib/env/main_prod.dart;
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MITI;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
