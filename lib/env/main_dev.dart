@@ -84,6 +84,7 @@ void _backgroundRouting(NotificationResponse details) {
 
 void main(List<String> args) async {
 
+  print("Loading environment: .env.dev");
   log("Loading environment: .env.dev");
   await dotenv.load(fileName: ".env.dev");
 
