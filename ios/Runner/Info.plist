@@ -113,6 +113,11 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>프로필 이미지를 가져오기 위해 허용을 해주세요.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>프로필 이미지를 생성하기 위해 허용을 해주세요.</string>
+
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>지도 경기장 확인을 위해 위치 추적 허용을 해주세요.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
