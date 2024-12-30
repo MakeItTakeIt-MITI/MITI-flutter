@@ -168,14 +168,14 @@ class GameForm extends _$GameForm {
     if (state.fee.isNotEmpty) {
       final fee = int.parse(state.fee);
       if (!(fee == 0 || fee >= 500)) {
-
         return false;
       }
     }
     return true;
   }
 
-  bool validDatetime() {
+
+  bool validDateTime() {
     if (state.startdate.isNotEmpty &&
         state.starttime.isNotEmpty &&
         state.enddate.isNotEmpty &&
@@ -184,28 +184,14 @@ class GameForm extends _$GameForm {
           DateTime.parse("${state.startdate} ${state.starttime}:00");
       DateTime endDateTime =
           DateTime.parse("${state.enddate} ${state.endtime}:00");
-      DateTime currentDateTime = DateTime.now();
-
-      // Checking if startDateTime is equal to or after endDateTime
-      if (startDateTime.isAtSameMomentAs(endDateTime) ||
-          startDateTime.isAfter(endDateTime)) {
-        return false;
-      } else if (startDateTime.isBefore(currentDateTime) &&
-          endDateTime.isBefore(currentDateTime)) {
-        return false;
-      } else if (currentDateTime.isAfter(startDateTime) &&
-          currentDateTime.isBefore(endDateTime)) {
-        return false;
-      } else {
-        // ref
-        //     .read(interactionDescProvider(InteractionType.date).notifier)
-        //     .update((state) => null);
+      log('startDateTime = $startDateTime endDateTime = $endDateTime');
+      final validNum = startDateTime.compareTo(endDateTime);
+      if (validNum < 0) {
         return true;
+      } else {
+        return false;
       }
     }
-    // ref
-    //     .read(interactionDescProvider(InteractionType.date).notifier)
-    //     .update((state) => null);
     return false;
   }
 
@@ -253,13 +239,13 @@ class GameForm extends _$GameForm {
   }
 
   bool formValid() {
-    log('validInvitation() = ${validInvitation()} validDatetime() = ${validDatetime()}');
+    log('validInvitation() = ${validInvitation()} validDatetime() = ${validDateTime()}');
     final formValid = ValidRegExp.gameTitle(state.title) &
         ValidRegExp.gameAddress(state.court.address) &
         // ValidRegExp.gameAddressDetail(state.court.address_detail) &
         ValidRegExp.courtName(state.court.name);
     log("formvalid = $formValid");
-    return validFee() && validInvitation() && validDatetime() && formValid;
+    return validFee() && validInvitation() && validDateTime() && formValid;
   }
 }
 

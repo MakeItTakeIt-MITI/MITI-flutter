@@ -738,7 +738,6 @@ class _V2DateFormState extends State<V2DateForm> {
     final startDate = ref.watch(datePickerProvider(true));
     final endDate = ref.watch(datePickerProvider(false));
 
-    log("start = $startDate");
     final parsingStart = parseDate(startDate);
     final parsingEnd = parseDate(endDate);
 
@@ -758,7 +757,7 @@ class _V2DateFormState extends State<V2DateForm> {
   GameDate parseDate(String dateTime) {
     final inputFormat = DateFormat("yyyy / MM / dd (E) hh:mm", "ko_KR");
     DateFormat dateFormat = DateFormat("yyyy-MM-dd");
-    DateFormat timeFormat = DateFormat("HH:mm");
+    DateFormat timeFormat = DateFormat("hh:mm");
     DateTime parsedDate = inputFormat.parse(dateTime);
     String formattedDate = dateFormat.format(parsedDate);
     String formattedTime = timeFormat.format(parsedDate);
