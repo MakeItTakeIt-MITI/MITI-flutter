@@ -62,6 +62,7 @@ import '../../user/view/user_participation_screen.dart';
 import '../../user/view/user_payment_detail_screen.dart';
 import '../../user/view/user_profile_update_screen.dart';
 import '../../user/view/user_review_screen.dart';
+import '../../util/view/image_crop_screen.dart';
 import '../error/view/error_screen.dart';
 import '../model/entity_enum.dart';
 import '../view/not_found_screen.dart';
@@ -304,6 +305,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                 key: state.pageKey,
               );
             }),
+        GoRoute(
+          path: '/image',
+          parentNavigatorKey: rootNavKey,
+          name: CropSample.routeName,
+          builder: (context, state) {
+            return  CropSample();
+          },
+        ),
         ShellRoute(
             navigatorKey: shellNavKey,
             builder: (context, state, child) {
@@ -470,7 +479,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                               parentNavigatorKey: rootNavKey,
                               name: GamePaymentScreen.routeName,
                               builder: (context, state) {
-
                                 final int gameId =
                                     int.parse(state.pathParameters['gameId']!);
                                 return GamePaymentScreen(

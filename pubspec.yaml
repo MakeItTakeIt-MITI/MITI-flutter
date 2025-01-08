@@ -101,7 +101,9 @@ dependencies:
   flutter_dotenv: ^5.2.1
 
   image_picker: ^1.1.2
-#  image_cropper: ^8.0.2
+#  image_cropper: ^8.0.1
+  crop_your_image: ^2.0.0
+  dotted_border: ^2.1.0
   flutter_image_compress: ^2.3.0
 
 dependency_overrides:

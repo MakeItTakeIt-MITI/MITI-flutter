@@ -4,7 +4,9 @@ import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:miti/account/error/account_error.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
 import 'package:miti/common/component/defalut_flashbar.dart';
@@ -12,9 +14,11 @@ import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:miti/user/model/user_model.dart';
 import 'package:miti/user/provider/user_form_provider.dart';
 import 'package:miti/user/provider/user_provider.dart';
 import 'package:miti/util/util.dart';
+import 'package:miti/util/view/image_crop_screen.dart';
 
 import '../error/user_error.dart';
 
@@ -72,11 +76,13 @@ class _NicknameUpdateScreenState extends ConsumerState<NicknameUpdateScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(height: 40.h),
+              const _ProfileImageComponent(),
+              SizedBox(height: 45.h),
               Text(
                 '변경하고 싶은 닉네임을 입력해 주세요.',
                 style: MITITextStyle.mdBold.copyWith(color: MITIColor.gray100),
               ),
-              SizedBox(height: 40.h),
+              SizedBox(height: 20.h),
               Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   return CustomTextFormField(
@@ -135,5 +141,65 @@ class _NicknameUpdateScreenState extends ConsumerState<NicknameUpdateScreen> {
         FlashUtil.showFlash(context, '프로필이 수정되었습니다.');
       });
     }
+  }
+}
+
+class _ProfileImageComponent extends ConsumerStatefulWidget {
+  const _ProfileImageComponent({super.key});
+
+  @override
+  ConsumerState<_ProfileImageComponent> createState() => _ProfileImageComponentState();
+}
+
+class _ProfileImageComponentState extends ConsumerState<_ProfileImageComponent> {
+  String? imageSrc;
+  @override
+  Widget build(BuildContext context) {
+
+    final result = ref.watch(userProfileImageProvider);
+    if (result is LoadingModel) {
+    } else if (result is ErrorModel) {}
+    final model = (result as ResponseModel<UserProfileImageModel>).data!;
+
+    log('model.profile_image_update_url = ${model.profile_image_update_url}');
+    return GestureDetector(
+      onTap: () async {
+        context.pushNamed(CropSample.routeName);
+        // final ImagePicker picker = ImagePicker();
+        // final XFile? image =
+        //     await picker.pickImage(source: ImageSource.gallery);
+        // log('image = $image');
+        // print('image = ${image?.path}');
+        // setState(() {
+        //   imageSrc = image?.path;
+        // });
+      },
+      child: Column(
+        children: [
+          if(imageSrc != null)
+            Image.asset(imageSrc!),
+          Align(
+            alignment: Alignment.center,
+            child: Stack(
+              children: [
+                CircleAvatar(
+                  backgroundImage: NetworkImage(model.profile_image_url),
+                  radius: 40.r,
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: SvgPicture.asset(
+                    AssetUtil.getAssetPath(type: AssetType.icon, name: 'camera'),
+                    height: 24.r,
+                    width: 24.r,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

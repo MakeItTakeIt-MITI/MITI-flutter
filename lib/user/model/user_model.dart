@@ -55,7 +55,6 @@ class UserModel extends IModelWithId {
   }
 }
 
-
 @JsonSerializable()
 class UserInfoModel {
   final String email;
@@ -69,6 +68,7 @@ class UserInfoModel {
   factory UserInfoModel.fromJson(Map<String, dynamic> json) =>
       _$UserInfoModelFromJson(json);
 }
+
 @JsonSerializable()
 class UserNicknameModel extends IModelWithId {
   final String email;
@@ -80,4 +80,19 @@ class UserNicknameModel extends IModelWithId {
 
   factory UserNicknameModel.fromJson(Map<String, dynamic> json) =>
       _$UserNicknameModelFromJson(json);
+}
+
+@JsonSerializable()
+class UserProfileImageModel {
+  final String nickname;
+  final String profile_image_url;
+  final String profile_image_update_url;
+
+  UserProfileImageModel(
+      {required this.nickname,
+      required this.profile_image_url,
+      required this.profile_image_update_url});
+
+  factory UserProfileImageModel.fromJson(Map<String, dynamic> json) =>
+      _$UserProfileImageModelFromJson(json);
 }

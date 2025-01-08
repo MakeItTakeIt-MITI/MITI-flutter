@@ -70,6 +70,10 @@ abstract class UserRepository {
     @Path() required int userId,
     @Path() required int paymentResultId,
   });
+
+  @Headers({'token': 'true'})
+  @GET('/users/{userId}/user-profile')
+  Future<ResponseModel<UserProfileImageModel>> getProfileImage({@Path() required int userId});
 }
 
 final userParticipationPRepositoryProvider =

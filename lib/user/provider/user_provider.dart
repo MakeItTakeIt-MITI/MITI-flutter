@@ -1,17 +1,12 @@
 import 'dart:developer';
 
-import 'package:intl/intl.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
-import 'package:miti/common/param/pagination_param.dart';
 import 'package:miti/user/provider/user_form_provider.dart';
 import 'package:miti/user/repository/user_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-import '../../auth/model/auth_model.dart';
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
-import '../../game/model/game_model.dart';
 import '../model/user_model.dart';
 import '../param/user_profile_param.dart';
 
@@ -93,7 +88,7 @@ class MyReview extends _$MyReview {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class UserInfo extends _$UserInfo {
   @override
   BaseModel build() {
@@ -121,6 +116,34 @@ class UserInfo extends _$UserInfo {
         .data!
         .copyWith(nickname: newNickname);
     state = (state as ResponseModel<UserModel>).copyWith(data: newData);
+  }
+}
+
+@Riverpod(keepAlive: true)
+class UserProfileImage extends _$UserProfileImage {
+  @override
+  BaseModel build() {
+    getUserProfileImage();
+    return LoadingModel();
+  }
+
+  void getUserProfileImage() async {
+    state = LoadingModel();
+    final repository = ref.watch(userRepositoryProvider);
+    final id = ref.read(authProvider)!.id!;
+    await repository.getProfileImage(userId: id).then((value) {
+      logger.i(value);
+      state = value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state = error;
+    });
+  }
+
+  void updateImage({required String src}) {
+    final mState = state as ResponseModel<UserProfileImageModel>;
   }
 }
 

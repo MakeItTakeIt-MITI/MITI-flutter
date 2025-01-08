@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,6 +26,7 @@ import '../../review/view/written_review_list_screen.dart';
 import '../../support/view/faq_screen.dart';
 import '../../support/view/support_screen.dart';
 import '../../theme/color_theme.dart';
+import '../../util/view/image_crop_screen.dart';
 import '../component/skeleton/receive_review_skeleton.dart';
 import '../error/user_error.dart';
 import '../model/user_model.dart';
@@ -191,7 +191,7 @@ class _MenuComponent extends StatelessWidget {
       ],
       '계정 설정': [
         _MenuItem(
-          onTap: () => context.pushNamed(NicknameUpdateScreen.routeName),
+          onTap: () => context.pushNamed(CropSample.routeName),//context.pushNamed(NicknameUpdateScreen.routeName),
           title: '프로필 수정',
         ),
         _MenuItem(
@@ -565,12 +565,32 @@ class _ProfileComponent extends ConsumerWidget {
               ],
             ),
           ),
-          SvgPicture.asset(
-            AssetUtil.getAssetPath(type: AssetType.icon, name: 'user_thum2'),
-            width: 60.r,
-            height: 60.r,
-          )
+          const _ProfileImage(),
         ],
+      ),
+    );
+  }
+}
+
+class _ProfileImage extends ConsumerWidget {
+  const _ProfileImage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final result = ref.watch(userProfileImageProvider);
+    if (result is LoadingModel) {
+      return SvgPicture.asset(
+        AssetUtil.getAssetPath(type: AssetType.icon, name: 'user_thum2'),
+        width: 60.r,
+        height: 60.r,
+      );
+    } else if (result is ErrorModel) {}
+    final model = (result as ResponseModel<UserProfileImageModel>).data!;
+
+    return CircleAvatar(
+      radius: 30.r,
+      backgroundImage: NetworkImage(
+        model.profile_image_url,
       ),
     );
   }
