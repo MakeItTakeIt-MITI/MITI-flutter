@@ -30,9 +30,23 @@ final userRepositoryProvider = Provider<UserRepository>((ref) {
 abstract class UserRepository {
   factory UserRepository(Dio dio, {String baseUrl}) = _UserRepository;
 
+  /// 유저 정보 상세 조회 API
   @Headers({'token': 'true'})
   @GET('/users/{userId}')
   Future<ResponseModel<UserModel>> getUserInfo({@Path() required int userId});
+
+  @Headers({'token': 'true'})
+  @GET('/users/{userId}/player-profile')
+  Future<ResponseModel<UserPlayerProfileModel>> getPlayerInfo({
+    @Path() required int userId,
+  });
+
+  @Headers({'token': 'true'})
+  @PATCH('/users/{userId}/player-profile')
+  Future<ResponseModel<UserPlayerProfileModel>> updatePlayerInfo({
+    @Path() required int userId,
+    @Body() required UserPlayerModel param,
+  });
 
   @Headers({'token': 'true'})
   @PATCH('/users/{userId}/update-profile')

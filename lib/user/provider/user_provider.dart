@@ -189,3 +189,49 @@ class PaymentDetail extends _$PaymentDetail {
     });
   }
 }
+
+@riverpod
+class PlayerProfile extends _$PlayerProfile {
+  @override
+  BaseModel build() {
+    getInfo();
+    return LoadingModel();
+  }
+
+  void getInfo() async {
+    state = LoadingModel();
+    final repository = ref.watch(userRepositoryProvider);
+    final id = ref.read(authProvider)!.id!;
+    await repository.getPlayerInfo(userId: id).then((value) {
+      logger.i(value);
+      state = value;
+      ref
+          .read(userPlayerProfileFormProvider.notifier)
+          .updateByModel(value.data!.playerProfile);
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state = error;
+    });
+  }
+}
+
+@riverpod
+Future<BaseModel> updatePlayerProfile(UpdatePlayerProfileRef ref) async {
+  final userId = ref.watch(authProvider)!.id!;
+  final param = ref.watch(userPlayerProfileFormProvider);
+  return await ref
+      .watch(userRepositoryProvider)
+      .updatePlayerInfo(userId: userId, param: param)
+      .then<BaseModel>((value) {
+    logger.i(value);
+    // ref.read(userInfoProvider.notifier).getUserInfo();
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
+}

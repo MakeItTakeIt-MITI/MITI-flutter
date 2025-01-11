@@ -18,6 +18,7 @@ import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/provider/user_provider.dart';
 import 'package:miti/user/view/user_delete_screen.dart';
+import 'package:miti/user/view/user_player_profile_screen.dart';
 import 'package:miti/user/view/user_profile_form_screen.dart';
 
 import '../../auth/error/auth_error.dart';
@@ -137,7 +138,7 @@ class _PlayerProfileComponent extends StatelessWidget {
     return Column(
       children: [
         GestureDetector(
-          onTap: () => context.pushNamed(UserProfileFormScreen.routeName),
+          onTap: () => context.pushNamed(UserPlayerProfileScreen.routeName),
           child: Container(
             color: MITIColor.gray800,
             padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),

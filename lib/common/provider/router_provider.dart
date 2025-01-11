@@ -25,6 +25,7 @@ import 'package:miti/support/view/guide_screen.dart';
 import 'package:miti/support/view/support_form_screen.dart';
 import 'package:miti/user/view/user_delete_screen.dart';
 import 'package:miti/user/view/user_payment_screen.dart';
+import 'package:miti/user/view/user_player_profile_screen.dart';
 import 'package:miti/user/view/user_profile_form_screen.dart';
 import 'package:miti/user/view/review_detail_screen.dart';
 
@@ -614,6 +615,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                   return const NoTransitionPage(child: ProfileBody());
                 },
                 routes: [
+                  GoRoute(
+                    path: 'playerprofile',
+                    parentNavigatorKey: rootNavKey,
+                    name: UserPlayerProfileScreen.routeName,
+                    builder: (context, state) {
+                      return const UserPlayerProfileScreen();
+                    },
+                  ),
                   GoRoute(
                     path: 'delete',
                     parentNavigatorKey: rootNavKey,

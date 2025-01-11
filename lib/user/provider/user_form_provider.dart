@@ -1,6 +1,8 @@
+import 'package:miti/user/model/user_model.dart';
 import 'package:miti/user/param/user_profile_param.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../common/model/entity_enum.dart';
 import '../../util/util.dart';
 
 part 'user_form_provider.g.dart';
@@ -25,7 +27,6 @@ class UserNicknameForm extends _$UserNicknameForm {
   bool validNickname() {
     return ValidRegExp.userNickname(state.nickname);
   }
-
 }
 
 @riverpod
@@ -67,5 +68,53 @@ class UserPasswordForm extends _$UserPasswordForm {
           state.new_password! == state.new_password_check!;
     }
     return false;
+  }
+}
+
+@riverpod
+class UserPlayerProfileForm extends _$UserPlayerProfileForm {
+  @override
+  UserPlayerModel build() {
+    return UserPlayerModel(
+      gender: null,
+      weight: null,
+      height: null,
+      position: null,
+      role: null,
+    );
+  }
+
+  void update({
+    GenderType? gender,
+    int? weight,
+    int? height,
+    PlayerPositionType? position,
+    PlayerRoleType? role,
+  }) {
+    state = state.copyWith(
+      gender: gender,
+      weight: weight,
+      height: height,
+      position: position,
+      role: role,
+    );
+  }
+
+  void updateByModel(UserPlayerModel model) {
+    state = model;
+  }
+
+  bool validWeight() {
+    if (state.height != null) {
+      return 30 <= state.weight! && state.weight! <= 150;
+    }
+    return true;
+  }
+
+  bool validHeight() {
+    if (state.height != null) {
+      return 50 <= state.height! && state.height! <= 230;
+    }
+    return true;
   }
 }

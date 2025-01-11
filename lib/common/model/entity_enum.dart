@@ -531,3 +531,69 @@ enum NotificationStatusType {
 
   final String displayName;
 }
+
+enum PlayerProfileType {
+  gender('성별'),
+  weight('체중'),
+  height('신장'),
+  position('포지션'),
+  role('역할');
+
+  const PlayerProfileType(this.displayName);
+
+  final String displayName;
+}
+
+enum PlayerPositionType {
+  point_guard('포인트가드'),
+  shooting_guard('슈팅가드'),
+  small_forward('스몰포워드'),
+  power_forward('파워포워드'),
+  center('센터');
+
+  const PlayerPositionType(this.displayName);
+  static PlayerPositionType stringToEnum({required String value}) {
+    return PlayerPositionType.values.firstWhere((e) {
+      return e.displayName == value;
+    });
+  }
+  final String displayName;
+}
+
+enum PlayerRoleType {
+  swingman('스윙맨'),
+  ball_handler('볼핸들러'),
+  bigman('빅맨'),
+  stretch_bigman('스트레치빅맨'),
+  control_tower('컨트롤나워'),
+  point_forward('포인트포워드'),
+  allrounder('올라운더'),
+  tweener('트위너'),
+  dual_guard('듀얼가드'),
+  slasher('슬래셔'),
+  shooter('슈터'),
+  @JsonValue('3point_and_defense')
+  three_point_and_defense('3&D'),
+  blueworker('블루워커');
+
+  const PlayerRoleType(this.displayName);
+  static PlayerRoleType stringToEnum({required String value}) {
+    return PlayerRoleType.values.firstWhere((e) {
+      return e.displayName == value;
+    });
+  }
+  final String displayName;
+}
+
+enum GenderType {
+  male('남성'),
+  female('여성');
+
+  const GenderType(this.displayName);
+  static GenderType stringToEnum({required String value}) {
+    return GenderType.values.firstWhere((e) {
+      return e.displayName == value;
+    });
+  }
+  final String displayName;
+}

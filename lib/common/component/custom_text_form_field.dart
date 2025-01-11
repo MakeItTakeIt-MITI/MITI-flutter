@@ -657,7 +657,10 @@ class DateInputFormatter extends TextInputFormatter {
 }
 
 class NumberFormatter extends TextInputFormatter {
-  NumberFormatter();
+  final int minRange;
+  final int maxRange;
+
+  NumberFormatter({this.minRange = 0, this.maxRange = 9999999999});
 
   final NumberFormat _formatter = NumberFormat('#,###');
 
@@ -691,8 +694,8 @@ class NumberFormatter extends TextInputFormatter {
     // 입력값이 10,000,000 이상인 경우 9,999,999로 제한
     int value = int.tryParse(newText) ?? 0;
     bool overflow = false;
-    if (value > 9999999999) {
-      value = 9999999999;
+    if (value > maxRange) {
+      value = maxRange;
       overflow = true;
     }
 

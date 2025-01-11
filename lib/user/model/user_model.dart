@@ -1,9 +1,11 @@
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:miti/common/model/model_id.dart';
 
 import '../../account/model/account_model.dart';
 import '../../auth/model/auth_model.dart';
 import '../../common/model/entity_enum.dart';
+import '../../common/param/pagination_param.dart';
 import '../../game/model/game_model.dart';
 
 part 'user_model.g.dart';
@@ -55,7 +57,6 @@ class UserModel extends IModelWithId {
   }
 }
 
-
 @JsonSerializable()
 class UserInfoModel {
   final String email;
@@ -69,6 +70,7 @@ class UserInfoModel {
   factory UserInfoModel.fromJson(Map<String, dynamic> json) =>
       _$UserInfoModelFromJson(json);
 }
+
 @JsonSerializable()
 class UserNicknameModel extends IModelWithId {
   final String email;
@@ -80,4 +82,64 @@ class UserNicknameModel extends IModelWithId {
 
   factory UserNicknameModel.fromJson(Map<String, dynamic> json) =>
       _$UserNicknameModelFromJson(json);
+}
+
+@JsonSerializable()
+class UserPlayerProfileModel extends IModelWithId {
+  final String email;
+  final String nickname;
+  @JsonKey(name: 'player_profile')
+  final UserPlayerModel playerProfile;
+
+  UserPlayerProfileModel({
+    required super.id,
+    required this.email,
+    required this.nickname,
+    required this.playerProfile,
+  });
+
+  factory UserPlayerProfileModel.fromJson(Map<String, dynamic> json) =>
+      _$UserPlayerProfileModelFromJson(json);
+}
+
+@JsonSerializable()
+class UserPlayerModel extends DefaultParam {
+  final GenderType? gender;
+  final int? weight;
+  final int? height;
+  final PlayerPositionType? position;
+  final PlayerRoleType? role;
+
+  UserPlayerModel({
+    required this.gender,
+    required this.weight,
+    required this.height,
+    required this.position,
+    required this.role,
+  });
+
+  UserPlayerModel copyWith({
+    GenderType? gender,
+    int? weight,
+    int? height,
+    PlayerPositionType? position,
+    PlayerRoleType? role,
+  }) {
+    return UserPlayerModel(
+      gender: gender ?? this.gender,
+      weight: weight ?? this.weight,
+      height: height ?? this.height,
+      position: position ?? this.position,
+      role: role ?? this.role,
+    );
+  }
+
+  factory UserPlayerModel.fromJson(Map<String, dynamic> json) =>
+      _$UserPlayerModelFromJson(json);
+
+  @override
+  List<Object?> get props => [gender, weight, height, position, role];
+
+  @override
+  bool? get stringify => true;
 }

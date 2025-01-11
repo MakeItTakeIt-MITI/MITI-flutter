@@ -11,11 +11,13 @@ import 'package:miti/game/provider/widget/game_form_provider.dart';
 
 import '../../common/component/custom_dialog.dart';
 import '../../common/component/custom_text_form_field.dart';
+import '../../common/component/defalut_flashbar.dart';
 import '../../common/error/common_error.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/provider/form_util_provider.dart';
 import '../../common/provider/router_provider.dart';
+import '../../theme/color_theme.dart';
 
 enum UserApiType {
   updateNickname,
@@ -25,6 +27,8 @@ enum UserApiType {
   receiveReviewDetail,
   updatePassword,
   paymentResultDetail,
+  getPlayerProfile,
+  updatePlayerProfile,
 }
 
 class UserError extends ErrorBase {
@@ -67,6 +71,12 @@ class UserError extends ErrorBase {
         break;
       case UserApiType.paymentResultDetail:
         _getPaymentResultDetail(context, ref);
+        break;
+      case UserApiType.getPlayerProfile:
+        _getPlayerProfile(context, ref);
+        break;
+      case UserApiType.updatePlayerProfile:
+        _updatePlayerProfile(context, ref);
         break;
       default:
         break;
@@ -447,6 +457,32 @@ class UserError extends ErrorBase {
       /// 리뷰 조회 결과 없음
       WidgetsBinding.instance.addPostFrameCallback(
           (s) => context.pushReplacementNamed(ErrorScreen.routeName));
+    } else {
+      /// 서버 오류
+      WidgetsBinding.instance.addPostFrameCallback(
+          (s) => context.pushReplacementNamed(ErrorScreen.routeName));
+    }
+  }
+
+  /// 선수 프로필 상세 조회 API
+  void _getPlayerProfile(BuildContext context, WidgetRef ref) {
+    if (this.status_code == Forbidden && this.error_code == 940) {
+      /// 요청 권한 없음
+      WidgetsBinding.instance.addPostFrameCallback(
+          (s) => context.pushReplacementNamed(ErrorScreen.routeName));
+    } else {
+      /// 서버 오류
+      WidgetsBinding.instance.addPostFrameCallback(
+          (s) => context.pushReplacementNamed(ErrorScreen.routeName));
+    }
+  }
+
+  /// 선수 프로필 수정 API
+  void _updatePlayerProfile(BuildContext context, WidgetRef ref) {
+    if (this.status_code == Forbidden && this.error_code == 940) {
+      /// 요청 권한 없음
+      FlashUtil.showFlash(context, "선수 프로필 수정에 실패하였습니다.",
+          textColor: MITIColor.error);
     } else {
       /// 서버 오류
       WidgetsBinding.instance.addPostFrameCallback(
