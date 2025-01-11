@@ -210,6 +210,7 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
   late Throttle<int> _throttler;
   int throttleCnt = 0;
   late final ScrollController _scrollController;
+  late final List<TextEditingController> textEditingControllers;
   bool isLoading = false;
   final formKeys = [
     GlobalKey(),
@@ -234,6 +235,8 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
   @override
   void initState() {
     super.initState();
+    textEditingControllers = List.generate(8, (_) => TextEditingController());
+
     _throttler = Throttle(
       const Duration(seconds: 1),
       initialValue: 0,
@@ -269,6 +272,7 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
         if (model.isNotEmpty) {
           final extra = GameRecentComponent(
             models: model,
+            textEditingControllers: textEditingControllers,
           );
           if (mounted) {
             context.pushNamed(DialogPage.routeName, extra: extra);
@@ -305,29 +309,37 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
             slivers: <Widget>[
               // const SliverToBoxAdapter(child: GameQuillComponent()),
               getSpacer(height: 20),
-              _TitleForm(focusNode: focusNodes[0], globalKey: formKeys[0]),
+              _TitleForm(
+                focusNode: focusNodes[0],
+                globalKey: formKeys[0],
+                titleController: textEditingControllers[0],
+              ),
               getSpacer(),
               const V2DateForm(),
               getSpacer(),
               _AddressForm(
                 focusNodes: focusNodes,
                 globalKeys: formKeys,
+                textEditingControllers: textEditingControllers.sublist(1, 4),
               ),
               getSpacer(),
               SliverToBoxAdapter(
                   child: ApplyForm(
                 formKeys: formKeys.sublist(3),
                 focusNodes: focusNodes.sublist(3),
+                textEditingControllers: textEditingControllers.sublist(4, 6),
               )),
               getSpacer(),
               _FeeForm(
                 formKeys: formKeys,
                 focusNodes: focusNodes,
+                textEditingController: textEditingControllers[6],
               ),
               getSpacer(),
               _AdditionalInfoForm(
                 formKeys: formKeys,
                 focusNodes: focusNodes,
+                textEditingController: textEditingControllers[7],
               ),
               getSpacer(height: 32),
               const AgreeTermComponent(),
@@ -414,52 +426,38 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
 class _TitleForm extends StatefulWidget {
   final FocusNode focusNode;
   final GlobalKey globalKey;
+  final TextEditingController titleController;
 
   const _TitleForm(
-      {super.key, required this.focusNode, required this.globalKey});
+      {super.key,
+      required this.focusNode,
+      required this.globalKey,
+      required this.titleController});
 
   @override
   State<_TitleForm> createState() => _TitleFormState();
 }
 
 class _TitleFormState extends State<_TitleForm> {
-  late final TextEditingController titleController;
-
   @override
   void initState() {
     super.initState();
-    titleController = TextEditingController();
   }
 
   @override
   void dispose() {
-    titleController.dispose();
+    widget.titleController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    log("title build!!");
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        ref.listen(gameFormProvider, (previous, next) {
-          if (previous?.title != next.title) {
-            /// 중간에 입력할 경우 offset이 맨 뒤로 가는 문제를 방지
-            final prevSelection = titleController.selection;
-            titleController.text = next.title;
-
-            titleController.selection = titleController.selection.copyWith(
-              baseOffset: prevSelection.baseOffset,
-              extentOffset: prevSelection.extentOffset,
-            );
-          }
-        });
-        final title =
-            ref.watch(gameFormProvider.select((value) => value.title));
         return SliverToBoxAdapter(
             child: CustomTextFormField(
           required: true,
-          textEditingController: titleController,
+          textEditingController: widget.titleController,
           hintText: '경기 제목을 입력해주세요.',
           label: '경기 제목',
           key: widget.globalKey,
@@ -469,6 +467,7 @@ class _TitleFormState extends State<_TitleForm> {
             FocusScope.of(context).requestFocus(FocusNode());
           },
           onChanged: (val) {
+            log('title value = $val');
             ref.read(gameFormProvider.notifier).update(title: val);
           },
         ));
@@ -1089,11 +1088,13 @@ class AddressComponent extends StatelessWidget {
 class _AddressForm extends ConsumerStatefulWidget {
   final List<FocusNode> focusNodes;
   final List<GlobalKey> globalKeys;
+  final List<TextEditingController> textEditingControllers;
 
   const _AddressForm({
     super.key,
     required this.focusNodes,
     required this.globalKeys,
+    required this.textEditingControllers,
   });
 
   @override
@@ -1108,9 +1109,9 @@ class _AddressFormState extends ConsumerState<_AddressForm> {
   @override
   void initState() {
     super.initState();
-    addressController = TextEditingController();
-    addressDetailController = TextEditingController();
-    nameController = TextEditingController();
+    addressController = widget.textEditingControllers[0];
+    addressDetailController = widget.textEditingControllers[1];
+    nameController = widget.textEditingControllers[2];
   }
 
   @override
@@ -1124,32 +1125,6 @@ class _AddressFormState extends ConsumerState<_AddressForm> {
   @override
   Widget build(BuildContext context) {
     final court = ref.watch(gameFormProvider.select((value) => value.court));
-    ref.listen(gameFormProvider, (previous, next) {
-      if (previous?.court != next.court) {
-        if (previous?.court.name != next.court.name) {
-          /// 중간에 입력할 경우 offset이 맨 뒤로 가는 문제를 방지
-          final prevSelection = nameController.selection;
-          nameController.text = next.court.name;
-
-          nameController.selection = nameController.selection.copyWith(
-            baseOffset: prevSelection.baseOffset,
-            extentOffset: prevSelection.extentOffset,
-          );
-        }
-        if (previous?.court.address_detail != next.court.address_detail) {
-          /// 중간에 입력할 경우 offset이 맨 뒤로 가는 문제를 방지
-          final prevSelection = addressDetailController.selection;
-          addressDetailController.text = next.court.address_detail ?? '';
-
-          addressDetailController.selection =
-              addressDetailController.selection.copyWith(
-            baseOffset: prevSelection.baseOffset,
-            extentOffset: prevSelection.extentOffset,
-          );
-        }
-      }
-    });
-
     return SliverToBoxAdapter(
       child: Column(
         children: [
@@ -1205,6 +1180,7 @@ class ApplyForm extends ConsumerStatefulWidget {
   final List<GlobalKey> formKeys;
   final List<FocusNode> focusNodes;
   final bool isUpdateForm;
+  final List<TextEditingController>? textEditingControllers;
 
   const ApplyForm({
     super.key,
@@ -1213,6 +1189,7 @@ class ApplyForm extends ConsumerStatefulWidget {
     required this.formKeys,
     required this.focusNodes,
     this.isUpdateForm = false,
+    this.textEditingControllers,
   });
 
   @override
@@ -1226,8 +1203,18 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
   @override
   void initState() {
     super.initState();
-    maxController = TextEditingController(text: widget.initMaxValue);
-    minController = TextEditingController(text: widget.initMinValue);
+    maxController = widget.textEditingControllers != null
+        ? widget.textEditingControllers![0]
+        : TextEditingController(text: widget.initMaxValue);
+    if (widget.initMaxValue != null) {
+      maxController.text = widget.initMaxValue.toString();
+    }
+    minController = widget.textEditingControllers != null
+        ? widget.textEditingControllers![1]
+        : TextEditingController(text: widget.initMinValue);
+    if (widget.initMinValue != null) {
+      minController.text = widget.initMinValue.toString();
+    }
   }
 
   @override
@@ -1242,9 +1229,12 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
     BuildContext context,
   ) {
     ref.listen(gameFormProvider, (previous, next) {
-      if (previous?.max_invitation != next.max_invitation) {
+      if (previous?.max_invitation != next.max_invitation &&
+          next.max_invitation.isNotEmpty) {
         /// 중간에 입력할 경우 offset이 맨 뒤로 가는 문제를 방지
         // 새로 입력된 값을 포멧
+        log('previous max invitation = ${previous?.max_invitation}');
+        log('next max invitation = ${next.max_invitation}');
         final int parsedValue = int.parse(next
             .max_invitation); // NumberFormat은 숫자 값만 받을 수 있기 때문에 문자를 숫자로 먼저 변환
         final formatter = NumberFormat
@@ -1257,7 +1247,8 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
           extentOffset: newText.length,
         );
       }
-      if (previous?.min_invitation != next.min_invitation) {
+      if (previous?.min_invitation != next.min_invitation &&
+          next.min_invitation.isNotEmpty) {
         /// 중간에 입력할 경우 offset이 맨 뒤로 가는 문제를 방지
         // 새로 입력된 값을 포멧
         final int parsedValue = int.parse(next
@@ -1393,11 +1384,13 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
 class _FeeForm extends ConsumerStatefulWidget {
   final List<GlobalKey> formKeys;
   final List<FocusNode> focusNodes;
+  final TextEditingController textEditingController;
 
   const _FeeForm({
     super.key,
     required this.formKeys,
     required this.focusNodes,
+    required this.textEditingController,
   });
 
   @override
@@ -1410,7 +1403,7 @@ class _FeeFormState extends ConsumerState<_FeeForm> {
   @override
   void initState() {
     super.initState();
-    feeController = TextEditingController();
+    feeController = widget.textEditingController;
   }
 
   @override
@@ -1486,11 +1479,13 @@ class _FeeFormState extends ConsumerState<_FeeForm> {
 class _AdditionalInfoForm extends ConsumerStatefulWidget {
   final List<GlobalKey> formKeys;
   final List<FocusNode> focusNodes;
+  final TextEditingController textEditingController;
 
   const _AdditionalInfoForm({
     super.key,
     required this.formKeys,
     required this.focusNodes,
+    required this.textEditingController,
   });
 
   @override
@@ -1504,7 +1499,7 @@ class _AdditionalInfoFormState extends ConsumerState<_AdditionalInfoForm> {
   @override
   void initState() {
     super.initState();
-    infoController = TextEditingController();
+    infoController = widget.textEditingController;
   }
 
   @override
@@ -1515,18 +1510,6 @@ class _AdditionalInfoFormState extends ConsumerState<_AdditionalInfoForm> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(gameFormProvider, (previous, next) {
-      if (previous?.info != next.info) {
-        final prevSelection = infoController.selection;
-
-        infoController.text = next.info;
-
-        infoController.selection = infoController.selection.copyWith(
-          baseOffset: prevSelection.baseOffset,
-          extentOffset: prevSelection.extentOffset,
-        );
-      }
-    });
     final info = ref.watch(gameFormProvider.select((value) => value.info));
     return SliverToBoxAdapter(
       child: Column(

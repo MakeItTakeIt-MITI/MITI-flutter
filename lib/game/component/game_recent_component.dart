@@ -9,16 +9,17 @@ import 'package:miti/theme/text_theme.dart';
 import 'package:miti/util/util.dart';
 
 import '../../court/component/court_list_component.dart';
-import '../param/game_param.dart';
 import '../provider/widget/game_form_provider.dart';
 
-class GameRecentComponent extends StatelessWidget {
+class GameRecentComponent extends ConsumerWidget {
   final List<GameRecentHostModel> models;
+  final List<TextEditingController> textEditingControllers;
 
-  const GameRecentComponent({super.key, required this.models});
+  const GameRecentComponent(
+      {super.key, required this.models, required this.textEditingControllers});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Align(
       alignment: Alignment.center,
       child: Padding(
@@ -112,8 +113,8 @@ class GameRecentComponent extends StatelessWidget {
 
   void selectRecentGame(int selected, WidgetRef ref, BuildContext context) {
     final model = models.firstWhere((m) => m.id == selected);
-
-    ref.read(gameFormProvider.notifier).selectGameHistory(model: model);
+    ref.read(gameFormProvider.notifier).selectGameHistory(
+        model: model, textEditingControllers: textEditingControllers);
     context.pop();
   }
 }

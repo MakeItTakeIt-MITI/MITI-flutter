@@ -1,6 +1,7 @@
 import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -41,10 +42,10 @@ class UserProfileUpdateScreen extends ConsumerWidget {
       backgroundColor: MITIColor.gray750,
       body: Column(
         children: <Widget>[
-          const _UserInfoComponent(),
-          const _PasswordResetting(),
-          SizedBox(height: 8.h),
-          const _AuthComponent(),
+          _UserInfoComponent(),
+          _PlayerProfileComponent(),
+          _PasswordResetting(),
+          _AuthComponent(),
         ],
       ),
     );
@@ -128,6 +129,43 @@ class _UserInfoComponent extends ConsumerWidget {
   }
 }
 
+class _PlayerProfileComponent extends StatelessWidget {
+  const _PlayerProfileComponent({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () => context.pushNamed(UserProfileFormScreen.routeName),
+          child: Container(
+            color: MITIColor.gray800,
+            padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    '선수 프로필',
+                    style: MITITextStyle.mdLight.copyWith(
+                      color: MITIColor.gray100,
+                    ),
+                  ),
+                ),
+                SvgPicture.asset(AssetUtil.getAssetPath(
+                    type: AssetType.icon, name: 'chevron_right'))
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+
+  }
+}
+
+
+
 class _PasswordResetting extends ConsumerWidget {
   const _PasswordResetting({super.key});
 
@@ -141,7 +179,6 @@ class _PasswordResetting extends ConsumerWidget {
     }
     return Column(
       children: [
-        SizedBox(height: 8.h),
         GestureDetector(
           onTap: () => context.pushNamed(UserProfileFormScreen.routeName),
           child: Container(

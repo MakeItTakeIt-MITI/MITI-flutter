@@ -107,6 +107,9 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
 
   bool valid() {
     final form = ref.watch(gameFormProvider);
+    // log('form.max_invitation.isNotEmpty = ${form.max_invitation.isNotEmpty }');
+    // log('form.min_invitation.isNotEmpty = ${form.min_invitation.isNotEmpty }');
+    // log('form.info.isNotEmpty = ${form.info.isNotEmpty }');
     return form.max_invitation.isNotEmpty &&
         form.min_invitation.isNotEmpty &&
         form.info.isNotEmpty &&
@@ -127,8 +130,8 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
           button: TextButton(
             onPressed: valid() && !isLoading
                 ? () async {
-                    _throttler.setValue(throttleCnt + 1);
-                  }
+              _throttler.setValue(throttleCnt + 1);
+            }
                 : () {},
             style: TextButton.styleFrom(
                 backgroundColor: valid() && !isLoading

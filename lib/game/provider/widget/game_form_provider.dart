@@ -1,7 +1,7 @@
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/game/param/game_param.dart';
 import 'package:miti/report/model/agreement_policy_model.dart';
@@ -11,9 +11,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../common/component/custom_text_form_field.dart';
 import '../../../common/model/entity_enum.dart';
-import '../../../common/provider/widget/datetime_provider.dart';
-import '../../../common/provider/widget/form_provider.dart';
-import '../../../theme/color_theme.dart';
 import '../../model/game_recent_host_model.dart';
 
 part 'game_form_provider.g.dart';
@@ -38,7 +35,6 @@ class GameForm extends _$GameForm {
     final result = ref.watch(
         agreementPolicyProvider(type: AgreementRequestType.game_hosting));
     if (result is ResponseListModel<AgreementPolicyModel>) {
-      // final model = result as
       final List<bool> checkBoxes =
           List.generate(result.data!.length + 1, (e) => false);
       return GameCreateParam(
@@ -54,7 +50,6 @@ class GameForm extends _$GameForm {
         court: const GameCourtParam(name: '', address: '', address_detail: ''),
         checkBoxes: checkBoxes,
       );
-      ;
     }
     return const GameCreateParam(
       title: '',
@@ -71,12 +66,23 @@ class GameForm extends _$GameForm {
     );
   }
 
-  void selectGameHistory({required GameRecentHostModel model}) {
+  void selectGameHistory(
+      {required GameRecentHostModel model,
+      required List<TextEditingController> textEditingControllers}) {
     GameCourtParam court = GameCourtParam(
       name: model.court.name,
       address: model.court.address,
       address_detail: model.court.address_detail,
     );
+    textEditingControllers[0].text = model.title;
+    textEditingControllers[1].text = model.court.address;
+    textEditingControllers[2].text = model.court.address_detail ?? '';
+    textEditingControllers[3].text = model.court.name;
+    textEditingControllers[4].text = model.min_invitation.toString();
+    textEditingControllers[5].text = model.max_invitation.toString();
+    textEditingControllers[6].text = model.fee.toString();
+    textEditingControllers[7].text = model.info;
+
     state = state.copyWith(
       title: model.title,
       court: court,
@@ -173,7 +179,6 @@ class GameForm extends _$GameForm {
     }
     return true;
   }
-
 
   bool validDateTime() {
     if (state.startdate.isNotEmpty &&
