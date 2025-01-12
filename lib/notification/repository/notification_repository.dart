@@ -96,4 +96,10 @@ abstract class PushPRepository
   Future<ResponseModel<UnreadPushModel>> unreadPush({
     @Path() required int userId,
   });
+
+  @Headers({'token': 'true'})
+  @PUT('/users/{userId}/push-notifications')
+  Future<ResponseModel<PaginationModel<PushModel>>> allReadPush({
+    @Path() required int userId,
+  });
 }

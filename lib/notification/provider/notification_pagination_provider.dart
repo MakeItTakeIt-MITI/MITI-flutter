@@ -85,4 +85,16 @@ class PushPageStateNotifier
     final newData = pState.copyWith(page_content: newPageContent);
     state = model.copyWith(data: newData);
   }
+
+  void allRead({required WidgetRef ref}) {
+    final model = (state as ResponseModel<PaginationModel<PushModel>>);
+    final pState = model.data!;
+    final newPageContent = pState.page_content.map((e) {
+      return e.copyWith(isRead: true);
+    }).toList();
+    ref.read(unreadPushProvider.notifier).get();
+
+    final newData = pState.copyWith(page_content: newPageContent);
+    state = model.copyWith(data: newData);
+  }
 }

@@ -11,6 +11,14 @@ class UnreadPushModel {
     required this.pushCnt,
   });
 
+  UnreadPushModel copyWith({
+    int? pushCnt,
+  }) {
+    return UnreadPushModel(
+      pushCnt: pushCnt ?? this.pushCnt,
+    );
+  }
+
   factory UnreadPushModel.fromJson(Map<String, dynamic> json) =>
       _$UnreadPushModelFromJson(json);
 }

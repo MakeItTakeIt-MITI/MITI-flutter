@@ -166,11 +166,50 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
         physics: const NeverScrollableScrollPhysics(),
         headerSliverBuilder: (_, __) {
           return [
-            const DefaultAppBar(
+            DefaultAppBar(
               title: '알림',
               isSliver: true,
               hasBorder: false,
               backgroundColor: MITIColor.gray800,
+              actions: [
+                Padding(
+                  padding: EdgeInsets.only(right: 16.w),
+                  child: Consumer(
+                    builder:
+                        (BuildContext context, WidgetRef ref, Widget? child) {
+                      final result = ref.watch(unreadPushProvider);
+                      bool unconfirmed = false;
+                      if (result is ResponseModel<UnreadPushModel>) {
+                        unconfirmed = result.data!.pushCnt > 0;
+                      }
+                      return GestureDetector(
+                        onTap: unconfirmed
+                            ? () {
+                                final result =
+                                    ref.read(allReadPushProvider.future);
+                                if (result is ErrorModel) {
+                                } else {
+                                  final userId = ref.read(authProvider)?.id;
+                                  ref
+                                      .read(pushPProvider(
+                                        PaginationStateParam(path: userId),
+                                      ).notifier)
+                                      .allRead(ref: ref);
+                                }
+                              }
+                            : null,
+                        child: Text(
+                          unconfirmed ? '모두 읽기' : '모두 읽음',
+                          style: MITITextStyle.xxsm.copyWith(
+                              color: unconfirmed
+                                  ? MITIColor.primary
+                                  : MITIColor.gray300),
+                        ),
+                      );
+                    },
+                  ),
+                )
+              ],
             ),
             SliverPersistentHeader(
                 pinned: true,

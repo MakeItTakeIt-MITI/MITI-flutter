@@ -9,8 +9,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
+import '../../common/param/pagination_param.dart';
 import '../../common/provider/secure_storage_provider.dart';
 import '../model/push_model.dart';
+import '../model/unread_push_model.dart';
+import 'notification_pagination_provider.dart';
 
 part 'notification_provider.g.dart';
 
@@ -188,4 +191,33 @@ class UnreadPush extends _$UnreadPush {
       state = error;
     });
   }
+
+  void allRead() {
+    final newState = state as ResponseModel<UnreadPushModel>;
+    state = newState.copyWith(data: newState.data!.copyWith(pushCnt: 0));
+    final secureProvider = ref.read(secureStorageProvider);
+    AppBadgePlus.isSupported().then((isAllow) {
+      if (isAllow) {
+        secureProvider.write(key: 'pushCnt', value: '0');
+        AppBadgePlus.updateBadge(0);
+      }
+    });
+  }
+}
+
+@riverpod
+Future<BaseModel> allReadPush(AllReadPushRef ref) async {
+  final repository = ref.watch(pushPRepositoryProvider);
+  final userId = ref.read(authProvider)!.id!;
+  return await repository.allReadPush(userId: userId).then<BaseModel>((value) {
+    logger.i(value);
+    ref.read(unreadPushProvider.notifier).allRead();
+
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
 }
