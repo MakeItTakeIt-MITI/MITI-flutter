@@ -87,28 +87,36 @@ class UserError extends ErrorBase {
   void _getUserInfo(BuildContext context, WidgetRef ref) {
     if (this.status_code == UnAuthorized && this.error_code == 501) {
       /// 토큰 미제공
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '유저 정보 조회 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '유저 정보 조회 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
+      });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '유저 정보 조회 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '유저 정보 조회 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
+      });
     } else if (this.status_code == Forbidden && this.error_code == 501) {
       /// 요청 권한 오류
       context.pushReplacementNamed(ErrorScreen.routeName);
@@ -125,28 +133,36 @@ class UserError extends ErrorBase {
   void _deleteUser(BuildContext context, WidgetRef ref) {
     if (this.status_code == UnAuthorized && this.error_code == 501) {
       /// 토큰 미제공
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '회원 탈퇴 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '회원 탈퇴 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
+      });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '회원 탈퇴 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '회원 탈퇴 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
+      });
     } else if (this.status_code == Forbidden && this.error_code == 501) {
       /// 요청 권한 없음
       showDialog(
@@ -164,7 +180,7 @@ class UserError extends ErrorBase {
           context: context,
           builder: (_) {
             return BottomDialog(
-              title: '회원탈퇴 실패',
+              title: '회원 탈퇴 실패',
               content:
                   '경기 진행이 끝나지 않은 경기가 있습니다.\n경기 진행이 모두 끝난 이후에 회원 탈퇴를 진행해 주세요.',
               btn: Consumer(
@@ -220,28 +236,36 @@ class UserError extends ErrorBase {
   void _getWrittenReviewDetail(BuildContext context, WidgetRef ref) {
     if (this.status_code == UnAuthorized && this.error_code == 501) {
       /// 토큰 미제공
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '리뷰 조회 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '리뷰 조회 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
+      });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '리뷰 조회 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '리뷰 조회 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
+      });
     } else if (this.status_code == Forbidden && this.error_code == 940) {
       /// 요청 권한 없음(review 작성자 x)
       context.pushReplacementNamed(ErrorScreen.routeName);
@@ -258,10 +282,36 @@ class UserError extends ErrorBase {
   void _getReceiveReviewDetail(BuildContext context, WidgetRef ref) {
     if (this.status_code == UnAuthorized && this.error_code == 501) {
       /// 토큰 미제공
-      context.pushReplacementNamed(ErrorScreen.routeName);
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '리뷰 조회 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
+      });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
-      context.pushReplacementNamed(ErrorScreen.routeName);
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '리뷰 조회 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
+      });
     } else if (this.status_code == Forbidden && this.error_code == 940) {
       /// 요청 권한 없음(reviewee x)
       context.pushReplacementNamed(ErrorScreen.routeName);
@@ -286,28 +336,36 @@ class UserError extends ErrorBase {
               ));
     } else if (this.status_code == UnAuthorized && this.error_code == 501) {
       /// 토큰 미제공
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '닉네임 변경 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '닉네임 변경 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
+      });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '닉네임 변경 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '닉네임 변경 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
+      });
     } else if (this.status_code == Forbidden && this.error_code == 940) {
       /// 사용자 불일치
       showDialog(
@@ -359,28 +417,36 @@ class UserError extends ErrorBase {
       );
     } else if (this.status_code == UnAuthorized && this.error_code == 501) {
       /// 토큰 미제공
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '비밀번호 변경 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '비밀번호 변경 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
+      });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '비밀번호 변경 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '비밀번호 변경 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
+      });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 기존 비밀번호 불일치
       showDialog(

@@ -18,6 +18,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:miti/auth/view/signup/signup_screen.dart';
+import 'package:miti/common/component/custom_bottom_sheet.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/component/default_layout.dart';
@@ -270,13 +271,12 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
         final model = (result as ResponseListModel<GameRecentHostModel>).data!;
         log("model ${model.length}");
         if (model.isNotEmpty) {
-          final extra = GameRecentComponent(
-            models: model,
-            textEditingControllers: textEditingControllers,
-          );
-          if (mounted) {
-            context.pushNamed(DialogPage.routeName, extra: extra);
-          }
+          showCustomModalBottomSheet(
+              context,
+              GameRecentComponent(
+                models: model,
+                textEditingControllers: textEditingControllers,
+              ));
         }
       }
     });
@@ -576,116 +576,99 @@ class _V2DateFormState extends State<V2DateForm> {
               GestureDetector(
                 onTap: () {
                   FocusScope.of(context).requestFocus(FocusNode());
-                  showDialog(
-                      context: context,
-                      builder: (_) {
-                        return Align(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 21.w),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: MITIColor.gray700,
-                                  borderRadius: BorderRadius.circular(20.r)),
-                              padding: EdgeInsets.all(20.r),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        "경기 시간 설정",
-                                        style: MITITextStyle.mdBold
-                                            .copyWith(color: MITIColor.gray100),
-                                      ),
-                                      IconButton(
-                                          onPressed: () => context.pop(),
-                                          style: const ButtonStyle(
-                                              tapTargetSize:
-                                                  MaterialTapTargetSize
-                                                      .shrinkWrap),
-                                          constraints: BoxConstraints.tight(
-                                              Size(24.r, 24.r)),
-                                          padding: EdgeInsets.zero,
-                                          icon: const Icon(
-                                            Icons.close,
-                                            color: MITIColor.gray100,
-                                          ))
-                                    ],
-                                  ),
-                                  SizedBox(height: 40.h),
-                                  const _GameTimePicker(
-                                    isStart: true,
-                                  ),
-                                  Divider(
-                                    height: 41.h,
-                                    color: MITIColor.gray600,
-                                  ),
-                                  const _GameTimePicker(
-                                    isStart: false,
-                                  ),
-                                  Consumer(
-                                    builder: (BuildContext context,
-                                        WidgetRef ref, Widget? child) {
-                                      final hasTime = ref
-                                              .watch(datePickerProvider(true))
-                                              .isNotEmpty &&
-                                          ref
-                                              .watch(datePickerProvider(false))
-                                              .isNotEmpty;
-                                      return Visibility(
-                                          visible:
-                                              hasTime && !validDateTime(ref),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.stretch,
-                                            children: [
-                                              SizedBox(height: 20.h),
-                                              Text(
-                                                "경기 종료 시간이 시작 시간의 이후가 되도록 설정해 주세요.",
-                                                style: MITITextStyle.xxsm
-                                                    .copyWith(
-                                                        color: MITIColor.error),
-                                              ),
-                                            ],
-                                          ));
-                                    },
-                                  ),
-                                  SizedBox(height: 40.h),
-                                  Consumer(
-                                    builder: (BuildContext context,
-                                        WidgetRef ref, Widget? child) {
-                                      final valid = validDateTime(ref);
-
-                                      return TextButton(
-                                        onPressed: valid
-                                            ? () {
-                                                selectDay(ref);
-                                              }
-                                            : null,
-                                        style: ButtonStyle(
-                                            backgroundColor:
-                                                WidgetStateProperty.all(valid
-                                                    ? MITIColor.primary
-                                                    : MITIColor.gray500)),
-                                        child: Text(
-                                          "선택 완료",
-                                          style: MITITextStyle.mdBold.copyWith(
-                                              color: valid
-                                                  ? MITIColor.gray800
-                                                  : MITIColor.gray50),
-                                        ),
-                                      );
-                                    },
-                                  )
-                                ],
+                  showCustomModalBottomSheet(
+                      context,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "경기 시간 설정",
+                                style: MITITextStyle.mdBold
+                                    .copyWith(color: MITIColor.gray100),
                               ),
-                            ),
+                              IconButton(
+                                  onPressed: () => context.pop(),
+                                  style: const ButtonStyle(
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap),
+                                  constraints:
+                                      BoxConstraints.tight(Size(24.r, 24.r)),
+                                  padding: EdgeInsets.zero,
+                                  icon: const Icon(
+                                    Icons.close,
+                                    color: MITIColor.gray100,
+                                  ))
+                            ],
                           ),
-                        );
-                      });
+                          SizedBox(height: 40.h),
+                          const _GameTimePicker(
+                            isStart: true,
+                          ),
+                          Divider(
+                            height: 41.h,
+                            color: MITIColor.gray600,
+                          ),
+                          const _GameTimePicker(
+                            isStart: false,
+                          ),
+                          Consumer(
+                            builder: (BuildContext context, WidgetRef ref,
+                                Widget? child) {
+                              final hasTime = ref
+                                      .watch(datePickerProvider(true))
+                                      .isNotEmpty &&
+                                  ref
+                                      .watch(datePickerProvider(false))
+                                      .isNotEmpty;
+                              return Visibility(
+                                  visible: hasTime && !validDateTime(ref),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      SizedBox(height: 20.h),
+                                      Text(
+                                        "경기 종료 시간이 시작 시간의 이후가 되도록 설정해 주세요.",
+                                        style: MITITextStyle.xxsm
+                                            .copyWith(color: MITIColor.error),
+                                      ),
+                                    ],
+                                  ));
+                            },
+                          ),
+                          SizedBox(height: 40.h),
+                          Consumer(
+                            builder: (BuildContext context, WidgetRef ref,
+                                Widget? child) {
+                              final valid = validDateTime(ref);
+
+                              return TextButton(
+                                onPressed: valid
+                                    ? () {
+                                        selectDay(ref);
+                                      }
+                                    : null,
+                                style: ButtonStyle(
+                                    backgroundColor: WidgetStateProperty.all(
+                                        valid
+                                            ? MITIColor.primary
+                                            : MITIColor.gray500)),
+                                child: Text(
+                                  "선택 완료",
+                                  style: MITITextStyle.mdBold.copyWith(
+                                      color: valid
+                                          ? MITIColor.gray800
+                                          : MITIColor.gray50),
+                                ),
+                              );
+                            },
+                          )
+                        ],
+                      ));
                 },
                 child: Container(
                   height: 48.r,
@@ -968,14 +951,19 @@ class _TimePickerState extends State<_TimePicker> {
 //   }
 // }
 
-class AddressComponent extends StatelessWidget {
+class AddressComponent extends StatefulWidget {
   final GameCourtParam court;
 
   const AddressComponent({super.key, required this.court});
 
   @override
+  State<AddressComponent> createState() => _AddressComponentState();
+}
+
+class _AddressComponentState extends State<AddressComponent> {
+  @override
   Widget build(BuildContext context) {
-    final address = court.address;
+    final address = widget.court.address;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -1046,6 +1034,9 @@ class AddressComponent extends StatelessWidget {
                 child: Consumer(
                   builder:
                       (BuildContext context, WidgetRef ref, Widget? child) {
+                    _AddressComponentState? parent = context
+                        .findAncestorStateOfType<_AddressComponentState>();
+
                     return TextButton(
                       onPressed: () async {
                         await Navigator.push(
@@ -1054,14 +1045,22 @@ class AddressComponent extends StatelessWidget {
                             builder: (_) => KpostalView(
                               callback: (Kpostal kpostal) async {
                                 log('result  =${kpostal.roadAddress}');
-                                final newCourt = court.copyWith(
-                                    address: kpostal.roadAddress);
+                                final newCourt = widget.court
+                                    .copyWith(address: kpostal.roadAddress);
                                 ref
                                     .read(gameFormProvider.notifier)
                                     .update(court: newCourt);
-                                const extra = CourtListComponent();
-                                context.pushNamed(DialogPage.routeName,
-                                    extra: extra);
+                                Future.delayed(
+                                    const Duration(milliseconds: 500),
+                                    () async {
+                                  if (mounted) {
+                                    await showCustomModalBottomSheet(
+                                        parent!.context,
+                                        const CourtListComponent());
+                                  }
+
+                                  log("show!! modal");
+                                });
                               },
                             ),
                           ),

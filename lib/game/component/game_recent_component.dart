@@ -20,94 +20,78 @@ class GameRecentComponent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Align(
-      alignment: Alignment.center,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 21.w),
-        child: Container(
-          padding: EdgeInsets.all(20.r),
-          decoration: BoxDecoration(
-            color: MITIColor.gray700,
-            borderRadius: BorderRadius.circular(20.r),
-          ),
-          // constraints: BoxConstraints(maxHeight: 504.h),
-          // alignment: Alignment.center,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(height: 4.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "최근 호스팅 목록",
-                        style: MITITextStyle.mdBold.copyWith(
-                          color: MITIColor.gray100,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => context.pop(),
-                        child: SvgPicture.asset(
-                          AssetUtil.getAssetPath(
-                              type: AssetType.icon, name: 'remove'),
-                        ),
-                      )
-                    ],
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 4.h),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "최근 호스팅 목록",
+                  style: MITITextStyle.mdBold.copyWith(
+                    color: MITIColor.gray100,
                   ),
-                  SizedBox(height: 20.h),
-                  Text(
-                    "최근 호스팅한 경기 목록입니다.\n같은 정보로 경기를 생성하시겠습니까?",
-                    style: MITITextStyle.xxsmLight150.copyWith(
-                      color: MITIColor.gray300,
-                    ),
+                ),
+                GestureDetector(
+                  onTap: () => context.pop(),
+                  child: SvgPicture.asset(
+                    AssetUtil.getAssetPath(
+                        type: AssetType.icon, name: 'remove'),
                   ),
-                ],
+                )
+              ],
+            ),
+            SizedBox(height: 20.h),
+            Text(
+              "최근 호스팅한 경기 목록입니다.\n같은 정보로 경기를 생성하시겠습니까?",
+              style: MITITextStyle.xxsmLight150.copyWith(
+                color: MITIColor.gray300,
               ),
-              SizedBox(height: 20.h),
-              ListView.separated(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemBuilder: (_, idx) {
-                    return _GameRecentCard.fromModel(
-                      model: models[idx],
-                    );
-                  },
-                  separatorBuilder: (_, idx) => SizedBox(
-                        height: 12.h,
-                      ),
-                  itemCount: models.length),
-              SizedBox(height: 20.h),
-              Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  final selected = ref.watch(selectedProvider);
-                  return TextButton(
-                      onPressed: selected != null
-                          ? () {
-                              selectRecentGame(selected, ref, context);
-                            }
-                          : () {},
-                      style: ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all(
-                              selected != null
-                                  ? MITIColor.primary
-                                  : MITIColor.gray500)),
-                      child: Text(
-                        "경기 정보 불러오기",
-                        style: MITITextStyle.mdBold.copyWith(
-                            color: selected != null
-                                ? MITIColor.gray800
-                                : MITIColor.gray50),
-                      ));
-                },
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ),
+        SizedBox(height: 20.h),
+        ListView.separated(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemBuilder: (_, idx) {
+              return _GameRecentCard.fromModel(
+                model: models[idx],
+              );
+            },
+            separatorBuilder: (_, idx) => SizedBox(
+                  height: 12.h,
+                ),
+            itemCount: models.length),
+        SizedBox(height: 20.h),
+        Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final selected = ref.watch(selectedProvider);
+            return TextButton(
+                onPressed: selected != null
+                    ? () {
+                        selectRecentGame(selected, ref, context);
+                      }
+                    : () {},
+                style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all(selected != null
+                        ? MITIColor.primary
+                        : MITIColor.gray500)),
+                child: Text(
+                  "경기 정보 불러오기",
+                  style: MITITextStyle.mdBold.copyWith(
+                      color: selected != null
+                          ? MITIColor.gray800
+                          : MITIColor.gray50),
+                ));
+          },
+        ),
+      ],
     );
   }
 

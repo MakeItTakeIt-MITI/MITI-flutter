@@ -101,7 +101,7 @@ class ReportError extends ErrorBase {
       );
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 경기 정보 조회 실패
-      context.goNamed(LoginScreen.routeName);
+
       showDialog(
         context: context,
         builder: (BuildContext context) {

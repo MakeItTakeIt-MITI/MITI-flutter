@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -54,29 +53,33 @@ class AccountError extends ErrorBase {
       /// 토큰 미제공
       WidgetsBinding.instance.addPostFrameCallback((s) {
         context.goNamed(LoginScreen.routeName);
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const CustomDialog(
-              title: '정산 내역 조회 실패',
-              content: '다시 로그인 해주세요.',
-            );
-          },
-        );
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '정산 내역 조회 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
       });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
       WidgetsBinding.instance.addPostFrameCallback((s) {
         context.goNamed(LoginScreen.routeName);
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const CustomDialog(
-              title: '정산 내역 조회 실패',
-              content: '다시 로그인 해주세요.',
-            );
-          },
-        );
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '정산 내역 조회 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
       });
     } else if (this.status_code == Forbidden && this.error_code == 940) {
       /// 사용자 고유 번호 권한 오류	or 정산 계좌 권한 오류
@@ -124,45 +127,45 @@ class AccountError extends ErrorBase {
       /// 토큰 미제공
       WidgetsBinding.instance.addPostFrameCallback((s) {
         context.goNamed(LoginScreen.routeName);
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const CustomDialog(
-              title: '송금 요청 실패',
-              content: '다시 로그인 해주세요.',
-            );
-          },
-        );
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '송금 요청 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
       });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
-
       WidgetsBinding.instance.addPostFrameCallback((s) {
         context.goNamed(LoginScreen.routeName);
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const CustomDialog(
-              title: '송금 요청 실패',
-              content: '다시 로그인 해주세요.',
-            );
-          },
-        );
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '송금 요청 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
       });
     } else if (this.status_code == Forbidden && this.error_code == 940) {
       /// 요청 권한 오류
-      WidgetsBinding.instance.addPostFrameCallback((s) {
-        context.goNamed(LoginScreen.routeName);
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const CustomDialog(
-              title: '송금 요청 실패',
-              content: '송금 요청 권한이 없습니다.',
-            );
-          },
-        );
-      });
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomDialog(
+            title: '송금 요청 실패',
+            content: '송금 요청 권한이 없습니다.',
+          );
+        },
+      );
     } else {
       /// 서버 오류
       showDialog(
@@ -183,30 +186,33 @@ class AccountError extends ErrorBase {
       /// 토큰 미제공
       WidgetsBinding.instance.addPostFrameCallback((s) {
         context.goNamed(LoginScreen.routeName);
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const CustomDialog(
-              title: '계좌 정보 조회 실패',
-              content: '다시 로그인 해주세요.',
-            );
-          },
-        );
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '계좌 정보 조회 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
       });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
-
       WidgetsBinding.instance.addPostFrameCallback((s) {
         context.goNamed(LoginScreen.routeName);
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const CustomDialog(
-              title: '계좌 정보 조회 실패',
-              content: '다시 로그인 해주세요.',
-            );
-          },
-        );
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '계좌 정보 조회 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
       });
     } else if (this.status_code == Forbidden && this.error_code == 940) {
       /// 요청 권한 없음

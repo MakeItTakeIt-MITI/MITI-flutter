@@ -214,44 +214,45 @@ class _PlayerProfileFormState extends ConsumerState<_PlayerProfileForm> {
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-            return BottomSheetWrapComponent(
-              onTapItem: (v) {
-                setState(() {
-                  if (selectedItem == v) {
-                    selectedItem = '';
-                  } else {
-                    selectedItem = v;
-                  }
-                });
-              },
-              items: items,
-              title: widget.type.displayName,
-              selectedItem: selectedItem,
-              onSubmitItem: () {
-                if (widget.type == PlayerProfileType.gender) {
-                  final gender = GenderType.stringToEnum(value: selectedItem);
-                  ref
-                      .read(userPlayerProfileFormProvider.notifier)
-                      .update(gender: gender);
-                } else if (widget.type == PlayerProfileType.position) {
-                  final position =
+                return BottomSheetWrapComponent(
+                  onTapItem: (v) {
+                    setState(() {
+                      if (selectedItem == v) {
+                        selectedItem = '';
+                      } else {
+                        selectedItem = v;
+                      }
+                    });
+                  },
+                  items: items,
+                  title: widget.type.displayName,
+                  selectedItem: selectedItem,
+                  onSubmitItem: () {
+                    if (widget.type == PlayerProfileType.gender) {
+                      final gender = GenderType.stringToEnum(value: selectedItem);
+                      ref
+                          .read(userPlayerProfileFormProvider.notifier)
+                          .update(gender: gender);
+                    } else if (widget.type == PlayerProfileType.position) {
+                      final position =
                       PlayerPositionType.stringToEnum(value: selectedItem);
-                  ref
-                      .read(userPlayerProfileFormProvider.notifier)
-                      .update(position: position);
-                } else if (widget.type == PlayerProfileType.role) {
-                  final role = PlayerRoleType.stringToEnum(value: selectedItem);
-                  ref
-                      .read(userPlayerProfileFormProvider.notifier)
-                      .update(role: role);
-                }
-                context.pop();
-                FocusScope.of(context).unfocus();
-              },
-            );
-          });
+                      ref
+                          .read(userPlayerProfileFormProvider.notifier)
+                          .update(position: position);
+                    } else if (widget.type == PlayerProfileType.role) {
+                      final role = PlayerRoleType.stringToEnum(value: selectedItem);
+                      ref
+                          .read(userPlayerProfileFormProvider.notifier)
+                          .update(role: role);
+                    }
+                    context.pop();
+                    FocusScope.of(context).unfocus();
+                  },
+                );
+              });
         });
   }
+
 
   List<String> getItems() {
     if (PlayerProfileType.gender == widget.type) {

@@ -318,17 +318,19 @@ class AuthError extends ErrorBase {
       );
     } else if (this.status_code == Forbidden && this.error_code == 340) {
       /// 이메일 가입 사용자
-      showDialog(
+      showModalBottomSheet(
           context: context,
-          builder: (_) {
-            return CustomDialog(
+          builder: (context) {
+            return BottomDialog(
               title: '이메일 가입 사용자',
-              content: '이메일 가입 이력이 존재합니다.\n일반 로그인을 통해 로그인 해주시기 바랍니다.',
-              btnDesc: '이메일 로그인 하러 가기',
-              onPressed: () {
-                context.pop();
-                context.goNamed(LoginScreen.routeName);
-              },
+              content: '해당 번호로 이메일 가입 이력이 존재합니다.\n일반 로그인을 통해 로그인 해주시기 바랍니다.',
+              btn: TextButton(
+                onPressed: () {
+                  context.pop();
+                  context.goNamed(LoginScreen.routeName);
+                },
+                child: const Text("이메일 로그인 하러 가기"),
+              ),
             );
           });
     } else if (this.status_code == Forbidden && this.error_code == 341) {

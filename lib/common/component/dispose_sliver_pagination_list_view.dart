@@ -34,8 +34,8 @@ class DisposeSliverPaginationListView<T extends Base, S>
     this.param,
     this.separateSize = 16,
     required this.emptyWidget,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   ConsumerState<DisposeSliverPaginationListView> createState() =>

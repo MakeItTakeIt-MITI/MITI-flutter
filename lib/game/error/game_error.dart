@@ -122,58 +122,63 @@ class GameError extends ErrorBase {
       /// 토큰 미제공
       WidgetsBinding.instance.addPostFrameCallback((s) {
         context.goNamed(LoginScreen.routeName);
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const CustomDialog(
-              title: '경기 모집 생성 실패',
-              content: '다시 로그인 해주세요.',
-            );
-          },
-        );
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '경기 모집 생성 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
       });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
       WidgetsBinding.instance.addPostFrameCallback((s) {
         context.goNamed(LoginScreen.routeName);
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const CustomDialog(
-              title: '경기 모집 생성 실패',
-              content: '다시 로그인 해주세요.',
-            );
-          },
-        );
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '경기 모집 생성 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
       });
     } else if (this.status_code == ServerError && this.error_code == 460) {
       /// 위경도 요청 API 실패
-
       WidgetsBinding.instance.addPostFrameCallback((s) {
-        context.goNamed(LoginScreen.routeName);
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const CustomDialog(
-              title: '경기 모집 생성 실패',
-              content: '서버가 불안정해 잠시후 다시 이용해주세요.',
-            );
-          },
-        );
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '경기 모집 생성 실패',
+                      content: '서버가 불안정해 잠시후 다시 이용해주세요.',
+                    );
+                  },
+                ));
       });
     } else if (this.status_code == ServerError && this.error_code == 461) {
       /// 위경도 변환 응답 처리 실패
       WidgetsBinding.instance.addPostFrameCallback((s) {
-        context.goNamed(LoginScreen.routeName);
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const CustomDialog(
-              title: '경기 모집 생성 실패',
-              content: '서버가 불안정해 잠시후 다시 이용해주세요.',
-            );
-          },
-        );
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '경기 모집 생성 실패',
+                      content: '서버가 불안정해 잠시후 다시 이용해주세요.',
+                    );
+                  },
+                ));
       });
     } else {
       /// 서버 오류
@@ -228,29 +233,33 @@ class GameError extends ErrorBase {
       /// 토큰 미제공
       WidgetsBinding.instance.addPostFrameCallback((s) {
         context.goNamed(LoginScreen.routeName);
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const CustomDialog(
-              title: '경기 수정 실패',
-              content: '다시 로그인 해주세요.',
-            );
-          },
-        );
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '경기 수정 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
       });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
       WidgetsBinding.instance.addPostFrameCallback((s) {
         context.goNamed(LoginScreen.routeName);
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const CustomDialog(
-              title: '경기 수정 실패',
-              content: '다시 로그인 해주세요.',
-            );
-          },
-        );
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '경기 수정 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
       });
     } else if (this.status_code == Forbidden && this.error_code == 501) {
       /// 호스트 사용자 아님
@@ -294,29 +303,33 @@ class GameError extends ErrorBase {
       /// 토큰 미제공
       WidgetsBinding.instance.addPostFrameCallback((s) {
         context.goNamed(LoginScreen.routeName);
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const CustomDialog(
-              title: '결제 정보 조회 실패',
-              content: '다시 로그인 해주세요.',
-            );
-          },
-        );
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '결제 정보 조회 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
       });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
       WidgetsBinding.instance.addPostFrameCallback((s) {
         context.goNamed(LoginScreen.routeName);
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const CustomDialog(
-              title: '결제 정보 조회 실패',
-              content: '다시 로그인 해주세요.',
-            );
-          },
-        );
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '결제 정보 조회 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
       });
     } else if (this.status_code == Forbidden && this.error_code == 940) {
       /// 참여 불가 경기
@@ -353,29 +366,36 @@ class GameError extends ErrorBase {
       context.pushReplacementNamed(ErrorScreen.routeName);
     } else if (this.status_code == UnAuthorized && this.error_code == 501) {
       /// 토큰 미제공
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '환불 정보 조회 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '환불 정보 조회 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
+      });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
-
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '환불 정보 조회 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '환불 정보 조회 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
+      });
     } else if (this.status_code == Forbidden && this.error_code == 940) {
       /// 요청자 참여자 불일치
       context.pushReplacementNamed(ErrorScreen.routeName);
@@ -404,28 +424,36 @@ class GameError extends ErrorBase {
   void _getReview(BuildContext context, WidgetRef ref) {
     if (this.status_code == UnAuthorized && this.error_code == 501) {
       /// 토큰 미제공
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '평점 조회 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '평점 조회 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
+      });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '평점 조회 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '평점 조회 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
+      });
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 평점 정보 조회 실패
       context.pushReplacementNamed(ErrorScreen.routeName);
@@ -461,32 +489,39 @@ class GameError extends ErrorBase {
       );
     } else if (this.status_code == UnAuthorized && this.error_code == 501) {
       /// 토큰 미제공
-
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '리뷰 작성 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '리뷰 작성 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
+      });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '리뷰 작성 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+            () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomDialog(
+                      title: '리뷰 작성 실패',
+                      content: '다시 로그인 해주세요.',
+                    );
+                  },
+                ));
+      });
     } else if (this.status_code == Forbidden && this.error_code == 940) {
       /// 결제 미완료 참여
-      context.goNamed(LoginScreen.routeName);
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -498,7 +533,7 @@ class GameError extends ErrorBase {
       );
     } else if (this.status_code == Forbidden && this.error_code == 941) {
       /// 미완료 경기
-      context.goNamed(LoginScreen.routeName);
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -510,7 +545,7 @@ class GameError extends ErrorBase {
       );
     } else if (this.status_code == Forbidden && this.error_code == 942) {
       /// 해당 경기 미참여 사용자
-      context.goNamed(LoginScreen.routeName);
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -522,7 +557,7 @@ class GameError extends ErrorBase {
       );
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 경기 정보 조회 실패
-      context.goNamed(LoginScreen.routeName);
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -534,7 +569,7 @@ class GameError extends ErrorBase {
       );
     } else if (this.status_code == NotFound && this.error_code == 941) {
       /// 참여 정보 조회 실패
-      context.goNamed(LoginScreen.routeName);
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -573,31 +608,39 @@ class GameError extends ErrorBase {
       );
     } else if (this.status_code == UnAuthorized && this.error_code == 501) {
       /// 토큰 미제공
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '리뷰 작성 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+                () => showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return const CustomDialog(
+                  title: '리뷰 작성 실패',
+                  content: '다시 로그인 해주세요.',
+                );
+              },
+            ));
+      });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '리뷰 작성 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+                () => showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return const CustomDialog(
+                  title: '리뷰 작성 실패',
+                  content: '다시 로그인 해주세요.',
+                );
+              },
+            ));
+      });
     } else if (this.status_code == Forbidden && this.error_code == 940) {
       /// 미완료 경기
-      context.goNamed(LoginScreen.routeName);
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -609,7 +652,7 @@ class GameError extends ErrorBase {
       );
     } else if (this.status_code == Forbidden && this.error_code == 941) {
       /// 호스트 사용자
-      context.goNamed(LoginScreen.routeName);
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -621,7 +664,7 @@ class GameError extends ErrorBase {
       );
     } else if (this.status_code == Forbidden && this.error_code == 942) {
       /// 미참여 사용자
-      context.goNamed(LoginScreen.routeName);
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -633,7 +676,7 @@ class GameError extends ErrorBase {
       );
     } else if (this.status_code == Forbidden && this.error_code == 943) {
       /// 참여 미확정 사용자
-      context.goNamed(LoginScreen.routeName);
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -645,7 +688,7 @@ class GameError extends ErrorBase {
       );
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 관련 객체 조회 실패
-      context.goNamed(LoginScreen.routeName);
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -730,11 +773,9 @@ class GameError extends ErrorBase {
           return BottomDialog(
             hasPop: true,
             title: '참여를 취소할 수 없는 경기입니다.',
-            content:
-            '경기 시작 2시간 이내에는 경기 참여를 취소하실 수 없습니다.',
+            content: '경기 시작 2시간 이내에는 경기 참여를 취소하실 수 없습니다.',
             btn: Consumer(
-              builder: (BuildContext context, WidgetRef ref,
-                  Widget? child) {
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
                 return TextButton(
                   onPressed: () async {
                     context.goNamed(GameScreen.routeName);

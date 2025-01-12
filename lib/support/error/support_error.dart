@@ -52,28 +52,36 @@ class SupportError extends ErrorBase {
   void _get(BuildContext context, WidgetRef ref) {
     if (this.status_code == UnAuthorized && this.error_code == 501) {
       /// 토큰 미제공
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '문의 조희 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+                () => showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return const CustomDialog(
+                  title: '문의 조희 실패',
+                  content: '다시 로그인 해주세요.',
+                );
+              },
+            ));
+      });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '문의 조희 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+                () => showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return const CustomDialog(
+                  title: '문의 조희 실패',
+                  content: '다시 로그인 해주세요.',
+                );
+              },
+            ));
+      });
     } else if (this.status_code == NotFound && this.error_code == 901) {
       /// 문의 고유 번호 오류
       context.pushReplacementNamed(ErrorScreen.routeName);
@@ -98,28 +106,36 @@ class SupportError extends ErrorBase {
       );
     } else if (this.status_code == UnAuthorized && this.error_code == 501) {
       /// 토큰 미제공
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '문의 작성 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+                () => showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return const CustomDialog(
+                  title: '문의 작성 실패',
+                  content: '다시 로그인 해주세요.',
+                );
+              },
+            ));
+      });
     } else if (this.status_code == UnAuthorized && this.error_code == 502) {
       /// 엑세스 토큰 오류
-      context.goNamed(LoginScreen.routeName);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomDialog(
-            title: '문의 작성 실패',
-            content: '다시 로그인 해주세요.',
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.goNamed(LoginScreen.routeName);
+        Future.delayed(
+            const Duration(milliseconds: 200),
+                () => showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return const CustomDialog(
+                  title: '문의 작성 실패',
+                  content: '다시 로그인 해주세요.',
+                );
+              },
+            ));
+      });
     } else {
       /// 서버 오류
       showDialog(
