@@ -10,7 +10,6 @@ import 'package:miti/court/view/court_detail_screen.dart';
 import 'package:miti/court/view/court_game_list_screen.dart';
 import 'package:miti/etc/view/tc_policy_screen.dart';
 import 'package:miti/game/model/widget/user_reivew_short_info_model.dart';
-import 'package:miti/game/view/game_participation_screen.dart';
 import 'package:miti/game/view/game_refund_screen.dart';
 import 'package:miti/game/view/game_create_screen.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
@@ -41,9 +40,11 @@ import '../../auth/view/signup/signup_screen.dart';
 import '../../auth/view/signup/signup_select_screen.dart';
 import '../../court/model/court_model.dart';
 import '../../court/view/court_search_screen.dart';
+import '../../game/view/gaem_participation_screen.dart';
 import '../../game/view/game_create_complete_screen.dart';
 import '../../default_screen.dart';
 import '../../court/view/court_map_screen.dart';
+import '../../game/view/game_review_list_screen.dart';
 import '../../game/view/game_screen.dart';
 import '../../kakaopay/view/approval_screen.dart';
 import '../../notification/view/notification_setting_screen.dart';
@@ -375,6 +376,17 @@ final routerProvider = Provider<GoRouter>((ref) {
                         },
                         routes: [
                           GoRoute(
+                              path: 'participation',
+                              parentNavigatorKey: rootNavKey,
+                              name: GameParticipationScreen.routeName,
+                              builder: (context, state) {
+                                final int gameId =
+                                    int.parse(state.pathParameters['gameId']!);
+                                return GameParticipationScreen(
+                                  gameId: gameId,
+                                );
+                              }),
+                          GoRoute(
                             path: 'complete',
                             parentNavigatorKey: rootNavKey,
                             name: GameCompleteScreen.routeName,
@@ -435,11 +447,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                           GoRoute(
                               path: 'players',
                               parentNavigatorKey: rootNavKey,
-                              name: GameParticipationScreen.routeName,
+                              name: GameReviewListScreen.routeName,
                               builder: (context, state) {
                                 final int gameId =
                                     int.parse(state.pathParameters['gameId']!);
-                                return GameParticipationScreen(
+                                return GameReviewListScreen(
                                   gameId: gameId,
                                 );
                               },
@@ -471,7 +483,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                               parentNavigatorKey: rootNavKey,
                               name: GamePaymentScreen.routeName,
                               builder: (context, state) {
-
                                 final int gameId =
                                     int.parse(state.pathParameters['gameId']!);
                                 return GamePaymentScreen(

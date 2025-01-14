@@ -59,7 +59,7 @@ class GameDetail extends _$GameDetail {
 
     repository.getGameDetail(gameId: gameId).then((value) {
       logger.i(value);
-      log('value.data!.is_host = ${value.data!.is_host} value.data!.is_participated ${value.data!.is_participated}');
+      log('value.data!.is_host = ${value.data!.is_host} value.data!.user_participation_id ${value.data!.user_participation_id}');
       state = value;
     }).catchError((e) {
       final error = ErrorModel.respToError(e);
@@ -412,6 +412,30 @@ class ReviewDetail extends _$ReviewDetail {
       final error = ErrorModel.respToError(e);
       logger.e(
           'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      return error;
+    });
+  }
+}
+
+@riverpod
+class GamePlayerProfile extends _$GamePlayerProfile {
+  @override
+  BaseModel build({required int gameId}) {
+    getPayment(gameId: gameId);
+    return LoadingModel();
+  }
+
+  void getPayment({required int gameId}) {
+    final repository = ref.watch(gameRepositoryProvider);
+    repository.getParticipationProfile(gameId: gameId).then<BaseModel>((value) {
+      logger.i(value);
+      state = value;
+      return value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state = error;
       return error;
     });
   }

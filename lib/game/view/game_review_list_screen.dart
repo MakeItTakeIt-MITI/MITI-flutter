@@ -25,19 +25,18 @@ import '../component/skeleton/game_participation_review_skeleton.dart';
 import '../model/game_model.dart';
 import 'package:collection/collection.dart';
 
-class GameParticipationScreen extends StatefulWidget {
+class GameReviewListScreen extends StatefulWidget {
   final int gameId;
 
-  static String get routeName => 'participation';
+  static String get routeName => 'gameReviewList';
 
-  const GameParticipationScreen({super.key, required this.gameId});
+  const GameReviewListScreen({super.key, required this.gameId});
 
   @override
-  State<GameParticipationScreen> createState() =>
-      _GameParticipationScreenState();
+  State<GameReviewListScreen> createState() => _GameReviewListScreenState();
 }
 
-class _GameParticipationScreenState extends State<GameParticipationScreen> {
+class _GameReviewListScreenState extends State<GameReviewListScreen> {
   late final ScrollController _scrollController;
 
   @override
@@ -91,7 +90,7 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
                   final userId = ref.read(authProvider)?.id ?? 0;
 
                   /// 본인 리뷰 제거
-                  model.participations.removeWhere((e) => e.userId == userId);
+                  // model.participations.removeWhere((e) => e.userId == userId);
 
                   if (model.participations.isEmpty) {
                     return Center(
@@ -106,13 +105,12 @@ class _GameParticipationScreenState extends State<GameParticipationScreen> {
 
                   return Column(
                     children: [
-                      if (model.host != null && model.host?.userId != userId)
+                      if (model.host != null && model.host?.id != userId)
                         _HostReviewComponent(
                           host: model.host!,
                           gameId: widget.gameId,
                         ),
-                      if ((model.host != null &&
-                              model.host?.userId != userId) &&
+                      if ((model.host != null && model.host?.id != userId) &&
                           model.participations.isNotEmpty)
                         Container(
                           color: MITIColor.gray800,
@@ -141,7 +139,8 @@ class _PlayerComponent extends StatelessWidget {
   final int gameId;
   final int? participationId;
   final Rating rating;
-  final List<ReviewerModel> reviews;
+
+  // final List<ReviewerModel> reviews;
 
   const _PlayerComponent({
     super.key,
@@ -150,7 +149,7 @@ class _PlayerComponent extends StatelessWidget {
     required this.gameId,
     required this.nickname,
     required this.rating,
-    required this.reviews,
+    // required this.reviews,
   });
 
   factory _PlayerComponent.fromParticipationModel({
@@ -158,12 +157,12 @@ class _PlayerComponent extends StatelessWidget {
     required int gameId,
   }) {
     return _PlayerComponent(
-      participation_status: model.participation_status,
+      participation_status: model.participationStatus,
       gameId: gameId,
       participationId: model.id,
-      nickname: model.nickname,
-      rating: model.guest_rating,
-      reviews: model.guest_reviews,
+      nickname: model.user.nickname,
+      rating: model.guestRating,
+      // reviews: model.guest_reviews,
     );
   }
 
@@ -174,8 +173,8 @@ class _PlayerComponent extends StatelessWidget {
     return _PlayerComponent(
       gameId: gameId,
       nickname: model.nickname,
-      rating: model.host_rating,
-      reviews: model.host_reviews,
+      rating: model.hostRating,
+      // reviews: model.host_reviews,
     );
   }
 
@@ -261,7 +260,7 @@ class _PlayerComponent extends StatelessWidget {
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
               final userId = ref.watch(authProvider.select((user) => user?.id));
               final valid =
-                  reviews.singleWhereOrNull((r) => r.reviewer == userId);
+                  true; //reviews.singleWhereOrNull((r) => r.reviewer == userId);
 
               return TextButton(
                   onPressed: () {

@@ -61,10 +61,13 @@ class UserModel extends IModelWithId {
 class UserInfoModel {
   final String email;
   final String nickname;
+  @JsonKey(name:'profile_image_url')
+  final String profileImageUrl;
 
   UserInfoModel({
     required this.email,
     required this.nickname,
+    required this.profileImageUrl,
   });
 
   factory UserInfoModel.fromJson(Map<String, dynamic> json) =>
@@ -136,6 +139,8 @@ class UserPlayerModel extends DefaultParam {
 
   factory UserPlayerModel.fromJson(Map<String, dynamic> json) =>
       _$UserPlayerModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$UserPlayerModelToJson(this);
 
   @override
   List<Object?> get props => [gender, weight, height, position, role];

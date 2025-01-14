@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -25,7 +26,7 @@ import 'package:miti/game/model/game_payment_model.dart';
 import 'package:miti/game/model/widget/user_reivew_short_info_model.dart';
 import 'package:miti/game/provider/game_provider.dart' hide Rating;
 import 'package:collection/collection.dart';
-import 'package:miti/game/view/game_participation_screen.dart';
+import 'package:miti/game/view/game_review_list_screen.dart';
 import 'package:miti/game/view/game_refund_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
@@ -34,6 +35,7 @@ import '../../account/model/account_model.dart';
 import '../../common/component/share_fab_component.dart';
 import '../../common/error/view/error_screen.dart';
 import '../../common/model/entity_enum.dart';
+import '../../court/view/court_detail_screen.dart';
 import '../../court/view/court_map_screen.dart';
 import '../../default_screen.dart';
 import '../../report/view/report_list_screen.dart';
@@ -42,6 +44,7 @@ import '../../user/model/review_model.dart';
 import '../../util/util.dart';
 import '../component/skeleton/game_detail_skeleton.dart';
 import '../model/game_refund_model.dart';
+import 'gaem_participation_screen.dart';
 import 'game_payment_screen.dart';
 import 'game_screen.dart';
 import 'game_update_screen.dart';
@@ -94,7 +97,6 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MITIColor.gray750,
       floatingActionButtonLocation: ExpandableFab.location,
       floatingActionButton: Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
@@ -137,7 +139,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
             const DefaultAppBar(
               title: '경기 상세 정보',
               isSliver: true,
-              backgroundColor: MITIColor.gray750,
+              hasBorder: false,
             ),
           ];
         },
@@ -155,7 +157,8 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
             result as ResponseModel<GameDetailModel>;
             final model = result.data!;
             // log('model is_host ${model.is_host} model.is_participated = ${model.is_participated}');
-            participationId = model.participation?.id;
+
+            participationId = model.user_participation_id;
             return CustomScrollView(
               slivers: [
                 SliverFillRemaining(
@@ -164,6 +167,12 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                       SingleChildScrollView(
                         child: Column(
                           children: [
+                            CourtMapComponent(
+                              latLng: NLatLng(
+                                double.parse(model.court.latitude),
+                                double.parse(model.court.longitude),
+                              ),
+                            ),
                             SummaryComponent.fromDetailModel(model: model),
                             getDivider(),
                             ParticipationComponent.fromModel(model: model),
@@ -330,7 +339,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
         Map<String, String> pathParameters = {'gameId': model.id.toString()};
 
         context.pushNamed(
-          GameParticipationScreen.routeName,
+          GameReviewListScreen.routeName,
           pathParameters: pathParameters,
         );
       },
@@ -393,7 +402,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
       case GameStatus.open:
         if (model.is_host) {
           button = editButton;
-        } else if (model.is_participated) {
+        } else if (model.user_participation_id != null) {
           if (policyValid) {
             button = cancelButton;
           } else {
@@ -406,7 +415,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
       case GameStatus.closed:
         if (model.is_host) {
           button = editButton;
-        } else if (model.is_participated) {
+        } else if (model.user_participation_id != null) {
           button = participationButton;
         } else {
           button = null;
@@ -416,7 +425,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
         button = null;
         break;
       case GameStatus.completed:
-        if (model.is_participated || model.is_host) {
+        if (model.user_participation_id != null || model.is_host) {
           button = Align(
             child: Row(
               mainAxisSize: MainAxisSize.max,
@@ -452,8 +461,8 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
 
   Widget getDivider() {
     return Container(
-      height: 4.h,
-      color: MITIColor.gray800,
+      height: 1.h,
+      color: MITIColor.gray750,
     );
   }
 }
@@ -621,6 +630,7 @@ class UserShortInfoComponent extends StatelessWidget {
 }
 
 class ParticipationComponent extends StatelessWidget {
+  final int gameId;
   final int max_invitation;
   final int num_of_confirmed_participations;
   final List<ConfirmedParticipationModel> confimed_participations;
@@ -629,13 +639,15 @@ class ParticipationComponent extends StatelessWidget {
       {super.key,
       required this.confimed_participations,
       required this.max_invitation,
-      required this.num_of_confirmed_participations});
+      required this.num_of_confirmed_participations,
+      required this.gameId});
 
   factory ParticipationComponent.fromModel({required GameDetailModel model}) {
     return ParticipationComponent(
       confimed_participations: model.confirmed_participations,
       max_invitation: model.max_invitation,
       num_of_confirmed_participations: model.num_of_confirmed_participations,
+      gameId: model.id,
     );
   }
 
@@ -646,10 +658,37 @@ class ParticipationComponent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            "참가 완료된 게스트 ($num_of_confirmed_participations / $max_invitation)",
-            style: MITITextStyle.mdBold.copyWith(color: MITIColor.gray100),
-            textAlign: TextAlign.left,
+          GestureDetector(
+            onTap: () {
+              Map<String, String> pathParameters = {
+                'gameId': gameId.toString()
+              };
+              context.pushNamed(
+                GameParticipationScreen.routeName,
+                pathParameters: pathParameters,
+              );
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "참가 완료된 게스트 ($num_of_confirmed_participations / $max_invitation)",
+                  style:
+                      MITITextStyle.mdBold.copyWith(color: MITIColor.gray100),
+                  textAlign: TextAlign.left,
+                ),
+                SvgPicture.asset(
+                  AssetUtil.getAssetPath(
+                    type: AssetType.icon,
+                    name: 'chevron_right',
+                  ),
+                  colorFilter: const ColorFilter.mode(
+                    MITIColor.gray400,
+                    BlendMode.srcIn,
+                  ),
+                ),
+              ],
+            ),
           ),
           SizedBox(height: 20.h),
           if (confimed_participations.isNotEmpty)
@@ -660,7 +699,7 @@ class ParticipationComponent extends StatelessWidget {
                     ...confimed_participations.mapIndexed((idx, e) => Row(
                           children: [
                             _GuestTile(
-                              name: confimed_participations[idx].nickname,
+                              name: confimed_participations[idx].user.nickname,
                             ),
                             SizedBox(width: 12.w),
                           ],
@@ -668,10 +707,16 @@ class ParticipationComponent extends StatelessWidget {
                   ],
                 )),
           if (confimed_participations.isEmpty)
-            Text(
-              "아직 참여한 게스트가 없습니다.",
-              style: MITITextStyle.xxsm.copyWith(
-                color: MITIColor.gray100,
+            SizedBox(
+              height: 56.h,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "아직 참여한 게스트가 없습니다.",
+                  style: MITITextStyle.xxsm.copyWith(
+                    color: MITIColor.gray100,
+                  ),
+                ),
               ),
             )
         ],

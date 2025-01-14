@@ -9,15 +9,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
 import 'package:miti/common/component/default_appbar.dart';
+import 'package:miti/common/component/default_layout.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/user/provider/user_form_provider.dart';
 import 'package:miti/user/provider/user_provider.dart';
-
-import '../../account/provider/widget/transfer_form_provider.dart';
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
-import '../model/user_model.dart';
 
 typedef BottomSheetSelectItem = void Function(String item);
 
@@ -36,6 +34,35 @@ class UserPlayerProfileScreen extends StatelessWidget {
         appBar: const DefaultAppBar(
           title: '선수 프로필',
           hasBorder: false,
+        ),
+        bottomNavigationBar: Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final valid =
+                ref.watch(userPlayerProfileFormProvider.notifier).validForm();
+            return BottomButton(
+              hasBorder: false,
+              button: TextButton(
+                onPressed: valid
+                    ? () async {
+                        final result =
+                            ref.read(updatePlayerProfileProvider.future);
+                        if (result is ErrorModel) {
+                        } else {}
+                      }
+                    : null,
+                style: TextButton.styleFrom(
+                  backgroundColor:
+                      valid ? MITIColor.primary : MITIColor.gray500,
+                ),
+                child: Text(
+                  "수정하기",
+                  style: MITITextStyle.mdBold.copyWith(
+                    color: valid ? MITIColor.gray800 : MITIColor.gray50,
+                  ),
+                ),
+              ),
+            );
+          },
         ),
         body: Consumer(
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
@@ -214,45 +241,45 @@ class _PlayerProfileFormState extends ConsumerState<_PlayerProfileForm> {
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-                return BottomSheetWrapComponent(
-                  onTapItem: (v) {
-                    setState(() {
-                      if (selectedItem == v) {
-                        selectedItem = '';
-                      } else {
-                        selectedItem = v;
-                      }
-                    });
-                  },
-                  items: items,
-                  title: widget.type.displayName,
-                  selectedItem: selectedItem,
-                  onSubmitItem: () {
-                    if (widget.type == PlayerProfileType.gender) {
-                      final gender = GenderType.stringToEnum(value: selectedItem);
-                      ref
-                          .read(userPlayerProfileFormProvider.notifier)
-                          .update(gender: gender);
-                    } else if (widget.type == PlayerProfileType.position) {
-                      final position =
+            return BottomSheetWrapComponent(
+              crossAxisCount: widget.type == PlayerProfileType.gender ? 2 : 3,
+              onTapItem: (v) {
+                setState(() {
+                  if (selectedItem == v) {
+                    selectedItem = '';
+                  } else {
+                    selectedItem = v;
+                  }
+                });
+              },
+              items: items,
+              title: widget.type.displayName,
+              selectedItem: selectedItem,
+              onSubmitItem: () {
+                if (widget.type == PlayerProfileType.gender) {
+                  final gender = GenderType.stringToEnum(value: selectedItem);
+                  ref
+                      .read(userPlayerProfileFormProvider.notifier)
+                      .update(gender: gender);
+                } else if (widget.type == PlayerProfileType.position) {
+                  final position =
                       PlayerPositionType.stringToEnum(value: selectedItem);
-                      ref
-                          .read(userPlayerProfileFormProvider.notifier)
-                          .update(position: position);
-                    } else if (widget.type == PlayerProfileType.role) {
-                      final role = PlayerRoleType.stringToEnum(value: selectedItem);
-                      ref
-                          .read(userPlayerProfileFormProvider.notifier)
-                          .update(role: role);
-                    }
-                    context.pop();
-                    FocusScope.of(context).unfocus();
-                  },
-                );
-              });
+                  ref
+                      .read(userPlayerProfileFormProvider.notifier)
+                      .update(position: position);
+                } else if (widget.type == PlayerProfileType.role) {
+                  final role = PlayerRoleType.stringToEnum(value: selectedItem);
+                  ref
+                      .read(userPlayerProfileFormProvider.notifier)
+                      .update(role: role);
+                }
+                context.pop();
+                FocusScope.of(context).unfocus();
+              },
+            );
+          });
         });
   }
-
 
   List<String> getItems() {
     if (PlayerProfileType.gender == widget.type) {
@@ -291,6 +318,7 @@ class _PlayerProfileFormState extends ConsumerState<_PlayerProfileForm> {
 }
 
 class BottomSheetWrapComponent extends StatelessWidget {
+  final int crossAxisCount;
   final BottomSheetSelectItem onTapItem;
   final String title;
   final List<String> items;
@@ -304,6 +332,7 @@ class BottomSheetWrapComponent extends StatelessWidget {
     required this.title,
     required this.selectedItem,
     required this.onSubmitItem,
+    this.crossAxisCount = 3,
   });
 
   @override
@@ -334,18 +363,25 @@ class BottomSheetWrapComponent extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20.h),
-              Wrap(
-                spacing: 10.r,
-                runSpacing: 10.r,
-                children: items
-                    .map((item) => GestureDetector(
-                          onTap: () => onTapItem(item),
-                          child: BottomSheetItem(
-                            isSelected: item == selectedItem,
-                            text: item,
-                          ),
-                        ))
-                    .toList(),
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  mainAxisSpacing: 12.r,
+                  crossAxisSpacing: 12.r,
+                  crossAxisCount: crossAxisCount,
+                  mainAxisExtent: 48.h,
+                ),
+                itemBuilder: (BuildContext context, int index) {
+                  return GestureDetector(
+                    onTap: () => onTapItem(items[index]),
+                    child: BottomSheetItem(
+                      isSelected: items[index] == selectedItem,
+                      text: items[index],
+                    ),
+                  );
+                },
+                itemCount: items.length,
               ),
               SizedBox(height: 20.h),
               TextButton(
@@ -379,8 +415,6 @@ class BottomSheetItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 103.w,
-      height: 48.h,
       padding: EdgeInsets.symmetric(vertical: 8.h),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8.r),

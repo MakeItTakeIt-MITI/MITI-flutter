@@ -105,7 +105,7 @@ class UserPlayerProfileForm extends _$UserPlayerProfileForm {
   }
 
   bool validWeight() {
-    if (state.height != null) {
+    if (state.weight != null) {
       return 30 <= state.weight! && state.weight! <= 150;
     }
     return true;
@@ -116,5 +116,9 @@ class UserPlayerProfileForm extends _$UserPlayerProfileForm {
       return 50 <= state.height! && state.height! <= 230;
     }
     return true;
+  }
+
+  bool validForm() {
+    return validHeight() && validWeight();
   }
 }

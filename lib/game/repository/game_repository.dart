@@ -44,11 +44,13 @@ abstract class GameRepository {
   Future<ResponseModel<GameDetailModel>> freeGame(
       {@Path() required int gameId});
 
+  /// 경기 모집 생성 API
   @Headers({'token': 'true'})
   @POST('/games')
   Future<ResponseModel<GameDetailModel>> createGame(
       {@Body() required GameCreateParam param});
 
+  /// 경기 정보 수정 API
   @Headers({'token': 'true'})
   @PATCH('/games/{gameId}')
   Future<ResponseModel<GameDetailModel>> updateGame(
@@ -95,6 +97,7 @@ abstract class GameRepository {
     @Path('userId') required int userId,
   });
 
+  /// 경기 모집 취소 API
   @Headers({'token': 'true'})
   @PUT('/games/{gameId}/cancel')
   Future<ResponseModel<GameDetailModel>> cancelRecruitGame({
@@ -117,6 +120,13 @@ abstract class GameRepository {
   Future<ResponseModel<GameCreateReviewModel>> createHostReview({
     @Path() required int gameId,
     @Body() required GameReviewParam param,
+  });
+
+  /// 경기 참가자 선수 프로필 목록 조회 API
+  @Headers({'token': 'true'})
+  @GET('/games/{gameId}/participations')
+  Future<ResponseListModel<GameParticipationPlayerModel>> getParticipationProfile({
+    @Path() required int gameId,
   });
 
   /// 게스트 리뷰 상세 조회 API

@@ -18,7 +18,6 @@ import 'package:miti/game/error/game_error.dart';
 import 'package:miti/game/model/game_model.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
-import 'package:miti/game/view/game_participation_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:collection/collection.dart';

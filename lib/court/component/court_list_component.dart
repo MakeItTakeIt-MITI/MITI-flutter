@@ -79,9 +79,12 @@ class _CourtListComponentState extends ConsumerState<CourtListComponent> {
           ],
         ),
         SizedBox(height: 20.h),
-        SizedBox(
-          height: MediaQuery.of(context).size.height / 2,
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height / 2,
+          ),
           child: CustomScrollView(
+            shrinkWrap: true,
             controller: _scrollController,
             slivers: [
               Consumer(

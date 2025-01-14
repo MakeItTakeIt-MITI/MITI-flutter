@@ -11,6 +11,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -59,9 +60,15 @@ class GamePaymentScreen extends ConsumerStatefulWidget {
 class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
   Payload payload = Payload();
 
-  String webApplicationId = Environment.bootPayJavaScriptKey;
-  String androidApplicationId = Environment.bootPayAndroidKey;
-  String iosApplicationId = Environment.bootPayIosKey;
+  String webApplicationId = dotenv.env['ENV'] == 'dev'
+      ? Environment.bootPayDevJavaScriptKey
+      : Environment.bootPayJavaScriptKey;
+  String androidApplicationId = dotenv.env['ENV'] == 'dev'
+      ? Environment.bootPayDevAndroidKey
+      : Environment.bootPayAndroidKey;
+  String iosApplicationId = dotenv.env['ENV'] == 'dev'
+      ? Environment.bootPayDevIosKey
+      : Environment.bootPayIosKey;
 
   String get applicationId {
     return Bootpay().applicationId(
@@ -107,11 +114,14 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
   Widget build(BuildContext context) {
     final result = ref.watch(paymentProvider(gameId: widget.gameId));
     GamePaymentModel? model;
+
     if (result is ResponseModel<GamePaymentModel>) {
       model = result.data!;
     }
+
+    log('result type = ${result.runtimeType}');
     final fee = model?.payment_information.final_payment_amount;
-    type = fee != null && fee == 0
+    type = model?.isFreeGame == null || model!.isFreeGame
         ? PaymentMethodType.empty_pay
         : PaymentMethodType.kakao;
 

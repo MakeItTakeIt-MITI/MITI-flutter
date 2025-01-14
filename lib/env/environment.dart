@@ -27,4 +27,10 @@ abstract class Environment {
   static final String bootPayAndroidKey = _Environment.bootPayAndroidKey;
   @EnviedField(varName: 'BOOT_PAY_IOS_KEY', obfuscate: true)
   static final String bootPayIosKey = _Environment.bootPayIosKey;
+  @EnviedField(varName: 'BOOT_PAY_DEV_JAVA_SCRIPT_KEY', obfuscate: true)
+  static final String bootPayDevJavaScriptKey = _Environment.bootPayDevJavaScriptKey;
+  @EnviedField(varName: 'BOOT_PAY_DEV_ANDROID_KEY', obfuscate: true)
+  static final String bootPayDevAndroidKey = _Environment.bootPayDevAndroidKey;
+  @EnviedField(varName: 'BOOT_PAY_DEV_IOS_KEY', obfuscate: true)
+  static final String bootPayDevIosKey = _Environment.bootPayDevIosKey;
 }

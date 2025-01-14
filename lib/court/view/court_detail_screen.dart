@@ -105,7 +105,7 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
           slivers: [
             SliverMainAxisGroup(slivers: [
               SliverToBoxAdapter(
-                child: _CourtMapComponent(
+                child: CourtMapComponent(
                   latLng: NLatLng(
                     double.parse(model.latitude),
                     double.parse(model.longitude),
@@ -137,16 +137,16 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
   }
 }
 
-class _CourtMapComponent extends StatefulWidget {
+class CourtMapComponent extends StatefulWidget {
   final NLatLng latLng;
 
-  const _CourtMapComponent({super.key, required this.latLng});
+  const CourtMapComponent({super.key, required this.latLng});
 
   @override
-  State<_CourtMapComponent> createState() => _CourtMapComponentState();
+  State<CourtMapComponent> createState() => CourtMapComponentState();
 }
 
-class _CourtMapComponentState extends State<_CourtMapComponent> {
+class CourtMapComponentState extends State<CourtMapComponent> {
   late final NaverMapController _naverMapController;
 
   @override

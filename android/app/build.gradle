@@ -82,10 +82,10 @@ android {
         applicationId "com.miti.miti"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 34
+        minSdkVersion 24
         targetSdkVersion 34 //flutter.targetSdkVersion
-        versionCode 17
-        versionName "1.0.2"
+        versionCode 19
+        versionName "1.0.5"
         multiDexEnabled true
         manifestPlaceholders += [KAKAO_NATIVE_APP_KEY: KAKAO_NATIVE_APP_KEY]
     }

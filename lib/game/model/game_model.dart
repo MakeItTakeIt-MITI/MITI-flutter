@@ -1,3 +1,4 @@
+import 'package:bootpay/user_info.dart';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:miti/court/model/court_model.dart';
@@ -145,14 +146,17 @@ class ReviewGameModel extends GameBaseModel {
 }
 
 @JsonSerializable()
-class UserReviewModel extends IModelWithId {
+class UserReviewModel extends NullIModelWithId {
+  @JsonKey(name: 'profile_image_url')
+  final String profileImageUrl;
   final String nickname;
   final RatingModel rating;
 
   UserReviewModel({
+    required this.profileImageUrl,
     required this.nickname,
     required this.rating,
-    required super.id,
+    super.id,
   });
 
   factory UserReviewModel.fromJson(Map<String, dynamic> json) =>
@@ -200,14 +204,14 @@ class Rating {
 }
 
 @JsonSerializable()
-class ConfirmedParticipationModel extends IModelWithId {
-  final String nickname;
+class ConfirmedParticipationModel extends NullIModelWithId {
   final ParticipationStatus participation_status;
+  final UserInfoModel user;
 
   ConfirmedParticipationModel({
-    required super.id,
-    required this.nickname,
+    super.id,
     required this.participation_status,
+    required this.user,
   });
 
   factory ConfirmedParticipationModel.fromJson(Map<String, dynamic> json) =>
@@ -229,8 +233,6 @@ class ParticipationModel extends IModelWithId {
       _$ParticipationModelFromJson(json);
 }
 
-
-
 @JsonSerializable()
 class GameDetailModel extends IModelWithId {
   final UserReviewModel host;
@@ -251,7 +253,7 @@ class GameDetailModel extends IModelWithId {
   final List<ConfirmedParticipationModel> confirmed_participations;
 
   final int num_of_confirmed_participations;
-  final bool is_participated;
+  final int? user_participation_id;
   final bool is_host;
   final ParticipationModel? participation;
 
@@ -273,7 +275,7 @@ class GameDetailModel extends IModelWithId {
     required this.modified_at,
     required this.confirmed_participations,
     required this.num_of_confirmed_participations,
-    required this.is_participated,
+    required this.user_participation_id,
     required this.is_host,
     required this.participation,
   });

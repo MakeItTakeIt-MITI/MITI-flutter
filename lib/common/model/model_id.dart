@@ -7,3 +7,11 @@ abstract class IModelWithId extends Base {
     required this.id,
   });
 }
+
+abstract class NullIModelWithId extends Base {
+  final int? id;
+
+  NullIModelWithId({
+    this.id,
+  });
+}

@@ -7,9 +7,12 @@ import 'game_refund_model.dart';
 
 part 'game_payment_model.g.dart';
 
+
 @JsonSerializable()
 class GamePaymentModel extends IModelWithId {
   final CourtGameModel court;
+  @JsonKey(name: 'is_free_game')
+  final bool isFreeGame;
   final GameStatus game_status;
   final String title;
   final String startdate;
@@ -25,6 +28,7 @@ class GamePaymentModel extends IModelWithId {
   GamePaymentModel({
     required super.id,
     required this.game_status,
+    required this.isFreeGame,
     required this.title,
     required this.startdate,
     required this.starttime,
