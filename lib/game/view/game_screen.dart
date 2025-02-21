@@ -185,16 +185,16 @@ class _GameFilterComponent extends ConsumerStatefulWidget {
 }
 
 class _GameFilterComponentState extends ConsumerState<_GameFilterComponent> {
-  GameStatus? getStatus(String? value) {
+  GameStatusType? getStatus(String? value) {
     switch (value) {
       case '모집 중':
-        return GameStatus.open;
+        return GameStatusType.open;
       case '모집 완료':
-        return GameStatus.closed;
+        return GameStatusType.closed;
       case '경기 취소':
-        return GameStatus.canceled;
+        return GameStatusType.canceled;
       case '경기 완료':
-        return GameStatus.completed;
+        return GameStatusType.completed;
       default:
         return null;
     }

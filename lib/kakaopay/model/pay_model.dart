@@ -36,7 +36,7 @@ class PayFreeModel extends PayBaseModel {
   final int game;
   final int user;
 
-  final ParticipationStatus participation_status;
+  final ParticipationStatusType participation_status;
 
   PayFreeModel({
     required this.game,
@@ -73,7 +73,7 @@ class PayFreeModel extends PayBaseModel {
 class PayApprovalModel extends IModelWithId {
   final PayResultModel payment_result;
   final DateTime created_at;
-  final ParticipationStatus participation_status;
+  final ParticipationStatusType participation_status;
 
   PayApprovalModel({
     required this.created_at,

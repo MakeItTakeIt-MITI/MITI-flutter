@@ -29,7 +29,7 @@ Future<BaseModel> emailCheck(EmailCheckRef ref,
 
 @riverpod
 Future<BaseModel> signUp(SignUpRef ref,
-    {required SignUpBaseParam param, required AuthType type}) async {
+    {required SignUpBaseParam param, required SignupMethodType type}) async {
   final repository = ref.watch(authRepositoryProvider);
   return await repository
       .signUp(param: param, provider: type)

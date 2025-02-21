@@ -7,7 +7,7 @@ part 'phone_verify_param.g.dart';
 @JsonSerializable()
 class SendCodeParam {
   final String phone;
-  final PhoneAuthType purpose;
+  final PhoneAuthenticationPurposeType purpose;
 
   SendCodeParam({
     required this.phone,
@@ -20,7 +20,7 @@ class SendCodeParam {
 @JsonSerializable()
 class PhoneVerifyParam {
   final String code;
-  final PhoneAuthType purpose;
+  final PhoneAuthenticationPurposeType purpose;
   final String authentication_token;
 
   PhoneVerifyParam({

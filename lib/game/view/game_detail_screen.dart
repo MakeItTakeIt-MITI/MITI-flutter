@@ -399,7 +399,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
     log('policyValid $policyValid');
 
     switch (gameStatus) {
-      case GameStatus.open:
+      case GameStatusType.open:
         if (model.is_host) {
           button = editButton;
         } else if (model.user_participation_id != null) {
@@ -412,7 +412,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
           button = participationButton;
         }
         break;
-      case GameStatus.closed:
+      case GameStatusType.closed:
         if (model.is_host) {
           button = editButton;
         } else if (model.user_participation_id != null) {
@@ -421,10 +421,10 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
           button = null;
         }
         break;
-      case GameStatus.canceled:
+      case GameStatusType.canceled:
         button = null;
         break;
-      case GameStatus.completed:
+      case GameStatusType.completed:
         if (model.user_participation_id != null || model.is_host) {
           button = Align(
             child: Row(
@@ -754,8 +754,8 @@ class _GuestTile extends StatelessWidget {
 }
 
 class SummaryComponent extends StatelessWidget {
-  final GameStatus? gameStatus;
-  final SettlementType? bankStatus;
+  final GameStatusType? gameStatus;
+  final SettlementStatusType? bankStatus;
   final String title;
   final String gameDate;
   final String address;

@@ -112,7 +112,7 @@ class SettlementCard extends StatelessWidget {
   final String datetime;
   final String address;
   final String expected_settlement_amount;
-  final SettlementType status;
+  final SettlementStatusType status;
 
   const SettlementCard({
     super.key,
@@ -376,7 +376,7 @@ class _ParticipationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final fee = NumberUtil.format(model.fee.toString());
     final settlementType =
-        model.is_settled ? SettlementType.completed : SettlementType.waiting;
+        model.is_settled ? SettlementStatusType.completed : SettlementStatusType.waiting;
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: 21.w,

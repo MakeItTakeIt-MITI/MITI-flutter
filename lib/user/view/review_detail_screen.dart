@@ -12,20 +12,13 @@ import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/view/review_form_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
-import 'package:miti/user/model/review_model.dart';
-import 'package:miti/user/provider/user_provider.dart';
 import 'package:miti/util/util.dart';
 
-import '../../account/model/account_model.dart';
 import '../../common/component/default_appbar.dart';
-import '../../common/component/default_layout.dart';
 import '../../common/model/entity_enum.dart';
-import '../../court/model/court_model.dart';
 import '../../game/model/game_model.dart';
 import '../../game/model/game_player_model.dart';
-import '../../game/view/game_detail_screen.dart';
 import '../../review/component/skeleton/review_detail_skeleton.dart';
-import '../error/user_error.dart';
 
 class ReviewDetailScreen extends StatefulWidget {
   final String revieweeNickname;
@@ -101,7 +94,7 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                   ));
                   if (result is LoadingModel) {
                     return const ReviewDetailSkeleton(
-                      reviewType: ReviewType.guest,
+                      reviewType: ReviewType.guestReview,
                     );
                   } else if (result is ErrorModel) {
                     // final userApiType =

@@ -146,14 +146,14 @@ class _SettlementListScreenState extends ConsumerState<SettlementListScreen> {
     );
   }
 
-  SettlementType? getStatus(String? value) {
+  SettlementStatusType? getStatus(String? value) {
     switch (value) {
       case '대기중':
-        return SettlementType.waiting;
+        return SettlementStatusType.waiting;
       case '정산 완료':
-        return SettlementType.completed;
+        return SettlementStatusType.completed;
       case '부분 정산':
-        return SettlementType.partiallyCompleted;
+        return SettlementStatusType.partiallyCompleted;
       default:
         return null;
     }
@@ -201,7 +201,7 @@ class SettlementCard extends StatelessWidget {
   final String datetime;
   final String address;
   final String fee;
-  final SettlementType status;
+  final SettlementStatusType status;
 
   const SettlementCard({
     super.key,

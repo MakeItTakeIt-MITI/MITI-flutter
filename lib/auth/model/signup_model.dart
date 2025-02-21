@@ -11,7 +11,7 @@ part 'signup_model.g.dart';
 class SignUpModel extends IModelWithId {
   final String email;
   final String nickname;
-  final AuthType signup_method;
+  final SignupMethodType signup_method;
   final TokenModel token;
 
   SignUpModel({

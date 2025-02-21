@@ -160,7 +160,7 @@ class _UserDeleteScreenState extends ConsumerState<UserDeleteScreen> {
             (ref.read(userInfoProvider) as ResponseModel<UserModel>)
                 .data!
                 .signup_method;
-        if (authType == AuthType.kakao) {
+        if (authType == SignupMethodType.kakao) {
           UserApi.instance.unlink();
         }
 

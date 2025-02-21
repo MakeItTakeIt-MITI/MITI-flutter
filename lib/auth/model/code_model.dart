@@ -51,7 +51,7 @@ class ResponseCodeModel {
 @JsonSerializable()
 class UpdateTokenBaseModel {
   final String phone;
-  final PhoneAuthType purpose;
+  final PhoneAuthenticationPurposeType purpose;
 
   UpdateTokenBaseModel({
     required this.phone,

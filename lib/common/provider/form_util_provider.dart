@@ -6,8 +6,8 @@ import '../component/custom_text_form_field.dart';
 
 
 final codeDescProvider = StateProvider.family
-    .autoDispose<InteractionDesc?, PhoneAuthType>(
-        (ref, PhoneAuthType type) => null);
+    .autoDispose<InteractionDesc?, PhoneAuthenticationPurposeType>(
+        (ref, PhoneAuthenticationPurposeType type) => null);
 
 
 final formDescProvider = StateProvider.family

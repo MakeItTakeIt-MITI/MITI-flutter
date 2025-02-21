@@ -7,7 +7,7 @@ class AuthModel {
   final int? id;
   final String? email;
   final String? nickname;
-  final AuthType? signUpType;
+  final SignupMethodType? signUpType;
   final TokenModel? token;
 
   AuthModel({
@@ -22,7 +22,7 @@ class AuthModel {
     int? id,
     String? email,
     String? nickname,
-    AuthType? signUpType,
+    SignupMethodType? signUpType,
     TokenModel? token,
   }) {
     return AuthModel(
@@ -40,7 +40,7 @@ class LoginModel {
   final int id;
   final String email;
   final String nickname;
-  final AuthType signup_method;
+  final SignupMethodType signup_method;
 
   final TokenModel token;
 

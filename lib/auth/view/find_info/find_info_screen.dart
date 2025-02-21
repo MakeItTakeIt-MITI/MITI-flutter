@@ -88,10 +88,10 @@ class _FindEmailScreenState extends ConsumerState<FindInfoScreen>
         ),
         body: TabBarView(controller: tabController, children: const [
           FindInfoBody(
-            type: PhoneAuthType.find_email,
+            type: PhoneAuthenticationPurposeType.find_email,
           ),
           FindInfoBody(
-            type: PhoneAuthType.password_update,
+            type: PhoneAuthenticationPurposeType.password_update,
           ),
         ]),
       ),
@@ -100,10 +100,10 @@ class _FindEmailScreenState extends ConsumerState<FindInfoScreen>
 }
 
 final validCodeProvider =
-    StateProvider.family.autoDispose<bool, PhoneAuthType>((ref, type) => false);
+    StateProvider.family.autoDispose<bool, PhoneAuthenticationPurposeType>((ref, type) => false);
 
 class FindInfoBody extends ConsumerStatefulWidget {
-  final PhoneAuthType type;
+  final PhoneAuthenticationPurposeType type;
 
   const FindInfoBody({
     super.key,
@@ -156,7 +156,7 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
         children: [
           SizedBox(height: 80.h),
           Text(
-            widget.type == PhoneAuthType.find_email ? '이메일 찾기' : '비밀번호 재설정',
+            widget.type == PhoneAuthenticationPurposeType.find_email ? '이메일 찾기' : '비밀번호 재설정',
             style: MITITextStyle.xxl140.copyWith(color: MITIColor.white),
           ),
           SizedBox(height: 12.h),
@@ -173,7 +173,7 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
               VerifyBaseModel? model;
 
-              if (widget.type == PhoneAuthType.find_email) {
+              if (widget.type == PhoneAuthenticationPurposeType.find_email) {
                 model = ref.watch(findEmailProvider);
               } else {
                 model = ref.watch(findPasswordProvider);
@@ -181,7 +181,7 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
               return TextButton(
                 onPressed: model != null
                     ? () {
-                        if (widget.type == PhoneAuthType.find_email) {
+                        if (widget.type == PhoneAuthenticationPurposeType.find_email) {
                           model as EmailVerifyModel;
                           if (model.authType != null) {
                             final Map<String, String> queryParameters = {

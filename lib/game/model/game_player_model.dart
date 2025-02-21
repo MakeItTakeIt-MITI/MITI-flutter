@@ -45,7 +45,7 @@ class UserWrittenReviewsModel {
 @JsonSerializable()
 class GameParticipationModel extends IModelWithId {
   @JsonKey(name: 'participation_status')
-  final ParticipationStatus participationStatus;
+  final ParticipationStatusType participationStatus;
   @JsonKey(name: 'guest_rating')
   final Rating guestRating;
   final UserInfoModel user;
@@ -63,7 +63,7 @@ class GameParticipationModel extends IModelWithId {
 
 @JsonSerializable()
 class GameParticipationPlayerModel extends IModelWithId {
-  final ParticipationStatus participation_status;
+  final ParticipationStatusType participation_status;
   final PlayerModel user;
 
   GameParticipationPlayerModel({

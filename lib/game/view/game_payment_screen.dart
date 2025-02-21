@@ -131,7 +131,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
           bool validCheckBox = true;
           final result = ref.watch(agreementPolicyProvider(
-              type: AgreementRequestType.game_participation));
+              type: AgreementRequestType.gameParticipation));
           final isCheckBoxes = ref.watch(
               gameParticipationFormProvider(gameId: widget.gameId, type: type)
                   .select((s) => s.isCheckBoxes));
@@ -190,7 +190,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
                   if (result is LoadingModel) {
                     return SingleChildScrollView(
                         child: GamePaymentSkeleton(
-                      type: AgreementRequestType.game_participation,
+                      type: AgreementRequestType.gameParticipation,
                       gameId: widget.gameId,
                       payType: type,
                     ));
@@ -227,7 +227,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
                         ),
                         getDivider(),
                         PaymentCheckForm(
-                          type: AgreementRequestType.game_participation,
+                          type: AgreementRequestType.gameParticipation,
                           gameId: widget.gameId,
                           payType: type,
                         ),
@@ -408,25 +408,25 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
       } else {
         final model = (result as ResponseModel<BootPayApproveModel>).data!;
         switch (model.status) {
-          case PaymentResultStatus.approved:
+          case PaymentResultStatusType.approved:
             {
               Bootpay().transactionConfirm();
               // Bootpay().dismiss(context); //명시적으로 부트페이 뷰 종료 호출
               break;
             }
-          case PaymentResultStatus.cancel:
+          case PaymentResultStatusType.canceled:
             {
               break;
             }
-          case PaymentResultStatus.request:
+          case PaymentResultStatusType.requested:
             {
               break;
             }
-          case PaymentResultStatus.create:
+          case PaymentResultStatusType.created:
             {
               break;
             }
-          case PaymentResultStatus.fail:
+          case PaymentResultStatusType.failed:
             {
               break;
             }
@@ -502,7 +502,7 @@ class PaymentCheckFormState extends ConsumerState<PaymentCheckForm> {
 
   void onCheck(WidgetRef ref, int idx) {
     bool allChecked = false;
-    if (widget.type == AgreementRequestType.game_participation) {
+    if (widget.type == AgreementRequestType.gameParticipation) {
       allChecked = !ref
           .read(gameParticipationFormProvider(
                   gameId: widget.gameId, type: widget.payType!)
@@ -573,7 +573,7 @@ class PaymentCheckFormState extends ConsumerState<PaymentCheckForm> {
           ref.read(checkProvider(2).notifier).update((state) => !state);
           final List<bool> isCheckBoxes = List.generate(
               result.data!.length, (e) => ref.read(checkProvider(2)));
-          if (widget.type == AgreementRequestType.game_participation) {
+          if (widget.type == AgreementRequestType.gameParticipation) {
             ref
                 .read(gameParticipationFormProvider(
                         gameId: widget.gameId, type: widget.payType!)

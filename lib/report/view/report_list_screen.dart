@@ -81,7 +81,7 @@ class ReportListScreen extends StatelessWidget {
 
 class ReportCard extends StatelessWidget {
   final int id;
-  final ReportType category;
+  final ReportCategoryType category;
   final HostReportCategoryType subcategory;
   final VoidCallback onTap;
 

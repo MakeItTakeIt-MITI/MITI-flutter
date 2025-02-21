@@ -351,7 +351,7 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
             ref.watch(gameFormProvider);
             final result = ref.watch(agreementPolicyProvider(
-                type: AgreementRequestType.game_hosting));
+                type: AgreementRequestType.gameHosting));
             bool validNext = true;
 
             if (result is ResponseListModel<AgreementPolicyModel>) {
@@ -1572,7 +1572,7 @@ class AgreeTermComponent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final result = ref.watch(
-        agreementPolicyProvider(type: AgreementRequestType.game_hosting));
+        agreementPolicyProvider(type: AgreementRequestType.gameHosting));
     if (result is LoadingModel) {
       return SliverToBoxAdapter(child: CircularProgressIndicator());
     } else if (result is ErrorModel) {

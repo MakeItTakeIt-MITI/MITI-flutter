@@ -43,7 +43,7 @@ class GameListByDateModel extends Base {
 
 @JsonSerializable()
 class GameHostModel extends IModelWithId {
-  final GameStatus game_status;
+  final GameStatusType game_status;
   final String title;
   final String startdate;
   final String starttime;
@@ -74,7 +74,7 @@ class GameHostModel extends IModelWithId {
 
 @JsonSerializable()
 class GameBaseModel extends IModelWithId {
-  final GameStatus game_status;
+  final GameStatusType game_status;
   final String title;
   final String startdate;
   final String starttime;
@@ -205,7 +205,7 @@ class Rating {
 
 @JsonSerializable()
 class ConfirmedParticipationModel extends NullIModelWithId {
-  final ParticipationStatus participation_status;
+  final ParticipationStatusType participation_status;
   final UserInfoModel user;
 
   ConfirmedParticipationModel({
@@ -221,7 +221,7 @@ class ConfirmedParticipationModel extends NullIModelWithId {
 @JsonSerializable()
 class ParticipationModel extends IModelWithId {
   final UserInfoModel user;
-  final ParticipationStatus participation_status;
+  final ParticipationStatusType participation_status;
 
   ParticipationModel({
     required super.id,
@@ -238,7 +238,7 @@ class GameDetailModel extends IModelWithId {
   final UserReviewModel host;
   final CourtGameModel court;
 
-  final GameStatus game_status;
+  final GameStatusType game_status;
   final String title;
   final String startdate;
   final String starttime;

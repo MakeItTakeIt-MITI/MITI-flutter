@@ -55,7 +55,7 @@ class UserPasswordParam {
 
 @JsonSerializable()
 class UserGameParam extends DefaultParam {
-  final GameStatus? game_status;
+  final GameStatusType? game_status;
 
   UserGameParam({
     this.game_status,

@@ -5,7 +5,7 @@ part 'boot_pay_approve_model.g.dart';
 
 @JsonSerializable()
 class BootPayApproveModel {
-  final PaymentResultStatus status;
+  final PaymentResultStatusType status;
   @JsonKey(name: 'payment_method')
   final String paymentMethod;
   @JsonKey(name: 'total_amount')

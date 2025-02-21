@@ -1,4 +1,3 @@
-
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../common/model/default_model.dart';
@@ -15,7 +14,7 @@ class TransferForm extends _$TransferForm {
   @override
   BankTransferParam build() {
     final result = ref.watch(
-        agreementPolicyProvider(type: AgreementRequestType.transfer_request));
+        agreementPolicyProvider(type: AgreementRequestType.transferRequest));
     if (result is ResponseListModel<AgreementPolicyModel>) {
       // final model = result as
       final List<bool> checkBoxes =

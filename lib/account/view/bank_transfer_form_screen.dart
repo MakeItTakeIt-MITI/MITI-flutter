@@ -521,7 +521,7 @@ class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
         ref.watch(transferFormProvider.select((value) => value.checkBoxes));
 
     final checkResult = ref.watch(
-        agreementPolicyProvider(type: AgreementRequestType.transfer_request));
+        agreementPolicyProvider(type: AgreementRequestType.transferRequest));
     bool validCheckBox = true;
     if (checkResult is ResponseListModel<AgreementPolicyModel>) {
       final checkModel = checkResult.data!;
@@ -546,7 +546,7 @@ class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
           Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
               final checkResult = ref.watch(agreementPolicyProvider(
-                  type: AgreementRequestType.transfer_request));
+                  type: AgreementRequestType.transferRequest));
               if (checkResult is LoadingModel) {
                 return Container();
               } else if (checkResult is ErrorModel) {

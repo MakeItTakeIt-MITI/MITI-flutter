@@ -58,7 +58,7 @@ class MyReview extends _$MyReview {
     state = LoadingModel();
     final repository = ref.watch(userRepositoryProvider);
     final review =
-        reviewType == ReviewType.guest ? 'guest-reviews' : 'host-reviews';
+        reviewType == ReviewType.guestReview ? 'guest-reviews' : 'host-reviews';
     final id = ref.read(authProvider)!.id!;
     switch (userReviewType) {
       case UserReviewType.written:

@@ -16,18 +16,18 @@ import '../../param/phone_verify_param.dart';
 part 'find_info_provider.g.dart';
 
 final phoneNumberProvider =
-    StateProvider.family.autoDispose<String, PhoneAuthType>((ref, type) => '');
+    StateProvider.family.autoDispose<String, PhoneAuthenticationPurposeType>((ref, type) => '');
 final emailProvider = StateProvider.autoDispose<String>((ref) => '');
 
 @riverpod
 Future<BaseModel> sendCode(SendCodeRef ref,
-    {required PhoneAuthType authType}) async {
+    {required PhoneAuthenticationPurposeType authType}) async {
   final repository = ref.watch(authRepositoryProvider);
   final phone = ref.read(phoneNumberProvider(authType)).replaceAll('-', '');
   final SendCodeParam param = SendCodeParam(phone: phone, purpose: authType);
 
   switch (authType) {
-    case PhoneAuthType.find_email:
+    case PhoneAuthenticationPurposeType.find_email:
       return await repository.sendCode(param: param).then<BaseModel>((value) {
         logger.i('findEmail $param!');
         final model = value.data!;
@@ -44,7 +44,7 @@ Future<BaseModel> sendCode(SendCodeRef ref,
         return error;
       });
 
-    case PhoneAuthType.password_update:
+    case PhoneAuthenticationPurposeType.password_update:
       return await repository.sendCode(param: param).then<BaseModel>((value) {
         logger.i('findPassword $param!');
         final model = value.data!;
@@ -62,7 +62,7 @@ Future<BaseModel> sendCode(SendCodeRef ref,
       });
 
     /// todo
-    case PhoneAuthType.signup:
+    case PhoneAuthenticationPurposeType.signup:
       return await repository.sendCode(param: param).then<BaseModel>((value) {
         logger.i('findPassword $param!');
         final model = value.data!;
@@ -107,7 +107,7 @@ class FindPassword extends _$FindPassword {
 
 @riverpod
 Future<BaseModel> verifyPhone(VerifyPhoneRef ref,
-    {required PhoneAuthType type}) async {
+    {required PhoneAuthenticationPurposeType type}) async {
   final model = ref.read(phoneAuthProvider(type: type));
 
   final param = PhoneVerifyParam(
@@ -116,7 +116,7 @@ Future<BaseModel> verifyPhone(VerifyPhoneRef ref,
       authentication_token: model.authentication_token);
 
   switch (type) {
-    case PhoneAuthType.signup:
+    case PhoneAuthenticationPurposeType.signup:
       return await ref
           .watch(authRepositoryProvider)
           .verifySignPhone(param: param)
@@ -133,7 +133,7 @@ Future<BaseModel> verifyPhone(VerifyPhoneRef ref,
             'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
         return error;
       });
-    case PhoneAuthType.find_email:
+    case PhoneAuthenticationPurposeType.find_email:
       return await ref
           .watch(authRepositoryProvider)
           .verifyEmailPhone(param: param)
@@ -147,7 +147,7 @@ Future<BaseModel> verifyPhone(VerifyPhoneRef ref,
             'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
         return error;
       });
-    case PhoneAuthType.password_update:
+    case PhoneAuthenticationPurposeType.password_update:
       return await ref
           .watch(authRepositoryProvider)
           .verifyPasswordPhone(param: param)

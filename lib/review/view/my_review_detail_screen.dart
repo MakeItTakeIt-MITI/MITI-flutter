@@ -80,7 +80,7 @@ class MyReviewDetailScreen extends StatelessWidget {
                   MyReceiveReviewDetailModel;
                   final title = userReviewType == UserReviewType.receive
                       ? '리뷰 작성자'
-                      : reviewType == ReviewType.host
+                      : reviewType == ReviewType.hostReview
                           ? '호스트'
                           : '게스트';
 

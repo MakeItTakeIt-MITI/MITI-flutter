@@ -58,7 +58,7 @@ class GameParticipationScreen extends StatelessWidget {
 
 class _ParticipationPlayerCard extends StatelessWidget {
   final int id;
-  final ParticipationStatus participation_status;
+  final ParticipationStatusType participation_status;
   final PlayerModel user;
 
   const _ParticipationPlayerCard({

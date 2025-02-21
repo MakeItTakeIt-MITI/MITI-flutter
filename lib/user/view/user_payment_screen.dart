@@ -122,7 +122,7 @@ class PaymentCard extends StatelessWidget {
   final int tax_free_amount;
   final int? canceled_total_amount;
   final int? canceled_tax_free_amount;
-  final PaymentCancelType? cancelation_reason;
+  final PaymentCancelationReasonType? cancelation_reason;
   final String approved_at;
   final String? canceled_at;
 

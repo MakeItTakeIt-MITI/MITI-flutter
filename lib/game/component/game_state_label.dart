@@ -6,7 +6,7 @@ import 'package:miti/theme/text_theme.dart';
 import '../../common/model/entity_enum.dart';
 
 class GameStateLabel extends StatelessWidget {
-  final GameStatus gameStatus;
+  final GameStatusType gameStatus;
 
   const GameStateLabel({super.key, required this.gameStatus});
 
@@ -16,19 +16,19 @@ class GameStateLabel extends StatelessWidget {
     late Color textColor;
 
     switch (gameStatus) {
-      case GameStatus.open:
+      case GameStatusType.open:
         backgroundColor = const Color(0xFF9DB6D4);
         textColor = const Color(0xFF303FC5);
         break;
-      case GameStatus.closed:
+      case GameStatusType.closed:
         backgroundColor = const Color(0xFF92D2D4);
         textColor = const Color(0xFF00797B);
         break;
-      case GameStatus.completed:
+      case GameStatusType.completed:
         backgroundColor = const Color(0xFFC1C1C1);
         textColor = const Color(0xFF484848);
         break;
-      case GameStatus.canceled:
+      case GameStatusType.canceled:
         backgroundColor = const Color(0xFFE9C4D3);
         textColor = const Color(0xFFDB0059);
         break;
@@ -58,11 +58,11 @@ class ReviewLabel extends StatelessWidget {
     late Color textColor;
 
     switch (reviewType) {
-      case ReviewType.host:
+      case ReviewType.hostReview:
         backgroundColor = const Color(0xFF0087E9).withOpacity(0.3);
         textColor = const Color(0xFF0087E9);
         break;
-      case ReviewType.guest:
+      case ReviewType.guestReview:
         backgroundColor = const Color(0xFF43D000).withOpacity(0.3);
         textColor = const Color(0xFF43D000);
         break;
@@ -88,7 +88,7 @@ class ReviewLabel extends StatelessWidget {
 }
 
 class SettlementLabel extends StatelessWidget {
-  final SettlementType settlementType;
+  final SettlementStatusType settlementType;
 
   const SettlementLabel({super.key, required this.settlementType});
 
@@ -98,27 +98,27 @@ class SettlementLabel extends StatelessWidget {
 
     switch (settlementType) {
       /// 정산 완료
-      case SettlementType.completed:
+      case SettlementStatusType.completed:
         textColor = const Color(0xFF58CDFF);
         break;
 
       /// 정산 대기중
-      case SettlementType.waiting:
+      case SettlementStatusType.waiting:
         textColor = MITIColor.gray200;
         break;
 
       /// 부분 정산 완료
-      case SettlementType.partiallyCompleted:
+      case SettlementStatusType.partiallyCompleted:
         textColor = const Color(0xFFFFDC62);
         break;
 
       /// 정산 취소
-      case SettlementType.canceled:
+      case SettlementStatusType.canceled:
         textColor = const Color(0xFFEE5F8A);
         break;
 
       /// 정산 정지
-      case SettlementType.suspended:
+      case SettlementStatusType.suspended:
         textColor = const Color(0xFFEE5F8A);
         break;
     }

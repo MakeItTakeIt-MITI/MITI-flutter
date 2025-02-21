@@ -13,7 +13,7 @@ class SettlementModel extends IModelWithId {
   final int commission;
   @JsonKey(name: 'settlement_amount')
   final int settlementAmount;
-  final SettlementType status;
+  final SettlementStatusType status;
   final ReviewGameModel game;
 
   SettlementModel({
@@ -66,7 +66,7 @@ class SettlementModel extends IModelWithId {
  */
 @JsonSerializable()
 class SettlementDetailModel extends IModelWithId {
-  final SettlementType status;
+  final SettlementStatusType status;
   final int amount;
   final int commission;
   @JsonKey(name: 'settlement_amount')
@@ -112,7 +112,7 @@ class GameSettlementModel extends IModelWithId {
   final UserReviewModel host;
   final CourtDetailModel court;
 
-  final GameStatus game_status;
+  final GameStatusType game_status;
   final String title;
   final String startdate;
   final String starttime;

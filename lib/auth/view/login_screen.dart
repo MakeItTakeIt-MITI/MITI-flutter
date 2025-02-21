@@ -256,7 +256,7 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
       final param = ref.read(loginFormProvider);
       final result = await ref.read(loginProvider(
         param: param,
-        type: AuthType.email,
+        type: SignupMethodType.email,
       ).future);
       if (mounted) {
         if (result is ErrorModel) {
@@ -343,7 +343,7 @@ class KakaoLoginButton extends ConsumerWidget {
           KakaoLoginParam(access_token: token.accessToken);
 
       final result = await ref
-          .read(loginProvider(param: param, type: AuthType.kakao).future);
+          .read(loginProvider(param: param, type: SignupMethodType.kakao).future);
       if (context.mounted) {
         if (result is ErrorModel) {
           if (result.status_code == Forbidden && result.error_code == 540) {
@@ -356,7 +356,7 @@ class KakaoLoginButton extends ConsumerWidget {
           if (context.mounted) {
             AuthError.fromModel(model: result).responseError(
                 context, AuthApiType.oauth, ref,
-                object: AuthType.kakao);
+                object: SignupMethodType.kakao);
           }
           throw Exception();
         } else {
@@ -456,14 +456,14 @@ class AppleLoginButton extends ConsumerWidget {
     );
     final param = AppleLoginParam.fromModel(credential: credential);
     final result = await ref
-        .read(loginProvider(param: param, type: AuthType.apple).future);
+        .read(loginProvider(param: param, type: SignupMethodType.apple).future);
 
     if (context.mounted) {
       if (result is ErrorModel) {
         if (context.mounted) {
           AuthError.fromModel(model: result).responseError(
               context, AuthApiType.oauth, ref,
-              object: AuthType.apple);
+              object: SignupMethodType.apple);
         }
         if (result.status_code == Forbidden && result.error_code == 540) {
           final String userInfoToken = result.data['userinfo_token'];

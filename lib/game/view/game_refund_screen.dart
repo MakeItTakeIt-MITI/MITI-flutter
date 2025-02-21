@@ -166,7 +166,7 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
                 getDivider(),
                 SliverToBoxAdapter(
                   child: PaymentCheckForm(
-                    type: AgreementRequestType.participation_refund,
+                    type: AgreementRequestType.participationRefund,
                     gameId: widget.gameId,
                   ),
                 ),

@@ -112,7 +112,7 @@ class EmailSignUpButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        const extra = AuthType.email;
+        const extra = SignupMethodType.email;
         context.goNamed(SignUpScreen.routeName, extra: extra);
       },
       child: Container(

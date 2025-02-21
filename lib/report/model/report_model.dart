@@ -6,7 +6,7 @@ part 'report_model.g.dart';
 
 @JsonSerializable()
 class ReportModel extends IModelWithId {
-  final ReportType category;
+  final ReportCategoryType category;
   final HostReportCategoryType subcategory;
 
   ReportModel({

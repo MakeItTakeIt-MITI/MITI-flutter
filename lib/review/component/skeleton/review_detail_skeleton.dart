@@ -50,7 +50,7 @@ class UserInfoSkeleton extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            reviewType == ReviewType.guest ? '리뷰 작성자' : '호스트',
+            reviewType == ReviewType.guestReview ? '리뷰 작성자' : '호스트',
             style: MITITextStyle.mdBold.copyWith(color: MITIColor.gray100),
           ),
           SizedBox(height: 20.h),

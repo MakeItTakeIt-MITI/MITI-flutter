@@ -38,7 +38,7 @@ import '../../provider/auth_provider.dart';
 import 'package:collection/collection.dart';
 
 class SignUpScreen extends ConsumerWidget {
-  final AuthType type;
+  final SignupMethodType type;
 
   static String get routeName => 'signUp';
 
@@ -113,12 +113,12 @@ class SignUpScreen extends ConsumerWidget {
     if (ref.watch(progressProvider).progress == 1) {
       return const NicknameForm();
     } else if (ref.watch(progressProvider).progress == 2) {
-      if (type == AuthType.email) {
+      if (type == SignupMethodType.email) {
         return const EmailForm();
       }
       return PersonalInfoForm(type: type);
     } else if (ref.watch(progressProvider).progress == 3) {
-      if (type == AuthType.email) {
+      if (type == SignupMethodType.email) {
         return const PasswordForm();
       }
       return Column(
@@ -136,7 +136,7 @@ class SignUpScreen extends ConsumerWidget {
 }
 
 class _ProgressComponent extends ConsumerWidget {
-  final AuthType type;
+  final SignupMethodType type;
 
   const _ProgressComponent({super.key, required this.type});
 
@@ -201,7 +201,7 @@ class _ProgressComponent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final length = AuthType.email == type ? 5 : 3;
+    final length = SignupMethodType.email == type ? 5 : 3;
     final currentIdx = ref.watch(progressProvider).progress;
     return Row(
       children: [
@@ -743,7 +743,7 @@ class _EmailFormState extends ConsumerState<EmailForm> {
 }
 
 class DescComponent extends ConsumerWidget {
-  final AuthType type;
+  final SignupMethodType type;
 
   const DescComponent({
     super.key,
@@ -758,7 +758,7 @@ class DescComponent extends ConsumerWidget {
       title = '닉네임을 입력해주세요.';
       desc = '닉네임은  MITI 프로필에서 표시되는 이름이에요.\n개인정보 보호를 위해 되도록 실명은 삼가해주세요.';
     } else if (ref.watch(progressProvider).progress == 2) {
-      if (type == AuthType.email) {
+      if (type == SignupMethodType.email) {
         title = '이메일을 입력해주세요.';
         desc = '이메일은 사용자의 아이디로 사용됩니다.\n입력하신 이메일로 MITI의 공지사항이 전달돼요.';
       } else {
@@ -766,7 +766,7 @@ class DescComponent extends ConsumerWidget {
         desc = '입력하신 정보는 안전하게 보관되며 공개되지 않아요.';
       }
     } else if (ref.watch(progressProvider).progress == 3) {
-      if (type == AuthType.email) {
+      if (type == SignupMethodType.email) {
         title = '비밀번호를 입력해주세요.';
       } else {
         title = 'MITI 회원 이용약관';
@@ -867,7 +867,7 @@ class _NicknameFormState extends ConsumerState<NicknameForm> {
 }
 
 class PersonalInfoForm extends ConsumerStatefulWidget {
-  final AuthType type;
+  final SignupMethodType type;
 
   const PersonalInfoForm({
     super.key,
@@ -939,9 +939,9 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
           type: widget.type,
         ),
         SizedBox(height: 40.h),
-        if (widget.type != AuthType.kakao)
+        if (widget.type != SignupMethodType.kakao)
           const PhoneForm(
-            type: PhoneAuthType.signup,
+            type: PhoneAuthenticationPurposeType.signup,
             hasLabel: true,
           ),
       ],
@@ -950,7 +950,7 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
 }
 
 class _BirthForm extends ConsumerStatefulWidget {
-  final AuthType type;
+  final SignupMethodType type;
 
   const _BirthForm({
     super.key,
@@ -1150,7 +1150,7 @@ class _TextFormFormatter extends TextInputFormatter {
 }
 
 class _NextButton extends ConsumerStatefulWidget {
-  final AuthType type;
+  final SignupMethodType type;
 
   const _NextButton({
     super.key,
@@ -1194,7 +1194,7 @@ class _NextButtonState extends ConsumerState<_NextButton> {
     final validNext = progressModel.validNext;
 
     String buttonText = '';
-    if (progress == 5 || (progress == 3 && AuthType.email != widget.type)) {
+    if (progress == 5 || (progress == 3 && SignupMethodType.email != widget.type)) {
       buttonText = '가입하기';
     } else {
       buttonText = '다음으로';
@@ -1208,7 +1208,7 @@ class _NextButtonState extends ConsumerState<_NextButton> {
             onPressed: () async {
               if (validNext) {
                 if ((progress == 5 ||
-                    (progress == 3 && AuthType.email != widget.type))) {
+                    (progress == 3 && SignupMethodType.email != widget.type))) {
                   _throttler.setValue(throttleCnt + 1);
                 } else {
                   ref.read(progressProvider.notifier).nextProgress();
@@ -1230,7 +1230,7 @@ class _NextButtonState extends ConsumerState<_NextButton> {
 
   Future<void> _signUp(BuildContext context) async {
     ref.read(progressProvider.notifier).updateValidNext(validNext: false);
-    if (AuthType.email != widget.type) {
+    if (SignupMethodType.email != widget.type) {
       final storage = ref.read(secureStorageProvider);
       final userInfoToken = await storage.read(key: "userInfoToken");
       ref
@@ -1242,13 +1242,13 @@ class _NextButtonState extends ConsumerState<_NextButton> {
     final model = ref.read(signUpFormProvider);
     late SignUpBaseParam param;
     switch (widget.type) {
-      case AuthType.email:
+      case SignupMethodType.email:
         param = SignUpEmailParam.fromForm(model: model);
         break;
-      case AuthType.apple:
+      case SignupMethodType.apple:
         param = SignUpAppleParam.fromForm(model: model);
         break;
-      case AuthType.kakao:
+      case SignupMethodType.kakao:
         param = SignUpKakaoParam.fromForm(model: model);
         break;
     }

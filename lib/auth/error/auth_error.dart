@@ -74,10 +74,10 @@ class AuthError extends ErrorBase {
         _signup(context, ref);
         break;
       case AuthApiType.oauth:
-        _oauth(context, ref, object as AuthType);
+        _oauth(context, ref, object as SignupMethodType);
         break;
       case AuthApiType.send_code:
-        _sendCode(context, ref, object as PhoneAuthType);
+        _sendCode(context, ref, object as PhoneAuthenticationPurposeType);
         break;
       case AuthApiType.request_code:
         _requestCode(context, ref);
@@ -287,7 +287,7 @@ class AuthError extends ErrorBase {
   }
 
   /// Oauth 엑세스토큰 로그인 API
-  void _oauth(BuildContext context, WidgetRef ref, AuthType type) {
+  void _oauth(BuildContext context, WidgetRef ref, SignupMethodType type) {
     if (this.status_code == BadRequest && this.error_code == 101) {
       /// 로그인 데이터 유효성 검증 실패
       showDialog(
@@ -306,7 +306,7 @@ class AuthError extends ErrorBase {
     context.goNamed(SignUpScreen.routeName, extra: extra);
     } else if (this.status_code == Forbidden && this.error_code == 140) {
       /// 로그인 불가 사용자
-      String oauthProvider = type == AuthType.kakao ? '애플' : '카카오';
+      String oauthProvider = type == SignupMethodType.kakao ? '애플' : '카카오';
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -447,7 +447,7 @@ class AuthError extends ErrorBase {
   }
 
   /// 인증 코드 입력 API - 회원가입, 이메일, 비밀번호
-  void _sendCode(BuildContext context, WidgetRef ref, PhoneAuthType type) {
+  void _sendCode(BuildContext context, WidgetRef ref, PhoneAuthenticationPurposeType type) {
     if (status_code == BadRequest && error_code == 101) {
       /// 요청 데이터 유효성 오류
       showDialog(
@@ -526,25 +526,25 @@ class AuthError extends ErrorBase {
           });
     } else if (status_code == BadRequest && error_code == 440) {
       /// 이메일, 비밀번호 찾기 apple 가입자
-      if (type == PhoneAuthType.find_email) {
+      if (type == PhoneAuthenticationPurposeType.find_email) {
         ref
             .read(findEmailProvider.notifier)
-            .update(EmailVerifyModel(authType: AuthType.apple));
+            .update(EmailVerifyModel(authType: SignupMethodType.apple));
       } else {
         ref
             .read(findPasswordProvider.notifier)
-            .update(PasswordVerifyModel(authType: AuthType.apple));
+            .update(PasswordVerifyModel(authType: SignupMethodType.apple));
       }
     } else if (status_code == BadRequest && error_code == 441) {
       /// 이메일, 비밀번호 찾기 kakao 가입자
-      if (type == PhoneAuthType.find_email) {
+      if (type == PhoneAuthenticationPurposeType.find_email) {
         ref
             .read(findEmailProvider.notifier)
-            .update(EmailVerifyModel(authType: AuthType.kakao));
+            .update(EmailVerifyModel(authType: SignupMethodType.kakao));
       } else {
         ref
             .read(findPasswordProvider.notifier)
-            .update(PasswordVerifyModel(authType: AuthType.kakao));
+            .update(PasswordVerifyModel(authType: SignupMethodType.kakao));
       }
     } else if (status_code == BadRequest && error_code == 480) {
       /// 이메일, 비밀번호 찾기 인증 코드 불일치
@@ -579,7 +579,7 @@ class AuthError extends ErrorBase {
           );
     } else if (status_code == NotFound && error_code == 440) {
       /// 일치 사용자 없음
-      if (type == PhoneAuthType.find_email) {
+      if (type == PhoneAuthenticationPurposeType.find_email) {
         ref.read(findEmailProvider.notifier).update(EmailVerifyModel());
       } else {
         ref.read(findPasswordProvider.notifier).update(PasswordVerifyModel());

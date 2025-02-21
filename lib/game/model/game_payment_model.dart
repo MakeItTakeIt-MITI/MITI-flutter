@@ -13,7 +13,7 @@ class GamePaymentModel extends IModelWithId {
   final CourtGameModel court;
   @JsonKey(name: 'is_free_game')
   final bool isFreeGame;
-  final GameStatus game_status;
+  final GameStatusType game_status;
   final String title;
   final String startdate;
   final String starttime;

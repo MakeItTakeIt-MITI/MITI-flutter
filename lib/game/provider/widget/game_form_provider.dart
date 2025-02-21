@@ -32,8 +32,8 @@ final interactionDescProvider = StateProvider.autoDispose
 class GameForm extends _$GameForm {
   @override
   GameCreateParam build() {
-    final result = ref.watch(
-        agreementPolicyProvider(type: AgreementRequestType.game_hosting));
+    final result = ref
+        .watch(agreementPolicyProvider(type: AgreementRequestType.gameHosting));
     if (result is ResponseListModel<AgreementPolicyModel>) {
       final List<bool> checkBoxes =
           List.generate(result.data!.length + 1, (e) => false);
@@ -298,7 +298,7 @@ class GameParticipationForm extends _$GameParticipationForm {
   GameParticipationParam build(
       {required int gameId, required PaymentMethodType type}) {
     final result = ref.watch(
-        agreementPolicyProvider(type: AgreementRequestType.game_participation));
+        agreementPolicyProvider(type: AgreementRequestType.gameParticipation));
     if (result is ResponseListModel<AgreementPolicyModel>) {
       final List<bool> checkBoxes =
           List.generate(result.data!.length, (e) => false);
@@ -334,7 +334,7 @@ class GameRefundForm extends _$GameRefundForm {
   @override
   GameRefundParam build() {
     final result = ref.watch(agreementPolicyProvider(
-        type: AgreementRequestType.participation_refund));
+        type: AgreementRequestType.participationRefund));
     if (result is ResponseListModel<AgreementPolicyModel>) {
       final List<bool> checkBoxes =
           List.generate(result.data!.length, (e) => false);

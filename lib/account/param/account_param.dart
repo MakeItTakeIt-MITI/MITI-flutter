@@ -7,7 +7,7 @@ part 'account_param.g.dart';
 
 @JsonSerializable()
 class SettlementPaginationParam extends DefaultParam {
-  final SettlementType? status;
+  final SettlementStatusType? status;
 
   SettlementPaginationParam({
     this.status,

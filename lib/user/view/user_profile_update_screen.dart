@@ -106,9 +106,9 @@ class _UserInfoComponent extends ConsumerWidget {
     if (model.phone != null) {
       phone = formatPhoneNumber(model.phone!);
     }
-    String loginType = model.signup_method == AuthType.email
+    String loginType = model.signup_method == SignupMethodType.email
         ? 'Email'
-        : model.signup_method == AuthType.apple
+        : model.signup_method == SignupMethodType.apple
             ? 'Apple ID'
             : 'Kakao ID';
 
@@ -175,7 +175,7 @@ class _PasswordResetting extends ConsumerWidget {
     final result = ref.watch(userInfoProvider);
     final model = (result as ResponseModel<UserModel>).data!;
 
-    if (model.signup_method != AuthType.email) {
+    if (model.signup_method != SignupMethodType.email) {
       return Container();
     }
     return Column(

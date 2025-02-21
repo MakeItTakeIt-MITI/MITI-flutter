@@ -258,8 +258,8 @@ class SignUpForm extends _$SignUpForm {
     // state = state.copyWith(showDetail: newShowDetail);
   }
 
-  bool validPersonalInfo(AuthType type) {
-    if (type != AuthType.kakao) {
+  bool validPersonalInfo(SignupMethodType type) {
+    if (type != SignupMethodType.kakao) {
       return validName() && validBirth() && validPhoneNumber();
     }
     return validName() && validBirth();

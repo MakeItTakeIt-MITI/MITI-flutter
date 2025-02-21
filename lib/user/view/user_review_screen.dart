@@ -22,6 +22,7 @@ import '../component/review_card.dart';
 import '../model/review_model.dart';
 import '../param/user_profile_param.dart';
 
+
 class UserWrittenReviewScreen extends ConsumerStatefulWidget {
   final UserReviewType type;
   final int bottomIdx;
@@ -58,9 +59,9 @@ class _UserWrittenReviewScreenState
   ReviewType? getReviewType(String? value) {
     switch (value) {
       case '호스트리뷰':
-        return ReviewType.host;
+        return ReviewType.hostReview;
       case '게스트리뷰':
-        return ReviewType.guest;
+        return ReviewType.guestReview;
       default:
         return null;
     }

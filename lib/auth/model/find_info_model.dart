@@ -19,9 +19,9 @@ class FindInfoModel {
 @JsonSerializable()
 class VerifyBaseModel {
   final String? phone;
-  final PhoneAuthType? purpose;
+  final PhoneAuthenticationPurposeType? purpose;
   @JsonKey(includeFromJson: false)
-  final AuthType? authType;
+  final SignupMethodType? authType;
 
   VerifyBaseModel({
     required this.phone,

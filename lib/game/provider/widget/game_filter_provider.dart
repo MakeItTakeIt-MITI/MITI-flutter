@@ -20,7 +20,7 @@ class GameFilter extends _$GameFilter {
   void update({
     String? startdate,
     String? starttime,
-    List<GameStatus>? gameStatus,
+    List<GameStatusType>? gameStatus,
   }) {
     state = state.copyWith(
       startdate: startdate ?? state.startdate,
@@ -39,7 +39,7 @@ class GameFilter extends _$GameFilter {
     return GameListParam(
         startdate: startDate,
         starttime: '$hour:$min',
-        gameStatus: GameStatus.values.toList());
+        gameStatus: GameStatusType.values.toList());
   }
 
   void rollback(GameListParam filter){
@@ -50,20 +50,20 @@ class GameFilter extends _$GameFilter {
     state = _init();
   }
 
-  void deleteStatus(GameStatus status) {
+  void deleteStatus(GameStatusType status) {
     state.gameStatus.removeWhere((s) => s.value == status.value);
     final gameStatus = state.gameStatus.toList();
     state = state.copyWith(gameStatus: gameStatus);
   }
 
-  void addStatus(GameStatus status) {
+  void addStatus(GameStatusType status) {
     state.gameStatus.add(status);
     final gameStatus = state.gameStatus.toList();
 
     state = state.copyWith(gameStatus: gameStatus);
   }
 
-  void initStatus(GameStatus status) {
+  void initStatus(GameStatusType status) {
     state = state.copyWith(gameStatus: [status]);
   }
 

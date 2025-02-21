@@ -135,7 +135,7 @@ class _GameReviewListScreenState extends State<GameReviewListScreen> {
 
 class _PlayerComponent extends StatelessWidget {
   final String nickname;
-  final ParticipationStatus? participation_status;
+  final ParticipationStatusType? participation_status;
   final int gameId;
   final int? participationId;
   final Rating rating;

@@ -75,7 +75,7 @@ abstract class AuthRepository {
   // @Header("")
   @POST('/auth/login/{provider}')
   Future<ResponseModel<LoginModel>> login({
-    @Path() required AuthType provider,
+    @Path() required SignupMethodType provider,
     @Body() required LoginBaseParam param,
     @Header("fcm-token") required String fcmToken,
   });
@@ -89,7 +89,7 @@ abstract class AuthRepository {
 
   @POST('/auth/signup/{provider}')
   Future<ResponseModel<SignUpModel>> signUp({
-    @Path() required AuthType provider,
+    @Path() required SignupMethodType provider,
     @Body() required SignUpBaseParam param,
   });
 

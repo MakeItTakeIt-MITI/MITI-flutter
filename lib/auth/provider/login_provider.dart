@@ -48,7 +48,7 @@ class LoginForm extends _$LoginForm {
 
 @riverpod
 Future<BaseModel> login(LoginRef ref,
-    {required LoginBaseParam param, required AuthType type}) async {
+    {required LoginBaseParam param, required SignupMethodType type}) async {
   final fcmToken = ref.read(fcmTokenProvider)!;
   print("login fcm_token ${fcmToken}");
   print(type);

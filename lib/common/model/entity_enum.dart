@@ -3,40 +3,44 @@ import 'dart:developer';
 import 'package:json_annotation/json_annotation.dart';
 
 @JsonEnum(valueField: 'value')
-enum GameStatus {
+enum GameStatusType {
   @JsonValue('open')
-  open('모집 중', 'open'),
+  open('모집중', 'open'),
   @JsonValue('closed')
-  closed('모집 완료', 'closed'),
-  completed('경기 완료', 'completed'),
+  closed('모집완료(마감)', 'closed'),
   @JsonValue('canceled')
-  canceled('경기 취소', 'canceled');
-  // @JsonValue('completed')
+  canceled('경기취소', 'canceled'),
+  @JsonValue('completed')
+  completed('경기완료', 'completed');
 
-  const GameStatus(this.displayName, this.value);
+  const GameStatusType(this.displayName, this.value);
 
   final String displayName;
   final String value;
 
-  static GameStatus stringToEnum({required String value}) {
-    return GameStatus.values.firstWhere((e) => e.displayName == value);
+  static GameStatusType stringToEnum({required String value}) {
+    return GameStatusType.values.firstWhere((e) => e.displayName == value);
   }
 }
 
-enum ParticipationStatus {
+enum ParticipationStatusType {
   /// 경기 참여 요청 생성 상태
   @JsonValue('requested')
-  requested('참여요청'),
+  requested('참여 요청 완료'),
 
   /// 경기 참여 확정 상태
   @JsonValue('confirmed')
-  confirmed('참여확정'),
+  confirmed('참여 승인 완료'),
+
+  // 참가자 변심으로 인한 참여 취소
+  @JsonValue('withdrawn')
+  withdrawn('참가자 변심으로 인한 참여 취소'),
 
   /// 경기 참여 취소 상태
   @JsonValue('canceled')
-  canceled('참여취소');
+  canceled('경기 취소로 인한 참여 취소');
 
-  const ParticipationStatus(this.name);
+  const ParticipationStatusType(this.name);
 
   final String name;
 }
@@ -52,19 +56,19 @@ enum PaymentRequestStatus {
   final String name;
 }
 
-enum PaymentResultStatus {
-  @JsonValue('create')
-  create('생성'),
-  @JsonValue('request')
-  request('요청'),
+enum PaymentResultStatusType {
+  @JsonValue('created')
+  created('요청 생성'),
+  @JsonValue('requested')
+  requested('PG 결제 요청 완료'),
   @JsonValue('approved')
-  approved('승인'),
-  @JsonValue('cancel')
-  cancel('취소'),
-  @JsonValue('fail')
-  fail('실패');
+  approved('PG 결제 승인 완료'),
+  @JsonValue('failed')
+  failed('PG 결제 실패'),
+  @JsonValue('canceled')
+  canceled('PG 결제 취소');
 
-  const PaymentResultStatus(this.name);
+  const PaymentResultStatusType(this.name);
 
   final String name;
 }
@@ -72,11 +76,9 @@ enum PaymentResultStatus {
 @JsonEnum(valueField: 'value')
 enum ReviewType {
   @JsonValue('host_review')
-  host('호스트리뷰', 'host_review'),
+  hostReview('호스트 리뷰', 'host_review'),
   @JsonValue('guest_review')
-  guest('게스트리뷰', 'guest_review');
-  // @JsonValue('all')
-  // all('전체보기', 'all');
+  guestReview('게스트 리뷰', 'guest_review');
 
   const ReviewType(this.displayName, this.value);
 
@@ -88,9 +90,8 @@ enum ReviewType {
   }
 }
 
-// @JsonEnum(valueField: 'value')
 enum ItemType {
-  pickup_game('경기 참가비');
+  pickup_game('픽업게임');
 
   const ItemType(this.value);
 
@@ -98,18 +99,27 @@ enum ItemType {
 }
 
 enum SettlementType {
-  @JsonValue('waiting')
-  waiting('정산 대기중'),
-  @JsonValue('partially_completed')
-  partiallyCompleted('부분 정산 완료'),
-  @JsonValue('completed')
-  completed('정산 완료'),
-  @JsonValue('suspended')
-  suspended('정산 정지'),
-  @JsonValue('canceled')
-  canceled('정산 취소');
+  @JsonValue('hosting')
+  hosting('경기 운영 정산금');
 
   const SettlementType(this.name);
+
+  final String name;
+}
+
+enum SettlementStatusType {
+  @JsonValue('waiting')
+  waiting('대기중'),
+  @JsonValue('partially_completed')
+  partiallyCompleted('부분 정산'),
+  @JsonValue('completed')
+  completed('정산완료'),
+  @JsonValue('suspended')
+  suspended('정산정지'),
+  @JsonValue('canceled')
+  canceled('정산취소');
+
+  const SettlementStatusType(this.name);
 
   final String name;
 }
@@ -129,9 +139,9 @@ enum TransferType {
 
 enum AccountStatus {
   @JsonValue('active')
-  active('정상 상태'),
+  active('활성화'),
   @JsonValue('disabled')
-  disabled('정지 상태');
+  disabled('비활성화');
 
   const AccountStatus(this.name);
 
@@ -140,7 +150,7 @@ enum AccountStatus {
 
 enum AccountType {
   @JsonValue('personal')
-  personal('개인');
+  personal('개인 잔고');
 
   const AccountType(this.name);
 
@@ -228,13 +238,13 @@ enum PlayerReviewTagType {
   final String name;
 }
 
-enum AuthType {
+enum SignupMethodType {
   email,
   kakao,
   apple;
 
-  static AuthType stringToEnum({required String value}) {
-    return AuthType.values.firstWhere((e) => e.name == value);
+  static SignupMethodType stringToEnum({required String value}) {
+    return SignupMethodType.values.firstWhere((e) => e.name == value);
   }
 }
 
@@ -244,13 +254,14 @@ enum ErrorScreenType {
   server;
 }
 
-enum PhoneAuthType {
+enum PhoneAuthenticationPurposeType {
   signup,
   find_email,
   password_update;
 
-  static PhoneAuthType stringToEnum({required String value}) {
-    return PhoneAuthType.values.firstWhere((e) => e.name == value);
+  static PhoneAuthenticationPurposeType stringToEnum({required String value}) {
+    return PhoneAuthenticationPurposeType.values
+        .firstWhere((e) => e.name == value);
   }
 }
 
@@ -280,10 +291,10 @@ enum InputFormType {
 enum PasswordFormType { password, passwordCheck, newPassword, newPasswordCheck }
 
 enum PaymentMethodType {
-  empty_pay('무료결제'),
+  empty_pay('0원 결제 전용 결제수단'),
+  card('카드'),
   kakao('카카오페이'),
-  npay('네이버페이'),
-  card('카드 결제');
+  npay('네이버 페이');
 
   final String displayName;
 
@@ -291,56 +302,58 @@ enum PaymentMethodType {
 }
 
 enum BankType {
-  @JsonValue("KOOKMIN")
-  KOOKMIN("KB국민"),
-  @JsonValue("NONGHYEOP")
-  NONGHYEOP("NH농협"),
-  @JsonValue("SHINHAN")
-  SHINHAN("신한"),
-  @JsonValue("WOORI")
-  WOORI("우리"),
-  @JsonValue("DAEGUBANK")
-  DAEGUBANK("대구"),
-  @JsonValue("IBK")
-  IBK("IBK기업"),
-  @JsonValue("HANA")
-  HANA("하나"),
-  @JsonValue("KYONGNAMBANK")
-  KYONGNAMBANK("경남"),
-  @JsonValue("BUSANBANK")
-  BUSANBANK("부산"),
-  @JsonValue("TOSSBANK")
-  TOSSBANK("토스뱅크"),
-  @JsonValue("GWANGJUBANK")
-  GWANGJUBANK("광주"),
-  @JsonValue("SC")
-  SC("SC제일"),
-  @JsonValue("JEONBUKBANK")
-  JEONBUKBANK("전북"),
-  @JsonValue("KAKAOBANK")
-  KAKAOBANK("카카오뱅크"),
-  @JsonValue("KDBBANK")
-  KDBBANK("KDB산업"),
-  @JsonValue("POST")
-  POST("우체국"),
-  @JsonValue("SAEMAUL")
-  SAEMAUL("새마을"),
-  @JsonValue("SHINHYEOP")
-  SHINHYEOP("신협"),
-  @JsonValue("CITI")
-  CITI("씨티"),
-  @JsonValue("KBANK")
-  KBANK("케이뱅크"),
-  @JsonValue("SUHYEOP")
-  SUHYEOP("수협"),
-  @JsonValue("SANLIM")
-  SANLIM("산림조합"),
-  @JsonValue("NH_INVESTMENT_AND_SECURITIES")
-  NH_INVESTMENT_AND_SECURITIES("NH투자증권"),
-  @JsonValue("KOREA_INVESTMENT_AND_SECURITIES")
-  KOREA_INVESTMENT_AND_SECURITIES("한국투자증권"),
-  @JsonValue("KB_SECURITIES")
-  KB_SECURITIES("KB증권");
+  @JsonValue('KOOKMIN')
+  KOOKMIN('KB국민'),
+  @JsonValue('SHINHAN')
+  SHINHAN('신한'),
+  @JsonValue('WOORI')
+  WOORI('우리'),
+  @JsonValue('SHINHYEOP')
+  SHINHYEOP('신협'),
+  @JsonValue('IBK')
+  IBK('IBK기업'),
+  @JsonValue('SAEMAUL')
+  SAEMAUL('새마을금고'),
+  @JsonValue('NONGHYEOP')
+  NONGHYEOP('NH농협'),
+  @JsonValue('SC')
+  SC('SC제일'),
+  @JsonValue('KYONGNAMBANK')
+  KYONGNAMBANK('경남'),
+  @JsonValue('DAEGUBANK')
+  DAEGUBANK('대구'),
+  @JsonValue('GWANGJUBANK')
+  GWANGJUBANK('광주'),
+  @JsonValue('BUSANBANK')
+  BUSANBANK('부산'),
+  @JsonValue('CITI')
+  CITI('씨티'),
+  @JsonValue('SUHYEOP')
+  SUHYEOP('수협'),
+  @JsonValue('KDBBANK')
+  KDBBANK('KDB산업'),
+  @JsonValue('JEONBUKBANK')
+  JEONBUKBANK('전북'),
+  @JsonValue('JEJUBANK')
+  JEJUBANK('제주'),
+  @JsonValue('POST')
+  POST('우체국'),
+  @JsonValue('HANA')
+  HANA('하나'),
+  @JsonValue('KBANK')
+  KBANK('케이뱅크'),
+  @JsonValue('TOSSBANK')
+  TOSSBANK('토스뱅크'),
+  @JsonValue('KAKAOBANK')
+  KAKAOBANK('카카오뱅크'),
+  @JsonValue('SANLIM')
+  SANLIM('산림조합'),
+  @JsonValue('KOREA_INVESTMENT_AND_SECURITIES')
+  KOREA_INVESTMENT_AND_SECURITIES('한국투자증권'),
+  @JsonValue('KB_SECURITIES')
+  KB_SECURITIES('KB증권'),
+  @JsonValue('NH_INVESTMENT_AND_SECURITIES')
+  NH_INVESTMENT_AND_SECURITIES('NH투자증권');
 
   static BankType stringToEnum({required String value}) {
     return BankType.values.firstWhere((e) {
@@ -354,16 +367,30 @@ enum BankType {
 }
 
 enum PushNotificationTopicType {
+  @JsonValue('general')
   general('일반 알림', true),
-  game_status_changed('경기 상태 변경', true),
+  @JsonValue('game_status_changed')
+  game_status_changed('경기 상태 변경 알림', true),
+  @JsonValue('new_participation')
   new_participation('새로운 참가 알림', true),
-  game_fee_changed('경기 참가비 변경', true),
-  host_report_reportee('호스트 신고 알림 to 호스트', false),
+  @JsonValue('game_fee_changed')
+  game_fee_changed('경기 참가비 변경 알림', true),
+  @JsonValue('host_report_reportee')
+  host_report_reportee('호스트 신고 알림 to 피신고 사용자', false),
+  @JsonValue('host_report_reporter')
   host_report_reporter('호스트 신고 알림 to 신고 사용자', false),
-  host_report_dismissed('호스트 신고 기각 알림', false),
-  host_report_dismissed_reportee('호스트 신고 기각 알림 to 호스트', false),
-  host_report_dismissed_reporter('호스트 신고 기각 알림 to 신고 사용자', false),
-  host_user_penalized('호스트 사용자 부정 사용 인정 처리 알림', false);
+  @JsonValue('host_report_dismissed')
+  host_report_dismissed('호스트 신고 기각', false),
+  @JsonValue('host_user_penalized')
+  host_user_penalized('호스트 신고 인정', false),
+  @JsonValue('guest_report_reportee')
+  guest_report_reportee('게스트 신고 알림 to 피신고 사용자', false),
+  @JsonValue('guest_report_reporter')
+  guest_report_reporter('게스트 신고 알림 to 신고 사용자', false),
+  @JsonValue('guest_report_dismissed')
+  guest_report_dismissed('게스트 신고 기각', false),
+  @JsonValue('guest_user_penalized')
+  guest_user_penalized('게스트 신고 인정', false);
 
   const PushNotificationTopicType(this.displayName, this.canSetting);
 
@@ -375,11 +402,15 @@ enum PushNotificationTopicType {
   final bool canSetting;
 }
 
-enum ReportType {
-  game_hosting_report('경기 주최자 부정 사용 신고'),
+enum ReportCategoryType {
+  @JsonValue('host_report')
+  hostReport('호스트 신고'),
+  @JsonValue('guest_report')
+  guestReport('게스트 신고'),
+  @JsonValue('etc')
   etc('기타 신고');
 
-  const ReportType(
+  const ReportCategoryType(
     this.displayName,
   );
 
@@ -413,15 +444,17 @@ enum FAQType {
   final String displayName;
 }
 
-enum PaymentCancelType {
-  simple_cancelation('참여 취소'),
+enum PaymentCancelationReasonType {
+  @JsonValue('simple_cancelation')
+  simple_cancelation('단순 결제 취소'),
+  @JsonValue('game_cancelation')
   game_cancelation('경기 취소'),
+  @JsonValue('converted_to_free_game')
   converted_to_free_game('무료 경기 전환'),
-  failed_to_participate_game('참가 실패'),
-  payment_incomplement('결제 실패'),
+  @JsonValue('report_result')
   report_result('신고 처리 결과');
 
-  const PaymentCancelType(
+  const PaymentCancelationReasonType(
     this.displayName,
   );
 
@@ -443,10 +476,14 @@ enum PaymentResultType {
 }
 
 enum ReportStatusType {
+  @JsonValue('waiting')
   waiting('대기중'),
-  evidence_requested('관련 자료 요청 상태'),
-  dismissed('기각'),
-  given_penalty('처분');
+  @JsonValue('evidence_requested')
+  evidenceRequested('자료 요청'),
+  @JsonValue('investigation_in_progress')
+  investigationInProgress('조사진행중'),
+  @JsonValue('concluded')
+  concluded('처리완료');
 
   const ReportStatusType(
     this.displayName,
@@ -471,22 +508,22 @@ enum UserGuideType {
   final String displayName;
 }
 
-enum PanaltyType {
-  suspension('서비스 이용 정지'),
-  warning('이용 경고');
+enum PenaltyType {
+  suspension('이용 정지'),
+  warning('서비스 경고');
 
-  const PanaltyType(
+  const PenaltyType(
     this.displayName,
   );
 
   final String displayName;
 }
 
-enum ReportInvesticationResultType {
+enum ReportInvestigationResultType {
   dismissed('신고 기각'),
-  penalized('신고 인정 및 해당 사용자 제재');
+  penalized('신고 인정');
 
-  const ReportInvesticationResultType(
+  const ReportInvestigationResultType(
     this.displayName,
   );
 
@@ -495,8 +532,10 @@ enum ReportInvesticationResultType {
 
 enum PolicyType {
   policy('방침'),
-  terms_and_conditions('약관'),
-  user_policy('이용정책');
+  @JsonValue('terms_and_conditions')
+  termsAndConditions('약관'),
+  @JsonValue('user_policy')
+  userPolicy('이용정책');
 
   const PolicyType(
     this.displayName,
@@ -506,11 +545,16 @@ enum PolicyType {
 }
 
 enum AgreementRequestType {
-  signup('회원가입 요청시 동의 항목'),
-  game_hosting('경기 생성시 사용자 동의 항목'),
-  game_participation('경기 참가시 사용자 동의 항목'),
-  transfer_request('이체 요청 생성시 사용자 동의 항목'),
-  participation_refund('환불 사용자 동의 항목');
+  @JsonValue('signup')
+  signup('회원가입'),
+  @JsonValue('game_hosting')
+  gameHosting('경기 생성'),
+  @JsonValue('game_participation')
+  gameParticipation('경기 참여'),
+  @JsonValue('transfer_request')
+  transferRequest('정산금 이체 요청'),
+  @JsonValue('participation_refund')
+  participationRefund('참여 취소');
 
   const AgreementRequestType(
     this.displayName,
@@ -523,7 +567,7 @@ enum NotificationStatusType {
   waiting('전송 대기중'),
   failed('전송 실패'),
   success('전송 완료'),
-  ignored('미전송');
+  ignored('사용자 무시 주제 알림');
 
   const NotificationStatusType(
     this.displayName,
@@ -545,18 +589,20 @@ enum PlayerProfileType {
 }
 
 enum PlayerPositionType {
-  point_guard('포인트가드'),
-  shooting_guard('슈팅가드'),
-  small_forward('스몰포워드'),
-  power_forward('파워포워드'),
-  center('센터');
+  PG('포인트가드'),
+  SG('슈팅가드'),
+  SF('스몰포워드'),
+  PF('파워포워드'),
+  C('센터');
 
   const PlayerPositionType(this.displayName);
+
   static PlayerPositionType stringToEnum({required String value}) {
     return PlayerPositionType.values.firstWhere((e) {
       return e.displayName == value;
     });
   }
+
   final String displayName;
 }
 
@@ -577,11 +623,13 @@ enum PlayerRoleType {
   blueworker('블루워커');
 
   const PlayerRoleType(this.displayName);
+
   static PlayerRoleType stringToEnum({required String value}) {
     return PlayerRoleType.values.firstWhere((e) {
       return e.displayName == value;
     });
   }
+
   final String displayName;
 }
 
@@ -590,10 +638,78 @@ enum GenderType {
   female('여성');
 
   const GenderType(this.displayName);
+
   static GenderType stringToEnum({required String value}) {
     return GenderType.values.firstWhere((e) {
       return e.displayName == value;
     });
   }
+
+  final String displayName;
+}
+
+enum BankTransferStatusType {
+  @JsonValue('이체 완료')
+  completed('이체 완료'),
+  @JsonValue('대기중')
+  waiting('대기중'),
+  @JsonValue('이체거절')
+  declined('이체거절');
+
+  const BankTransferStatusType(this.displayName);
+
+  static GenderType stringToEnum({required String value}) {
+    return GenderType.values.firstWhere((e) {
+      return e.displayName == value;
+    });
+  }
+
+  final String displayName;
+}
+
+enum RatingType {
+  @JsonValue('host_rating')
+  hostRating('호스트 평점'),
+  @JsonValue('guest_rating')
+  guestRating('게스트 평점');
+
+  const RatingType(this.displayName);
+
+  final String displayName;
+}
+
+enum AdvertisementStatusType {
+  active('활성화 상태'),
+  expired('광고 만료 상태');
+
+  const AdvertisementStatusType(this.displayName);
+
+  final String displayName;
+}
+
+enum FaqCategoryType {
+  game('경기'),
+  participation('참가'),
+  settlement('정산'),
+  review('리뷰'),
+  report('신고'),
+  etc('기타');
+
+  const FaqCategoryType(this.displayName);
+
+  final String displayName;
+}
+
+enum UserGuideCategoryType {
+  game('경기'),
+  participation('참여'),
+  settlement('정산'),
+  transfer('이체'),
+  review('리뷰'),
+  report('신고'),
+  etc('기타');
+
+  const UserGuideCategoryType(this.displayName);
+
   final String displayName;
 }

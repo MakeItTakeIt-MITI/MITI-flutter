@@ -113,7 +113,7 @@ class ReceiveReviewModel extends ReviewBaseModel {
 
 @JsonSerializable()
 class GameReviewBaseModel extends IModelWithId {
-  final GameStatus game_status;
+  final GameStatusType game_status;
   final String title;
   final String startdate;
   final String starttime;

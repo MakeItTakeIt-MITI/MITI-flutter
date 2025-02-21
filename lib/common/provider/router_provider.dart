@@ -166,9 +166,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                       parentNavigatorKey: rootNavKey,
                       name: OtherAccountScreen.routeName,
                       builder: (_, state) {
-                        final AuthType authType = state.extra as AuthType;
-                        final PhoneAuthType phoneType =
-                            PhoneAuthType.stringToEnum(
+                        final SignupMethodType authType = state.extra as SignupMethodType;
+                        final PhoneAuthenticationPurposeType phoneType =
+                            PhoneAuthenticationPurposeType.stringToEnum(
                                 value: state.uri.queryParameters['phoneType']!);
                         return OtherAccountScreen(
                           authType: authType,
@@ -278,7 +278,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                         //   return false;
                         // },
                         builder: (_, state) {
-                          AuthType extra = state.extra as AuthType;
+                          SignupMethodType extra = state.extra as SignupMethodType;
 
                           return SignUpScreen(
                             type: extra,

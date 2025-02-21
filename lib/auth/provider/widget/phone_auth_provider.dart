@@ -5,7 +5,7 @@ import '../../../common/model/entity_enum.dart';
 part 'phone_auth_provider.g.dart';
 
 class PhoneAuthModel {
-  final PhoneAuthType type;
+  final PhoneAuthenticationPurposeType type;
   final String authentication_token;
   final String code;
 
@@ -16,7 +16,7 @@ class PhoneAuthModel {
   });
 
   PhoneAuthModel copyWith({
-    PhoneAuthType? type,
+    PhoneAuthenticationPurposeType? type,
     String? authentication_token,
     String? code,
   }) {
@@ -31,7 +31,7 @@ class PhoneAuthModel {
 @riverpod
 class PhoneAuth extends _$PhoneAuth {
   @override
-  PhoneAuthModel build({required PhoneAuthType type}) {
+  PhoneAuthModel build({required PhoneAuthenticationPurposeType type}) {
     return PhoneAuthModel(
       authentication_token: '',
       code: '',
@@ -42,7 +42,7 @@ class PhoneAuth extends _$PhoneAuth {
   void update({
     String? authentication_token,
     String? code,
-    PhoneAuthType? type,
+    PhoneAuthenticationPurposeType? type,
   }) {
     state = state.copyWith(
       authentication_token: authentication_token,

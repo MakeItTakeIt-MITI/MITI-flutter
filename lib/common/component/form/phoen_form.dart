@@ -23,7 +23,7 @@ import '../../provider/form_util_provider.dart';
 import '../custom_text_form_field.dart';
 
 class PhoneForm extends ConsumerStatefulWidget {
-  final PhoneAuthType type;
+  final PhoneAuthenticationPurposeType type;
   final bool hasLabel;
 
   const PhoneForm({
@@ -111,7 +111,7 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
     return RegExp(r"^\d{3}-\d{4}-\d{4}$").hasMatch(phone);
   }
 
-  Future<void> requestValidCode(String phone, PhoneAuthType type) async {
+  Future<void> requestValidCode(String phone, PhoneAuthenticationPurposeType type) async {
     FocusScope.of(context).requestFocus(FocusNode());
     timerReset();
     final result = await ref.read(sendCodeProvider(authType: type).future);
@@ -186,7 +186,7 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
         AuthError.fromModel(model: result).responseError(
             context, AuthApiType.send_code, ref,
             object: widget.type);
-        if (PhoneAuthType.signup != widget.type) {
+        if (PhoneAuthenticationPurposeType.signup != widget.type) {
           if ((result.status_code == BadRequest &&
                   (result.error_code == 440 || result.error_code == 441)) ||
               (result.status_code == NotFound && result.error_code == 440)) {
@@ -205,19 +205,19 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
         codeBtnColor = MITIColor.gray500;
         codeBtnTextColor = MITIColor.primary;
         timerReset();
-        if (widget.type == PhoneAuthType.signup) {
+        if (widget.type == PhoneAuthenticationPurposeType.signup) {
           final phoneNumber = ref.read(phoneNumberProvider(widget.type));
           ref
               .read(signUpFormProvider.notifier)
               .updateForm(phoneNumber: phoneNumber);
           if (ref
               .read(signUpFormProvider.notifier)
-              .validPersonalInfo(AuthType.email)) {
+              .validPersonalInfo(SignupMethodType.email)) {
             ref
                 .read(progressProvider.notifier)
                 .updateValidNext(validNext: true);
           }
-        } else if (widget.type == PhoneAuthType.find_email) {}
+        } else if (widget.type == PhoneAuthenticationPurposeType.find_email) {}
       }
     }
   }

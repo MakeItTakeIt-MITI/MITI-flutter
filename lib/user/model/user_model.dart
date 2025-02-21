@@ -10,6 +10,10 @@ import '../../game/model/game_model.dart';
 
 part 'user_model.g.dart';
 
+
+
+
+
 @JsonSerializable()
 class UserModel extends IModelWithId {
   final String email;
@@ -17,7 +21,7 @@ class UserModel extends IModelWithId {
   final String? name;
   final String? birthday;
   final String? phone;
-  final AuthType signup_method;
+  final SignupMethodType signup_method;
   final RatingModel rating;
 
   UserModel({
@@ -41,7 +45,7 @@ class UserModel extends IModelWithId {
     String? name,
     String? birthday,
     String? phone,
-    AuthType? signup_method,
+    SignupMethodType? signup_method,
     RatingModel? rating,
   }) {
     return UserModel(
@@ -61,7 +65,7 @@ class UserModel extends IModelWithId {
 class UserInfoModel {
   final String email;
   final String nickname;
-  @JsonKey(name:'profile_image_url')
+  @JsonKey(name: 'profile_image_url')
   final String profileImageUrl;
 
   UserInfoModel({

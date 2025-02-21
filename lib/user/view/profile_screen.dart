@@ -364,11 +364,11 @@ class _ReviewComponent extends ConsumerWidget {
             children: [
               Expanded(
                   child: _ReviewCard(
-                      type: ReviewType.guest, rating: model.guest_rating)),
+                      type: ReviewType.guestReview, rating: model.guest_rating)),
               SizedBox(width: 9.w),
               Expanded(
                   child: _ReviewCard(
-                      type: ReviewType.host, rating: model.host_rating)),
+                      type: ReviewType.hostReview, rating: model.host_rating)),
             ],
           )
         ],
@@ -407,7 +407,7 @@ class _ReviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = type == ReviewType.guest ? '게스트' : '호스트';
+    final title = type == ReviewType.guestReview ? '게스트' : '호스트';
     final add = rating.num_of_reviews != 0 ? '+' : '';
     return Container(
       decoration: BoxDecoration(

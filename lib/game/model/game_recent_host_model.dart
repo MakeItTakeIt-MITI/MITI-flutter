@@ -31,7 +31,7 @@ part 'game_recent_host_model.g.dart';
  */
 @JsonSerializable()
 class GameRecentHostModel extends IModelWithId {
-  final GameStatus game_status;
+  final GameStatusType game_status;
   final String title;
   final String startdate;
   final String starttime;

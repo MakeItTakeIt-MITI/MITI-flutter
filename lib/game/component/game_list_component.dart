@@ -72,7 +72,7 @@ class GameCardByDate extends StatelessWidget {
 
 class GameCard extends StatelessWidget {
   final int id;
-  final GameStatus game_status;
+  final GameStatusType game_status;
   final String title;
   final String startdate;
   final String starttime;

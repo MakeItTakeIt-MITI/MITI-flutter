@@ -10,7 +10,7 @@ class GameListParam extends Equatable {
   final String? startdate;
   final String? starttime;
   @JsonKey(name: "game_status")
-  final List<GameStatus> gameStatus;
+  final List<GameStatusType> gameStatus;
 
   const GameListParam({
     this.startdate,
@@ -29,7 +29,7 @@ class GameListParam extends Equatable {
   GameListParam copyWith({
     String? startdate,
     String? starttime,
-    List<GameStatus>? gameStatus,
+    List<GameStatusType>? gameStatus,
   }) {
     return GameListParam(
       startdate: startdate ?? this.startdate,

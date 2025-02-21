@@ -565,7 +565,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
 
 class CourtCard extends StatelessWidget {
   final int id;
-  final GameStatus game_status;
+  final GameStatusType game_status;
   final String title;
   final String startdate;
   final String starttime;
@@ -1115,7 +1115,7 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
 
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: GameStatus.values
+                        children: GameStatusType.values
                             .map((e) => _GameStatusButton(
                                 status: e,
                                 selected: gameStatus.isNotEmpty
@@ -1218,7 +1218,7 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
 }
 
 class _GameStatusButton extends ConsumerWidget {
-  final GameStatus status;
+  final GameStatusType status;
   final bool selected;
 
   const _GameStatusButton(

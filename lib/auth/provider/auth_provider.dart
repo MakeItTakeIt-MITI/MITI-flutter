@@ -112,7 +112,7 @@ class AuthStateNotifier extends StateNotifier<AuthModel?> {
 
     ///todo 수정 필요
     final signUpType =
-        AuthType.stringToEnum(value: signUpTypeString ?? 'email');
+        SignupMethodType.stringToEnum(value: signUpTypeString ?? 'email');
 
     if (accessToken != null) {
       state = AuthModel(
