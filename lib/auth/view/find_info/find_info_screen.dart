@@ -228,7 +228,7 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
 
                           Map<String, String> queryParameters = {
                             "password_update_token":
-                                model.password_update_token ?? '',
+                                model.passwordUpdateToken ?? '',
                             "userId": model.id.toString(),
                           };
                           context.pushNamed(ResetPasswordScreen.routeName,

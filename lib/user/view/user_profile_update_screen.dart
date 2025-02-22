@@ -26,6 +26,7 @@ import '../../common/component/custom_dialog.dart';
 import '../../util/util.dart';
 import '../component/skeleton/user_info_skeleton.dart';
 import '../model/user_model.dart';
+import '../model/v2/user_info_response.dart';
 
 class UserProfileUpdateScreen extends ConsumerWidget {
   static String get routeName => 'profileUpdate';
@@ -95,7 +96,7 @@ class _UserInfoComponent extends ConsumerWidget {
       return const UserInfoSkeleton();
     }
 
-    final model = (result as ResponseModel<UserModel>).data!;
+    final model = (result as ResponseModel<UserInfoResponse>).data!;
     String? birthday;
     String? phone;
     if (model.birthday != null) {
@@ -106,9 +107,9 @@ class _UserInfoComponent extends ConsumerWidget {
     if (model.phone != null) {
       phone = formatPhoneNumber(model.phone!);
     }
-    String loginType = model.signup_method == SignupMethodType.email
+    String loginType = model.signupMethod == SignupMethodType.email
         ? 'Email'
-        : model.signup_method == SignupMethodType.apple
+        : model.signupMethod == SignupMethodType.apple
             ? 'Apple ID'
             : 'Kakao ID';
 
@@ -173,9 +174,9 @@ class _PasswordResetting extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final result = ref.watch(userInfoProvider);
-    final model = (result as ResponseModel<UserModel>).data!;
+    final model = (result as ResponseModel<UserInfoResponse>).data!;
 
-    if (model.signup_method != SignupMethodType.email) {
+    if (model.signupMethod != SignupMethodType.email) {
       return Container();
     }
     return Column(

@@ -12,6 +12,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../common/component/custom_text_form_field.dart';
 import '../../../common/model/entity_enum.dart';
 import '../../model/game_recent_host_model.dart';
+import '../../model/v2/game/base_game_with_court_response.dart';
 
 part 'game_form_provider.g.dart';
 
@@ -67,17 +68,17 @@ class GameForm extends _$GameForm {
   }
 
   void selectGameHistory(
-      {required GameRecentHostModel model,
+      {required BaseGameWithCourtResponse model,
       required List<TextEditingController> textEditingControllers}) {
     GameCourtParam court = GameCourtParam(
-      name: model.court.name,
+      name: model.court.name ?? "미정",
       address: model.court.address,
-      address_detail: model.court.address_detail,
+      address_detail: model.court.addressDetail,
     );
     textEditingControllers[0].text = model.title;
     textEditingControllers[1].text = model.court.address;
-    textEditingControllers[2].text = model.court.address_detail ?? '';
-    textEditingControllers[3].text = model.court.name;
+    textEditingControllers[2].text = model.court.addressDetail ?? '';
+    textEditingControllers[3].text = model.court.name ?? '미정';
     textEditingControllers[4].text = model.min_invitation.toString();
     textEditingControllers[5].text = model.max_invitation.toString();
     textEditingControllers[6].text = model.fee.toString();

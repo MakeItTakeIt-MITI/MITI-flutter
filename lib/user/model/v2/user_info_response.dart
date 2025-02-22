@@ -10,7 +10,7 @@ part 'user_info_response.g.dart';
 @JsonSerializable()
 class UserInfoResponse extends BaseUserResponse {
   final String name; // 이름
-  final DateTime birthday; // 생일
+  final String birthday; // 생일
   final String phone; // 연락처
   @JsonKey(name: 'signup_method')
   final SignupMethodType signupMethod; // 회원가입 방식 (SignupMethod로 대체 가능)
@@ -42,7 +42,7 @@ class UserInfoResponse extends BaseUserResponse {
     int? id,
     String? nickname,
     String? name,
-    DateTime? birthday,
+    String? birthday,
     String? phone,
     SignupMethodType? signupMethod,
     String? profileImageUrl,

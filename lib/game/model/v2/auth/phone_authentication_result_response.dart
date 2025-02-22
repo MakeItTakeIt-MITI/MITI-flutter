@@ -1,16 +1,12 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:miti/common/model/entity_enum.dart';
 
+import '../../../../auth/model/find_info_model.dart';
+
 part 'phone_authentication_result_response.g.dart';
 
 @JsonSerializable()
-class PhoneAuthenticationResultResponse {
-  @JsonKey(name: 'phone')
-  final String phone;
-
-  @JsonKey(name: 'purpose')
-  final PhoneAuthenticationPurposeType purpose;
-
+class PhoneAuthenticationResultResponse extends VerifyBaseModel {
   @JsonKey(name: 'is_authenticated')
   final bool isAuthenticated;
 
@@ -18,16 +14,18 @@ class PhoneAuthenticationResultResponse {
   final String signupToken;
 
   PhoneAuthenticationResultResponse({
-    required this.phone,
-    required this.purpose,
+    required super.phone,
+    required super.purpose,
     required this.isAuthenticated,
     required this.signupToken,
   });
 
-  factory PhoneAuthenticationResultResponse.fromJson(Map<String, dynamic> json) =>
+  factory PhoneAuthenticationResultResponse.fromJson(
+          Map<String, dynamic> json) =>
       _$PhoneAuthenticationResultResponseFromJson(json);
 
-  Map<String, dynamic> toJson() => _$PhoneAuthenticationResultResponseToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$PhoneAuthenticationResultResponseToJson(this);
 
   PhoneAuthenticationResultResponse copyWith({
     String? phone,

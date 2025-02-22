@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,6 +21,7 @@ import '../../common/model/entity_enum.dart';
 import '../../etc/view/tc_policy_screen.dart';
 import '../../game/model/game_model.dart';
 import '../../notification/view/notification_setting_screen.dart';
+import '../../review/model/v2/base_guest_rating_response.dart';
 import '../../review/view/receive_review_list_screen.dart';
 import '../../review/view/written_review_list_screen.dart';
 import '../../support/view/faq_screen.dart';
@@ -30,6 +30,7 @@ import '../../theme/color_theme.dart';
 import '../component/skeleton/receive_review_skeleton.dart';
 import '../error/user_error.dart';
 import '../model/user_model.dart';
+import '../model/v2/user_info_response.dart';
 import '../provider/user_provider.dart';
 import '../../util/util.dart';
 
@@ -339,8 +340,7 @@ class _ReviewComponent extends ConsumerWidget {
               .responseError(context, UserApiType.get, ref));
       return const Text("error");
     }
-    final model = (result as ResponseModel<UserModel>).data!.rating;
-    model.guest_rating;
+    final model = (result as ResponseModel<UserInfoResponse>).data!;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
@@ -363,12 +363,15 @@ class _ReviewComponent extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                  child: _ReviewCard(
-                      type: ReviewType.guestReview, rating: model.guest_rating)),
+                child: _ReviewCard(
+                  type: ReviewType.guestReview,
+                  rating: model.guestRating,
+                ),
+              ),
               SizedBox(width: 9.w),
               Expanded(
                   child: _ReviewCard(
-                      type: ReviewType.hostReview, rating: model.host_rating)),
+                      type: ReviewType.hostReview, rating: model.guestRating)),
             ],
           )
         ],
@@ -379,7 +382,7 @@ class _ReviewComponent extends ConsumerWidget {
 
 class _ReviewCard extends StatelessWidget {
   final ReviewType type;
-  final Rating rating;
+  final BaseRatingResponse rating;
 
   const _ReviewCard({super.key, required this.type, required this.rating});
 
@@ -408,7 +411,7 @@ class _ReviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final title = type == ReviewType.guestReview ? '게스트' : '호스트';
-    final add = rating.num_of_reviews != 0 ? '+' : '';
+    final add = rating.numOfReviews != 0 ? '+' : '';
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12.r),
@@ -420,20 +423,20 @@ class _ReviewCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            '$title 리뷰 (${rating.num_of_reviews}$add)',
+            '$title 리뷰 (${rating.numOfReviews}$add)',
             style: MITITextStyle.xxsm.copyWith(
               color: MITIColor.gray100,
             ),
           ),
           SizedBox(height: 12.h),
-          if (rating.num_of_reviews != 0)
+          if (rating.numOfReviews != 0)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ...getStar(rating.average_rating ?? 0),
+                ...getStar(rating.averageRating ?? 0),
                 SizedBox(width: 8.w),
                 Text(
-                  "${rating.average_rating ?? 0}",
+                  "${rating.averageRating ?? 0}",
                   style: MITITextStyle.lg.copyWith(
                     color: MITIColor.gray100,
                   ),
@@ -522,7 +525,7 @@ class _ProfileComponent extends ConsumerWidget {
               .responseError(context, UserApiType.get, ref));
       return const Text("error");
     }
-    final model = (result as ResponseModel<UserModel>).data!;
+    final model = (result as ResponseModel<UserInfoResponse>).data!;
 
     return Padding(
       padding: EdgeInsets.symmetric(

@@ -15,8 +15,8 @@ import '../../param/phone_verify_param.dart';
 
 part 'find_info_provider.g.dart';
 
-final phoneNumberProvider =
-    StateProvider.family.autoDispose<String, PhoneAuthenticationPurposeType>((ref, type) => '');
+final phoneNumberProvider = StateProvider.family
+    .autoDispose<String, PhoneAuthenticationPurposeType>((ref, type) => '');
 final emailProvider = StateProvider.autoDispose<String>((ref) => '');
 
 @riverpod
@@ -32,10 +32,10 @@ Future<BaseModel> sendCode(SendCodeRef ref,
         logger.i('findEmail $param!');
         final model = value.data!;
         ref.read(phoneAuthProvider(type: authType).notifier).update(
-              authentication_token: model.authentication_token,
+              authentication_token: model.authenticationToken,
               type: authType,
             );
-        log('token ${model.authentication_token}');
+        log('token ${model.authenticationToken}');
         return value;
       }).catchError((e) {
         final error = ErrorModel.respToError(e);
@@ -49,10 +49,10 @@ Future<BaseModel> sendCode(SendCodeRef ref,
         logger.i('findPassword $param!');
         final model = value.data!;
         ref.read(phoneAuthProvider(type: authType).notifier).update(
-              authentication_token: model.authentication_token,
+              authentication_token: model.authenticationToken,
               type: authType,
             );
-        log('token ${model.authentication_token}');
+        log('token ${model.authenticationToken}');
         return value;
       }).catchError((e) {
         final error = ErrorModel.respToError(e);
@@ -67,10 +67,10 @@ Future<BaseModel> sendCode(SendCodeRef ref,
         logger.i('findPassword $param!');
         final model = value.data!;
         ref.read(phoneAuthProvider(type: authType).notifier).update(
-              authentication_token: model.authentication_token,
+              authentication_token: model.authenticationToken,
               type: authType,
             );
-        log('token ${model.authentication_token}');
+        log('token ${model.authenticationToken}');
         return value;
       }).catchError((e) {
         final error = ErrorModel.respToError(e);
@@ -125,7 +125,7 @@ Future<BaseModel> verifyPhone(VerifyPhoneRef ref,
         final model = value.data!;
         ref
             .read(signUpFormProvider.notifier)
-            .updateForm(signup_token: model.signup_token);
+            .updateForm(signup_token: model.signupToken);
         return value;
       }).catchError((e) {
         final error = ErrorModel.respToError(e);
@@ -162,51 +162,4 @@ Future<BaseModel> verifyPhone(VerifyPhoneRef ref,
         return error;
       });
   }
-}
-
-@riverpod
-Future<BaseModel> reissueForPassword(ReissueForPasswordRef ref) async {
-  final user_info_token =
-      ''; //ref.read(phoneAuthProvider).authentication_token;
-  return await ref
-      .watch(authRepositoryProvider)
-      .reissueForPassword(user_info_token: user_info_token)
-      .then<BaseModel>((value) {
-    logger.i('reissueForPassword !');
-    final model = value.data!;
-    // ref
-    //     .read(phoneAuthProvider.notifier)
-    //     .update(authentication_token: model.authentication_token);
-    return value;
-  }).catchError((e) {
-    final error = ErrorModel.respToError(e);
-    logger.e(
-        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
-    return error;
-  });
-}
-
-@riverpod
-Future<BaseModel> resetPassword(ResetPasswordRef ref,
-    {required String password_update_token}) async {
-  final user_info_token =
-      ''; //ref.read(phoneAuthProvider).authentication_token;
-  final model = ref.read(signUpFormProvider);
-  final param = ResetPasswordParam.fromModel(model: model);
-  return await ref
-      .watch(authRepositoryProvider)
-      .resetPassword(
-        param: param,
-        token: user_info_token,
-      )
-      .then<BaseModel>((value) {
-    logger.i('resetPassword $param!');
-    final model = value.data;
-    return value;
-  }).catchError((e) {
-    final error = ErrorModel.respToError(e);
-    logger.e(
-        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
-    return error;
-  });
 }

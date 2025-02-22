@@ -17,6 +17,11 @@ import '../../dio/provider/dio_provider.dart';
 import '../../game/model/game_model.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import '../model/v2/base_player_profile_response.dart';
+import '../model/v2/base_user_profile_response.dart';
+import '../model/v2/user_info_response.dart';
+import '../model/v2/user_player_profile_response.dart';
+
 part 'user_repository.g.dart';
 
 final userRepositoryProvider = Provider<UserRepository>((ref) {
@@ -33,19 +38,43 @@ abstract class UserRepository {
   /// 유저 정보 상세 조회 API
   @Headers({'token': 'true'})
   @GET('/users/{userId}')
-  Future<ResponseModel<UserModel>> getUserInfo({@Path() required int userId});
+  Future<ResponseModel<UserInfoResponse>> getUserInfo(
+      {@Path() required int userId});
 
+  /// 유저 프로필 조회 API
+  /// todo error
+  @Headers({'token': 'true'})
+  @GET('/users/{userId}/user-profile')
+  Future<ResponseModel<BaseUserProfileResponse>> getUserProfileInfo(
+      {@Path() required int userId});
+
+  /// 유저 프로필 수정 API
+  /// todo error
+  @Headers({'token': 'true'})
+  @PATCH('/users/{userId}/user-profile')
+  Future<ResponseModel<BaseUserProfileResponse>> updateUserProfileInfo(
+      {@Path() required int userId});
+
+  /// 프로필 이미지 초기화 API
+  /// todo error
+  @Headers({'token': 'true'})
+  @PUT('/users/{userId}/user-profile')
+  Future<ResponseModel<BaseUserProfileResponse>> resetProfileImage(
+      {@Path() required int userId});
+
+  /// 선수 프로필 상세 조회 API
   @Headers({'token': 'true'})
   @GET('/users/{userId}/player-profile')
-  Future<ResponseModel<UserPlayerProfileModel>> getPlayerInfo({
+  Future<ResponseModel<UserPlayerProfileResponse>> getPlayerInfo({
     @Path() required int userId,
   });
 
+  /// 선수 프로필 수정 API
   @Headers({'token': 'true'})
   @PATCH('/users/{userId}/player-profile')
-  Future<ResponseModel<UserPlayerProfileModel>> updatePlayerInfo({
+  Future<ResponseModel<UserPlayerProfileResponse>> updatePlayerInfo({
     @Path() required int userId,
-    @Body() required UserPlayerModel param,
+    @Body() required BasePlayerProfileResponse param,
   });
 
   @Headers({'token': 'true'})

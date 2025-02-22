@@ -35,14 +35,16 @@ class VerifyBaseModel {
 
 @JsonSerializable()
 class SignUpVerifyModel extends VerifyBaseModel {
-  final bool is_authenticated;
-  final String signup_token;
+  @JsonKey(name: 'is_authenticated')
+  final bool isAuthenticated;
+  @JsonKey(name: 'signup_token')
+  final String signupToken;
 
   SignUpVerifyModel({
     required super.phone,
     required super.purpose,
-    required this.is_authenticated,
-    required this.signup_token,
+    required this.isAuthenticated,
+    required this.signupToken,
     super.authType,
   });
 
@@ -55,14 +57,15 @@ class SignUpVerifyModel extends VerifyBaseModel {
 class EmailVerifyModel extends VerifyBaseModel {
   final int? id;
   final String? email;
-  final String? password_update_token;
+  @JsonKey(name: 'password_update_token')
+  final String? passwordUpdateToken;
 
   EmailVerifyModel({
     this.id,
     this.email,
     super.phone,
     super.purpose,
-    this.password_update_token,
+    this.passwordUpdateToken,
     super.authType,
   });
 
@@ -74,13 +77,14 @@ class EmailVerifyModel extends VerifyBaseModel {
 @JsonSerializable()
 class PasswordVerifyModel extends VerifyBaseModel {
   final int? id;
-  final String? password_update_token;
+  @JsonKey(name: 'password_update_token')
+  final String? passwordUpdateToken;
 
   PasswordVerifyModel({
     this.id,
     super.phone,
     super.purpose,
-    this.password_update_token,
+    this.passwordUpdateToken,
     super.authType,
   });
 

@@ -237,7 +237,7 @@ class _EmailComponent extends StatelessWidget {
                       onPressed: () {
                         Map<String, String> queryParameters = {
                           "password_update_token":
-                              model!.password_update_token ?? '',
+                              model!.passwordUpdateToken ?? '',
                           "userId": model.id.toString(),
                         };
 

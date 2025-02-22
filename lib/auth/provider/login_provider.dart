@@ -18,6 +18,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
+import '../../game/model/v2/auth/login_response.dart';
 import '../param/auth_param.dart';
 import '../param/login_param.dart';
 import '../param/signup_param.dart';
@@ -79,13 +80,13 @@ Future<BaseModel> login(LoginRef ref,
   });
 }
 
-Future<void> saveUserInfo(FlutterSecureStorage storage, LoginModel model,
+Future<void> saveUserInfo(FlutterSecureStorage storage, LoginResponse model,
     AutoDisposeFutureProviderRef ref) async {
   await Future.wait([
     storage.write(key: 'id', value: model.id.toString()),
     storage.write(key: 'email', value: model.email),
     storage.write(key: 'nickname', value: model.nickname),
-    storage.write(key: 'signUpType', value: model.signup_method.name),
+    storage.write(key: 'signUpType', value: model.signupMethod.name),
     storage.write(key: 'accessToken', value: model.token.access),
     storage.write(key: 'refreshToken', value: model.token.refresh),
     storage.write(key: 'tokenType', value: model.token.type),

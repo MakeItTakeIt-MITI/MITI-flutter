@@ -13,6 +13,7 @@ import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../game/model/game_model.dart';
 import '../model/user_model.dart';
+import '../model/v2/user_info_response.dart';
 import '../param/user_profile_param.dart';
 
 part 'user_provider.g.dart';
@@ -117,10 +118,10 @@ class UserInfo extends _$UserInfo {
   }
 
   void updateNickname(String newNickname) {
-    final newData = (state as ResponseModel<UserModel>)
+    final newData = (state as ResponseModel<UserInfoResponse>)
         .data!
         .copyWith(nickname: newNickname);
-    state = (state as ResponseModel<UserModel>).copyWith(data: newData);
+    state = (state as ResponseModel<UserInfoResponse>).copyWith(data: newData);
   }
 }
 

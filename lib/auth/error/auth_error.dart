@@ -303,7 +303,7 @@ class AuthError extends ErrorBase {
       /// 비회원 Oauth 사용자 ?
       final extra = type;
       print("not oauth user");
-    context.goNamed(SignUpScreen.routeName, extra: extra);
+      context.goNamed(SignUpScreen.routeName, extra: extra);
     } else if (this.status_code == Forbidden && this.error_code == 140) {
       /// 로그인 불가 사용자
       String oauthProvider = type == SignupMethodType.kakao ? '애플' : '카카오';
@@ -447,7 +447,8 @@ class AuthError extends ErrorBase {
   }
 
   /// 인증 코드 입력 API - 회원가입, 이메일, 비밀번호
-  void _sendCode(BuildContext context, WidgetRef ref, PhoneAuthenticationPurposeType type) {
+  void _sendCode(BuildContext context, WidgetRef ref,
+      PhoneAuthenticationPurposeType type) {
     if (status_code == BadRequest && error_code == 101) {
       /// 요청 데이터 유효성 오류
       showDialog(

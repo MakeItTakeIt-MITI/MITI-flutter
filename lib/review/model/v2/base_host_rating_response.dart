@@ -1,17 +1,14 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import 'base_guest_rating_response.dart';
+
 part 'base_host_rating_response.g.dart';
 
 @JsonSerializable()
-class BaseHostRatingResponse {
-  @JsonKey(name: 'average_rating')
-  final double? averageRating; // 평균 평점 (리뷰가 없는 경우 null)
-  @JsonKey(name: 'num_of_reviews')
-  final int numOfReviews; // 리뷰 개수
-
+class BaseHostRatingResponse extends BaseRatingResponse {
   BaseHostRatingResponse({
-    this.averageRating,
-    required this.numOfReviews,
+    super.averageRating,
+    required super.numOfReviews,
   });
 
   factory BaseHostRatingResponse.fromJson(Map<String, dynamic> json) =>

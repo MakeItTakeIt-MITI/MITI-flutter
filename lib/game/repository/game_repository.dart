@@ -14,6 +14,7 @@ import '../model/game_payment_model.dart';
 import '../model/game_player_model.dart';
 import '../model/game_recent_host_model.dart';
 import '../model/game_review_model.dart';
+import '../model/v2/game/base_game_with_court_response.dart';
 import '../param/game_param.dart';
 
 part 'game_repository.g.dart';
@@ -91,9 +92,10 @@ abstract class GameRepository {
     @Path('ratingId') required int ratingId,
   });
 
+  /// 최근 호스팅 경기 목록 조회 API
   @Headers({'token': 'true'})
   @GET('/users/{userId}/recent-hosted-games')
-  Future<ResponseListModel<GameRecentHostModel>> getRecentHostings({
+  Future<ResponseListModel<BaseGameWithCourtResponse>> getRecentHostings({
     @Path('userId') required int userId,
   });
 
@@ -125,7 +127,8 @@ abstract class GameRepository {
   /// 경기 참가자 선수 프로필 목록 조회 API
   @Headers({'token': 'true'})
   @GET('/games/{gameId}/participations')
-  Future<ResponseListModel<GameParticipationPlayerModel>> getParticipationProfile({
+  Future<ResponseListModel<GameParticipationPlayerModel>>
+      getParticipationProfile({
     @Path() required int gameId,
   });
 

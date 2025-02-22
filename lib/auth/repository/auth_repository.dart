@@ -3,12 +3,16 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miti/auth/param/phone_verify_param.dart';
 import 'package:miti/auth/param/update_token_param.dart';
+import 'package:miti/game/model/v2/auth/login_response.dart';
 import 'package:retrofit/http.dart';
 
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../dio/dio_interceptor.dart';
 import '../../dio/provider/dio_provider.dart';
+import '../../game/model/v2/auth/base_token_response.dart';
+import '../../game/model/v2/auth/password_update_request_response.dart';
+import '../../game/model/v2/auth/phone_authentication_request_response.dart';
 import '../../user/model/user_model.dart';
 import '../model/auth_model.dart';
 import '../model/code_model.dart';
@@ -40,23 +44,14 @@ abstract class AuthRepository {
   @POST('/auth/logout')
   Future<CompletedModel> logout();
 
-  @GET('/auth/token-issuement/{user_info_token}')
-  Future<ResponseModel<FindInfoModel>> reissueForPassword(
-      {@Path() required String user_info_token});
-
-  @POST('/auth/reset-password/{token}')
-  Future<ResponseModel<RequestNewPasswordModel>> resetPassword(
-      {@Path() required String token,
-      @Body() required ResetPasswordParam param});
-
   @Headers({'refresh': 'true'})
   @POST('/auth/refresh-token')
-  Future<ResponseModel<TokenModel>> getReIssueToken();
+  Future<ResponseModel<BaseTokenResponse>> getReIssueToken();
 
   /////////////////////////////////////////
   /// 인증 코드 전송 요청 API
   @POST('/auth/send-code')
-  Future<ResponseModel<SendCodeModel>> sendCode(
+  Future<ResponseModel<PhoneAuthenticationRequestResponse>> sendCode(
       {@Body() required SendCodeParam param});
 
   /// 회원가입, 이메일 찾기, 비밀번호 찾기 번호 인증
@@ -74,21 +69,14 @@ abstract class AuthRepository {
 
   // @Header("")
   @POST('/auth/login/{provider}')
-  Future<ResponseModel<LoginModel>> login({
+  Future<ResponseModel<LoginResponse>> login({
     @Path() required SignupMethodType provider,
     @Body() required LoginBaseParam param,
     @Header("fcm-token") required String fcmToken,
   });
 
-  //
-  // @POST('/auth/oauth//login')
-  // Future<ResponseModel<LoginModel>> oauthLogin(
-  //     {@Path() required AuthType provider,
-  //     @Header("fcm-token") required String fcmToken,
-  //     @Body() required LoginBaseParam param});
-
   @POST('/auth/signup/{provider}')
-  Future<ResponseModel<SignUpModel>> signUp({
+  Future<ResponseModel<LoginResponse>> signUp({
     @Path() required SignupMethodType provider,
     @Body() required SignUpBaseParam param,
   });
@@ -99,7 +87,7 @@ abstract class AuthRepository {
 
   @Headers({'token': 'true'})
   @POST('/auth/password-authentication')
-  Future<ResponseModel<UpdateTokenModel>> getUpdateToken(
+  Future<ResponseModel<PasswordUpdateRequestResponse>> getUpdateToken(
       {@Body() required UpdateTokenParam param});
 
   @Headers({'token': 'true'})

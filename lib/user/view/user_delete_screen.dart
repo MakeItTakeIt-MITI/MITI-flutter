@@ -24,6 +24,7 @@ import '../../common/component/custom_dialog.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
 import '../error/user_error.dart';
+import '../model/v2/user_info_response.dart';
 
 class UserDeleteScreen extends ConsumerStatefulWidget {
   static String get routeName => 'deleteUser';
@@ -157,9 +158,9 @@ class _UserDeleteScreenState extends ConsumerState<UserDeleteScreen> {
             .responseError(context, UserApiType.delete, ref);
       } else {
         final authType =
-            (ref.read(userInfoProvider) as ResponseModel<UserModel>)
+            (ref.read(userInfoProvider) as ResponseModel<UserInfoResponse>)
                 .data!
-                .signup_method;
+                .signupMethod;
         if (authType == SignupMethodType.kakao) {
           UserApi.instance.unlink();
         }

@@ -42,6 +42,7 @@ import '../../util/util.dart';
 import '../component/game_recent_component.dart';
 import '../model/game_model.dart';
 import '../model/game_recent_host_model.dart';
+import '../model/v2/game/base_game_with_court_response.dart';
 import '../param/game_param.dart';
 import 'game_create_complete_screen.dart';
 
@@ -268,7 +269,8 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
 
       if (result is ErrorModel) {
       } else {
-        final model = (result as ResponseListModel<GameRecentHostModel>).data!;
+        final model =
+            (result as ResponseListModel<BaseGameWithCourtResponse>).data!;
         log("model ${model.length}");
         if (model.isNotEmpty) {
           showCustomModalBottomSheet(
@@ -1571,8 +1573,8 @@ class AgreeTermComponent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final result = ref.watch(
-        agreementPolicyProvider(type: AgreementRequestType.gameHosting));
+    final result = ref
+        .watch(agreementPolicyProvider(type: AgreementRequestType.gameHosting));
     if (result is LoadingModel) {
       return SliverToBoxAdapter(child: CircularProgressIndicator());
     } else if (result is ErrorModel) {

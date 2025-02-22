@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../common/model/entity_enum.dart';
 import '../../util/util.dart';
+import '../model/v2/base_player_profile_response.dart';
 
 part 'user_form_provider.g.dart';
 
@@ -74,8 +75,8 @@ class UserPasswordForm extends _$UserPasswordForm {
 @riverpod
 class UserPlayerProfileForm extends _$UserPlayerProfileForm {
   @override
-  UserPlayerModel build() {
-    return UserPlayerModel(
+  BasePlayerProfileResponse build() {
+    return BasePlayerProfileResponse(
       gender: null,
       weight: null,
       height: null,
@@ -100,7 +101,7 @@ class UserPlayerProfileForm extends _$UserPlayerProfileForm {
     );
   }
 
-  void updateByModel(UserPlayerModel model) {
+  void updateByModel(BasePlayerProfileResponse model) {
     state = model;
   }
 

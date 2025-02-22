@@ -11,6 +11,7 @@ import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/provider/secure_storage_provider.dart';
 import '../../court/view/court_map_screen.dart';
+import '../../game/model/v2/auth/base_token_response.dart';
 import '../model/auth_model.dart';
 import '../param/signup_param.dart';
 import '../repository/auth_repository.dart';
@@ -92,7 +93,8 @@ class AuthStateNotifier extends StateNotifier<AuthModel?> {
   Future<String> reIssueToken() async {
     log("reIssueToken");
 
-    final ResponseModel<TokenModel> result = await repository.getReIssueToken();
+    final ResponseModel<BaseTokenResponse> result =
+        await repository.getReIssueToken();
     state = state?.copyWith(token: result.data!);
     await storage.write(key: 'accessToken', value: state!.token?.access);
     await storage.write(key: 'refreshToken', value: state!.token?.refresh);
@@ -114,9 +116,9 @@ class AuthStateNotifier extends StateNotifier<AuthModel?> {
     final signUpType =
         SignupMethodType.stringToEnum(value: signUpTypeString ?? 'email');
 
-    if (accessToken != null) {
+    if (accessToken != null && refreshToken != null && tokenType != null) {
       state = AuthModel(
-        token: TokenModel(
+        token: BaseTokenResponse(
             access: accessToken, refresh: refreshToken, type: tokenType),
         id: int.parse(id ?? '0'),
         email: email,

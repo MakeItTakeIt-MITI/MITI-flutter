@@ -1,6 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:miti/common/model/entity_enum.dart';
 
+import '../../game/model/v2/auth/base_token_response.dart';
+
 part 'auth_model.g.dart';
 
 class AuthModel {
@@ -8,7 +10,7 @@ class AuthModel {
   final String? email;
   final String? nickname;
   final SignupMethodType? signUpType;
-  final TokenModel? token;
+  final BaseTokenResponse? token;
 
   AuthModel({
     required this.id,
@@ -23,7 +25,7 @@ class AuthModel {
     String? email,
     String? nickname,
     SignupMethodType? signUpType,
-    TokenModel? token,
+    BaseTokenResponse? token,
   }) {
     return AuthModel(
       token: token ?? this.token,
