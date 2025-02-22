@@ -9,6 +9,7 @@ import 'package:retrofit/http.dart';
 import '../../common/model/default_model.dart';
 import '../../dio/dio_interceptor.dart';
 import '../../dio/provider/dio_provider.dart';
+import '../../game/model/v2/payment/payment_completed_response.dart';
 import '../../user/model/user_model.dart';
 import '../model/boot_pay_approve_model.dart';
 import '../model/boot_pay_request_model.dart';
@@ -41,7 +42,7 @@ abstract class PayRepository {
       {@Path() required int gameId});
 
   @Headers({'token': 'true'})
-  @POST('/payments/approve')
-  Future<ResponseModel<BootPayApproveModel>> approveBootPay(
+  @POST('/payments/bootpay/approve')
+  Future<ResponseModel<PaymentCompletedResponse>> approveBootPay(
       @Body() BootPayApproveParam param);
 }

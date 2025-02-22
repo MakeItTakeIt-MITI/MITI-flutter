@@ -13,6 +13,7 @@ import 'package:miti/user/view/user_payment_screen.dart';
 
 import '../../common/error/view/pay_error_screen.dart';
 import '../../common/model/entity_enum.dart';
+import '../../game/model/v2/payment/payment_result_response.dart';
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
 import '../../util/util.dart';
@@ -50,10 +51,10 @@ class UserPaymentDetailScreen extends StatelessWidget {
                 .responseError(context, UserApiType.paymentResultDetail, ref);
             return Text('error');
           }
-          final model = (result as ResponseModel<MyPaymentDetailModel>).data!;
-          final approvedAt = DateTimeUtil.parseDateTime(model.approved_at);
-          final String? canceledAt = model.canceled_at != null
-              ? DateTimeUtil.parseDateTime(model.canceled_at!)
+          final model = (result as ResponseModel<PaymentResultResponse>).data!;
+          final approvedAt = DateTimeUtil.parseDateTime(model.approvedAt);
+          final String? canceledAt = model.canceledAt != null
+              ? DateTimeUtil.parseDateTime(model.canceledAt!)
               : null;
           return Column(
             children: [
@@ -132,12 +133,12 @@ class _CancelInfoComponent extends StatelessWidget {
   });
 
   factory _CancelInfoComponent.fromModel(
-      {required MyPaymentDetailModel model}) {
+      {required PaymentResultResponse model}) {
     return _CancelInfoComponent(
-      total_amount: model.total_amount,
-      tax_free_amount: model.tax_free_amount,
-      canceled_total_amount: model.canceled_total_amount ?? 0,
-      canceled_tax_free_amount: model.canceled_tax_free_amount ?? 0,
+      total_amount: model.totalAmount,
+      tax_free_amount: model.taxFreeAmount,
+      canceled_total_amount: model.canceledTotalAmount ?? 0,
+      canceled_tax_free_amount: model.canceledTaxFreeAmount ?? 0,
     );
   }
 
@@ -237,45 +238,49 @@ class _CancelInfoComponent extends StatelessWidget {
 
 class _PaymentSimpleInfoComponent extends StatelessWidget {
   final int id;
-  final PaymentResultType status;
-  final ItemType item_type;
-  final PaymentMethodType payment_method;
-  final String item_name;
-  final int total_amount;
-  final int tax_free_amount;
-  final int? canceled_total_amount;
-  final int? canceled_tax_free_amount;
-  final PaymentCancelationReasonType? cancelation_reason;
-  final String approved_at;
-  final String? canceled_at;
+  final ItemType itemType;
+  final PaymentResultStatusType status;
+  final PaymentMethodType paymentMethod;
+  final int quantity;
+  final String itemName;
+  final int totalAmount;
+  final int taxFreeAmount;
+  final int? canceledTotalAmount;
+  final int? canceledTaxFreeAmount;
+  final String approvedAt;
+  final String? canceledAt;
 
   const _PaymentSimpleInfoComponent({
     super.key,
     required this.id,
+    required this.itemType,
     required this.status,
-    required this.item_type,
-    required this.payment_method,
-    required this.item_name,
-    required this.total_amount,
-    required this.tax_free_amount,
-    this.canceled_total_amount,
-    this.canceled_tax_free_amount,
-    this.cancelation_reason,
-    required this.approved_at,
-    this.canceled_at,
+    required this.paymentMethod,
+    required this.quantity,
+    required this.itemName,
+    required this.totalAmount,
+    required this.taxFreeAmount,
+    this.canceledTotalAmount,
+    this.canceledTaxFreeAmount,
+    required this.approvedAt,
+    this.canceledAt,
   });
 
   factory _PaymentSimpleInfoComponent.fromDetailModel(
-      {required MyPaymentDetailModel model}) {
+      {required PaymentResultResponse model}) {
     return _PaymentSimpleInfoComponent(
       id: model.id,
+      itemType: model.itemType,
       status: model.status,
-      item_type: model.item_type,
-      payment_method: model.payment_method,
-      approved_at: model.approved_at,
-      total_amount: model.total_amount,
-      item_name: model.item_name,
-      tax_free_amount: model.tax_free_amount,
+      paymentMethod: model.paymentMethod,
+      quantity: model.quantity,
+      itemName: model.itemName,
+      totalAmount: model.totalAmount,
+      taxFreeAmount: model.taxFreeAmount,
+      canceledTotalAmount: model.canceledTotalAmount,
+      canceledTaxFreeAmount: model.canceledTaxFreeAmount,
+      approvedAt: model.approvedAt,
+      canceledAt: model.canceledAt,
     );
   }
 
@@ -288,14 +293,14 @@ class _PaymentSimpleInfoComponent extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                item_type.value,
+                itemType.value,
                 style: MITITextStyle.xxsm.copyWith(
                   color: MITIColor.gray100,
                 ),
               ),
               SizedBox(height: 8.h),
               Text(
-                item_name,
+                itemName,
                 style: MITITextStyle.xxsm.copyWith(
                   color: MITIColor.gray100,
                 ),
@@ -306,7 +311,7 @@ class _PaymentSimpleInfoComponent extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    payment_method.displayName,
+                    paymentMethod.displayName,
                     style: MITITextStyle.xxsmLight.copyWith(
                       color: MITIColor.gray400,
                     ),
@@ -321,7 +326,7 @@ class _PaymentSimpleInfoComponent extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    status.displayName,
+                    status.name,
                     style: MITITextStyle.xxsmLight.copyWith(
                       color: MITIColor.gray400,
                     ),
@@ -333,9 +338,9 @@ class _PaymentSimpleInfoComponent extends StatelessWidget {
         ),
         SizedBox(width: 50.w),
         Text(
-          total_amount == 0
+          totalAmount == 0
               ? '무료'
-              : '${NumberUtil.format(total_amount.toString())}원',
+              : '${NumberUtil.format(totalAmount.toString())}원',
           style: MITITextStyle.lg.copyWith(
             color: MITIColor.gray100,
           ),

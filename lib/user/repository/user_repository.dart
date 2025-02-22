@@ -19,6 +19,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../../game/model/v2/game/base_game_court_by_date_response.dart';
 import '../../game/model/v2/payment/base_payment_result_response.dart';
+import '../../game/model/v2/payment/payment_result_response.dart';
 import '../model/v2/base_player_profile_response.dart';
 import '../model/v2/base_user_profile_response.dart';
 import '../model/v2/user_info_response.dart';
@@ -109,9 +110,10 @@ abstract class UserRepository {
     @Path() required int reviewId,
   });
 
+  /// 결제 내역 상세 조회 API
   @Headers({'token': 'true'})
   @GET('/users/{userId}/payment-results/{paymentResultId}')
-  Future<ResponseModel<MyPaymentDetailModel>> getPaymentResultDetail({
+  Future<ResponseModel<PaymentResultResponse>> getPaymentResultDetail({
     @Path() required int userId,
     @Path() required int paymentResultId,
   });
@@ -126,8 +128,8 @@ final userParticipationPRepositoryProvider =
 });
 
 @RestApi()
-abstract class UserParticipationPRepository
-    extends IBasePaginationRepository<BaseGameCourtByDateResponse, UserGameParam> {
+abstract class UserParticipationPRepository extends IBasePaginationRepository<
+    BaseGameCourtByDateResponse, UserGameParam> {
   factory UserParticipationPRepository(Dio dio, {String baseUrl}) =
       _UserParticipationPRepository;
 
@@ -198,8 +200,8 @@ final userHostingPRepositoryProvider = Provider<UserHostingPRepository>((ref) {
 });
 
 @RestApi()
-abstract class UserHostingPRepository
-    extends IBasePaginationRepository<BaseGameCourtByDateResponse, UserGameParam> {
+abstract class UserHostingPRepository extends IBasePaginationRepository<
+    BaseGameCourtByDateResponse, UserGameParam> {
   factory UserHostingPRepository(Dio dio, {String baseUrl}) =
       _UserHostingPRepository;
 
@@ -222,8 +224,8 @@ final userPaymentPRepositoryProvider = Provider<UserPaymentPRepository>((ref) {
 });
 
 @RestApi()
-abstract class UserPaymentPRepository
-    extends IBasePaginationRepository<BasePaymentResultResponse, UserPaymentParam> {
+abstract class UserPaymentPRepository extends IBasePaginationRepository<
+    BasePaymentResultResponse, UserPaymentParam> {
   factory UserPaymentPRepository(Dio dio, {String baseUrl}) =
       _UserPaymentPRepository;
 
