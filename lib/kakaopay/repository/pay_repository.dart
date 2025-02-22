@@ -27,18 +27,14 @@ final payRepositoryProvider = Provider<PayRepository>((ref) {
 abstract class PayRepository {
   factory PayRepository(Dio dio, {String baseUrl}) = _PayRepository;
 
-  // @Headers({'token': 'true'})
-  // @POST('/games/{gameId}/participations')
-  // Future<ResponseModel<PayBaseModel>> readyPay(
-  //     {@Path() required int gameId,
-  //     @Query('payment_method') required PaymentMethodType type});
-
   @Headers({'token': 'true'})
   @POST('/payments/kakao/approve/{requestId}')
   Future<ResponseModel<PayApprovalModel>> approvalPay(
       {@Query('pg_token') required String pgToken,
       @Path() required int requestId});
 
+
+  /// 경기 참여 요청 API - 유료 경기, 무료 경기
   @Headers({'token': 'true'})
   @POST('/games/{gameId}/participations')
   Future<ResponseModel<PayBaseModel>> requestBootPay(

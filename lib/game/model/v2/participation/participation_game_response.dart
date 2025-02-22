@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:miti/common/model/entity_enum.dart';
+import 'package:miti/kakaopay/model/pay_model.dart';
 import '../../../../user/model/v2/base_user_response.dart';
 import '../game/base_game_response.dart';
 import 'base_participation_response.dart';
@@ -7,7 +8,8 @@ import 'base_participation_response.dart';
 part 'participation_game_response.g.dart';
 
 @JsonSerializable()
-class ParticipationGameResponse extends BaseParticipationResponse {
+class ParticipationGameResponse extends BaseParticipationResponse
+    implements PayBaseModel {
   final BaseGameResponse game;
 
   ParticipationGameResponse({

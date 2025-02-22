@@ -61,24 +61,24 @@ Future<BaseModel> approvalPay(ApprovalPayRef ref,
   });
 }
 
-@Riverpod()
-Future<BaseModel> requestBootPay(RequestBootPayRef ref,
-    {required int gameId}) async {
-  final repository = ref.watch(payRepositoryProvider);
-  return repository
-      .requestBootPay(gameId: gameId)
-      .then<BaseModel>((value) async {
-    logger.i('requestBootPay!');
-    final model = value.data!;
-
-    return value;
-  }).catchError((e) {
-    final error = ErrorModel.respToError(e);
-    logger.e(
-        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
-    return error;
-  });
-}
+// @Riverpod()
+// Future<BaseModel> requestBootPay(RequestBootPayRef ref,
+//     {required int gameId}) async {
+//   final repository = ref.watch(payRepositoryProvider);
+//   return repository
+//       .requestBootPay(gameId: gameId)
+//       .then<BaseModel>((value) async {
+//     logger.i('requestBootPay!');
+//     final model = value.data!;
+//
+//     return value;
+//   }).catchError((e) {
+//     final error = ErrorModel.respToError(e);
+//     logger.e(
+//         'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+//     return error;
+//   });
+// }
 
 @Riverpod()
 Future<BaseModel> approveBootPay(ApproveBootPayRef ref,

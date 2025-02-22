@@ -11,6 +11,8 @@ import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../common/model/entity_enum.dart';
+import '../../user/model/v2/user_guest_player_response.dart';
+import '../model/v2/participation/participation_guest_player_response.dart';
 
 class GameParticipationScreen extends StatelessWidget {
   static String get routeName => 'participation';
@@ -36,7 +38,7 @@ class GameParticipationScreen extends StatelessWidget {
               return Text('error');
             }
             final model =
-                (result as ResponseListModel<GameParticipationPlayerModel>)
+                (result as ResponseListModel<ParticipationGuestPlayerResponse>)
                     .data!;
             log('model length = ${model.length}');
 
@@ -58,21 +60,21 @@ class GameParticipationScreen extends StatelessWidget {
 
 class _ParticipationPlayerCard extends StatelessWidget {
   final int id;
-  final ParticipationStatusType participation_status;
-  final PlayerModel user;
+  final ParticipationStatusType participationStatus;
+  final UserGuestPlayerResponse user;
 
   const _ParticipationPlayerCard({
     super.key,
     required this.id,
-    required this.participation_status,
+    required this.participationStatus,
     required this.user,
   });
 
   factory _ParticipationPlayerCard.fromModel(
-      {required GameParticipationPlayerModel model}) {
+      {required ParticipationGuestPlayerResponse model}) {
     return _ParticipationPlayerCard(
       id: model.id,
-      participation_status: model.participation_status,
+      participationStatus: model.participationStatus,
       user: model.user,
     );
   }

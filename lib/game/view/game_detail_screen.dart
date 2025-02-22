@@ -39,11 +39,17 @@ import '../../court/view/court_detail_screen.dart';
 import '../../court/view/court_map_screen.dart';
 import '../../default_screen.dart';
 import '../../report/view/report_list_screen.dart';
+import '../../review/model/v2/base_guest_rating_response.dart';
+import '../../user/model/v2/user_host_rating_response.dart';
 import '../../user/view/profile_screen.dart';
 import '../../user/model/review_model.dart';
 import '../../util/util.dart';
 import '../component/skeleton/game_detail_skeleton.dart';
 import '../model/game_refund_model.dart';
+import '../model/v2/game/game_detail_response.dart';
+import '../model/v2/game/game_participation_payment_detail_response.dart';
+import '../model/v2/game/game_with_court_response.dart';
+import '../model/v2/participation/base_participation_response.dart';
 import 'gaem_participation_screen.dart';
 import 'game_payment_screen.dart';
 import 'game_screen.dart';
@@ -100,9 +106,9 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
       floatingActionButtonLocation: ExpandableFab.location,
       floatingActionButton: Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
-          GameDetailModel? model;
+          GameDetailResponse? model;
           final result = ref.watch(gameDetailProvider(gameId: widget.gameId));
-          if (result is ResponseModel<GameDetailModel>) {
+          if (result is ResponseModel<GameDetailResponse>) {
             model = result.data!;
           }
           return ShareFabComponent(
@@ -122,7 +128,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
           } else if (result is ErrorModel) {
             return const SizedBox(height: 0);
           }
-          result as ResponseModel<GameDetailModel>;
+          result as ResponseModel<GameDetailResponse>;
           final model = result.data!;
           final button = getBottomButton(model, ref, context);
           return button != null
@@ -154,7 +160,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                       .responseError(context, GameApiType.get, ref));
               return Text('에러입니다.');
             }
-            result as ResponseModel<GameDetailModel>;
+            result as ResponseModel<GameDetailResponse>;
             final model = result.data!;
             // log('model is_host ${model.is_host} model.is_participated = ${model.is_participated}');
 
@@ -214,7 +220,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
   }
 
   Widget? getBottomButton(
-      GameDetailModel model, WidgetRef ref, BuildContext context) {
+      GameDetailResponse model, WidgetRef ref, BuildContext context) {
     Widget? button;
     final buttonTextStyle = MITITextStyle.btnTextBStyle.copyWith(
       color: Colors.white,
@@ -498,7 +504,7 @@ class InfoComponent extends StatelessWidget {
 
 class UserShortInfoComponent extends StatelessWidget {
   final String nickname;
-  final Rating rating;
+  final BaseRatingResponse rating;
 
   // final bool isHost;
 
@@ -518,10 +524,10 @@ class UserShortInfoComponent extends StatelessWidget {
   }
 
   factory UserShortInfoComponent.fromHostModel(
-      {required UserReviewModel model}) {
+      {required UserHostRatingResponse model}) {
     return UserShortInfoComponent(
       nickname: model.nickname,
-      rating: model.rating.host_rating,
+      rating: model.hostRating,
     );
   }
 
@@ -581,17 +587,17 @@ class UserShortInfoComponent extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            ...getStar(rating.average_rating ?? 0),
+                            ...getStar(rating.averageRating ?? 0),
                             SizedBox(width: 6.w),
                             Text(
-                              rating.average_rating?.toStringAsFixed(1) ?? '0',
+                              rating.averageRating?.toStringAsFixed(1) ?? '0',
                               style: MITITextStyle.sm.copyWith(
                                 color: MITIColor.gray100,
                               ),
                             ),
                             SizedBox(width: 6.w),
                             Text(
-                              '리뷰 ${rating.num_of_reviews}',
+                              '리뷰 ${rating.numOfReviews}',
                               style: MITITextStyle.sm.copyWith(
                                   color: MITIColor.gray100,
                                   decoration: TextDecoration.underline,
@@ -633,20 +639,21 @@ class ParticipationComponent extends StatelessWidget {
   final int gameId;
   final int max_invitation;
   final int num_of_confirmed_participations;
-  final List<ConfirmedParticipationModel> confimed_participations;
+  final List<BaseParticipationResponse> participations;
 
   const ParticipationComponent(
       {super.key,
-      required this.confimed_participations,
+      required this.participations,
       required this.max_invitation,
       required this.num_of_confirmed_participations,
       required this.gameId});
 
-  factory ParticipationComponent.fromModel({required GameDetailModel model}) {
+  factory ParticipationComponent.fromModel(
+      {required GameDetailResponse model}) {
     return ParticipationComponent(
-      confimed_participations: model.confirmed_participations,
+      participations: model.participations,
       max_invitation: model.max_invitation,
-      num_of_confirmed_participations: model.num_of_confirmed_participations,
+      num_of_confirmed_participations: model.num_of_participations,
       gameId: model.id,
     );
   }
@@ -691,22 +698,22 @@ class ParticipationComponent extends StatelessWidget {
             ),
           ),
           SizedBox(height: 20.h),
-          if (confimed_participations.isNotEmpty)
+          if (participations.isNotEmpty)
             SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    ...confimed_participations.mapIndexed((idx, e) => Row(
+                    ...participations.mapIndexed((idx, e) => Row(
                           children: [
                             _GuestTile(
-                              name: confimed_participations[idx].user.nickname,
+                              name: participations[idx].user.nickname,
                             ),
                             SizedBox(width: 12.w),
                           ],
                         )),
                   ],
                 )),
-          if (confimed_participations.isEmpty)
+          if (participations.isEmpty)
             SizedBox(
               height: 56.h,
               child: Align(
@@ -762,7 +769,7 @@ class SummaryComponent extends StatelessWidget {
   final String? fee;
   final String duration;
   final int max_invitation;
-  final int num_of_confirmed_participations;
+  final int num_of_participations;
   final int? gameId;
   final bool isUpdateForm;
 
@@ -774,14 +781,14 @@ class SummaryComponent extends StatelessWidget {
       required this.address,
       this.fee,
       required this.max_invitation,
-      required this.num_of_confirmed_participations,
+      required this.num_of_participations,
       this.bankStatus,
       required this.duration,
       this.gameId,
       this.isUpdateForm = false});
 
   factory SummaryComponent.fromDetailModel(
-      {required GameDetailModel model, bool isUpdateForm = false}) {
+      {required GameDetailResponse model, bool isUpdateForm = false}) {
     final start = DateTime.parse("${model.startdate} ${model.starttime}");
     final end = DateTime.parse("${model.enddate} ${model.endtime}");
 
@@ -794,8 +801,7 @@ class SummaryComponent extends StatelessWidget {
     final gameDate = startDate == endDate
         ? '$startDate $time'
         : '$startDate ${model.starttime.substring(0, 5)} ~ $endDate ${model.endtime.substring(0, 5)}';
-    final address =
-        '${model.court.address} ${model.court.address_detail ?? ''}';
+    final address = '${model.court.address} ${model.court.addressDetail ?? ''}';
     return SummaryComponent(
       gameId: model.id,
       gameStatus: model.game_status,
@@ -804,60 +810,60 @@ class SummaryComponent extends StatelessWidget {
       address: address,
       fee: NumberUtil.format(model.fee.toString()),
       max_invitation: model.max_invitation,
-      num_of_confirmed_participations: model.num_of_confirmed_participations,
+      num_of_participations: model.num_of_participations,
       duration: end.difference(start).inMinutes.toString(),
       isUpdateForm: isUpdateForm,
     );
   }
 
-  factory SummaryComponent.fromPaymentModel({required GamePaymentModel model}) {
-    final start = DateTime.parse("${model.startdate} ${model.starttime}");
-    final end = DateTime.parse("${model.enddate} ${model.endtime}");
-    final startDate = model.startdate.replaceAll('-', '. ');
-    final endDate = model.startdate.replaceAll('-', '. ');
+  factory SummaryComponent.fromPaymentModel(
+      {required GameParticipationPaymentDetailResponse model}) {
+    final start = DateTime.parse("${model.startDate} ${model.startTime}");
+    final end = DateTime.parse("${model.endDate} ${model.endTime}");
+    final startDate = model.startDate.replaceAll('-', '. ');
+    final endDate = model.endDate.replaceAll('-', '. ');
 
     final time =
-        '${model.starttime.substring(0, 5)} ~ ${model.endtime.substring(0, 5)}';
+        '${model.startTime.substring(0, 5)} ~ ${model.endTime.substring(0, 5)}';
     final gameDate = startDate == endDate
         ? '$startDate $time'
-        : '$startDate ${model.starttime.substring(0, 5)} ~ $endDate ${model.endtime.substring(0, 5)}';
-    final address =
-        '${model.court.address} ${model.court.address_detail ?? ''}';
+        : '$startDate ${model.startTime.substring(0, 5)} ~ $endDate ${model.endTime.substring(0, 5)}';
+    final address = '${model.court.address} ${model.court.addressDetail ?? ''}';
     return SummaryComponent(
-      gameStatus: model.game_status,
+      gameStatus: model.gameStatus,
       title: model.title,
       gameDate: gameDate,
       address: address,
       fee: NumberUtil.format(
-          model.payment_information.payment_amount.game_fee_amount.toString()),
-      max_invitation: model.max_invitation,
-      num_of_confirmed_participations: model.num_of_confirmed_participations,
+          model.paymentInformation.paymentAmount.gameFeeAmount.toString()),
+      max_invitation: model.maxInvitation,
+      num_of_participations: model.numOfParticipations,
       duration: end.difference(start).inMinutes.toString(),
     );
   }
 
-  factory SummaryComponent.fromRefundModel({required GameRefundModel model}) {
-    final start = DateTime.parse("${model.startdate} ${model.starttime}");
-    final end = DateTime.parse("${model.enddate} ${model.endtime}");
-    final startDate = model.startdate.replaceAll('-', '. ');
-    final endDate = model.startdate.replaceAll('-', '. ');
+  factory SummaryComponent.fromRefundModel({required GameWithCourtResponse model}) {
+    final start = DateTime.parse("${model.startDate} ${model.startTime}");
+    final end = DateTime.parse("${model.endDate} ${model.endTime}");
+    final startDate = model.startDate.replaceAll('-', '. ');
+    final endDate = model.endDate.replaceAll('-', '. ');
 
     final time =
-        '${model.starttime.substring(0, 5)} ~ ${model.endtime.substring(0, 5)}';
+        '${model.startTime.substring(0, 5)} ~ ${model.endTime.substring(0, 5)}';
     final gameDate = startDate == endDate
         ? '$startDate $time'
-        : '$startDate ${model.starttime.substring(0, 5)} ~ $endDate ${model.endtime.substring(0, 5)}';
+        : '$startDate ${model.startTime.substring(0, 5)} ~ $endDate ${model.endTime.substring(0, 5)}';
     final address =
-        '${model.court.address} ${model.court.address_detail ?? ''}';
+        '${model.court.address} ${model.court.addressDetail ?? ''}';
     return SummaryComponent(
-      gameStatus: model.game_status,
+      gameStatus: model.gameStatus,
       title: model.title,
       gameDate: gameDate,
       address: address,
       // fee: NumberUtil.format(
       //     model.payment_information.payment_amount.game_fee_amount.toString()),
-      max_invitation: model.max_invitation,
-      num_of_confirmed_participations: model.num_of_participations,
+      max_invitation: model.maxInvitation,
+      num_of_participations: model.numOfParticipations,
       duration: end.difference(start).inMinutes.toString(),
     );
   }
@@ -980,7 +986,7 @@ class SummaryComponent extends StatelessWidget {
     final desc = [
       "$duration분 경기",
       address,
-      "$num_of_confirmed_participations / $max_invitation"
+      "$num_of_participations / $max_invitation"
     ];
     final svgPath = ["clock", "map_pin", "people"];
 

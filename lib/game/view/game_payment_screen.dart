@@ -43,6 +43,9 @@ import '../../env/environment.dart';
 import '../../kakaopay/param/boot_pay_approve_param.dart';
 import '../component/skeleton/game_payment_skeleton.dart';
 import '../error/game_error.dart';
+import '../model/v2/game/game_participation_payment_detail_response.dart';
+import '../model/v2/game/game_participation_payment_response.dart';
+import '../model/v2/payment/base_payment_request_response.dart';
 import 'game_create_complete_screen.dart';
 import 'game_detail_screen.dart';
 import 'package:collection/collection.dart';
@@ -113,14 +116,14 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
   @override
   Widget build(BuildContext context) {
     final result = ref.watch(paymentProvider(gameId: widget.gameId));
-    GamePaymentModel? model;
+    GameParticipationPaymentDetailResponse? model;
 
-    if (result is ResponseModel<GamePaymentModel>) {
+    if (result is ResponseModel<GameParticipationPaymentDetailResponse>) {
       model = result.data!;
     }
 
     log('result type = ${result.runtimeType}');
-    final fee = model?.payment_information.final_payment_amount;
+    final fee = model?.paymentInformation.finalPaymentAmount;
     type = model?.isFreeGame == null || model!.isFreeGame
         ? PaymentMethodType.empty_pay
         : PaymentMethodType.kakao;
@@ -201,9 +204,9 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
                   }
 
                   final model =
-                      (result as ResponseModel<GamePaymentModel>).data!;
+                      (result as ResponseModel<GameParticipationPaymentDetailResponse>).data!;
                   final visiblePay = model
-                          .payment_information.payment_amount.game_fee_amount !=
+                          .paymentInformation.paymentAmount.gameFeeAmount !=
                       0;
                   return SingleChildScrollView(
                     child: Column(
@@ -211,7 +214,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
                         SummaryComponent.fromPaymentModel(model: model),
                         getDivider(),
                         PaymentComponent.fromModel(
-                            model: model.payment_information),
+                            model: model.paymentInformation),
                         // Visibility(
                         //     visible: visiblePay,
                         //     child: Column(
@@ -269,7 +272,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
             );
             break;
           default:
-            final model = payBaseModel as BootPayRequestModel;
+            final model = payBaseModel as BasePaymentRequestResponse;
             bootpayReqeustDataInit(model);
             goBootpayTest(context);
             break;
@@ -282,7 +285,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
     }
   }
 
-  bootpayReqeustDataInit(BootPayRequestModel model) {
+  bootpayReqeustDataInit(BasePaymentRequestResponse model) {
     // Item item1 = Item();
     // item1.name = "미키 '마우스"; // 주문정보에 담길 상품명
     // item1.qty = 1; // 해당 상품의 주문 수량
@@ -292,14 +295,14 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
     // List<Item>? itemList = [item1];
     // payload.items = itemList; // 상품정보 배열
 
-    payload.orderName = model.orderName; //결제할 상품명
-    payload.price = model.price.toDouble(); //정기결제시 0 혹은 주석
-    payload.taxFree = model.taxFree.toDouble();
+    payload.orderName = model.itemName; //결제할 상품명
+    payload.price = model.totalAmount.toDouble(); //정기결제시 0 혹은 주석
+    payload.taxFree = model.taxFreeAmount.toDouble();
     payload.orderId = model.orderId; //주문번호, 개발사에서 고유값으로 지정해야함
 
-    User user = User(); // 구매자 정보
-    user.username = model.user.username;
-    user.phone = model.user.phone;
+    // User user = User(); // 구매자 정보
+    // user.username = model.user.username;
+    // user.phone = model.user.phone;
 
     payload.webApplicationId = webApplicationId; // web application id
     payload.androidApplicationId =
@@ -607,19 +610,19 @@ class PaymentComponent extends StatelessWidget {
       required this.promotion_amount,
       required this.final_payment_amount});
 
-  factory PaymentComponent.fromModel({required PaymentModel model}) {
-    final payment = model.payment_amount;
+  factory PaymentComponent.fromModel({required GameParticipationPaymentResponse model}) {
+    final payment = model.paymentAmount;
     final game_fee_amount =
-        NumberFormat.decimalPattern().format(payment.game_fee_amount);
+        NumberFormat.decimalPattern().format(payment.gameFeeAmount);
     final miti_commission_amount =
-        NumberFormat.decimalPattern().format(payment.commission_amount);
-    final vat_amount = NumberFormat.decimalPattern().format(payment.vat_amount);
+        NumberFormat.decimalPattern().format(payment.commissionAmount);
+    final vat_amount = NumberFormat.decimalPattern().format(payment.vatAmount);
     final totalAmount =
-        NumberFormat.decimalPattern().format(payment.total_amount);
+        NumberFormat.decimalPattern().format(payment.totalAmount);
     final promotion_amount = NumberFormat.decimalPattern()
-        .format(model.discount_amount.promotion_amount);
+        .format(model.discountAmount.promotionAmount);
     final final_payment_amount =
-        NumberFormat.decimalPattern().format(model.final_payment_amount);
+        NumberFormat.decimalPattern().format(model.finalPaymentAmount);
     return PaymentComponent(
       game_fee_amount: game_fee_amount,
       commission_amount: miti_commission_amount,

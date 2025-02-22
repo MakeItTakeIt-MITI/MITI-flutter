@@ -17,6 +17,7 @@ import '../../dio/provider/dio_provider.dart';
 import '../../game/model/game_model.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import '../../game/model/v2/game/base_game_court_by_date_response.dart';
 import '../model/v2/base_player_profile_response.dart';
 import '../model/v2/base_user_profile_response.dart';
 import '../model/v2/user_info_response.dart';
@@ -125,14 +126,15 @@ final userParticipationPRepositoryProvider =
 
 @RestApi()
 abstract class UserParticipationPRepository
-    extends IBasePaginationRepository<GameListByDateModel, UserGameParam> {
+    extends IBasePaginationRepository<BaseGameCourtByDateResponse, UserGameParam> {
   factory UserParticipationPRepository(Dio dio, {String baseUrl}) =
       _UserParticipationPRepository;
 
+  /// 참여 경기 목록 조회 API
   @override
   @Headers({'token': 'true'})
   @GET('/users/{userId}/participated-games')
-  Future<ResponseModel<PaginationModel<GameListByDateModel>>> paginate({
+  Future<ResponseModel<PaginationModel<BaseGameCourtByDateResponse>>> paginate({
     @Queries() required PaginationParam paginationParams,
     @Queries() UserGameParam? param,
     @Path('userId') int? path,
@@ -196,14 +198,15 @@ final userHostingPRepositoryProvider = Provider<UserHostingPRepository>((ref) {
 
 @RestApi()
 abstract class UserHostingPRepository
-    extends IBasePaginationRepository<GameListByDateModel, UserGameParam> {
+    extends IBasePaginationRepository<BaseGameCourtByDateResponse, UserGameParam> {
   factory UserHostingPRepository(Dio dio, {String baseUrl}) =
       _UserHostingPRepository;
 
+  /// 호스팅 경기 목록 조회 API
   @override
   @Headers({'token': 'true'})
   @GET('/users/{userId}/hosted-games')
-  Future<ResponseModel<PaginationModel<GameListByDateModel>>> paginate({
+  Future<ResponseModel<PaginationModel<BaseGameCourtByDateResponse>>> paginate({
     @Queries() required PaginationParam paginationParams,
     @Queries() UserGameParam? param,
     @Path('userId') int? path,

@@ -73,7 +73,7 @@ class UserPlayerProfileScreen extends StatelessWidget {
             // } else if (result is ErrorModel) {
             //   return Text("error");
             // }
-            // final model = (result as ResponseModel<UserPlayerProfileModel>)
+            // final model = (result as ResponseModel<UserPlayerProfileResponse>)
             //     .data!
             //     .playerProfile;
             return Container(

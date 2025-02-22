@@ -15,6 +15,12 @@ import '../model/game_player_model.dart';
 import '../model/game_recent_host_model.dart';
 import '../model/game_review_model.dart';
 import '../model/v2/game/base_game_with_court_response.dart';
+import '../model/v2/game/game_detail_response.dart';
+import '../model/v2/game/game_participation_payment_detail_response.dart';
+import '../model/v2/game/game_with_court_map_response.dart';
+import '../model/v2/participation/participation_game_response.dart';
+import '../model/v2/participation/participation_guest_player_response.dart';
+import '../model/v2/payment/participation_refund_info_response.dart';
 import '../param/game_param.dart';
 
 part 'game_repository.g.dart';
@@ -30,40 +36,42 @@ final gameRepositoryProvider = Provider<GameRepository>((ref) {
 abstract class GameRepository {
   factory GameRepository(Dio dio, {String baseUrl}) = _GameRepository;
 
-  // @Headers({'token': 'true'})
-  @GET('/games')
-  Future<ResponseListModel<GameModel>> getGameList(
+  @GET('/games/map')
+  Future<ResponseListModel<GameWithCourtMapResponse>> getMapGameList(
       {@Queries() required GameListParam param});
 
+  /// 경기 상세 조회 API
   @Headers({'token': 'true', 'required': 'false'})
   @GET('/games/{gameId}')
-  Future<ResponseModel<GameDetailModel>> getGameDetail(
+  Future<ResponseModel<GameDetailResponse>> getGameDetail(
       {@Path() required int gameId});
 
+  /// 경기 무료 전환 API
   @Headers({'token': 'true'})
   @PATCH('/games/{gameId}/convert-free-game')
-  Future<ResponseModel<GameDetailModel>> freeGame(
+  Future<ResponseModel<GameDetailResponse>> freeGame(
       {@Path() required int gameId});
 
   /// 경기 모집 생성 API
   @Headers({'token': 'true'})
   @POST('/games')
-  Future<ResponseModel<GameDetailModel>> createGame(
+  Future<ResponseModel<GameDetailResponse>> createGame(
       {@Body() required GameCreateParam param});
 
   /// 경기 정보 수정 API
   @Headers({'token': 'true'})
   @PATCH('/games/{gameId}')
-  Future<ResponseModel<GameDetailModel>> updateGame(
+  Future<ResponseModel<GameDetailResponse>> updateGame(
       {@Body() required GameUpdateParam param, @Path() required int gameId});
 
   @Headers({'token': 'true'})
   @GET('/games/{gameId}/host')
   Future<ResponseModel<UserReviewModel>> getHost({@Path() required int gameId});
 
+  /// 경기 참여 결제 정보 조회 API
   @Headers({'token': 'true'})
   @GET('/games/{gameId}/payment-info')
-  Future<ResponseModel<GamePaymentModel>> getPayment(
+  Future<ResponseModel<GameParticipationPaymentDetailResponse>> getPayment(
       {@Path() required int gameId});
 
   /// 경기 피리뷰자 목록 조회 API
@@ -72,16 +80,18 @@ abstract class GameRepository {
   Future<ResponseModel<GameRevieweesModel>> getReviewees(
       {@Path() required int gameId});
 
+  /// 경기 참여 취소 및 환불 API
   @Headers({'token': 'true'})
   @DELETE('/games/{gameId}/participations/{participationId}')
-  Future<ResponseModel<ParticipationModel>> cancelGame({
+  Future<ResponseModel<ParticipationGameResponse>> cancelGame({
     @Path('gameId') required int gameId,
     @Path('participationId') required int participationId,
   });
 
+  /// 경기 참여 환불 정보 조회 API
   @Headers({'token': 'true'})
   @GET('/games/{gameId}/participations/{participationId}/refund-info')
-  Future<ResponseModel<RefundModel>> refundInfo({
+  Future<ResponseModel<ParticipationRefundInfoResponse>> refundInfo({
     @Path('gameId') required int gameId,
     @Path('participationId') required int participationId,
   });
@@ -102,7 +112,7 @@ abstract class GameRepository {
   /// 경기 모집 취소 API
   @Headers({'token': 'true'})
   @PUT('/games/{gameId}/cancel')
-  Future<ResponseModel<GameDetailModel>> cancelRecruitGame({
+  Future<ResponseModel<GameDetailResponse>> cancelRecruitGame({
     @Path('gameId') required int gameId,
   });
 
@@ -127,7 +137,7 @@ abstract class GameRepository {
   /// 경기 참가자 선수 프로필 목록 조회 API
   @Headers({'token': 'true'})
   @GET('/games/{gameId}/participations')
-  Future<ResponseListModel<GameParticipationPlayerModel>>
+  Future<ResponseListModel<ParticipationGuestPlayerResponse>>
       getParticipationProfile({
     @Path() required int gameId,
   });
@@ -145,4 +155,20 @@ abstract class GameRepository {
   @GET('/games/{gameId}/reviews/{reviewId}')
   Future<ResponseModel<ReviewDetailModel>> getHostReview(
       {@Path() required int gameId, @Path() required int reviewId});
+}
+
+/// 경기 리스트 목록 조회 API
+/// todo 파라미터, 프로바이터
+@RestApi()
+abstract class GamePRepository extends IBasePaginationRepository<
+    GameWithCourtMapResponse, UserPaymentParam> {
+  factory GamePRepository(Dio dio, {String baseUrl}) = _GamePRepository;
+
+  @override
+  @GET('/games/list')
+  Future<ResponseModel<PaginationModel<GameWithCourtMapResponse>>> paginate({
+    @Queries() required PaginationParam paginationParams,
+    @Queries() UserPaymentParam? param,
+    @Path('userId') int? path,
+  });
 }

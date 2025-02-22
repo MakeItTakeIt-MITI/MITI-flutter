@@ -21,6 +21,8 @@ import '../../common/component/default_layout.dart';
 import '../../common/provider/router_provider.dart';
 import '../error/game_error.dart';
 import '../model/game_payment_model.dart';
+import '../model/v2/payment/participation_refund_info_response.dart';
+import '../model/v2/payment/payment_refund_amount.dart';
 import 'game_create_screen.dart';
 import 'game_payment_screen.dart';
 
@@ -146,7 +148,9 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
 
               return const SliverToBoxAdapter(child: Text('에러'));
             }
-            final model = (result as ResponseModel<RefundModel>).data!;
+            final model =
+                (result as ResponseModel<ParticipationRefundInfoResponse>)
+                    .data!;
 
             return CustomScrollView(
               slivers: [
@@ -154,7 +158,7 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
                     child: SummaryComponent.fromRefundModel(model: model.game)),
                 getDivider(),
                 _RefundInfoComponent(
-                  model: model,
+                  model: model.refundInfo,
                 ),
                 getDivider(),
                 const SliverToBoxAdapter(
@@ -209,7 +213,7 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
 }
 
 class _RefundInfoComponent extends ConsumerWidget {
-  final RefundModel model;
+  final PaymentRefundAmount model;
 
   const _RefundInfoComponent({
     super.key,
@@ -238,18 +242,19 @@ class _RefundInfoComponent extends ConsumerWidget {
             SizedBox(height: 20.h),
             getPayment(
                 title: '경기 참여 비용',
-                fee: formatFee(model.payment_amount.total_amount)),
+                fee: formatFee(model.paymentAmount.totalAmount)),
             SizedBox(height: 12.h),
             getPayment(
               title: '결제 수수료',
-              fee: formatFee(model.commission_amount.payment_commission_amount),
+              fee: formatFee(
+                  model.refundCommissionAmount.paymentCommissionAmount),
               color: MITIColor.gray100,
             ),
             SizedBox(height: 12.h),
             getPayment(
               title: '참여 취소 수수료',
               fee: formatFee(
-                  model.commission_amount.cancelation_commission_amount),
+                  model.refundCommissionAmount.cancelationCommissionAmount),
               color: MITIColor.gray100,
             ),
             getDivider(),
@@ -263,7 +268,7 @@ class _RefundInfoComponent extends ConsumerWidget {
                   ),
                 ),
                 Text(
-                  '₩ ${formatFee(model.final_refund_amount)}',
+                  '₩ ${formatFee(model.finalRefundAmount)}',
                   style: MITITextStyle.mdBold.copyWith(
                     color: MITIColor.primary,
                   ),

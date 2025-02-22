@@ -43,6 +43,7 @@ import '../component/game_recent_component.dart';
 import '../model/game_model.dart';
 import '../model/game_recent_host_model.dart';
 import '../model/v2/game/base_game_with_court_response.dart';
+import '../model/v2/game/game_detail_response.dart';
 import '../param/game_param.dart';
 import 'game_create_complete_screen.dart';
 
@@ -406,7 +407,7 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
         GameError.fromModel(model: result)
             .responseError(context, GameApiType.createGame, ref);
       } else {
-        final model = result as ResponseModel<GameDetailModel>;
+        final model = result as ResponseModel<GameDetailResponse>;
         Map<String, String> pathParameters = {
           'gameId': model.data!.id.toString()
         };

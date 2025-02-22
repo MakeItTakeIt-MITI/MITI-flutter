@@ -21,6 +21,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../common/component/custom_dialog.dart';
 import '../../common/component/default_layout.dart';
 import '../../common/provider/router_provider.dart';
+import '../../game/model/v2/game/game_detail_response.dart';
 import '../../game/view/review_form_screen.dart';
 import '../../theme/text_theme.dart';
 import '../error/report_error.dart';
@@ -178,7 +179,7 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
             .responseError(context, ReportApiType.report, ref);
       } else {
         final model = (ref.read(gameDetailProvider(gameId: widget.gameId))
-                as ResponseModel<GameDetailModel>)
+                as ResponseModel<GameDetailResponse>)
             .data!;
         Map<String, String> pathParameters = {'gameId': model.id.toString()};
         context.goNamed(GameDetailScreen.routeName,

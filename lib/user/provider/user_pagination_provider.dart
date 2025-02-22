@@ -5,6 +5,7 @@ import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
 import '../../common/provider/pagination_provider.dart';
 import '../../game/model/game_model.dart';
+import '../../game/model/v2/game/base_game_court_by_date_response.dart';
 import '../model/review_model.dart';
 import '../param/user_profile_param.dart';
 import '../repository/user_repository.dart';
@@ -25,7 +26,7 @@ final userHostingPProvider = StateNotifierProvider.family.autoDispose<
 });
 
 class UserHostingPageStateNotifier extends PaginationProvider<
-    GameListByDateModel, UserGameParam, UserHostingPRepository> {
+    BaseGameCourtByDateResponse, UserGameParam, UserHostingPRepository> {
   UserHostingPageStateNotifier({
     required super.repository,
     required super.pageParams,
@@ -50,7 +51,7 @@ final userParticipationPProvider = StateNotifierProvider.family.autoDispose<
 });
 
 class UserParticipationPageStateNotifier extends PaginationProvider<
-    GameListByDateModel, UserGameParam, UserParticipationPRepository> {
+    BaseGameCourtByDateResponse, UserGameParam, UserParticipationPRepository> {
   UserParticipationPageStateNotifier({
     required super.repository,
     required super.pageParams,

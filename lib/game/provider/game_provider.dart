@@ -17,7 +17,7 @@ import '../../user/provider/user_pagination_provider.dart';
 part 'game_provider.g.dart';
 
 @Riverpod(keepAlive: false)
-class GameList extends _$GameList {
+class MapGameList extends _$MapGameList {
   @override
   BaseModel build() {
     getList();
@@ -28,7 +28,7 @@ class GameList extends _$GameList {
     state = LoadingModel();
     final repository = ref.watch(gameRepositoryProvider);
     final param = ref.read(gameFilterProvider);
-    repository.getGameList(param: param).then((value) {
+    repository.getMapGameList(param: param).then((value) {
       logger.i(value);
       ref.read(selectGameListProvider.notifier).update((state) => value.data!);
       state = value;

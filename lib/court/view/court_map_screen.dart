@@ -29,11 +29,13 @@ import 'package:collection/collection.dart';
 
 import '../../common/model/entity_enum.dart';
 import '../../game/model/game_model.dart';
+import '../../game/model/v2/game/game_with_court_map_response.dart';
 import '../../game/view/game_detail_screen.dart';
 import '../model/court_model.dart';
+import '../model/v2/court_map_response.dart';
 
 final selectGameListProvider =
-    StateProvider.autoDispose<List<GameModel>>((ref) => []);
+    StateProvider.autoDispose<List<GameWithCourtMapResponse>>((ref) => []);
 final selectMakerProvider = StateProvider.autoDispose<int?>((ref) => null);
 final scrollControllerProvider =
     StateProvider.autoDispose<ScrollController?>((ref) => null);
@@ -180,8 +182,8 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     final position = ref.watch(positionProvider);
     final select = ref.watch(selectMakerProvider);
 
-    ref.listen(gameListProvider, (previous, next) {
-      log("listen gameListProvider");
+    ref.listen(mapGameListProvider, (previous, next) {
+      log("listen mapGameListProvider");
       if (_mapController != null) {
         if (next is LoadingModel) {
         } else if (next is ErrorModel) {
@@ -409,7 +411,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     );
   }
 
-  Widget _getCourtComponent(List<GameModel> modelList) {
+  Widget _getCourtComponent(List<GameWithCourtMapResponse> modelList) {
     if (modelList.isEmpty) {
       return SliverToBoxAdapter(
           child: Column(
@@ -446,10 +448,10 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
 
   void refreshMarker(BaseModel response) async {
     // log('refreshMarker');
-    final model = (response as ResponseListModel<GameModel>).data!;
-    Map<MapPosition, List<GameModel>> markers = {};
+    final model = (response as ResponseListModel<GameWithCourtMapResponse>).data!;
+    Map<MapPosition, List<GameWithCourtMapResponse>> markers = {};
 
-    for (GameModel value in model) {
+    for (GameWithCourtMapResponse value in model) {
       final mapPosition = MapPosition(
           longitude: double.parse(value.court.longitude),
           latitude: double.parse(value.court.latitude));
@@ -466,13 +468,13 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     await _mapController?.clearOverlays();
     final List<MapMarkerModel> markerList = [];
     for (MapPosition key in markers.keys) {
-      final GameModel model = markers[key]!.first;
+      final GameWithCourtMapResponse model = markers[key]!.first;
       final fee = model.fee == 0
           ? "무료 경기"
           : '₩${NumberFormat.decimalPattern().format(model.fee)}';
 
       markerList.add(MapMarkerModel(
-          time: '${model.starttime.substring(0, 5)}~',
+          time: '${model.startTime.substring(0, 5)}~',
           cost: fee,
           moreCnt: markers[key]!.length,
           id: model.id,
@@ -572,7 +574,7 @@ class CourtCard extends StatelessWidget {
   final String enddate;
   final String endtime;
   final String fee;
-  final CourtModel? court;
+  final CourtMapResponse? court;
   final int num_of_participations;
   final int max_invitation;
 
@@ -591,21 +593,21 @@ class CourtCard extends StatelessWidget {
     required this.id,
   });
 
-  factory CourtCard.fromModel({required GameModel model}) {
+  factory CourtCard.fromModel({required GameWithCourtMapResponse model}) {
     final fee = model.fee == 0
         ? '무료'
         : "₩${NumberFormat.decimalPattern().format(model.fee)}";
     return CourtCard(
-      game_status: model.game_status,
+      game_status: model.gameStatus,
       title: model.title,
-      startdate: model.startdate,
-      starttime: model.starttime,
-      enddate: model.enddate,
-      endtime: model.endtime,
+      startdate: model.startDate,
+      starttime: model.startTime,
+      enddate: model.endDate,
+      endtime: model.endTime,
       fee: fee,
       court: model.court,
-      num_of_participations: model.num_of_participations,
-      max_invitation: model.max_invitation,
+      num_of_participations: model.numOfParticipations,
+      max_invitation: model.maxInvitation,
       id: model.id,
     );
   }
@@ -1152,7 +1154,7 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
                   const Spacer(),
                   TextButton(
                       onPressed: () {
-                        ref.read(gameListProvider.notifier).getList();
+                        ref.read(mapGameListProvider.notifier).getList();
                         ref
                             .read(showFilterProvider.notifier)
                             .update((state) => false);

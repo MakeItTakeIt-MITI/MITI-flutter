@@ -21,6 +21,7 @@ import '../../common/component/default_layout.dart';
 import '../../common/provider/router_provider.dart';
 import '../../util/util.dart';
 import '../model/game_model.dart';
+import '../model/v2/game/game_detail_response.dart';
 import 'game_create_screen.dart';
 import 'game_detail_screen.dart';
 
@@ -130,8 +131,8 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
           button: TextButton(
             onPressed: valid() && !isLoading
                 ? () async {
-              _throttler.setValue(throttleCnt + 1);
-            }
+                    _throttler.setValue(throttleCnt + 1);
+                  }
                 : () {},
             style: TextButton.styleFrom(
                 backgroundColor: valid() && !isLoading
@@ -162,7 +163,7 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
                         .responseError(context, GameApiType.get, ref);
                     return Text('에러');
                   }
-                  result as ResponseModel<GameDetailModel>;
+                  result as ResponseModel<GameDetailResponse>;
                   final model = result.data!;
                   return Column(
                     children: [

@@ -1,11 +1,12 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:miti/common/model/model_id.dart';
 
 import 'base_game_response.dart';
 
 part 'base_game_court_by_date_response.g.dart';
 
 @JsonSerializable()
-class BaseGameCourtByDateResponse {
+class BaseGameCourtByDateResponse extends Base {
   // The map where the key is a date string (YYYY-MM-DD) and the value is a list of games (BaseGameResponse)
   @JsonKey(name: "startdate")
   final String startDate;

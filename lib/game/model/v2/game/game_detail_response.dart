@@ -11,7 +11,7 @@ part 'game_detail_response.g.dart';
 @JsonSerializable()
 class GameDetailResponse extends IModelWithId {
   final GameStatusType game_status;
-  final String titile;
+  final String title;
   final String startdate;
   final String starttime;
   final String enddate;
@@ -32,7 +32,7 @@ class GameDetailResponse extends IModelWithId {
   GameDetailResponse({
     required super.id,
     required this.game_status,
-    required this.titile,
+    required this.title,
     required this.startdate,
     required this.starttime,
     required this.enddate,
@@ -82,7 +82,7 @@ class GameDetailResponse extends IModelWithId {
     return GameDetailResponse(
       id: id ?? this.id,
       game_status: game_status ?? this.game_status,
-      titile: titile ?? this.titile,
+      title: titile ?? this.title,
       startdate: startdate ?? this.startdate,
       starttime: starttime ?? this.starttime,
       enddate: enddate ?? this.enddate,
