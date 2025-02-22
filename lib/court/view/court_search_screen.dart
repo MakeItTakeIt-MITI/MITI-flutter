@@ -30,6 +30,7 @@ import '../../common/component/sliver_delegate.dart';
 import '../component/court_search_card.dart';
 import '../component/skeleton/court_list_skeleton.dart';
 import '../model/court_model.dart';
+import '../model/v2/court_map_response.dart';
 import 'court_map_screen.dart';
 
 class CourtSearchListScreen extends ConsumerStatefulWidget {
@@ -56,9 +57,7 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
     super.initState();
     controller = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((s) {
-      ref
-          .read(scrollControllerProvider.notifier)
-          .update((s) => controller);
+      ref.read(scrollControllerProvider.notifier).update((s) => controller);
     });
   }
 
@@ -136,7 +135,7 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
                                     courtPageProvider(PaginationStateParam()),
                                 itemBuilder: (BuildContext context, int index,
                                     Base model) {
-                                  model as CourtSearchModel;
+                                  model as CourtMapResponse;
                                   return ResultCard.fromModel(
                                     model: model,
                                     onTap: () {
@@ -162,7 +161,7 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
     );
   }
 
-  void onTap(CourtSearchModel model, BuildContext context) {
+  void onTap(CourtMapResponse model, BuildContext context) {
     Map<String, String> pathParameters = {'courtId': model.id.toString()};
     context.pushNamed(
       CourtDetailScreen.routeName,

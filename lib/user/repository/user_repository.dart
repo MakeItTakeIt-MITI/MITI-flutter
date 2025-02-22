@@ -18,6 +18,7 @@ import '../../game/model/game_model.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../../game/model/v2/game/base_game_court_by_date_response.dart';
+import '../../game/model/v2/payment/base_payment_result_response.dart';
 import '../model/v2/base_player_profile_response.dart';
 import '../model/v2/base_user_profile_response.dart';
 import '../model/v2/user_info_response.dart';
@@ -222,14 +223,15 @@ final userPaymentPRepositoryProvider = Provider<UserPaymentPRepository>((ref) {
 
 @RestApi()
 abstract class UserPaymentPRepository
-    extends IBasePaginationRepository<MyPaymentModel, UserPaymentParam> {
+    extends IBasePaginationRepository<BasePaymentResultResponse, UserPaymentParam> {
   factory UserPaymentPRepository(Dio dio, {String baseUrl}) =
       _UserPaymentPRepository;
 
+  /// 결제 내역 목록 조회 API
   @override
   @Headers({'token': 'true'})
   @GET('/users/{userId}/payment-results')
-  Future<ResponseModel<PaginationModel<MyPaymentModel>>> paginate({
+  Future<ResponseModel<PaginationModel<BasePaymentResultResponse>>> paginate({
     @Queries() required PaginationParam paginationParams,
     @Queries() UserPaymentParam? param,
     @Path('userId') int? path,

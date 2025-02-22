@@ -6,6 +6,7 @@ import '../../common/param/pagination_param.dart';
 import '../../common/provider/pagination_provider.dart';
 import '../../game/model/game_model.dart';
 import '../../game/model/v2/game/base_game_court_by_date_response.dart';
+import '../../game/model/v2/payment/base_payment_result_response.dart';
 import '../model/review_model.dart';
 import '../param/user_profile_param.dart';
 import '../repository/user_repository.dart';
@@ -125,7 +126,7 @@ final userPaymentPProvider = StateNotifierProvider.family.autoDispose<
   );
 });
 
-class UserPaymentPageStateNotifier extends PaginationProvider<MyPaymentModel,
+class UserPaymentPageStateNotifier extends PaginationProvider<BasePaymentResultResponse,
     UserPaymentParam, UserPaymentPRepository> {
   UserPaymentPageStateNotifier({
     required super.repository,

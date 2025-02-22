@@ -23,6 +23,7 @@ import '../../court/view/court_map_screen.dart';
 import '../../game/component/game_list_component.dart';
 import '../../game/component/skeleton/game_list_skeleton.dart';
 import '../../game/model/game_model.dart';
+import '../../game/model/v2/game/base_game_court_by_date_response.dart';
 import '../../theme/text_theme.dart';
 import '../../util/util.dart';
 import '../param/user_profile_param.dart';
@@ -123,7 +124,7 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
                 sliver: DisposeSliverPaginationListView(
                   provider: provider,
                   itemBuilder: (BuildContext context, int index, Base pModel) {
-                    final model = pModel as GameListByDateModel;
+                    final model = pModel as BaseGameCourtByDateResponse;
                     return GameCardByDate.fromModel(
                       model: model,
                     );

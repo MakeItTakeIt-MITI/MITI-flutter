@@ -27,7 +27,7 @@ class BasePaymentResultResponse extends IModelWithId{
   final int totalAmount;
 
   @JsonKey(name: 'approved_at')
-  final DateTime approvedAt;
+  final String approvedAt;
 
   BasePaymentResultResponse({
     required super.id,
@@ -53,7 +53,7 @@ class BasePaymentResultResponse extends IModelWithId{
     int? quantity,
     String? itemName,
     int? totalAmount,
-    DateTime? approvedAt,
+    String? approvedAt,
   }) {
     return BasePaymentResultResponse(
       id: id ?? this.id,

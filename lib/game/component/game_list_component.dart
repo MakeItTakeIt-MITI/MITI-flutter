@@ -13,11 +13,13 @@ import 'package:miti/util/util.dart';
 import '../../common/model/entity_enum.dart';
 import '../../court/model/court_model.dart';
 import '../model/game_model.dart';
+import '../model/v2/game/base_game_court_by_date_response.dart';
+import '../model/v2/game/base_game_response.dart';
 import 'game_state_label.dart';
 
 class GameCardByDate extends StatelessWidget {
   final String dateTime;
-  final List<GameHostModel> models;
+  final List<BaseGameResponse> models;
 
   const GameCardByDate({
     super.key,
@@ -25,9 +27,10 @@ class GameCardByDate extends StatelessWidget {
     required this.models,
   });
 
-  factory GameCardByDate.fromModel({required GameListByDateModel model}) {
+  factory GameCardByDate.fromModel(
+      {required BaseGameCourtByDateResponse model}) {
     return GameCardByDate(
-      dateTime: model.startdate,
+      dateTime: model.startDate,
       models: model.games,
     );
   }
@@ -90,14 +93,14 @@ class GameCard extends StatelessWidget {
     required this.id,
   });
 
-  factory GameCard.fromModel({required GameHostModel model}) {
+  factory GameCard.fromModel({required BaseGameResponse model}) {
     return GameCard(
-      game_status: model.game_status,
+      game_status: model.gameStatus,
       title: model.title,
-      startdate: model.startdate,
-      starttime: model.starttime,
-      enddate: model.enddate,
-      endtime: model.endtime,
+      startdate: model.startDate,
+      starttime: model.startTime,
+      enddate: model.endDate,
+      endtime: model.endTime,
       id: model.id,
     );
   }

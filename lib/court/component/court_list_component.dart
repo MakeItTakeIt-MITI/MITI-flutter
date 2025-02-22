@@ -20,6 +20,7 @@ import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
 import '../../game/component/skeleton/game_list_skeleton.dart';
 import '../model/court_model.dart';
+import '../model/v2/court_map_response.dart';
 import '../param/court_pagination_param.dart';
 import '../provider/court_pagination_provider.dart';
 import '../provider/court_provider.dart';
@@ -27,7 +28,7 @@ import '../provider/widget/court_search_provider.dart';
 
 final selectedProvider = StateProvider.autoDispose<int?>((ref) => null);
 final selectedCourtProvider =
-    StateProvider.autoDispose<CourtSearchModel?>((ref) => null);
+    StateProvider.autoDispose<CourtMapResponse?>((ref) => null);
 
 class CourtListComponent extends ConsumerStatefulWidget {
   const CourtListComponent({super.key});
@@ -95,7 +96,7 @@ class _CourtListComponentState extends ConsumerState<CourtListComponent> {
                       param: param,
                     )),
                     itemBuilder: (BuildContext context, int index, Base model) {
-                      model as CourtSearchModel;
+                      model as CourtMapResponse;
                       return CourtAddressCard.fromModel(
                         model: model,
                         selected: selected?.id == model.id,
@@ -209,7 +210,7 @@ class _CourtListComponentState extends ConsumerState<CourtListComponent> {
 
     final court = ref.read(gameFormProvider).court;
     final newCourt =
-        court.copyWith(name: model.name, address_detail: model.address_detail);
+        court.copyWith(name: model.name, address_detail: model.addressDetail);
 
     ref.read(gameFormProvider.notifier).update(court: newCourt);
 

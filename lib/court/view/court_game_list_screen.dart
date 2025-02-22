@@ -10,6 +10,7 @@ import '../../common/param/pagination_param.dart';
 import '../../game/component/game_list_component.dart';
 import '../../game/component/skeleton/game_list_skeleton.dart';
 import '../../game/model/game_model.dart';
+import '../../game/model/v2/game/base_game_court_by_date_response.dart';
 import '../param/court_pagination_param.dart';
 import '../provider/court_pagination_provider.dart';
 
@@ -31,11 +32,13 @@ class _CourtGameListScreenState extends State<CourtGameListScreen> {
     super.initState();
     _scrollController = ScrollController();
   }
+
   @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,7 +64,7 @@ class _CourtGameListScreenState extends State<CourtGameListScreen> {
                         path: widget.courtId)),
                     itemBuilder:
                         (BuildContext context, int index, Base pModel) {
-                      final model = pModel as GameListByDateModel;
+                      final model = pModel as BaseGameCourtByDateResponse;
                       return GameCardByDate.fromModel(model: model);
                     },
                     param: CourtPaginationParam(search: ''),

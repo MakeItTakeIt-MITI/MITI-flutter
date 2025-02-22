@@ -6,6 +6,7 @@ import 'package:miti/theme/color_theme.dart';
 
 import '../../theme/text_theme.dart';
 import '../model/court_model.dart';
+import '../model/v2/court_map_response.dart';
 
 class ResultCard extends StatelessWidget {
   final int courtId;
@@ -23,12 +24,12 @@ class ResultCard extends StatelessWidget {
       required this.isShare});
 
   factory ResultCard.fromModel(
-      {required CourtSearchModel model,
+      {required CourtMapResponse model,
       required VoidCallback onTap,
       bool isShare = false}) {
-    final address = '${model.address} ${model.address_detail ?? ''}';
+    final address = '${model.address} ${model.addressDetail ?? ''}';
     return ResultCard(
-      name: model.name,
+      name: model.name ?? '미정',
       address: address,
       courtId: model.id,
       onTap: onTap,

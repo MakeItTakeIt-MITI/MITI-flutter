@@ -13,6 +13,7 @@ import '../../common/component/dispose_sliver_pagination_list_view.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
+import '../../game/model/v2/payment/base_payment_result_response.dart';
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
 import '../component/skeleton/payment_card_skeleton.dart';
@@ -66,7 +67,7 @@ class _UserPaymentScreenState extends ConsumerState<UserPaymentScreen> {
                 provider:
                     userPaymentPProvider(PaginationStateParam(path: userId)),
                 itemBuilder: (BuildContext context, int index, Base pModel) {
-                  pModel as MyPaymentModel;
+                  pModel as BasePaymentResultResponse;
 
                   return GestureDetector(
                       onTap: () {
@@ -114,52 +115,42 @@ class _UserPaymentScreenState extends ConsumerState<UserPaymentScreen> {
 
 class PaymentCard extends StatelessWidget {
   final int id;
-  final PaymentResultType status;
-  final ItemType item_type;
-  final PaymentMethodType payment_method;
-  final String item_name;
-  final int total_amount;
-  final int tax_free_amount;
-  final int? canceled_total_amount;
-  final int? canceled_tax_free_amount;
-  final PaymentCancelationReasonType? cancelation_reason;
-  final String approved_at;
-  final String? canceled_at;
+  final ItemType itemType;
+  final PaymentResultStatusType status;
+  final PaymentMethodType paymentMethod;
+  final int quantity;
+  final String itemName;
+  final int totalAmount;
+  final String approvedAt;
 
   const PaymentCard({
     super.key,
     required this.id,
     required this.status,
-    required this.item_type,
-    required this.payment_method,
-    required this.item_name,
-    required this.total_amount,
-    required this.tax_free_amount,
-    this.canceled_total_amount,
-    this.canceled_tax_free_amount,
-    this.cancelation_reason,
-    required this.approved_at,
-    this.canceled_at,
+    required this.itemType,
+    required this.paymentMethod,
+    required this.approvedAt,
+    required this.totalAmount,
+    required this.itemName,
+    required this.quantity,
   });
 
-  factory PaymentCard.fromModel({required MyPaymentModel model}) {
+  factory PaymentCard.fromModel({required BasePaymentResultResponse model}) {
     return PaymentCard(
       id: model.id,
       status: model.status,
-      item_type: model.item_type,
-      payment_method: model.payment_method,
-      cancelation_reason: model.cancelation_reason,
-      approved_at: model.approved_at,
-      total_amount: model.total_amount,
-      item_name: model.item_name,
-      tax_free_amount: model.tax_free_amount,
+      itemType: model.itemType,
+      paymentMethod: model.paymentMethod,
+      approvedAt: model.approvedAt,
+      totalAmount: model.totalAmount,
+      itemName: model.itemName,
+      quantity: model.quantity,
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
-    final date = DateTimeUtil.parseMd(dateTime: DateTime.parse(approved_at));
+    final date = DateTimeUtil.parseMd(dateTime: DateTime.parse(approvedAt));
     return Container(
       decoration: const BoxDecoration(
         border: Border(
@@ -184,14 +175,14 @@ class PaymentCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  item_type.value,
+                  itemType.value,
                   style: MITITextStyle.xxsm.copyWith(
                     color: MITIColor.gray100,
                   ),
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  item_name,
+                  itemName,
                   style: MITITextStyle.xxsm.copyWith(
                     color: MITIColor.gray100,
                   ),
@@ -202,7 +193,7 @@ class PaymentCard extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      payment_method.displayName,
+                      paymentMethod.displayName,
                       style: MITITextStyle.xxsmLight.copyWith(
                         color: MITIColor.gray400,
                       ),
@@ -217,7 +208,7 @@ class PaymentCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      status.displayName,
+                      status.name,
                       style: MITITextStyle.xxsmLight.copyWith(
                         color: MITIColor.gray400,
                       ),
@@ -229,9 +220,9 @@ class PaymentCard extends StatelessWidget {
           ),
           SizedBox(width: 50.w),
           Text(
-            total_amount == 0
+            totalAmount == 0
                 ? '무료'
-                : '${NumberUtil.format(total_amount.toString())}원',
+                : '${NumberUtil.format(totalAmount.toString())}원',
             style: MITITextStyle.lg.copyWith(
               color: MITIColor.gray100,
             ),
