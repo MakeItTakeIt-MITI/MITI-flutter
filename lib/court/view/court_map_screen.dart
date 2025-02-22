@@ -29,6 +29,7 @@ import 'package:collection/collection.dart';
 
 import '../../common/model/entity_enum.dart';
 import '../../game/model/game_model.dart';
+import '../../game/model/v2/game/game_response.dart';
 import '../../game/model/v2/game/game_with_court_map_response.dart';
 import '../../game/view/game_detail_screen.dart';
 import '../model/court_model.dart';
@@ -448,7 +449,8 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
 
   void refreshMarker(BaseModel response) async {
     // log('refreshMarker');
-    final model = (response as ResponseListModel<GameWithCourtMapResponse>).data!;
+    final model =
+        (response as ResponseListModel<GameWithCourtMapResponse>).data!;
     Map<MapPosition, List<GameWithCourtMapResponse>> markers = {};
 
     for (GameWithCourtMapResponse value in model) {
@@ -488,7 +490,6 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     final futureMarkerList = markerList
         .map((e) => CustomMarker(model: e).getMarker(context))
         .toList();
-
 
     for (int i = 0; i < futureMarkerList.length; i++) {
       final marker = await futureMarkerList[i];
@@ -612,20 +613,20 @@ class CourtCard extends StatelessWidget {
     );
   }
 
-  factory CourtCard.fromSoonestGameModel({required GameHostModel model}) {
+  factory CourtCard.fromSoonestGameModel({required GameResponse model}) {
     final fee = model.fee == 0
         ? '무료'
         : "₩${NumberFormat.decimalPattern().format(model.fee)}";
     return CourtCard(
-      game_status: model.game_status,
+      game_status: model.gameStatus,
       title: model.title,
-      startdate: model.startdate,
-      starttime: model.starttime,
-      enddate: model.enddate,
-      endtime: model.endtime,
+      startdate: model.startDate,
+      starttime: model.startTime,
+      enddate: model.endDate,
+      endtime: model.endTime,
       fee: fee,
-      num_of_participations: model.num_of_participations,
-      max_invitation: model.max_invitation,
+      num_of_participations: model.numOfParticipations,
+      max_invitation: model.maxInvitation,
       id: model.id,
       court: null,
     );

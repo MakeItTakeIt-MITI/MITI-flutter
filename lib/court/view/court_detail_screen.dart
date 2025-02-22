@@ -7,28 +7,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:miti/account/error/account_error.dart';
-import 'package:miti/common/component/default_layout.dart';
-import 'package:miti/common/component/dispose_sliver_pagination_list_view.dart';
 import 'package:miti/common/model/default_model.dart';
-import 'package:miti/common/param/pagination_param.dart';
-import 'package:miti/court/component/court_search_card.dart';
-import 'package:miti/court/model/court_model.dart';
-import 'package:miti/court/param/court_pagination_param.dart';
-import 'package:miti/court/provider/court_pagination_provider.dart';
 import 'package:miti/court/provider/court_provider.dart';
 import 'package:miti/game/view/game_create_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../common/component/default_appbar.dart';
 import '../../common/component/share_fab_component.dart';
-import '../../common/model/model_id.dart';
-import '../../game/component/game_list_component.dart';
-import '../../game/model/game_model.dart';
 import '../../util/util.dart';
 import '../component/skeleton/court_detail_skeleton.dart';
+import '../model/v2/court_operations_response.dart';
 import 'court_game_list_screen.dart';
 import 'court_map_screen.dart';
 
@@ -74,7 +63,7 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
       return Text("Error");
     }
 
-    final model = (result as ResponseModel<CourtDetailModel>).data!;
+    final model = (result as ResponseModel<CourtOperationsResponse>).data!;
 
     return Scaffold(
       backgroundColor: MITIColor.gray750,
@@ -183,7 +172,7 @@ class CourtMapComponentState extends State<CourtMapComponent> {
 }
 
 class _CourtInfoComponent extends ConsumerWidget {
-  final CourtDetailModel model;
+  final CourtOperationsResponse model;
 
   const _CourtInfoComponent({
     super.key,
@@ -199,12 +188,12 @@ class _CourtInfoComponent extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              model.name,
+              model.name ?? '미정',
               style: MITITextStyle.lgBold.copyWith(color: MITIColor.gray100),
             ),
             SizedBox(height: 8.h),
             Text(
-              "${model.address} ${model.address_detail}",
+              "${model.address} ${model.addressDetail}",
               style: MITITextStyle.sm.copyWith(
                 color: MITIColor.gray400,
               ),
@@ -257,8 +246,9 @@ class SoonestGamesComponent extends StatelessWidget {
                       return const Text("Error");
                     }
                     final model =
-                        (result as ResponseModel<CourtDetailModel>).data!;
-                    if (model.soonest_games.isEmpty) {
+                        (result as ResponseModel<CourtOperationsResponse>)
+                            .data!;
+                    if (model.soonestGames.isEmpty) {
                       return Container();
                     }
                     return GestureDetector(
@@ -299,8 +289,9 @@ class SoonestGamesComponent extends StatelessWidget {
                 } else if (result is ErrorModel) {
                   return const Text("Error");
                 }
-                final model = (result as ResponseModel<CourtDetailModel>).data!;
-                if (model.soonest_games.isEmpty) {
+                final model =
+                    (result as ResponseModel<CourtOperationsResponse>).data!;
+                if (model.soonestGames.isEmpty) {
                   return Column(
                     children: [
                       SizedBox(height: 80.h),
@@ -356,12 +347,12 @@ class SoonestGamesComponent extends StatelessWidget {
                     ListView.separated(
                       itemBuilder: (_, idx) {
                         return CourtCard.fromSoonestGameModel(
-                            model: model.soonest_games[idx]);
+                            model: model.soonestGames[idx]);
                       },
                       separatorBuilder: (_, idx) => SizedBox(
                         height: 12.h,
                       ),
-                      itemCount: model.soonest_games.length,
+                      itemCount: model.soonestGames.length,
                       padding: EdgeInsets.zero,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),

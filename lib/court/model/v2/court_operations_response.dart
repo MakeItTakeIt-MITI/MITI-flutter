@@ -9,7 +9,7 @@ part 'court_operations_response.g.dart';
 @JsonSerializable()
 class CourtOperationsResponse extends CourtResponse {
   @JsonKey(name: 'soonest_games')
-  final GameResponse soonestGames;
+  final List<GameResponse> soonestGames;
 
   CourtOperationsResponse({
     required super.id,
@@ -37,7 +37,7 @@ class CourtOperationsResponse extends CourtResponse {
     String? latitude,
     String? longitude,
     String? info,
-    GameResponse? soonestGames,
+    List<GameResponse>? soonestGames,
   }) {
     return CourtOperationsResponse(
       id: id ?? this.id,

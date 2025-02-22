@@ -36,6 +36,7 @@ final gameRepositoryProvider = Provider<GameRepository>((ref) {
 abstract class GameRepository {
   factory GameRepository(Dio dio, {String baseUrl}) = _GameRepository;
 
+  /// 경기 지도 목록 조회 API
   @GET('/games/map')
   Future<ResponseListModel<GameWithCourtMapResponse>> getMapGameList(
       {@Queries() required GameListParam param});

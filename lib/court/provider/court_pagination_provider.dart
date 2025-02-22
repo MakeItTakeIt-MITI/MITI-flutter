@@ -9,9 +9,11 @@ import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
 import '../../common/provider/pagination_provider.dart';
 import '../../game/model/game_model.dart';
+import '../../game/model/v2/game/base_game_court_by_date_response.dart';
 import '../../user/provider/user_pagination_provider.dart';
 import '../../user/repository/user_repository.dart';
 import '../model/court_model.dart';
+import '../model/v2/court_map_response.dart';
 
 final courtPageProvider = StateNotifierProvider.family.autoDispose<
     CourtPageStateNotifier,
@@ -28,7 +30,7 @@ final courtPageProvider = StateNotifierProvider.family.autoDispose<
   );
 });
 
-class CourtPageStateNotifier extends PaginationProvider<CourtSearchModel,
+class CourtPageStateNotifier extends PaginationProvider<CourtMapResponse,
     CourtPaginationParam, CourtPaginationRepository> {
   final searchDebounce = Debouncer(const Duration(milliseconds: 300),
       initialValue: CourtPaginationParam(), checkEquality: false);
@@ -67,7 +69,7 @@ final courtGamePageProvider = StateNotifierProvider.family.autoDispose<
   );
 });
 
-class CourtGamePageStateNotifier extends PaginationProvider<GameListByDateModel,
+class CourtGamePageStateNotifier extends PaginationProvider<BaseGameCourtByDateResponse,
     CourtPaginationParam, CourtGamePaginationRepository> {
   CourtGamePageStateNotifier({
     required super.repository,
