@@ -21,6 +21,7 @@ import '../../common/component/default_layout.dart';
 import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
 import '../../game/component/game_state_label.dart';
+import '../../game/model/v2/settlement/game_settlement_response.dart';
 import '../../theme/text_theme.dart';
 import '../../util/util.dart';
 import '../param/account_param.dart';
@@ -128,7 +129,7 @@ class _SettlementListScreenState extends ConsumerState<SettlementListScreen> {
                           PaginationStateParam(path: userId)),
                       itemBuilder:
                           (BuildContext context, int index, Base pModel) {
-                        final model = pModel as SettlementModel;
+                        final model = pModel as GameSettlementResponse;
 
                         return SettlementCard.fromModel(
                           model: model,
@@ -214,20 +215,20 @@ class SettlementCard extends StatelessWidget {
   });
 
   factory SettlementCard.fromModel({
-    required SettlementModel model,
+    required GameSettlementResponse model,
   }) {
     final game = model.game;
 
-    final st = DateTime.parse(game.startdate);
+    final st = DateTime.parse(game.startDate);
     final fe = DateFormat('yyyy년 MM월 dd일 (E)', 'ko');
 
     final startDate = fe.format(st);
     final period =
-        "$startDate ${game.starttime.substring(0, 5)} ~ ${game.endtime.substring(0, 5)}";
+        "$startDate ${game.startTime.substring(0, 5)} ~ ${game.endTime.substring(0, 5)}";
     return SettlementCard(
       title: game.title,
       datetime: period,
-      address: '${game.court.address} ${game.court.address_detail ?? ''}',
+      address: '${game.court.address} ${game.court.addressDetail ?? ''}',
       id: model.id,
       fee: NumberUtil.format(model.settlementAmount.toString()),
       status: model.status,

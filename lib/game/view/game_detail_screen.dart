@@ -375,6 +375,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                       context.pushNamed(
                         ReportListScreen.routeName,
                         pathParameters: pathParameters,
+                        extra: ReportCategoryType.hostReport,
                       );
                     },
                     child: Text(
@@ -842,7 +843,8 @@ class SummaryComponent extends StatelessWidget {
     );
   }
 
-  factory SummaryComponent.fromRefundModel({required GameWithCourtResponse model}) {
+  factory SummaryComponent.fromRefundModel(
+      {required GameWithCourtResponse model}) {
     final start = DateTime.parse("${model.startDate} ${model.startTime}");
     final end = DateTime.parse("${model.endDate} ${model.endTime}");
     final startDate = model.startDate.replaceAll('-', '. ');
@@ -853,8 +855,7 @@ class SummaryComponent extends StatelessWidget {
     final gameDate = startDate == endDate
         ? '$startDate $time'
         : '$startDate ${model.startTime.substring(0, 5)} ~ $endDate ${model.endTime.substring(0, 5)}';
-    final address =
-        '${model.court.address} ${model.court.addressDetail ?? ''}';
+    final address = '${model.court.address} ${model.court.addressDetail ?? ''}';
     return SummaryComponent(
       gameStatus: model.gameStatus,
       title: model.title,

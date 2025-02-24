@@ -204,6 +204,8 @@ class GameInfoComponent extends StatelessWidget {
     );
   }
 
+
+
   Row getGameInfo({required String title, required String desc}) {
     return Row(
       children: [

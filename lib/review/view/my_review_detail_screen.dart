@@ -10,6 +10,7 @@ import '../../user/model/review_model.dart';
 import '../../user/provider/user_provider.dart';
 import '../../user/view/review_detail_screen.dart';
 import '../component/skeleton/review_detail_skeleton.dart';
+import '../model/v2/host_review_response.dart';
 
 class MyReviewDetailScreen extends StatelessWidget {
   final UserReviewType userReviewType;
@@ -70,7 +71,7 @@ class MyReviewDetailScreen extends StatelessWidget {
 
                   String nickname = '';
                   final model =
-                      (result as ResponseModel<MyReviewDetailBaseModel>).data!;
+                      (result as ResponseModel<BaseReviewResponse>).data!;
                   if (UserReviewType.written == userReviewType) {
                     nickname = (model as MyWrittenReviewDetailModel).reviewee;
                   } else {

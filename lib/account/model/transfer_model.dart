@@ -15,7 +15,7 @@ class TransferModel extends IModelWithId {
   @JsonKey(name: 'account_number')
   final String accountNumber;
   @JsonKey(name: 'transfer_status')
-  final TransferType transferStatus;
+  final BankTransferStatusType transferStatus;
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
   @JsonKey(name: 'transferred_at')

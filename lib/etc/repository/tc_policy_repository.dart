@@ -22,9 +22,11 @@ final tcPolicyRepositoryProvider = Provider<TcPolicyRepository>((ref) {
 abstract class TcPolicyRepository {
   factory TcPolicyRepository(Dio dio, {String baseUrl}) = _TcPolicyRepository;
 
+  /// 약관 및 정책 목록 조회 API
   @GET('/policies')
   Future<ResponseListModel<TcPolicyModel>> getPolicyList();
 
+  /// 약관 및 정책 상세 조회 API
   @GET('/policies/{policyId}')
   Future<ResponseModel<TcPolicyDetailModel>> getDetail({
     @Path('policyId') required int policyId,

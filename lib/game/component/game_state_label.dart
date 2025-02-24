@@ -139,7 +139,7 @@ class SettlementLabel extends StatelessWidget {
 }
 
 class TransferLabel extends StatelessWidget {
-  final TransferType transferType;
+  final BankTransferStatusType transferType;
 
   const TransferLabel({super.key, required this.transferType});
 
@@ -148,13 +148,13 @@ class TransferLabel extends StatelessWidget {
     late Color textColor;
 
     switch (transferType) {
-      case TransferType.completed:
+      case BankTransferStatusType.completed:
         textColor = const Color(0xFF58CDFF);
         break;
-      case TransferType.waiting:
+      case BankTransferStatusType.waiting:
         textColor = MITIColor.gray200;
         break;
-      case TransferType.declined:
+      case BankTransferStatusType.declined:
         textColor = const Color(0xFFEE5F8A);
         break;
     }

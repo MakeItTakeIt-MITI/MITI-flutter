@@ -16,15 +16,15 @@ part 'report_provider.g.dart';
 @Riverpod(keepAlive: false)
 class Report extends _$Report {
   @override
-  BaseModel build() {
-    get();
+  BaseModel build({ReportCategoryType? reportType}) {
+    get(reportType);
     return LoadingModel();
   }
 
-  Future<void> get() async {
+  Future<void> get(ReportCategoryType? reportType) async {
     state = LoadingModel();
     final repository = ref.watch(reportRepositoryProvider);
-    repository.get().then((value) {
+    repository.get(reportType: reportType).then((value) {
       logger.i(value);
       state = value;
     }).catchError((e) {

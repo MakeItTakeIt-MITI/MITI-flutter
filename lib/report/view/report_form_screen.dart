@@ -22,14 +22,16 @@ import '../../common/component/custom_dialog.dart';
 import '../../common/component/default_layout.dart';
 import '../../common/provider/router_provider.dart';
 import '../../game/model/v2/game/game_detail_response.dart';
+import '../../game/model/v2/report/base_report_reason_response.dart';
 import '../../game/view/review_form_screen.dart';
 import '../../theme/text_theme.dart';
 import '../error/report_error.dart';
 import '../model/report_model.dart';
-
+// todo 신고 작성 api
 class ReportFormScreen extends ConsumerStatefulWidget {
   final int gameId;
   final int reportId;
+  final int? participationId;
   final HostReportCategoryType type;
 
   static String get routeName => 'reportForm';
@@ -39,6 +41,7 @@ class ReportFormScreen extends ConsumerStatefulWidget {
     required this.gameId,
     required this.reportId,
     required this.type,
+    this.participationId,
   });
 
   @override
@@ -125,7 +128,8 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
             } else if (result is ErrorModel) {
               return Text('error');
             }
-            final model = (result as ResponseModel<ReportDetailModel>).data!;
+            final model =
+                (result as ResponseModel<BaseReportReasonResponse>).data!;
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: 21.w),
               child: CustomScrollView(
@@ -133,7 +137,7 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
                   SliverToBoxAdapter(child: SizedBox(height: 32.h)),
                   SliverToBoxAdapter(
                     child: Text(
-                      model.subcategory.displayName,
+                      model.briefTitle,
                       style: MITITextStyle.lgBold.copyWith(
                         color: Colors.white,
                       ),

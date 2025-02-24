@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
 import '../../common/provider/pagination_provider.dart';
+import '../../game/model/v2/account/base_bank_transfer_response.dart';
+import '../../game/model/v2/settlement/game_settlement_response.dart';
 import '../model/account_model.dart';
 import '../model/transfer_model.dart';
 import '../param/account_param.dart';
@@ -23,7 +25,7 @@ final settlementPageProvider = StateNotifierProvider.family.autoDispose<
   );
 });
 
-class SettlementPageStateNotifier extends PaginationProvider<SettlementModel,
+class SettlementPageStateNotifier extends PaginationProvider<GameSettlementResponse,
     SettlementPaginationParam, SettlementPaginationRepository> {
   SettlementPageStateNotifier({
     required super.repository,
@@ -48,7 +50,7 @@ final bankTransferPageProvider = StateNotifierProvider.family.autoDispose<
   );
 });
 
-class BankTransferPageStateNotifier extends PaginationProvider<TransferModel,
+class BankTransferPageStateNotifier extends PaginationProvider<BaseBankTransferResponse,
     BankTransferPaginationParam, BankTransferPaginationRepository> {
   BankTransferPageStateNotifier({
     required super.repository,

@@ -8,7 +8,7 @@ import '../../../user/model/v2/base_user_response.dart';
 part 'host_review_response.g.dart';
 
 @JsonSerializable()
-class HostReviewResponse extends IModelWithId {
+class BaseReviewResponse extends IModelWithId {
   final int rating;
   final String comment;
   final List<PlayerReviewTagType> tags;
@@ -16,7 +16,7 @@ class HostReviewResponse extends IModelWithId {
   final BaseUserResponse reviewer;
   final GameWithCourtResponse game;
 
-  HostReviewResponse({
+  BaseReviewResponse({
     required super.id,
     required this.rating,
     required this.comment,
@@ -26,11 +26,51 @@ class HostReviewResponse extends IModelWithId {
     required this.game,
   });
 
+  factory BaseReviewResponse.fromJson(Map<String, dynamic> json) =>
+      _$BaseReviewResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$BaseReviewResponseToJson(this);
+
+  BaseReviewResponse copyWith({
+    int? id,
+    int? rating,
+    String? comment,
+    List<PlayerReviewTagType>? tags,
+    BaseUserResponse? reviewee,
+    BaseUserResponse? reviewer,
+    GameWithCourtResponse? game,
+  }) {
+    return BaseReviewResponse(
+      id: id ?? this.id,
+      rating: rating ?? this.rating,
+      comment: comment ?? this.comment,
+      tags: tags ?? this.tags,
+      reviewee: reviewee ?? this.reviewee,
+      reviewer: reviewer ?? this.reviewer,
+      game: game ?? this.game,
+    );
+  }
+}
+
+@JsonSerializable()
+class HostReviewResponse extends BaseReviewResponse {
+  HostReviewResponse({
+    required super.id,
+    required super.rating,
+    required super.comment,
+    required super.tags,
+    required super.reviewee,
+    required super.reviewer,
+    required super.game,
+  });
+
   factory HostReviewResponse.fromJson(Map<String, dynamic> json) =>
       _$HostReviewResponseFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$HostReviewResponseToJson(this);
 
+  @override
   HostReviewResponse copyWith({
     int? id,
     int? rating,

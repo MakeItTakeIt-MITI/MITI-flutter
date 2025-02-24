@@ -27,6 +27,7 @@ abstract class SupportPRepository
     extends IBasePaginationRepository<SupportModel, SupportParam> {
   factory SupportPRepository(Dio dio, {String baseUrl}) = _SupportPRepository;
 
+  /// 나의 문의 내역 조회 API
   @override
   @Headers({'token': 'true'})
   @GET('/users/{userId}/qna')
@@ -36,6 +37,7 @@ abstract class SupportPRepository
     @Path('userId') int? path,
   });
 
+  /// 문의 작성 API
   @Headers({'token': 'true'})
   @POST('/users/{userId}/qna')
   Future<ResponseModel<QuestionModel>> createSupport({
@@ -43,6 +45,7 @@ abstract class SupportPRepository
     @Path() required int userId,
   });
 
+  /// 나의 문의 내역 상세 조회 API
   @Headers({'token': 'true'})
   @GET('/users/{userId}/qna/{questionId}')
   Future<ResponseModel<QuestionModel>> getQuestion({
@@ -50,11 +53,13 @@ abstract class SupportPRepository
     @Path() required int userId,
   });
 
+  /// FAQ 목록 조회 API
   @GET('/support/faq')
   Future<ResponseListModel<FAQModel>> getFAQ({
     @Query('search') String? search,
   });
 
+  /// 서비스 이용 안내 조회 API
   @GET('/support/guide')
   Future<ResponseListModel<GuideModel>> getGuide(
       {@Query('category') String? category});

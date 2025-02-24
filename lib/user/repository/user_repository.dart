@@ -96,21 +96,21 @@ abstract class UserRepository {
     @Body() required UserPasswordParam param,
   });
 
-  @Headers({'token': 'true'})
-  @GET('/users/{userId}/written-reviews/{reviewType}/{reviewId}')
-  Future<ResponseModel<MyWrittenReviewDetailModel>> getWrittenReview({
-    @Path() required int userId,
-    @Path() required String reviewType,
-    @Path() required int reviewId,
-  });
-
-  @Headers({'token': 'true'})
-  @GET('/users/{userId}/received-reviews/{reviewType}/{reviewId}')
-  Future<ResponseModel<MyReceiveReviewDetailModel>> getReceiveReview({
-    @Path() required int userId,
-    @Path() required String reviewType,
-    @Path() required int reviewId,
-  });
+  // @Headers({'token': 'true'})
+  // @GET('/users/{userId}/written-reviews/{reviewType}/{reviewId}')
+  // Future<ResponseModel<MyWrittenReviewDetailModel>> getWrittenReview({
+  //   @Path() required int userId,
+  //   @Path() required String reviewType,
+  //   @Path() required int reviewId,
+  // });
+  //
+  // @Headers({'token': 'true'})
+  // @GET('/users/{userId}/received-reviews/{reviewType}/{reviewId}')
+  // Future<ResponseModel<MyReceiveReviewDetailModel>> getReceiveReview({
+  //   @Path() required int userId,
+  //   @Path() required String reviewType,
+  //   @Path() required int reviewId,
+  // });
 
   /// 결제 내역 상세 조회 API
   @Headers({'token': 'true'})

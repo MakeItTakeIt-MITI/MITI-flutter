@@ -28,6 +28,7 @@ import '../../auth/view/signup/signup_screen.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/view/operation_term_screen.dart';
+import '../../game/model/v2/account/base_account_response.dart';
 import '../../util/util.dart';
 import '../component/bank_card.dart';
 import 'package:collection/collection.dart';
@@ -385,11 +386,11 @@ class _TransferAmountForm extends ConsumerWidget {
       return Text('에러');
     }
 
-    final model = (result as ResponseModel<AccountDetailModel>).data!;
+    final model = (result as ResponseModel<BaseAccountResponse>).data!;
 
     final interaction = ref.watch(formInfoProvider(InputFormType.amount));
     final amount =
-        NumberUtil.format(model.requestableTransferAmount.toString());
+        NumberUtil.format(model.transferRequestableAmount.toString());
     return Container(
       color: MITIColor.gray750,
       padding:
@@ -438,7 +439,7 @@ class _TransferAmountForm extends ConsumerWidget {
               final value = val.replaceAll(',', '').replaceAll('₩ ', '');
               final amount = int.parse(value);
               ref.read(transferFormProvider.notifier).update(amount: amount);
-              if (amount > model.requestableTransferAmount) {
+              if (amount > model.transferRequestableAmount) {
                 ref
                     .read(formInfoProvider(InputFormType.amount).notifier)
                     .update(
@@ -515,7 +516,7 @@ class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
 
       return Text('에러');
     }
-    final model = (result as ResponseModel<AccountDetailModel>).data!;
+    final model = (result as ResponseModel<BaseAccountResponse>).data!;
 
     List<bool> isCheckBoxes =
         ref.watch(transferFormProvider.select((value) => value.checkBoxes));
@@ -535,7 +536,7 @@ class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
     final form = ref.watch(transferFormProvider);
     final valid = ref
             .watch(transferFormProvider.notifier)
-            .valid(model.requestableTransferAmount) &&
+            .valid(model.transferRequestableAmount) &&
         validCheckBox;
     return Container(
       color: MITIColor.gray750,

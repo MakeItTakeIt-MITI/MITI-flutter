@@ -1,13 +1,14 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/common/model/model_id.dart';
 import 'base_report_reason_response.dart'; // Assuming BaseReportReasonResponse is in this path
 
 part 'base_report_type_response.g.dart';
 
 @JsonSerializable()
-class BaseReportTypeResponse extends IModelWithId{
+class BaseReportTypeResponse extends IModelWithId {
   @JsonKey(name: 'report_type')
-  final String reportType;
+  final ReportCategoryType reportType;
 
   @JsonKey(name: 'report_reason')
   final List<BaseReportReasonResponse> reportReason;
@@ -25,7 +26,7 @@ class BaseReportTypeResponse extends IModelWithId{
 
   BaseReportTypeResponse copyWith({
     int? id,
-    String? reportType,
+    ReportCategoryType? reportType,
     List<BaseReportReasonResponse>? reportReason,
   }) {
     return BaseReportTypeResponse(

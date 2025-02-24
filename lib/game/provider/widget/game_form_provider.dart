@@ -14,6 +14,7 @@ import '../../../common/component/custom_text_form_field.dart';
 import '../../../common/model/entity_enum.dart';
 import '../../model/game_recent_host_model.dart';
 import '../../model/v2/game/base_game_with_court_response.dart';
+import '../../model/v2/game/game_with_court_response.dart';
 
 part 'game_form_provider.g.dart';
 
@@ -69,7 +70,7 @@ class GameForm extends _$GameForm {
   }
 
   void selectGameHistory(
-      {required GameResponse model,
+      {required GameWithCourtResponse model,
       required List<TextEditingController> textEditingControllers}) {
     GameCourtParam court = GameCourtParam(
       name: model.court.name ?? "미정",
@@ -88,8 +89,8 @@ class GameForm extends _$GameForm {
     state = state.copyWith(
       title: model.title,
       court: court,
-      min_invitation: model.min_invitation.toString(),
-      max_invitation: model.max_invitation.toString(),
+      min_invitation: model.minInvitation.toString(),
+      max_invitation: model.maxInvitation.toString(),
       info: model.info,
       fee: model.fee.toString(),
     );

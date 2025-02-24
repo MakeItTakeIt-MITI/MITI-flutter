@@ -17,6 +17,9 @@ import '../../auth/provider/auth_provider.dart';
 import '../../common/component/dispose_sliver_pagination_list_view.dart';
 import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
+import '../../game/model/v2/account/base_account_response.dart';
+import '../../game/model/v2/account/base_bank_transfer_response.dart';
+import '../../game/model/v2/settlement/game_settlement_response.dart';
 import '../component/skeleton/bank_transfer_skeleton.dart';
 import '../component/skeleton/settlement_skeleton.dart';
 import '../model/account_model.dart';
@@ -146,7 +149,7 @@ class _SettlementHistoryComponentState
                 provider:
                     settlementPageProvider(PaginationStateParam(path: userId)),
                 itemBuilder: (BuildContext context, int index, Base pModel) {
-                  final model = pModel as SettlementModel;
+                  final model = pModel as GameSettlementResponse;
 
                   return SettlementCard.fromModel(
                     model: model,
@@ -212,7 +215,7 @@ class _TransferHistoryComponentState extends State<_TransferHistoryComponent> {
                 provider: bankTransferPageProvider(
                     PaginationStateParam(path: userId)),
                 itemBuilder: (BuildContext context, int index, Base pModel) {
-                  final model = pModel as TransferModel;
+                  final model = pModel as BaseBankTransferResponse;
                   return BankTransferCard.fromModel(
                     model: model,
                   );
@@ -277,10 +280,10 @@ class _AccountInfo extends ConsumerWidget {
                               return Text("error");
                             }
                             final model =
-                                (result as ResponseModel<AccountDetailModel>)
+                                (result as ResponseModel<BaseAccountResponse>)
                                     .data!;
                             final amount = NumberUtil.format(
-                                model.requestableTransferAmount.toString());
+                                model.transferRequestableAmount.toString());
                             return Text(
                               amount,
                               style: MITITextStyle.xxl

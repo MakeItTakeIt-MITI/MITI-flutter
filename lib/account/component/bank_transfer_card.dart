@@ -6,6 +6,7 @@ import 'package:miti/game/component/game_state_label.dart';
 import 'package:miti/theme/color_theme.dart';
 
 import '../../common/model/entity_enum.dart';
+import '../../game/model/v2/account/base_bank_transfer_response.dart';
 import '../../theme/text_theme.dart';
 import '../../util/util.dart';
 import '../model/transfer_model.dart';
@@ -17,7 +18,7 @@ class BankTransferCard extends ConsumerWidget {
   final String account_bank;
   final String account_holder;
   final String account_number;
-  final TransferType status;
+  final BankTransferStatusType status;
   final String created_at;
 
   const BankTransferCard(
@@ -30,7 +31,7 @@ class BankTransferCard extends ConsumerWidget {
       required this.status,
       required this.created_at});
 
-  factory BankTransferCard.fromModel({required TransferModel model}) {
+  factory BankTransferCard.fromModel({required BaseBankTransferResponse model}) {
     return BankTransferCard(
       amount: NumberUtil.format(model.amount.toString()),
       account_bank: model.accountBank.displayName,

@@ -64,6 +64,36 @@ class SettlementModel extends IModelWithId {
         ]
 
  */
+/*
+  id
+  status_code
+  amount
+  commission
+  settlement_amount
+  expected_settlement_amount
+  game
+  id
+  game_status
+  title
+  startdate
+  starttime
+  enddate
+  endtime
+  max_invitation
+  min_invitation
+  fee
+  court
+  id
+  address
+  address_detail
+  latitude
+  longitude
+  participations
+  nickname
+  fee
+  is_settled
+
+ */
 @JsonSerializable()
 class SettlementDetailModel extends IModelWithId {
   final SettlementStatusType status;

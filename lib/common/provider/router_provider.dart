@@ -166,7 +166,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                       parentNavigatorKey: rootNavKey,
                       name: OtherAccountScreen.routeName,
                       builder: (_, state) {
-                        final SignupMethodType authType = state.extra as SignupMethodType;
+                        final SignupMethodType authType =
+                            state.extra as SignupMethodType;
                         final PhoneAuthenticationPurposeType phoneType =
                             PhoneAuthenticationPurposeType.stringToEnum(
                                 value: state.uri.queryParameters['phoneType']!);
@@ -278,7 +279,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                         //   return false;
                         // },
                         builder: (_, state) {
-                          SignupMethodType extra = state.extra as SignupMethodType;
+                          SignupMethodType extra =
+                              state.extra as SignupMethodType;
 
                           return SignUpScreen(
                             type: extra,
@@ -420,8 +422,20 @@ final routerProvider = Provider<GoRouter>((ref) {
                               builder: (context, state) {
                                 final int gameId =
                                     int.parse(state.pathParameters['gameId']!);
+                                int? participationId = null;
+
+                                if (state.uri.queryParameters
+                                    .containsKey('participationId')) {
+                                  participationId = int.parse(state
+                                      .uri.queryParameters['participationId']!);
+                                }
+
+                                final ReportCategoryType reportType =
+                                    state.extra as ReportCategoryType;
                                 return ReportListScreen(
                                   gameId: gameId,
+                                  reportType: reportType,
+                                  participationId: participationId,
                                 );
                               },
                               routes: [
@@ -434,12 +448,19 @@ final routerProvider = Provider<GoRouter>((ref) {
                                         state.pathParameters['gameId']!);
                                     final int reportId = int.parse(
                                         state.pathParameters['reportId']!);
+                                    int? participationId = null;
+                                    if (state.uri.queryParameters
+                                        .containsKey('participationId')) {
+                                      participationId = int.parse(state.uri
+                                          .queryParameters['participationId']!);
+                                    }
                                     final type =
                                         state.extra as HostReportCategoryType;
                                     return ReportFormScreen(
                                       gameId: gameId,
                                       reportId: reportId,
                                       type: type,
+                                      participationId: participationId,
                                     );
                                   },
                                 ),

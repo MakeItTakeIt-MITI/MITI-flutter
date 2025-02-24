@@ -14,6 +14,7 @@ import '../model/v2/game/game_detail_response.dart';
 import '../model/v2/game/game_participation_payment_detail_response.dart';
 import '../model/v2/game/game_response.dart';
 import '../model/v2/game/game_with_court_map_response.dart';
+import '../model/v2/game/game_with_court_response.dart';
 import '../model/v2/participation/participation_game_response.dart';
 import '../model/v2/participation/participation_guest_player_response.dart';
 import '../model/v2/payment/participation_refund_info_response.dart';
@@ -103,7 +104,7 @@ abstract class GameRepository {
   /// 최근 호스팅 경기 목록 조회 API
   @Headers({'token': 'true'})
   @GET('/users/{userId}/recent-hosted-games')
-  Future<ResponseListModel<GameResponse>> getRecentHostings({
+  Future<ResponseListModel<GameWithCourtResponse>> getRecentHostings({
     @Path('userId') required int userId,
   });
 

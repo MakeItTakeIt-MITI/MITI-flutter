@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:intl/intl.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/common/param/pagination_param.dart';
+import 'package:miti/review/repository/review_repository.dart';
 import 'package:miti/user/provider/user_form_provider.dart';
 import 'package:miti/user/repository/user_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -12,6 +13,8 @@ import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../game/model/game_model.dart';
+import '../../review/model/v2/guest_review_response.dart';
+import '../../review/model/v2/host_review_response.dart';
 import '../model/user_model.dart';
 import '../model/v2/user_info_response.dart';
 import '../param/user_profile_param.dart';
@@ -57,40 +60,41 @@ class MyReview extends _$MyReview {
     required ReviewType reviewType,
   }) async {
     state = LoadingModel();
-    final repository = ref.watch(userRepositoryProvider);
-    final review =
-        reviewType == ReviewType.guestReview ? 'guest-reviews' : 'host-reviews';
+    final repository = ref.watch(reviewRepositoryProvider);
     final id = ref.read(authProvider)!.id!;
-    switch (userReviewType) {
-      case UserReviewType.written:
-        repository
-            .getWrittenReview(
-                userId: id, reviewId: reviewId, reviewType: review)
-            .then((value) {
-          logger.i(value);
-          state = value;
-        }).catchError((e) {
-          final error = ErrorModel.respToError(e);
-          logger.e(
-              'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
-          state = error;
-        });
-        break;
-      default:
-        repository
-            .getReceiveReview(
-                userId: id, reviewId: reviewId, reviewType: review)
-            .then((value) {
-          logger.i(value);
-          state = value;
-        }).catchError((e) {
-          final error = ErrorModel.respToError(e);
-          logger.e(
-              'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
-          state = error;
-        });
-        break;
+
+    late Future<ResponseModel<BaseReviewResponse>> futureResponse;
+
+    if (reviewType == ReviewType.hostReview &&
+        userReviewType == UserReviewType.receive) {
+      /// 받은 호스트 리뷰 상세 조회API
+      futureResponse = repository.getReceivedHostReviewDetail(
+          userId: id, reviewId: reviewId);
+    } else if (reviewType == ReviewType.guestReview &&
+        userReviewType == UserReviewType.receive) {
+      /// 받은 게스트 리뷰 상세 조회 API
+      futureResponse = repository.getReceivedGuestReviewDetail(
+          userId: id, reviewId: reviewId);
+    } else if (reviewType == ReviewType.hostReview &&
+        userReviewType == UserReviewType.written) {
+      /// 작성 호스트 리뷰 상세 조회 API
+      futureResponse =
+          repository.getWrittenHostReviewDetail(userId: id, reviewId: reviewId);
+    } else {
+      /// 작성 호스트 리뷰 상세 조회 API
+      futureResponse = repository.getWrittenGuestReviewDetail(
+          userId: id, reviewId: reviewId);
     }
+
+    futureResponse.then((value) {
+      logger.i(value);
+      state = value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state = error;
+    });
   }
 }
 

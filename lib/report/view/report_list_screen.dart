@@ -12,14 +12,23 @@ import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../common/model/entity_enum.dart';
+import '../../game/model/v2/report/base_report_reason_response.dart';
+import '../../game/model/v2/report/base_report_type_response.dart';
 import '../../util/util.dart';
 
 class ReportListScreen extends StatelessWidget {
   final int gameId;
+  final int? participationId;
+  final ReportCategoryType reportType;
 
   static String get routeName => 'reportList';
 
-  const ReportListScreen({super.key, required this.gameId});
+  const ReportListScreen({
+    super.key,
+    required this.gameId,
+    required this.reportType,
+    this.participationId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +40,18 @@ class ReportListScreen extends StatelessWidget {
       backgroundColor: MITIColor.gray750,
       body: Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
-          final result = ref.watch(reportProvider);
+          final result = ref.watch(reportProvider(reportType: reportType));
           if (result is LoadingModel) {
             return const CircularProgressIndicator();
           } else if (result is ErrorModel) {
             return const Text('error');
           }
-          final modelList = (result as ResponseListModel<ReportModel>).data!;
+          final List<BaseReportReasonResponse> modelList =
+              (result as ResponseListModel<BaseReportTypeResponse>)
+                      .data!
+                      .firstOrNull
+                      ?.reportReason ??
+                  List.empty();
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 32.h),
             child: Column(
@@ -61,10 +75,18 @@ class ReportListScreen extends StatelessWidget {
                               'reportId': modelList[idx].id.toString()
                             };
 
+                            Map<String, String> queryParameters =
+                                participationId != null
+                                    ? {
+                                        'participationId':
+                                            participationId.toString()
+                                      }
+                                    : {};
+
                             context.pushNamed(
                               ReportFormScreen.routeName,
                               pathParameters: pathParameters,
-                              extra: modelList[idx].subcategory,
+                              queryParameters: queryParameters,
                             );
                           },
                         ),
@@ -81,23 +103,17 @@ class ReportListScreen extends StatelessWidget {
 
 class ReportCard extends StatelessWidget {
   final int id;
-  final ReportCategoryType category;
-  final HostReportCategoryType subcategory;
+  final String title;
   final VoidCallback onTap;
 
   const ReportCard(
-      {super.key,
-      required this.id,
-      required this.category,
-      required this.subcategory,
-      required this.onTap});
+      {super.key, required this.id, required this.title, required this.onTap});
 
   factory ReportCard.fromModel(
-      {required ReportModel model, required VoidCallback onTap}) {
+      {required BaseReportReasonResponse model, required VoidCallback onTap}) {
     return ReportCard(
       id: model.id,
-      category: model.category,
-      subcategory: model.subcategory,
+      title: model.title,
       onTap: onTap,
     );
   }
@@ -116,7 +132,7 @@ class ReportCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              subcategory.displayName,
+              title,
               style: MITITextStyle.sm150.copyWith(
                 color: MITIColor.gray200,
               ),

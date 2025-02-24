@@ -124,19 +124,6 @@ enum SettlementStatusType {
   final String name;
 }
 
-enum TransferType {
-  @JsonValue('waiting')
-  waiting('이체 대기중'),
-  @JsonValue('declined')
-  declined('이체 거부됨'),
-  @JsonValue('completed')
-  completed('이체 완료');
-
-  const TransferType(this.name);
-
-  final String name;
-}
-
 enum AccountStatus {
   @JsonValue('active')
   active('활성화'),
