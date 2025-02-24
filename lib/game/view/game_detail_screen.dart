@@ -225,6 +225,15 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
   Widget? getBottomButton(
       GameDetailResponse model, WidgetRef ref, BuildContext context) {
     Widget? button;
+    final gameStatus = model.game_status;
+    final startTime = DateTime.parse('${model.startdate} ${model.starttime}');
+    final createdAt = DateTime.parse('${model.created_at}');
+
+    final policyValid = DateTime.now().difference(startTime).inHours <= -2;
+    final policyCreatedAtValid =
+        DateTime.now().difference(createdAt).inHours <= -2;
+    log('policyValid $policyValid policyCreatedAtValid = $policyCreatedAtValid');
+    final editValid = policyValid && policyCreatedAtValid;
     final buttonTextStyle = MITITextStyle.btnTextBStyle.copyWith(
       color: Colors.white,
       height: 1,
@@ -234,46 +243,51 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
         SizedBox(
           width: 98.w,
           child: TextButton(
-            onPressed: () {
-              showModalBottomSheet(
-                  context: context,
-                  builder: (context) {
-                    return BottomDialog(
-                        title: "경기 취소",
-                        content:
-                            "경기 취소 시, 모집 완료된 참가자와 경기 정보가 모두 삭제됩니다.\n경기를 취소하시겠습니까?",
-                        btn: Row(
-                          children: [
-                            Expanded(
-                                child: TextButton(
-                                    onPressed: () {
-                                      _throttler.setValue(throttleCnt + 1);
-                                    },
-                                    style: ButtonStyle(
-                                        backgroundColor:
-                                            WidgetStateProperty.all(
-                                                MITIColor.gray800)),
-                                    child: Text(
-                                      "취소하기",
-                                      style: MITITextStyle.mdBold.copyWith(
-                                        color: MITIColor.primary,
-                                      ),
-                                    ))),
-                            SizedBox(width: 6.w),
-                            Expanded(
-                                child: TextButton(
-                                    onPressed: () => context.pop(),
-                                    child: const Text("경기 유지하기"))),
-                          ],
-                        ));
-                  });
-            },
+            onPressed: editValid
+                ? () {
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return BottomDialog(
+                              title: "경기 취소",
+                              content:
+                                  "경기 취소 시, 모집 완료된 참가자와 경기 정보가 모두 삭제됩니다.\n경기를 취소하시겠습니까?",
+                              btn: Row(
+                                children: [
+                                  Expanded(
+                                      child: TextButton(
+                                          onPressed: () {
+                                            _throttler
+                                                .setValue(throttleCnt + 1);
+                                          },
+                                          style: ButtonStyle(
+                                              backgroundColor:
+                                                  WidgetStateProperty.all(
+                                                      MITIColor.gray800)),
+                                          child: Text(
+                                            "취소하기",
+                                            style:
+                                                MITITextStyle.mdBold.copyWith(
+                                              color: MITIColor.primary,
+                                            ),
+                                          ))),
+                                  SizedBox(width: 6.w),
+                                  Expanded(
+                                      child: TextButton(
+                                          onPressed: () => context.pop(),
+                                          child: const Text("경기 유지하기"))),
+                                ],
+                              ));
+                        });
+                  }
+                : null,
             style: ButtonStyle(
               backgroundColor: WidgetStateProperty.all(MITIColor.gray700),
             ),
             child: Text(
               "경기 취소",
-              style: MITITextStyle.md.copyWith(color: MITIColor.error),
+              style: MITITextStyle.md.copyWith(
+                  color: editValid ? MITIColor.error : MITIColor.gray500),
             ),
           ),
         ),
@@ -343,6 +357,16 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
         '경기 참여하기',
       ),
     );
+    final disabledParticipationButton = TextButton(
+      onPressed: null,
+      style: TextButton.styleFrom(
+          fixedSize: Size(double.infinity, 48.h),
+          backgroundColor: MITIColor.gray700),
+      child: Text(
+        '경기 참여하기',
+        style: MITITextStyle.mdBold.copyWith(color: MITIColor.gray500),
+      ),
+    );
     final reviewButton = TextButton(
       onPressed: () {
         Map<String, String> pathParameters = {'gameId': model.id.toString()};
@@ -403,52 +427,61 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
           ),
         ));
 
-    final gameStatus = model.game_status;
-    final startTime = DateTime.parse('${model.startdate} ${model.starttime}');
-    final policyValid = DateTime.now().difference(startTime).inHours <= -2;
-    log('policyValid $policyValid');
-
-    switch (gameStatus) {
-      case GameStatusType.open:
-        if (model.is_host) {
+    if (model.is_host) {
+      switch (gameStatus) {
+        case GameStatusType.open || GameStatusType.closed:
           button = editButton;
-        } else if (model.user_participation_id != null) {
-          if (policyValid) {
-            button = cancelButton;
-          } else {
-            button = cancelDisableButton;
-          }
-        } else {
-          button = participationButton;
-        }
-        break;
-      case GameStatusType.closed:
-        if (model.is_host) {
-          button = editButton;
-        } else if (model.user_participation_id != null) {
-          button = participationButton;
-        } else {
+          // if (!policyValid || !policyCreatedAtValid) {
+          // } else if (policyValid && policyCreatedAtValid) {
+          //   button = editButton;
+          // }
+          break;
+        case GameStatusType.canceled:
           button = null;
-        }
-        break;
-      case GameStatusType.canceled:
-        button = null;
-        break;
-      case GameStatusType.completed:
-        if (model.user_participation_id != null || model.is_host) {
-          button = Align(
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                if (!model.is_host) reportButton,
-                if (!model.is_host) SizedBox(width: 12.w),
-                Expanded(child: reviewButton)
-              ],
-            ),
-          );
-        }
-        break;
+          break;
+        case GameStatusType.completed:
+          button = reviewButton;
+          break;
+      }
+    } else {
+      switch (gameStatus) {
+        case GameStatusType.open || GameStatusType.closed:
+          if (model.user_participation_id == null &&
+              gameStatus == GameStatusType.open) {
+            button = participationButton;
+          } else if (model.user_participation_id == null &&
+              gameStatus == GameStatusType.closed) {
+            button = disabledParticipationButton;
+          } else if (model.user_participation_id != null) {
+            if (policyValid) {
+              button = cancelButton;
+            } else {
+              button = cancelDisableButton;
+            }
+          }
+          break;
+        case GameStatusType.canceled:
+          button = null;
+          break;
+        case GameStatusType.completed:
+          if (model.user_participation_id == null) {
+            button = null;
+          } else {
+            button = Align(
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  reportButton,
+                  SizedBox(width: 12.w),
+                  Expanded(child: reviewButton)
+                ],
+              ),
+            );
+          }
+          break;
+      }
     }
+
     return button;
   }
 
@@ -473,7 +506,6 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
     return Container(
       height: 1.h,
       color: MITIColor.gray750,
-
     );
   }
 }
