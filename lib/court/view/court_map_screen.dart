@@ -27,6 +27,7 @@ import 'package:miti/theme/text_theme.dart';
 import 'package:miti/util/util.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:collection/collection.dart';
+import 'package:snapping_sheet/snapping_sheet.dart';
 
 import '../../common/model/entity_enum.dart';
 import '../../game/model/game_model.dart';
@@ -58,7 +59,9 @@ final positionProvider = StateProvider.autoDispose<Position?>((ref) => null);
 
 class _HomeScreenState extends ConsumerState<CourtMapScreen>
     with AutomaticKeepAliveClientMixin {
-  late final DraggableScrollableController _draggableScrollableController;
+  final ScrollController listViewController = ScrollController();
+  final SnappingSheetController snappingSheetController =
+      SnappingSheetController();
   NaverMapController? _mapController;
   late final Box<bool> permissionBox;
 
@@ -68,8 +71,6 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
   void initState() {
     super.initState();
     log('page init!!');
-    _draggableScrollableController = DraggableScrollableController();
-
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       startApp();
     });
@@ -91,8 +92,8 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
 
   @override
   void dispose() {
-    _draggableScrollableController.dispose();
     _mapController?.dispose();
+    listViewController.dispose();
     super.dispose();
   }
 
@@ -176,7 +177,8 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
   Widget build(BuildContext context) {
     ref.listen(showFilterProvider, (previous, next) {
       if (next) {
-        _draggableScrollableController.reset();
+        snappingSheetController
+            .snapToPosition(const SnappingPosition.factor(positionFactor: 0));
       }
     });
 
@@ -195,237 +197,61 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
       }
     });
 
-    // log('position = ${position}');
-    return Stack(
-      children: [
-        NaverMap(
-          options: const NaverMapViewOptions(
-            initialCameraPosition: NCameraPosition(
-              target: NLatLng(37.5666, 126.979),
-              zoom: 15,
-            ),
-            locale: Locale('ko'),
-          ),
-          onMapTapped: (NPoint point, NLatLng latLng) {
-            // print("tap point = $point latLng = $latLng");
-            ref.read(showFilterProvider.notifier).update((state) => !state);
-          },
-          onMapReady: (controller) async {
-            log('controller Map Loading');
-
-            /// marker를 이미지로 생성할 시 준비과정 중 사용할 이미지들을 캐싱 필요
-            /// 하지 않을 경우 사용하지 않은 이미지를 사용할 때 캐싱되지 않아 display 되지 않음
-            // final Set<NAddableOverlay> cacheImageMarker = {};
-            // for (int i = 0; i < 4; i++) {
-            //   final marker = await CustomMarker(
-            //           model: MapMarkerModel(
-            //               id: i,
-            //               time: '',
-            //               cost: '',
-            //               moreCnt: i % 2 == 0 ? 2 : 1,
-            //               latitude: 120,
-            //               longitude: 35))
-            //       .getMarker(context, selected: i > 1);
-            //   cacheImageMarker.add(marker);
-            // }
-            // await controller.addOverlayAll(cacheImageMarker);
-            _mapController = controller;
-            // await getLocation();
-          },
+    return SnappingSheet(
+      controller: snappingSheetController,
+      lockOverflowDrag: true,
+      snappingPositions: const [
+        SnappingPosition.factor(
+          positionFactor: 0,
+          snappingDuration: Duration(milliseconds: 300),
+          grabbingContentOffset: GrabbingContentOffset.middle,
         ),
-        Consumer(
-          builder: (BuildContext context, WidgetRef ref, Widget? child) {
-            final visible = ref.watch(showFilterProvider);
-            return Visibility(
-                visible: visible,
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: const Color(0xFF000000).withOpacity(0.64)),
-                ));
-          },
+        SnappingPosition.factor(
+          grabbingContentOffset: GrabbingContentOffset.bottom,
+          snappingDuration: Duration(milliseconds: 300),
+          positionFactor: 0.85,
         ),
-        Consumer(
-          builder: (BuildContext context, WidgetRef ref, Widget? child) {
-            final visible = ref.watch(showFilterProvider);
-            if (visible) {
-              return const Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: _FilterComponent(),
-              );
-            }
-            return Positioned(
-              child: SafeArea(
-                  child: Padding(
-                      padding: EdgeInsets.only(top: 16.h),
-                      child: const _FilterChipsComponent(
-                        inFilter: false,
-                      ))),
-            );
-          },
-        ),
-        Consumer(
-          builder: (BuildContext context, WidgetRef ref, Widget? child) {
-            final visible = ref.watch(showFilterProvider);
-            return Visibility(visible: !visible, child: child!);
-          },
-          child: Positioned(
-            left: 12.w,
-            bottom: 50.h,
-            child: Container(
-              padding: EdgeInsets.all(10.r),
-              decoration: BoxDecoration(
-                  color:
-                      position != null ? const Color(0xFFE9FFFF) : Colors.white,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color:
-                        position != null ? MITIColor.primary : MITIColor.gray50,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                        color: const Color(0xFF000000).withOpacity(0.25),
-                        blurRadius: 10.r)
-                  ]),
-              child: GestureDetector(
-                onTap: () async {
-                  if (position == null) {
-                    _permission();
-                  } else {
-                    ref.read(positionProvider.notifier).update((state) => null);
-                    await _mapController!
-                        .setLocationTrackingMode(NLocationTrackingMode.none);
-                  }
-                },
-                child: SvgPicture.asset(
-                  AssetUtil.getAssetPath(
-                      type: AssetType.icon,
-                      name: position != null ? "gps" : "un_gps"),
-                ),
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          child: DraggableScrollableSheet(
-            initialChildSize: 0.04,
-            // 0.04
-            maxChildSize: 0.85,
-            minChildSize: 0.04,
-            snap: true,
-            controller: _draggableScrollableController,
-            builder: (BuildContext context, ScrollController scrollController) {
-              return Container(
-                decoration: BoxDecoration(
-                    color: MITIColor.gray900,
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(16.r))),
-                alignment: Alignment.topCenter,
-                child: Stack(
-                  children: [
-                    // 내용
-                    Positioned.fill(
-                      top: 0.h,
-                      left: 0,
-                      right: 0,
-                      child: CustomScrollView(
-                        controller: scrollController,
-                        slivers: [
-                          SliverToBoxAdapter(
-                            child: SizedBox(
-                              height: 62.h,
-                            ),
-                          ),
-                          Consumer(
-                            builder: (BuildContext context, WidgetRef ref,
-                                Widget? child) {
-                              final modelList =
-                                  ref.watch(selectGameListProvider);
-                              return SliverPadding(
-                                padding: EdgeInsets.symmetric(horizontal: 21.w),
-                                sliver: _getCourtComponent(modelList),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    // 핸들 부분
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: MITIColor.gray900,
-                            borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(16.r))),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            SizedBox(height: 8.h),
-                            Align(
-                              alignment: Alignment.center,
-                              child: Container(
-                                height: 4.h,
-                                width: 60.w,
-                                decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(8.r)),
-                                  color: MITIColor.gray100,
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 20.h),
-                            Consumer(builder: (_, ref, child) {
-                              final modelList =
-                                  ref.watch(selectGameListProvider);
-                              return Padding(
-                                padding:
-                                    EdgeInsets.symmetric(horizontal: 16.w),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 12.w),
-                                      child: Text(
-                                        '${modelList.length}개의 매치',
-                                        style: MITITextStyle.selectionDayStyle
-                                            .copyWith(
-                                          color: MITIColor.gray100,
-                                        ),
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      child: Text(
-                                        '전체 경기',
-                                        style: MITITextStyle.smSemiBold
-                                            .copyWith(color: MITIColor.white),
-                                      ),
-                                      onTap: () {
-                                        context.pushNamed(
-                                            GameSearchScreen.routeName);
-                                      },
-                                    )
-                                  ],
-                                ),
-                              );
-                            }),
-                            SizedBox(height: 10.h),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        )
       ],
+      grabbing: const GrabbingWidget(),
+      initialSnappingPosition: const SnappingPosition.factor(positionFactor: 0),
+      grabbingHeight: 60.h,
+      sheetAbove: null,
+      sheetBelow: SnappingSheetContent(
+        draggable: true,
+        childScrollController: listViewController,
+        child: Container(
+          color: MITIColor.gray900,
+          child: CustomScrollView(
+            controller: listViewController,
+            slivers: [
+              Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  final modelList = ref.watch(selectGameListProvider);
+                  return SliverPadding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    sliver: _getCourtComponent(modelList),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+      child: CourtMapBackground(
+        position: position,
+        onMapReady: (controller) {
+          _mapController = controller;
+        },
+        onTap: () async {
+          if (position == null) {
+            _permission();
+          } else {
+            ref.read(positionProvider.notifier).update((state) => null);
+            await _mapController!
+                .setLocationTrackingMode(NLocationTrackingMode.none);
+          }
+        },
+      ),
     );
   }
 
@@ -531,11 +357,13 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
               pathParameters: pathParameters, queryParameters: queryParameters);
         }
 
-        _draggableScrollableController.animateTo(
-          0.9,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
+        snappingSheetController.snapToPosition(
+            const SnappingPosition.factor(positionFactor: 0.85));
+        // _draggableScrollableController.animateTo(
+        //   0.9,
+        //   duration: const Duration(milliseconds: 500),
+        //   curve: Curves.easeInOut,
+        // );
 
         await _mapController?.updateCamera(NCameraUpdate.fromCameraPosition(
             NCameraPosition(
@@ -1523,6 +1351,170 @@ class _PermissionComponent extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class CourtMapBackground extends ConsumerWidget {
+  final Position? position;
+  final Function(NaverMapController controller) onMapReady;
+  final VoidCallback onTap;
+
+  const CourtMapBackground({
+    super.key,
+    this.position,
+    required this.onMapReady,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Stack(
+      children: [
+        NaverMap(
+          options: const NaverMapViewOptions(
+            initialCameraPosition: NCameraPosition(
+              target: NLatLng(37.5666, 126.979),
+              zoom: 15,
+            ),
+            locale: Locale('ko'),
+          ),
+          onMapTapped: (NPoint point, NLatLng latLng) {
+            // print("tap point = $point latLng = $latLng");
+            ref.read(showFilterProvider.notifier).update((state) => !state);
+          },
+          onMapReady: onMapReady,
+        ),
+        Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final visible = ref.watch(showFilterProvider);
+            return Visibility(
+                visible: visible,
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: const Color(0xFF000000).withOpacity(0.64)),
+                ));
+          },
+        ),
+        Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final visible = ref.watch(showFilterProvider);
+            if (visible) {
+              return const Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: _FilterComponent(),
+              );
+            }
+            return Positioned(
+              child: SafeArea(
+                  child: Padding(
+                      padding: EdgeInsets.only(top: 16.h),
+                      child: const _FilterChipsComponent(
+                        inFilter: false,
+                      ))),
+            );
+          },
+        ),
+        Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final visible = ref.watch(showFilterProvider);
+            return Visibility(visible: !visible, child: child!);
+          },
+          child: Positioned(
+            left: 12.w,
+            bottom: 50.h,
+            child: Container(
+              padding: EdgeInsets.all(10.r),
+              decoration: BoxDecoration(
+                  color:
+                      position != null ? const Color(0xFFE9FFFF) : Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color:
+                        position != null ? MITIColor.primary : MITIColor.gray50,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                        color: const Color(0xFF000000).withOpacity(0.25),
+                        blurRadius: 10.r)
+                  ]),
+              child: GestureDetector(
+                onTap: onTap,
+                child: SvgPicture.asset(
+                  AssetUtil.getAssetPath(
+                      type: AssetType.icon,
+                      name: position != null ? "gps" : "un_gps"),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class GrabbingWidget extends StatelessWidget {
+  const GrabbingWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          color: MITIColor.gray900,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16.r))),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(height: 8.h),
+          Align(
+            alignment: Alignment.center,
+            child: Container(
+              height: 4.h,
+              width: 60.w,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(8.r)),
+                color: MITIColor.gray100,
+              ),
+            ),
+          ),
+          SizedBox(height: 20.h),
+          Consumer(builder: (_, ref, child) {
+            final modelList = ref.watch(selectGameListProvider);
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: 12.w),
+                    child: Text(
+                      '${modelList.length}개의 매치',
+                      style: MITITextStyle.selectionDayStyle.copyWith(
+                        color: MITIColor.gray100,
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    child: Text(
+                      '전체 경기',
+                      style: MITITextStyle.smSemiBold
+                          .copyWith(color: MITIColor.white),
+                    ),
+                    onTap: () {
+                      context.pushNamed(GameSearchScreen.routeName);
+                    },
+                  )
+                ],
+              ),
+            );
+          }),
+          SizedBox(height: 10.h),
+        ],
       ),
     );
   }
