@@ -44,6 +44,7 @@ import '../model/game_model.dart';
 import '../model/game_recent_host_model.dart';
 import '../model/v2/game/base_game_with_court_response.dart';
 import '../model/v2/game/game_detail_response.dart';
+import '../model/v2/game/game_response.dart';
 import '../param/game_param.dart';
 import 'game_create_complete_screen.dart';
 
@@ -270,8 +271,7 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
 
       if (result is ErrorModel) {
       } else {
-        final model =
-            (result as ResponseListModel<BaseGameWithCourtResponse>).data!;
+        final model = (result as ResponseListModel<GameResponse>).data!;
         log("model ${model.length}");
         if (model.isNotEmpty) {
           showCustomModalBottomSheet(

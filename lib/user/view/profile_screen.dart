@@ -371,7 +371,9 @@ class _ReviewComponent extends ConsumerWidget {
               SizedBox(width: 9.w),
               Expanded(
                   child: _ReviewCard(
-                      type: ReviewType.hostReview, rating: model.guestRating)),
+                type: ReviewType.hostReview,
+                rating: model.hostRating,
+              )),
             ],
           )
         ],

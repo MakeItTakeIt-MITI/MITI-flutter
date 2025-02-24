@@ -20,6 +20,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../game/model/v2/game/base_game_court_by_date_response.dart';
 import '../../game/model/v2/payment/base_payment_result_response.dart';
 import '../../game/model/v2/payment/payment_result_response.dart';
+import '../../review/model/v2/base_received_review_response.dart';
+import '../../review/model/v2/base_written_review_response.dart';
 import '../model/v2/base_player_profile_response.dart';
 import '../model/v2/base_user_profile_response.dart';
 import '../model/v2/user_info_response.dart';
@@ -154,14 +156,15 @@ final userWrittenReviewsPRepositoryProvider =
 
 @RestApi()
 abstract class UserWrittenReviewsPRepository
-    extends IBasePaginationRepository<WrittenReviewModel, UserReviewParam> {
+    extends IBasePaginationRepository<BaseWrittenReviewResponse, UserReviewParam> {
   factory UserWrittenReviewsPRepository(Dio dio, {String baseUrl}) =
       _UserWrittenReviewsPRepository;
 
+  /// 작성 리뷰 목록 조회 API
   @override
   @Headers({'token': 'true'})
   @GET('/users/{userId}/written-reviews')
-  Future<ResponseModel<PaginationModel<WrittenReviewModel>>> paginate({
+  Future<ResponseModel<PaginationModel<BaseWrittenReviewResponse>>> paginate({
     @Queries() required PaginationParam paginationParams,
     @Queries() UserReviewParam? param,
     @Path('userId') int? path,
@@ -178,14 +181,15 @@ final userReceiveReviewsPRepositoryProvider =
 
 @RestApi()
 abstract class UserReceiveReviewsPRepository
-    extends IBasePaginationRepository<ReceiveReviewModel, UserReviewParam> {
+    extends IBasePaginationRepository<BaseReceivedReviewResponse, UserReviewParam> {
   factory UserReceiveReviewsPRepository(Dio dio, {String baseUrl}) =
       _UserReceiveReviewsPRepository;
 
+  /// 받은 리뷰 목록 조회 API
   @override
   @Headers({'token': 'true'})
   @GET('/users/{userId}/received-reviews')
-  Future<ResponseModel<PaginationModel<ReceiveReviewModel>>> paginate({
+  Future<ResponseModel<PaginationModel<BaseReceivedReviewResponse>>> paginate({
     @Queries() required PaginationParam paginationParams,
     @Queries() UserReviewParam? param,
     @Path('userId') int? path,

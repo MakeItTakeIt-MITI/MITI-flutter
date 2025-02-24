@@ -5,11 +5,12 @@ import '../../../user/model/v2/user_guest_rating_response.dart';
 import 'base_guest_rating_response.dart';
 import 'base_guest_review_response.dart';
 import 'base_host_rating_response.dart';
+import 'host_review_list_response.dart';
 
 part 'guest_review_list_response.g.dart';
 
 @JsonSerializable()
-class GuestReviewListResponse {
+class GuestReviewListResponse extends BaseReviewListResponse {
   final UserGuestRatingResponse reviewee;
   final List<BaseGuestReviewResponse> reviews;
 

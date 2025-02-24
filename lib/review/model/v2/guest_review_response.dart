@@ -7,6 +7,8 @@ import '../../../user/model/v2/base_user_response.dart';
 
 part 'guest_review_response.g.dart';
 
+
+
 @JsonSerializable()
 class GuestReviewResponse extends IModelWithId {
   final int rating;

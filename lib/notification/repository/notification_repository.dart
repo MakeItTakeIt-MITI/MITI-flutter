@@ -29,6 +29,7 @@ abstract class NoticePRepository
     extends IBasePaginationRepository<NoticeModel, NotificationParam> {
   factory NoticePRepository(Dio dio, {String baseUrl}) = _NoticePRepository;
 
+  /// 공지사항 목록 조회 API
   @override
   @GET('/notifications')
   Future<ResponseModel<PaginationModel<NoticeModel>>> paginate({
@@ -37,6 +38,7 @@ abstract class NoticePRepository
     @Path('userId') int? path,
   });
 
+  /// 공지사항 상세 조회 API
   @GET('/notifications/{notificationId}')
   Future<ResponseModel<NoticeDetailModel>> get({
     @Path() required int notificationId,
@@ -55,6 +57,7 @@ abstract class PushPRepository
     extends IBasePaginationRepository<PushModel, NotificationParam> {
   factory PushPRepository(Dio dio, {String baseUrl}) = _PushPRepository;
 
+  /// 푸시 알림 목록 조회 API
   @override
   @Headers({'token': 'true'})
   @GET('/users/{userId}/push-notifications')
@@ -64,12 +67,14 @@ abstract class PushPRepository
     @Path('userId') int? path,
   });
 
+  /// 푸시 알림 설정 조회 API
   @Headers({'token': 'true'})
   @GET('/users/{userId}/push-notifications/setting')
   Future<ResponseModel<PushAllowModel>> getSetting({
     @Path() required int userId,
   });
 
+  /// 푸시 알림 상세 조회 API
   @Headers({'token': 'true'})
   @GET('/users/{userId}/push-notifications/{pushId}')
   Future<ResponseModel<PushDetailModel>> get({
@@ -77,6 +82,7 @@ abstract class PushPRepository
     @Path() required int pushId,
   });
 
+  /// 푸시 알림 허용 API
   @Headers({'token': 'true'})
   @PATCH('/users/{userId}/push-notifications/setting/on')
   Future<ResponseModel<PushAllowModel>> allowPush({
@@ -84,6 +90,7 @@ abstract class PushPRepository
     @Queries() required PushSettingParam? topic,
   });
 
+  /// 푸시 알림 거부 API
   @Headers({'token': 'true'})
   @PATCH('/users/{userId}/push-notifications/setting/off')
   Future<ResponseModel<PushAllowModel>> disallowPush({
@@ -91,6 +98,7 @@ abstract class PushPRepository
     @Queries() required PushSettingParam? topic,
   });
 
+  /// 미확인 푸시 알림 정보 확인 API
   @Headers({'token': 'true'})
   @GET('/users/{userId}/unread-push-notifications')
   Future<ResponseModel<UnreadPushModel>> unreadPush({

@@ -20,6 +20,11 @@ import '../../user/model/review_model.dart';
 import '../../user/view/review_detail_screen.dart';
 import '../../util/util.dart';
 import '../component/skeleton/review_card_skeleton.dart';
+import '../model/v2/base_guest_review_response.dart';
+import '../model/v2/base_host_review_response.dart';
+import '../model/v2/base_written_review_response.dart';
+import '../model/v2/guest_review_list_response.dart';
+import '../model/v2/host_review_list_response.dart';
 
 class ReviewListScreen extends StatelessWidget {
   final int gameId;
@@ -57,11 +62,20 @@ class ReviewListScreen extends StatelessWidget {
                       backgroundColor: MITIColor.gray750,
                     );
                   }
-                  final model =
-                      (result as ResponseModel<ReviewListModel>).data!;
-                  final nickname = model.reviewee_nickname.length > 6
-                      ? '${model.reviewee_nickname.substring(0, 6)}...'
-                      : model.reviewee_nickname;
+                  late String nickname;
+                  if (participationId == null) {
+                    final model =
+                        (result as ResponseModel<HostReviewListResponse>).data!;
+                    nickname = model.reviewee.nickname;
+                  } else {
+                    final model =
+                        (result as ResponseModel<GuestReviewListResponse>)
+                            .data!;
+                    nickname = model.reviewee.nickname;
+                  }
+                  nickname = nickname.length > 6
+                      ? '${nickname.substring(0, 6)}...'
+                      : nickname;
                   return DefaultAppBar(
                     isSliver: true,
                     hasBorder: false,
@@ -77,11 +91,16 @@ class ReviewListScreen extends StatelessWidget {
               Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   BaseModel result;
+                  BaseReviewListResponse model;
                   if (participationId == null) {
                     result = ref.watch(hostReviewListProvider(gameId: gameId));
+                    model =
+                        (result as ResponseModel<HostReviewListResponse>).data!;
                   } else {
                     result = ref.watch(guestReviewListProvider(
                         gameId: gameId, participationId: participationId!));
+                    model = (result as ResponseModel<GuestReviewListResponse>)
+                        .data!;
                   }
                   if (result is LoadingModel) {
                     return const SliverToBoxAdapter(
@@ -90,38 +109,70 @@ class ReviewListScreen extends StatelessWidget {
                   } else if (result is ErrorModel) {
                     return const SliverToBoxAdapter(child: Text('error'));
                   }
-
-                  final model =
-                      (result as ResponseModel<ReviewListModel>).data!;
+                  int itemCount = 0;
+                  if (model is GuestReviewListResponse) {
+                    itemCount = model.reviews.length;
+                  } else {
+                    itemCount =
+                        (model as HostReviewListResponse).reviews.length;
+                  }
 
                   return SliverList.separated(
                     itemBuilder: (_, idx) {
-                      return ReviewCard.fromHistoryModel(
-                        model: model.reviews[idx],
-                        onTap: () {
-                          Map<String, String> queryParameters = {
-                            'revieweeNickname': model.reviewee_nickname
-                          };
-                          if (participationId != null) {
-                            queryParameters['participationId'] =
-                                participationId.toString();
-                          }
+                      if (model is GuestReviewListResponse) {
+                        final rModel = (model as GuestReviewListResponse);
+                        return ReviewCard.fromGuestHistoryModel(
+                          model: rModel.reviews[idx],
+                          onTap: () {
+                            Map<String, String> queryParameters = {
+                              'revieweeNickname': rModel.reviewee.nickname
+                            };
+                            if (participationId != null) {
+                              queryParameters['participationId'] =
+                                  participationId.toString();
+                            }
 
-                          Map<String, String> pathParameters = {
-                            'reviewId': model.reviews[idx].id.toString(),
-                            'gameId': gameId.toString(),
-                          };
+                            Map<String, String> pathParameters = {
+                              'reviewId': rModel.reviews[idx].id.toString(),
+                              'gameId': gameId.toString(),
+                            };
 
-                          context.pushNamed(
-                            ReviewDetailScreen.routeName,
-                            pathParameters: pathParameters,
-                            queryParameters: queryParameters,
-                          );
-                        },
-                      );
+                            context.pushNamed(
+                              ReviewDetailScreen.routeName,
+                              pathParameters: pathParameters,
+                              queryParameters: queryParameters,
+                            );
+                          },
+                        );
+                      } else {
+                        final rModel = (model as HostReviewListResponse);
+                        return ReviewCard.fromHostHistoryModel(
+                          model: rModel.reviews[idx],
+                          onTap: () {
+                            Map<String, String> queryParameters = {
+                              'revieweeNickname': rModel.reviewee.nickname
+                            };
+                            if (participationId != null) {
+                              queryParameters['participationId'] =
+                                  participationId.toString();
+                            }
+
+                            Map<String, String> pathParameters = {
+                              'reviewId': rModel.reviews[idx].id.toString(),
+                              'gameId': gameId.toString(),
+                            };
+
+                            context.pushNamed(
+                              ReviewDetailScreen.routeName,
+                              pathParameters: pathParameters,
+                              queryParameters: queryParameters,
+                            );
+                          },
+                        );
+                      }
                     },
                     separatorBuilder: (_, idx) => Container(height: 8.h),
-                    itemCount: model.reviews.length,
+                    itemCount: itemCount,
                   );
                 },
               )
@@ -161,8 +212,8 @@ class ReviewCard extends StatelessWidget {
     );
   }
 
-  factory ReviewCard.fromWrittenModel(
-      {required WrittenReviewModel model, required VoidCallback onTap}) {
+  factory ReviewCard.fromGuestHistoryModel(
+      {required BaseGuestReviewResponse model, required VoidCallback onTap}) {
     final tags = model.tags.length > 2 ? model.tags.sublist(0, 2) : model.tags;
 
     return ReviewCard(
@@ -170,7 +221,33 @@ class ReviewCard extends StatelessWidget {
       rating: model.rating,
       tags: tags,
       onTap: onTap,
-      nickname: model.reviewee,
+      nickname: model.reviewer.nickname,
+    );
+  }
+
+  factory ReviewCard.fromHostHistoryModel(
+      {required BaseHostReviewResponse model, required VoidCallback onTap}) {
+    final tags = model.tags.length > 2 ? model.tags.sublist(0, 2) : model.tags;
+
+    return ReviewCard(
+      id: model.id,
+      rating: model.rating,
+      tags: tags,
+      onTap: onTap,
+      nickname: model.reviewer.nickname,
+    );
+  }
+
+  factory ReviewCard.fromWrittenModel(
+      {required BaseWrittenReviewResponse model, required VoidCallback onTap}) {
+    final tags = model.tags.length > 2 ? model.tags.sublist(0, 2) : model.tags;
+
+    return ReviewCard(
+      id: model.id,
+      rating: model.rating,
+      tags: tags,
+      onTap: onTap,
+      nickname: model.reviewer.nickname,
     );
   }
 

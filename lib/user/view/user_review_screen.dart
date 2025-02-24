@@ -18,10 +18,11 @@ import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
 import '../../common/provider/pagination_provider.dart';
 import '../../common/repository/base_pagination_repository.dart';
+import '../../review/model/v2/base_received_review_response.dart';
+import '../../review/model/v2/base_written_review_response.dart';
 import '../component/review_card.dart';
 import '../model/review_model.dart';
 import '../param/user_profile_param.dart';
-
 
 class UserWrittenReviewScreen extends ConsumerStatefulWidget {
   final UserReviewType type;
@@ -156,13 +157,13 @@ class _UserWrittenReviewScreenState
                         itemBuilder:
                             (BuildContext context, int index, Base pModel) {
                           if (widget.type == UserReviewType.written) {
-                            pModel as WrittenReviewModel;
+                            pModel as BaseWrittenReviewResponse;
                             // return ReviewCard.fromWrittenModel(
                             //   model: pModel,
                             //   bottomIdx: widget.bottomIdx,
                             // );
                           } else {
-                            pModel as ReceiveReviewModel;
+                            pModel as BaseReceivedReviewResponse;
                             // return ReviewCard.fromReceiveModel(
                             //   model: pModel,
                             //   bottomIdx: widget.bottomIdx,

@@ -6,13 +6,16 @@ import '../../../user/model/v2/user_host_rating_response.dart';
 import 'base_guest_rating_response.dart';
 import 'base_guest_review_response.dart';
 import 'base_host_rating_response.dart';
+import 'base_host_review_response.dart';
 
 part 'host_review_list_response.g.dart';
 
+abstract class BaseReviewListResponse {}
+
 @JsonSerializable()
-class HostReviewListResponse {
+class HostReviewListResponse extends BaseReviewListResponse {
   final UserHostRatingResponse reviewee;
-  final List<BaseGuestReviewResponse> reviews;
+  final List<BaseHostReviewResponse> reviews;
 
   HostReviewListResponse({
     required this.reviewee,
@@ -26,7 +29,7 @@ class HostReviewListResponse {
 
   HostReviewListResponse copyWith({
     UserHostRatingResponse? reviewee,
-    List<BaseGuestReviewResponse>? reviews,
+    List<BaseHostReviewResponse>? reviews,
   }) {
     return HostReviewListResponse(
       reviewee: reviewee ?? this.reviewee,

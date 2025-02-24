@@ -20,6 +20,7 @@ import '../../user/provider/user_pagination_provider.dart';
 import '../../user/provider/user_provider.dart';
 import '../../util/util.dart';
 import '../component/skeleton/written_review_list_skeleton.dart';
+import '../model/v2/base_written_review_response.dart';
 import 'my_review_detail_screen.dart';
 import 'review_list_screen.dart';
 
@@ -72,7 +73,7 @@ class _WrittenReviewListScreenState
                 provider: userWrittenReviewsPProvider(
                     PaginationStateParam(path: userId)),
                 itemBuilder: (BuildContext context, int index, Base pModel) {
-                  final model = (pModel as WrittenReviewModel);
+                  final model = (pModel as BaseWrittenReviewResponse);
                   return ReviewCard.fromWrittenModel(
                     model: pModel,
                     onTap: () {
@@ -82,7 +83,7 @@ class _WrittenReviewListScreenState
 
                       final Map<String, String> queryParameters = {
                         'userReviewType': UserReviewType.written.value,
-                        'reviewType': model.review_type.value,
+                        'reviewType': model.reviewType.value,
                       };
 
                       context.pushNamed(

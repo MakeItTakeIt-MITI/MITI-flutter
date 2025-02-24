@@ -10,10 +10,11 @@ import 'package:miti/util/util.dart';
 
 import '../../court/component/court_list_component.dart';
 import '../model/v2/game/base_game_with_court_response.dart';
+import '../model/v2/game/game_response.dart';
 import '../provider/widget/game_form_provider.dart';
 
 class GameRecentComponent extends ConsumerWidget {
-  final List<BaseGameWithCourtResponse> models;
+  final List<GameResponse> models;
   final List<TextEditingController> textEditingControllers;
 
   const GameRecentComponent(
@@ -117,7 +118,7 @@ class _GameRecentCard extends ConsumerWidget {
   });
 
   factory _GameRecentCard.fromModel({
-    required BaseGameWithCourtResponse model,
+    required GameResponse model,
   }) {
     final address =
         '${model.court.address} ${(model.court.addressDetail ?? '')}';

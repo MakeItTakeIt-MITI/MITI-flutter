@@ -14,14 +14,17 @@ import '../../common/component/dispose_sliver_pagination_list_view.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
+import '../../game/model/v2/game/base_game_response.dart';
 import '../../game/view/review_form_screen.dart';
 import '../../theme/color_theme.dart';
 import '../../user/model/review_model.dart';
+import '../../user/model/v2/base_user_response.dart';
 import '../../user/param/user_profile_param.dart';
 import '../../user/provider/user_pagination_provider.dart';
 import '../../user/provider/user_provider.dart';
 import '../../util/util.dart';
 import '../component/skeleton/receive_review_list_skeleton.dart';
+import '../model/v2/base_received_review_response.dart';
 import 'my_review_detail_screen.dart';
 
 class ReceiveReviewListScreen extends ConsumerStatefulWidget {
@@ -73,7 +76,7 @@ class _ReceiveReviewListScreenState
                 provider: userReceiveReviewsPProvider(
                     PaginationStateParam(path: userId)),
                 itemBuilder: (BuildContext context, int index, Base pModel) {
-                  pModel as ReceiveReviewModel;
+                  pModel as BaseReceivedReviewResponse;
 
                   return _ReceiveReviewCard.fromModel(model: pModel);
                 },
@@ -111,12 +114,12 @@ class _ReceiveReviewListScreenState
 
 class _ReceiveReviewCard extends StatelessWidget {
   final int id;
-  final String reviewer;
+  final BaseUserResponse reviewer;
   final ReviewType review_type;
   final int rating;
   final List<PlayerReviewTagType> tags;
   final String? comment;
-  final GameReviewBaseModel game;
+  final BaseGameResponse game;
 
   const _ReceiveReviewCard(
       {super.key,
@@ -128,13 +131,14 @@ class _ReceiveReviewCard extends StatelessWidget {
       this.comment,
       required this.game});
 
-  factory _ReceiveReviewCard.fromModel({required ReceiveReviewModel model}) {
+  factory _ReceiveReviewCard.fromModel(
+      {required BaseReceivedReviewResponse model}) {
     final tags = model.tags.length > 2 ? model.tags.sublist(0, 2) : model.tags;
 
     return _ReceiveReviewCard(
       id: model.id,
       reviewer: model.reviewer,
-      review_type: model.review_type,
+      review_type: model.reviewType,
       rating: model.rating,
       tags: tags,
       game: model.game,
@@ -165,15 +169,15 @@ class _ReceiveReviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final st = DateTime.parse(game.startdate);
-    final et = DateTime.parse(game.startdate);
+    final st = DateTime.parse(game.startDate);
+    final et = DateTime.parse(game.endDate);
     final fe = DateFormat('yyyy년 MM월 dd일 (E)', 'ko');
 
     final startDate = fe.format(st);
     final endDate = fe.format(et);
-    final period = game.startdate == game.enddate
-        ? "$startDate ${game.starttime.substring(0, 5)}~${game.endtime.substring(0, 5)}"
-        : "$startDate ${game.starttime.substring(0, 5)} ~\n$endDate ${game.endtime.substring(0, 5)}";
+    final period = game.startDate == game.endDate
+        ? "$startDate ${game.startTime.substring(0, 5)}~${game.endTime.substring(0, 5)}"
+        : "$startDate ${game.startTime.substring(0, 5)} ~\n$endDate ${game.endTime.substring(0, 5)}";
 
     final reviewChips = tags.map(
       (t) => Padding(

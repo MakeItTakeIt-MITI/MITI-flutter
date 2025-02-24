@@ -18,7 +18,9 @@ import '../../common/component/default_appbar.dart';
 import '../../common/model/entity_enum.dart';
 import '../../game/model/game_model.dart';
 import '../../game/model/game_player_model.dart';
+import '../../game/model/v2/game/game_with_court_response.dart';
 import '../../review/component/skeleton/review_detail_skeleton.dart';
+import '../../review/model/v2/guest_review_response.dart';
 
 class ReviewDetailScreen extends StatefulWidget {
   final String revieweeNickname;
@@ -106,12 +108,12 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                     return Text('에러');
                   }
                   final model =
-                      (result as ResponseModel<ReviewDetailModel>).data!;
+                      (result as ResponseModel<GuestReviewResponse>).data!;
 
                   return Column(
                     children: [
                       UserInfoComponent(
-                        nickname: model.reviewer,
+                        nickname: model.reviewer.nickname,
                         title: '리뷰 작성자',
                       ),
                       getDivider(),
@@ -182,21 +184,21 @@ class GameInfoComponent extends StatelessWidget {
       required this.address,
       required this.fee});
 
-  factory GameInfoComponent.fromModel({required ReviewGameModel model}) {
-    final st = DateTime.parse(model.startdate);
-    final et = DateTime.parse(model.startdate);
+  factory GameInfoComponent.fromModel({required GameWithCourtResponse model}) {
+    final st = DateTime.parse(model.startDate);
+    final et = DateTime.parse(model.endDate);
     final fe = DateFormat('yyyy년 MM월 dd일 (E)', 'ko');
 
     final startDate = fe.format(st);
     final endDate = fe.format(et);
-    final period = model.startdate == model.enddate
-        ? "$startDate ${model.starttime.substring(0, 5)}~${model.endtime.substring(0, 5)}"
-        : "$startDate ${model.starttime.substring(0, 5)} ~\n$endDate ${model.endtime.substring(0, 5)}";
+    final period = model.startDate == model.endDate
+        ? "$startDate ${model.startTime.substring(0, 5)}~${model.endTime.substring(0, 5)}"
+        : "$startDate ${model.startTime.substring(0, 5)} ~\n$endDate ${model.endTime.substring(0, 5)}";
 
     return GameInfoComponent(
       title: model.title,
       period: period,
-      address: model.court.address + (" ${model.court.address_detail}" ?? ''),
+      address: model.court.address + (" ${model.court.addressDetail}" ?? ''),
       fee:
           model.fee == 0 ? '무료' : "${NumberUtil.format(model.fee.toString())}원",
     );
@@ -265,7 +267,7 @@ class ReviewInfoComponent extends StatelessWidget {
       required this.tags,
       required this.comment});
 
-  factory ReviewInfoComponent.fromModel({required ReviewDetailModel model}) {
+  factory ReviewInfoComponent.fromModel({required GuestReviewResponse model}) {
     return ReviewInfoComponent(
       rating: model.rating,
       tags: model.tags,

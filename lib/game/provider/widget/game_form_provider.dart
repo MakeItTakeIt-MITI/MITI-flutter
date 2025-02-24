@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miti/common/model/default_model.dart';
+import 'package:miti/game/model/v2/game/game_response.dart';
 import 'package:miti/game/param/game_param.dart';
 import 'package:miti/report/model/agreement_policy_model.dart';
 import 'package:miti/report/provider/report_provider.dart';
@@ -68,7 +69,7 @@ class GameForm extends _$GameForm {
   }
 
   void selectGameHistory(
-      {required BaseGameWithCourtResponse model,
+      {required GameResponse model,
       required List<TextEditingController> textEditingControllers}) {
     GameCourtParam court = GameCourtParam(
       name: model.court.name ?? "미정",
@@ -79,8 +80,8 @@ class GameForm extends _$GameForm {
     textEditingControllers[1].text = model.court.address;
     textEditingControllers[2].text = model.court.addressDetail ?? '';
     textEditingControllers[3].text = model.court.name ?? '미정';
-    textEditingControllers[4].text = model.min_invitation.toString();
-    textEditingControllers[5].text = model.max_invitation.toString();
+    textEditingControllers[4].text = model.minInvitation.toString();
+    textEditingControllers[5].text = model.maxInvitation.toString();
     textEditingControllers[6].text = model.fee.toString();
     textEditingControllers[7].text = model.info;
 

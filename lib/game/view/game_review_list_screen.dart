@@ -20,10 +20,15 @@ import 'package:miti/util/util.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/error/view/error_screen.dart';
 import '../../common/model/entity_enum.dart';
+import '../../review/model/v2/base_guest_rating_response.dart';
+import '../../review/model/v2/game_reviewee_list_response.dart';
+import '../../user/model/v2/user_host_rating_response.dart';
 import '../../user/view/review_detail_screen.dart';
 import '../component/skeleton/game_participation_review_skeleton.dart';
 import '../model/game_model.dart';
 import 'package:collection/collection.dart';
+
+import '../model/v2/participation/participation_guest_rating_response.dart';
 
 class GameReviewListScreen extends StatefulWidget {
   final int gameId;
@@ -86,7 +91,7 @@ class _GameReviewListScreenState extends State<GameReviewListScreen> {
                   }
 
                   final model =
-                      (result as ResponseModel<GameRevieweesModel>).data!;
+                      (result as ResponseModel<GameRevieweeListResponse>).data!;
                   final userId = ref.read(authProvider)?.id ?? 0;
 
                   /// 본인 리뷰 제거
@@ -118,7 +123,7 @@ class _GameReviewListScreenState extends State<GameReviewListScreen> {
                         ),
                       if (model.participations.isNotEmpty)
                         _GuestReviewComponent(
-                          participated_users: model.participations,
+                          participations: model.participations,
                           gameId: widget.gameId,
                         ),
                     ],
@@ -138,7 +143,7 @@ class _PlayerComponent extends StatelessWidget {
   final ParticipationStatusType? participation_status;
   final int gameId;
   final int? participationId;
-  final Rating rating;
+  final BaseRatingResponse rating;
 
   // final List<ReviewerModel> reviews;
 
@@ -153,7 +158,7 @@ class _PlayerComponent extends StatelessWidget {
   });
 
   factory _PlayerComponent.fromParticipationModel({
-    required GameParticipationModel model,
+    required ParticipationGuestRatingResponse model,
     required int gameId,
   }) {
     return _PlayerComponent(
@@ -161,13 +166,13 @@ class _PlayerComponent extends StatelessWidget {
       gameId: gameId,
       participationId: model.id,
       nickname: model.user.nickname,
-      rating: model.guestRating,
+      rating: model.user.guestRating,
       // reviews: model.guest_reviews,
     );
   }
 
   factory _PlayerComponent.fromHostModel({
-    required ReviewHostModel model,
+    required UserHostRatingResponse model,
     required int gameId,
   }) {
     return _PlayerComponent(
@@ -234,17 +239,17 @@ class _PlayerComponent extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      ...getStar(rating.average_rating ?? 0),
+                      ...getStar(rating.averageRating ?? 0),
                       SizedBox(width: 6.w),
                       Text(
-                        (rating.average_rating ?? 0).toStringAsFixed(1),
+                        (rating.averageRating ?? 0).toStringAsFixed(1),
                         style: MITITextStyle.sm.copyWith(
                           color: MITIColor.gray100,
                         ),
                       ),
                       SizedBox(width: 6.w),
                       Text(
-                        '리뷰 ${rating.num_of_reviews}',
+                        '리뷰 ${rating.numOfReviews}',
                         style: MITITextStyle.sm.copyWith(
                           color: MITIColor.gray100,
                         ),
@@ -339,7 +344,7 @@ class _PlayerComponent extends StatelessWidget {
 }
 
 class _HostReviewComponent extends StatelessWidget {
-  final ReviewHostModel host;
+  final UserHostRatingResponse host;
   final int gameId;
 
   const _HostReviewComponent({
@@ -376,12 +381,12 @@ class _HostReviewComponent extends StatelessWidget {
 }
 
 class _GuestReviewComponent extends StatelessWidget {
-  final List<GameParticipationModel> participated_users;
+  final List<ParticipationGuestRatingResponse> participations;
   final int gameId;
 
   const _GuestReviewComponent({
     super.key,
-    required this.participated_users,
+    required this.participations,
     required this.gameId,
   });
 
@@ -401,22 +406,22 @@ class _GuestReviewComponent extends StatelessWidget {
               ),
             ),
           ),
-          if (participated_users.isEmpty) getEmptyWidget(),
+          if (participations.isEmpty) getEmptyWidget(),
           SizedBox(height: 12.h),
-          if (participated_users.isNotEmpty)
+          if (participations.isNotEmpty)
             ListView.separated(
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,
                 itemBuilder: (_, idx) {
                   return _PlayerComponent.fromParticipationModel(
-                    model: participated_users[idx],
+                    model: participations[idx],
                     gameId: gameId,
                   );
                 },
                 separatorBuilder: (_, idx) {
                   return SizedBox(height: 10.h);
                 },
-                itemCount: participated_users.length),
+                itemCount: participations.length),
         ],
       ),
     );

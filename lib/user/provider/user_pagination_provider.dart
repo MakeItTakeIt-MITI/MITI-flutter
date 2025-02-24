@@ -7,6 +7,8 @@ import '../../common/provider/pagination_provider.dart';
 import '../../game/model/game_model.dart';
 import '../../game/model/v2/game/base_game_court_by_date_response.dart';
 import '../../game/model/v2/payment/base_payment_result_response.dart';
+import '../../review/model/v2/base_received_review_response.dart';
+import '../../review/model/v2/base_written_review_response.dart';
 import '../model/review_model.dart';
 import '../param/user_profile_param.dart';
 import '../repository/user_repository.dart';
@@ -77,7 +79,7 @@ final userWrittenReviewsPProvider = StateNotifierProvider.family.autoDispose<
 });
 
 class UserWrittenReviewsPageStateNotifier extends PaginationProvider<
-    WrittenReviewModel, UserReviewParam, UserWrittenReviewsPRepository> {
+    BaseWrittenReviewResponse, UserReviewParam, UserWrittenReviewsPRepository> {
   UserWrittenReviewsPageStateNotifier({
     required super.repository,
     required super.pageParams,
@@ -102,7 +104,7 @@ final userReceiveReviewsPProvider = StateNotifierProvider.family.autoDispose<
 });
 
 class UserReceiveReviewsPageStateNotifier extends PaginationProvider<
-    ReceiveReviewModel, UserReviewParam, UserReceiveReviewsPRepository> {
+    BaseReceivedReviewResponse, UserReviewParam, UserReceiveReviewsPRepository> {
   UserReceiveReviewsPageStateNotifier({
     required super.repository,
     required super.pageParams,
