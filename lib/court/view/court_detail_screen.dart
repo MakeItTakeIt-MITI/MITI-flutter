@@ -94,10 +94,13 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
           slivers: [
             SliverMainAxisGroup(slivers: [
               SliverToBoxAdapter(
-                child: CourtMapComponent(
-                  latLng: NLatLng(
-                    double.parse(model.latitude),
-                    double.parse(model.longitude),
+                child: Padding(
+                  padding: EdgeInsets.all(13.r),
+                  child: CourtMapComponent(
+                    latLng: NLatLng(
+                      double.parse(model.latitude),
+                      double.parse(model.longitude),
+                    ),
                   ),
                 ),
               ),
@@ -118,9 +121,12 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
 
   SliverToBoxAdapter getDivider() {
     return SliverToBoxAdapter(
-      child: Container(
-        height: 4.h,
-        color: MITIColor.gray800,
+      child: Divider(
+        indent: 16.w,
+        endIndent: 16.w,
+        color: MITIColor.gray700,
+        height: 16.h,
+        thickness: 1.h,
       ),
     );
   }
@@ -140,31 +146,28 @@ class CourtMapComponentState extends State<CourtMapComponent> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(13.r),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20.r),
-        child: SizedBox(
-          height: 200.h,
-          child: NaverMap(
-            options: NaverMapViewOptions(
-              initialCameraPosition: NCameraPosition(
-                target: widget.latLng,
-                zoom: 12,
-              ),
-              locale: const Locale('ko'),
-              logoClickEnable: false,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20.r),
+      child: SizedBox(
+        height: 200.h,
+        child: NaverMap(
+          options: NaverMapViewOptions(
+            initialCameraPosition: NCameraPosition(
+              target: widget.latLng,
+              zoom: 12,
             ),
-            onMapReady: (controller) async {
-              _naverMapController = controller;
-              final icon = NOverlayImage.fromAssetImage(
-                AssetUtil.getAssetPath(
-                    type: AssetType.icon, name: 'location', extension: 'png'),
-              );
-              await _naverMapController.addOverlay(
-                  NMarker(id: '1', position: widget.latLng, icon: icon));
-            },
+            locale: const Locale('ko'),
+            logoClickEnable: false,
           ),
+          onMapReady: (controller) async {
+            _naverMapController = controller;
+            final icon = NOverlayImage.fromAssetImage(
+              AssetUtil.getAssetPath(
+                  type: AssetType.icon, name: 'location', extension: 'png'),
+            );
+            await _naverMapController.addOverlay(
+                NMarker(id: '1', position: widget.latLng, icon: icon));
+          },
         ),
       ),
     );
@@ -193,7 +196,7 @@ class _CourtInfoComponent extends ConsumerWidget {
             ),
             SizedBox(height: 8.h),
             Text(
-              "${model.address} ${model.addressDetail}",
+              "${model.address} ${model.addressDetail ?? ''}",
               style: MITITextStyle.sm.copyWith(
                 color: MITIColor.gray400,
               ),

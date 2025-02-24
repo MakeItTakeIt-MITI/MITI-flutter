@@ -13,6 +13,7 @@ import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
 import '../../court/view/court_map_screen.dart';
 import '../../user/provider/user_pagination_provider.dart';
+import '../model/v2/participation/participation_guest_player_response.dart';
 
 part 'game_provider.g.dart';
 
@@ -417,20 +418,41 @@ class ReviewDetail extends _$ReviewDetail {
   }
 }
 
+enum PlayerOrderType { participation, height }
+
 @riverpod
 class GamePlayerProfile extends _$GamePlayerProfile {
   @override
   BaseModel build({required int gameId}) {
-    getPayment(gameId: gameId);
+    getPlayers(gameId: gameId);
     return LoadingModel();
   }
 
-  void getPayment({required int gameId}) {
+  void getPlayers({
+    required int gameId,
+    PlayerOrderType? orderType,
+  }) {
+    state = LoadingModel();
     final repository = ref.watch(gameRepositoryProvider);
     repository.getParticipationProfile(gameId: gameId).then<BaseModel>((value) {
       logger.i(value);
-      state = value;
-      return value;
+      if (orderType == null || orderType == PlayerOrderType.participation) {
+        final players = (value).data!;
+        players.sort((ParticipationGuestPlayerResponse p1,
+                ParticipationGuestPlayerResponse p2) =>
+            p1.participationStatus.index
+                .compareTo(p2.participationStatus.index));
+        state = value.copyWith(data: players);
+      } else {
+        final players = (value).data!;
+        players.sort((ParticipationGuestPlayerResponse p1,
+                ParticipationGuestPlayerResponse p2) =>
+            p2.user.playerProfile.height
+                ?.compareTo(p1.user.playerProfile.height ?? 0) ??
+            1);
+        state = value.copyWith(data: players);
+      }
+      return state;
     }).catchError((e) {
       final error = ErrorModel.respToError(e);
       logger.e(

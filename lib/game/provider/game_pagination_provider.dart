@@ -1,3 +1,4 @@
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../common/model/default_model.dart';
@@ -24,10 +25,24 @@ final gamePageProvider = StateNotifierProvider.family.autoDispose<
 
 class GamePageStateNotifier extends PaginationProvider<GameWithCourtMapResponse,
     GamePaginationParam, GamePRepository> {
+  final searchDebounce = Debouncer(const Duration(milliseconds: 300),
+      initialValue: GamePaginationParam(), checkEquality: false);
+
   GamePageStateNotifier({
     required super.repository,
     required super.pageParams,
     super.param,
     super.path,
-  });
+  }) {
+    searchDebounce.values.listen((GamePaginationParam state) {
+      paginate(
+          paginationParams: const PaginationParam(page: 1),
+          forceRefetch: true,
+          param: state);
+    });
+  }
+
+  void updateDebounce({required GamePaginationParam param}) {
+    searchDebounce.setValue(param);
+  }
 }

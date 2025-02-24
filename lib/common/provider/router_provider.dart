@@ -14,6 +14,7 @@ import 'package:miti/game/view/game_refund_screen.dart';
 import 'package:miti/game/view/game_create_screen.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/game/view/game_payment_screen.dart';
+import 'package:miti/game/view/game_search_screen.dart';
 import 'package:miti/game/view/game_update_screen.dart';
 import 'package:miti/game/view/review_form_screen.dart';
 import 'package:miti/notification/model/push_model.dart';
@@ -40,7 +41,7 @@ import '../../auth/view/signup/signup_screen.dart';
 import '../../auth/view/signup/signup_select_screen.dart';
 import '../../court/model/court_model.dart';
 import '../../court/view/court_search_screen.dart';
-import '../../game/view/gaem_participation_screen.dart';
+import '../../game/view/game_participation_screen.dart';
 import '../../game/view/game_create_complete_screen.dart';
 import '../../default_screen.dart';
 import '../../court/view/court_map_screen.dart';
@@ -325,6 +326,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                 pageBuilder: (context, state) {
                   return const NoTransitionPage(child: CourtMapScreen());
                 },
+                routes: [
+                  GoRoute(
+                    path: 'gameSearch',
+                    parentNavigatorKey: rootNavKey,
+                    name: GameSearchScreen.routeName,
+                    builder: (context, state) {
+                      return GameSearchScreen();
+                    },
+                  )
+                ],
               ),
               GoRoute(
                   path: '/games',

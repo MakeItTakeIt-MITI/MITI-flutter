@@ -50,7 +50,7 @@ import '../model/v2/game/game_detail_response.dart';
 import '../model/v2/game/game_participation_payment_detail_response.dart';
 import '../model/v2/game/game_with_court_response.dart';
 import '../model/v2/participation/base_participation_response.dart';
-import 'gaem_participation_screen.dart';
+import 'game_participation_screen.dart';
 import 'game_payment_screen.dart';
 import 'game_screen.dart';
 import 'game_update_screen.dart';
@@ -173,10 +173,13 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                       SingleChildScrollView(
                         child: Column(
                           children: [
-                            CourtMapComponent(
-                              latLng: NLatLng(
-                                double.parse(model.court.latitude),
-                                double.parse(model.court.longitude),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 13.r),
+                              child: CourtMapComponent(
+                                latLng: NLatLng(
+                                  double.parse(model.court.latitude),
+                                  double.parse(model.court.longitude),
+                                ),
                               ),
                             ),
                             SummaryComponent.fromDetailModel(model: model),
@@ -470,6 +473,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
     return Container(
       height: 1.h,
       color: MITIColor.gray750,
+
     );
   }
 }

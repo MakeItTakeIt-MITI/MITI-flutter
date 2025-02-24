@@ -24,13 +24,13 @@ enum GameStatusType {
 }
 
 enum ParticipationStatusType {
-  /// 경기 참여 요청 생성 상태
-  @JsonValue('requested')
-  requested('참여 요청 완료'),
-
   /// 경기 참여 확정 상태
   @JsonValue('confirmed')
   confirmed('참여 승인 완료'),
+
+  /// 경기 참여 요청 생성 상태
+  @JsonValue('requested')
+  requested('참여 요청 완료'),
 
   // 참가자 변심으로 인한 참여 취소
   @JsonValue('withdrawn')

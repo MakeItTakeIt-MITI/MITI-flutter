@@ -21,6 +21,7 @@ import 'package:miti/game/component/game_state_label.dart';
 import 'package:miti/game/param/game_param.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/provider/widget/game_filter_provider.dart';
+import 'package:miti/game/view/game_search_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/util/util.dart';
@@ -355,50 +356,66 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
                       top: 0,
                       left: 0,
                       right: 0,
-                      child: IgnorePointer(
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: MITIColor.gray900,
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(16.r))),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              SizedBox(height: 8.h),
-                              Align(
-                                alignment: Alignment.center,
-                                child: Container(
-                                  height: 4.h,
-                                  width: 60.w,
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(8.r)),
-                                    color: MITIColor.gray100,
-                                  ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: MITIColor.gray900,
+                            borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(16.r))),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            SizedBox(height: 8.h),
+                            Align(
+                              alignment: Alignment.center,
+                              child: Container(
+                                height: 4.h,
+                                width: 60.w,
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(8.r)),
+                                  color: MITIColor.gray100,
                                 ),
                               ),
-                              SizedBox(height: 20.h),
-                              Consumer(builder: (_, ref, child) {
-                                final modelList =
-                                    ref.watch(selectGameListProvider);
-                                if (modelList.isNotEmpty) {
-                                  return Padding(
-                                    padding: EdgeInsets.only(left: 33.w),
-                                    child: Text(
-                                      '${modelList.length}개의 매치',
-                                      style: MITITextStyle.selectionDayStyle
-                                          .copyWith(
-                                        color: MITIColor.gray100,
+                            ),
+                            SizedBox(height: 20.h),
+                            Consumer(builder: (_, ref, child) {
+                              final modelList =
+                                  ref.watch(selectGameListProvider);
+                              return Padding(
+                                padding:
+                                    EdgeInsets.symmetric(horizontal: 16.w),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 12.w),
+                                      child: Text(
+                                        '${modelList.length}개의 매치',
+                                        style: MITITextStyle.selectionDayStyle
+                                            .copyWith(
+                                          color: MITIColor.gray100,
+                                        ),
                                       ),
                                     ),
-                                  );
-                                }
-                                return Container();
-                              }),
-                              SizedBox(height: 10.h),
-                            ],
-                          ),
+                                    GestureDetector(
+                                      child: Text(
+                                        '전체 경기',
+                                        style: MITITextStyle.smSemiBold
+                                            .copyWith(color: MITIColor.white),
+                                      ),
+                                      onTap: () {
+                                        context.pushNamed(
+                                            GameSearchScreen.routeName);
+                                      },
+                                    )
+                                  ],
+                                ),
+                              );
+                            }),
+                            SizedBox(height: 10.h),
+                          ],
                         ),
                       ),
                     ),

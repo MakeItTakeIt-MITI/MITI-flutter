@@ -11,6 +11,7 @@ enum DropButtonType {
   review,
   transfer,
   settlement,
+  participation,
 }
 
 final dropDownValueProvider = StateProvider.family
@@ -27,7 +28,7 @@ class CustomDropDownButton extends ConsumerStatefulWidget {
   final TextStyle? textStyle;
   final DropButtonType type;
 
-  const CustomDropDownButton( {
+  const CustomDropDownButton({
     super.key,
     required this.items,
     required this.onChanged,

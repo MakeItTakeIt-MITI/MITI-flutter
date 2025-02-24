@@ -110,6 +110,18 @@ class ResponseListModel<T> extends BaseModel {
       Map<String, dynamic> json, T Function(Object? json) fromJsonT) {
     return _$ResponseListModelFromJson(json, fromJsonT);
   }
+
+  ResponseListModel<T> copyWith({
+    final int? status_code,
+    final String? message,
+    final List<T>? data,
+  }) {
+    return ResponseListModel<T>(
+      status_code: status_code ?? this.status_code,
+      message: message ?? this.message,
+      data: data ?? this.data,
+    );
+  }
 }
 
 @JsonSerializable(

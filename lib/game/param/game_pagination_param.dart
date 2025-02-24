@@ -21,18 +21,18 @@ class GamePaginationParam extends DefaultParam {
   Map<String, dynamic> toJson() => _$GamePaginationParamToJson(this);
 
   GamePaginationParam copyWith({
-    String? search,
+    String? title,
     DistrictType? district,
     bool isAll = false,
   }) {
     if (isAll) {
       return GamePaginationParam(
-        title: search ?? this.title,
+        title: title ?? this.title,
         district: null,
       );
     }
     return GamePaginationParam(
-      title: search ?? this.title,
+      title: title ?? this.title,
       district: district ?? this.district,
     );
   }

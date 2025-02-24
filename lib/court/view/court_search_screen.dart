@@ -102,7 +102,10 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
                     child: Container(
                         color: MITIColor.gray800,
                         height: 58.h,
-                        child: const _SearchComponent()),
+                        child: SearchComponent(
+                          onChanged: searchCourt,
+                          selectRegion: selectRegion,
+                        )),
                   ),
                 ),
               ),
@@ -161,6 +164,28 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
     );
   }
 
+  void selectRegion(String? region) {
+    final district =
+        region == '전체' ? null : DistrictType.stringToEnum(value: region!);
+    final form = ref
+        .read(courtSearchProvider.notifier)
+        .update(district: district, isAll: district == null);
+    ref
+        .read(dropDownValueProvider(DropButtonType.district).notifier)
+        .update((state) => region);
+    ref.read(courtPageProvider(PaginationStateParam()).notifier).paginate(
+        paginationParams: const PaginationParam(page: 1),
+        forceRefetch: true,
+        param: form);
+  }
+
+  void searchCourt(val) {
+    final form = ref.read(courtSearchProvider.notifier).update(search: val);
+    ref
+        .read(courtPageProvider(PaginationStateParam()).notifier)
+        .updateDebounce(param: form);
+  }
+
   void onTap(CourtMapResponse model, BuildContext context) {
     Map<String, String> pathParameters = {'courtId': model.id.toString()};
     context.pushNamed(
@@ -187,14 +212,20 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
   }
 }
 
-class _SearchComponent extends StatefulWidget {
-  const _SearchComponent({super.key});
+typedef SelectRegion = void Function(String? region);
+
+class SearchComponent extends StatefulWidget {
+  final ValueChanged<String> onChanged;
+  final SelectRegion selectRegion;
+
+  const SearchComponent(
+      {super.key, required this.onChanged, required this.selectRegion});
 
   @override
-  State<_SearchComponent> createState() => _SearchComponentState();
+  State<SearchComponent> createState() => _SearchComponentState();
 }
 
-class _SearchComponentState extends State<_SearchComponent> {
+class _SearchComponentState extends State<SearchComponent> {
   String region = '전체';
   final items = [
     '전체',
@@ -250,15 +281,17 @@ class _SearchComponentState extends State<_SearchComponent> {
                     color: MITIColor.gray100,
                     height: 1,
                   ),
-                  onChanged: (val) {
-                    final form = ref
-                        .read(courtSearchProvider.notifier)
-                        .update(search: val);
-                    ref
-                        .read(
-                            courtPageProvider(PaginationStateParam()).notifier)
-                        .updateDebounce(param: form);
-                  },
+                  onChanged: widget.onChanged,
+                  //     (val) {
+                  //   final form = ref
+                  //       .read(courtSearchProvider.notifier)
+                  //       .update(search: val);
+                  //   ref
+                  //       .read(
+                  //           courtPageProvider(PaginationStateParam()).notifier)
+                  //       .updateDebounce(param: form);
+                  // }
+                  // ,
                   onFieldSubmitted: (val) {
                     // ref.read(courtSearchProvider.notifier).search(page: 1);
                   },
@@ -337,8 +370,8 @@ class _SearchComponentState extends State<_SearchComponent> {
                                     TextButton(
                                         onPressed: selectRegion.isNotEmpty
                                             ? () {
-                                                changeDropButton(
-                                                    selectRegion, ref);
+                                                widget
+                                                    .selectRegion(selectRegion);
                                                 context.pop();
                                                 FocusScope.of(context)
                                                     .unfocus();
@@ -398,21 +431,6 @@ class _SearchComponentState extends State<_SearchComponent> {
         ],
       ),
     );
-  }
-
-  void changeDropButton(String? val, WidgetRef ref) {
-    final district =
-        val == '전체' ? null : DistrictType.stringToEnum(value: val!);
-    final form = ref
-        .read(courtSearchProvider.notifier)
-        .update(district: district, isAll: district == null);
-    ref
-        .read(dropDownValueProvider(DropButtonType.district).notifier)
-        .update((state) => val);
-    ref.read(courtPageProvider(PaginationStateParam()).notifier).paginate(
-        paginationParams: const PaginationParam(page: 1),
-        forceRefetch: true,
-        param: form);
   }
 }
 
