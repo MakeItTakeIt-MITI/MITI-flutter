@@ -11,6 +11,8 @@ import '../../common/param/pagination_param.dart';
 import '../../common/repository/base_pagination_repository.dart';
 import '../../dio/dio_interceptor.dart';
 import '../../dio/provider/dio_provider.dart';
+import '../../game/model/v2/report/base_guest_report_response.dart';
+import '../../game/model/v2/report/base_host_report_response.dart';
 import '../../game/model/v2/report/base_report_reason_response.dart';
 import '../../game/model/v2/report/base_report_type_response.dart';
 import '../../user/param/user_profile_param.dart';
@@ -20,7 +22,7 @@ part 'report_repository.g.dart';
 
 final reportRepositoryProvider = Provider<ReportRepository>((ref) {
   final baseUrl =
-      dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
+  dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
   return ReportRepository(dio, baseUrl: baseUrl);
 });
@@ -44,16 +46,18 @@ abstract class ReportRepository {
 
   /// 경기 호스트 신고 API
   @Headers({'token': 'true'})
-  @POST('/games/{gameId}/reports')
-  Future<ResponseModel<CreateReportModel>> reportHost({
+  @POST('/games/{gameId}/host-reports')
+  Future<ResponseModel<BaseHostReportResponse>> reportHost({
     @Path() required int gameId,
     @Body() required ReportParam param,
   });
 
+  /// 경기 게스트 신고 API
   @Headers({'token': 'true'})
-  @POST('/games/{gameId}/reports')
-  Future<ResponseModel<CreateReportModel>> report({
+  @POST('/games/{gameId}/participations/{participationId}/guest-reports')
+  Future<ResponseModel<BaseGuestReportResponse>> reportGuest({
     @Path() required int gameId,
+    @Path() required int participationId,
     @Body() required ReportParam param,
   });
 

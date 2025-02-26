@@ -7,20 +7,21 @@ part 'report_param.g.dart';
 
 @JsonSerializable()
 class ReportParam extends Equatable {
-  final HostReportCategoryType category;
+  @JsonKey(name: "report_reason")
+  final int reportReason;
   final String content;
 
   const ReportParam({
-    required this.category,
+    required this.reportReason,
     required this.content,
   });
 
   ReportParam copyWith({
-    HostReportCategoryType? category,
+    int? reportReason,
     String? content,
   }) {
     return ReportParam(
-      category: category ?? this.category,
+      reportReason: reportReason ?? this.reportReason,
       content: content ?? this.content,
     );
   }
@@ -31,7 +32,7 @@ class ReportParam extends Equatable {
       _$ReportParamFromJson(json);
 
   @override
-  List<Object?> get props => [category, content];
+  List<Object?> get props => [reportReason, content];
 
   @override
   bool? get stringify => true;

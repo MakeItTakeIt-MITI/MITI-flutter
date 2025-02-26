@@ -27,6 +27,7 @@ import '../../game/view/review_form_screen.dart';
 import '../../theme/text_theme.dart';
 import '../error/report_error.dart';
 import '../model/report_model.dart';
+
 // todo 신고 작성 api
 class ReportFormScreen extends ConsumerStatefulWidget {
   final int gameId;
@@ -91,7 +92,8 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
         bottomNavigationBar: BottomButton(
           button: Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              final form = ref.watch(reportFormProvider(category: widget.type));
+              final form =
+                  ref.watch(reportFormProvider(reportReason: widget.reportId));
               final valid = form.content.isNotEmpty;
               return TextButton(
                 onPressed: valid && !isLoading
@@ -154,7 +156,8 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
                       child: MultiLineTextFormField(
                         onChanged: (val) {
                           ref
-                              .read(reportFormProvider(category: widget.type)
+                              .read(reportFormProvider(
+                                      reportReason: widget.reportId)
                                   .notifier)
                               .update(content: val);
                         },
@@ -174,9 +177,11 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
   }
 
   Future<void> _report(WidgetRef ref, BuildContext context) async {
-    final result = await ref.read(
-        createReportProvider(gameId: widget.gameId, category: widget.type)
-            .future);
+    final result = await ref.read(createReportProvider(
+            gameId: widget.gameId,
+            reportId: widget.reportId,
+            participationId: widget.participationId)
+        .future);
     if (context.mounted) {
       if (result is ErrorModel) {
         ReportError.fromModel(model: result)

@@ -43,6 +43,9 @@ import '../../env/environment.dart';
 import '../../kakaopay/param/boot_pay_approve_param.dart';
 import '../component/skeleton/game_payment_skeleton.dart';
 import '../error/game_error.dart';
+import '../model/v2/game/game_participation_payment_detail_response.dart';
+import '../model/v2/game/game_participation_payment_response.dart';
+import '../model/v2/payment/base_payment_request_response.dart';
 import 'game_create_complete_screen.dart';
 import 'game_detail_screen.dart';
 import 'package:collection/collection.dart';
@@ -199,11 +202,11 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
                     return Text('에러');
                   }
 
-                  final model =
-                      (result as ResponseModel<GameParticipationPaymentDetailResponse>).data!;
-                  final visiblePay = model
-                          .paymentInformation.paymentAmount.gameFeeAmount !=
-                      0;
+                  final model = (result as ResponseModel<
+                          GameParticipationPaymentDetailResponse>)
+                      .data!;
+                  final visiblePay =
+                      model.paymentInformation.paymentAmount.gameFeeAmount != 0;
                   return SingleChildScrollView(
                     child: Column(
                       children: [
@@ -606,7 +609,8 @@ class PaymentComponent extends StatelessWidget {
       required this.promotion_amount,
       required this.final_payment_amount});
 
-  factory PaymentComponent.fromModel({required GameParticipationPaymentResponse model}) {
+  factory PaymentComponent.fromModel(
+      {required GameParticipationPaymentResponse model}) {
     final payment = model.paymentAmount;
     final game_fee_amount =
         NumberFormat.decimalPattern().format(payment.gameFeeAmount);

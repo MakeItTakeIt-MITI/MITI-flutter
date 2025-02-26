@@ -9,8 +9,8 @@ part 'report_form_provider.g.dart';
 @riverpod
 class ReportForm extends _$ReportForm {
   @override
-  ReportParam build({required HostReportCategoryType category}) {
-    return ReportParam(category: category, content: '');
+  ReportParam build({required int reportReason}) {
+    return ReportParam(content: '', reportReason: reportReason);
   }
 
   void update({String? content}) {

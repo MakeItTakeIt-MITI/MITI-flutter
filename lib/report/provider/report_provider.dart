@@ -61,15 +61,18 @@ class ReportDetail extends _$ReportDetail {
 
 @riverpod
 Future<BaseModel> createReport(CreateReportRef ref,
-    {required int gameId, required HostReportCategoryType category}) async {
-  final param = ref.read(reportFormProvider(category: category));
-  return await ref
-      .watch(reportRepositoryProvider)
-      .report(
-        gameId: gameId,
-        param: param,
-      )
-      .then<BaseModel>((value) {
+    {required int gameId, required int reportId, int? participationId}) async {
+  final param = ref.read(reportFormProvider(reportReason: reportId));
+  final repository = ref.watch(reportRepositoryProvider);
+  final result = participationId == null
+      ? repository.reportHost(
+          gameId: gameId,
+          param: param,
+        )
+      : repository.reportGuest(
+          gameId: gameId, participationId: participationId, param: param);
+
+  return await result.then<BaseModel>((value) {
     logger.i('create report !');
     return value;
   }).catchError((e) {
