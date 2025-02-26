@@ -68,6 +68,8 @@ class Update extends _$Update {
       // 앱 현재 버전 정보 가져오기
       final packageInfo = await PackageInfo.fromPlatform();
       final currentVersion = packageInfo.version;
+      log("currentVersion = $currentVersion");
+      print("currentVersion = $currentVersion");
 
       // Remote Config에서 최소 버전과 권장 버전 가져오기
 
@@ -91,8 +93,7 @@ class Update extends _$Update {
       final storeUrl = Platform.isIOS ? appStoreUrl : playStoreUrl;
 
       // 버전 비교
-      final needForceUpdate =
-          isVersionLower(currentVersion, minimumAppVersion);
+      final needForceUpdate = isVersionLower(currentVersion, minimumAppVersion);
       final needRecommendedUpdate =
           isVersionLower(currentVersion, recommendedAppVersion);
       final needRecommendUpdate =
@@ -134,7 +135,16 @@ class Update extends _$Update {
       log("state currentAppVersion= ${state.currentAppVersion}");
       log("state updateVersion= ${state.updateVersion}");
       log("state updateMessage= ${state.updateMessage}");
-      log("state = ${state.storeUrl}");
+      log("state storeUrl = ${state.storeUrl}");
+
+      print("minimumAppVersion = ${minimumAppVersion}");
+      print("recommendedAppVersion = ${recommendedAppVersion}");
+      print("state forceUpdate = ${state.forceUpdate}");
+      print("state recommendedUpdate = ${state.recommendedUpdate}");
+      print("state currentAppVersion= ${state.currentAppVersion}");
+      print("state updateVersion= ${state.updateVersion}");
+      print("state updateMessage= ${state.updateMessage}");
+      print("state storeUrl = ${state.storeUrl}");
     } catch (e) {
       debugPrint('App version check error: $e');
     }
