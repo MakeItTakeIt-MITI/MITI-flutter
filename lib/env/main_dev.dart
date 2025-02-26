@@ -39,6 +39,7 @@ import '../court/view/court_detail_screen.dart';
 import '../firebase_options.dart';
 import '../notification/provider/notification_provider.dart';
 import '../notification/view/notification_screen.dart';
+import '../util/util.dart';
 
 //
 @pragma('vm:entry-point')
@@ -84,6 +85,8 @@ void _backgroundRouting(NotificationResponse details) {
 }
 
 void main(List<String> args) async {
+  EnvUtil.instance.initialize(environment: BuildEnvironment.development);
+
   print("Loading environment: .env.dev");
   log("Loading environment: .env.dev");
   await dotenv.load(fileName: ".env.dev");

@@ -58,10 +58,15 @@ class GamePaymentScreen extends ConsumerStatefulWidget {
 
 class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
   Payload payload = Payload();
-
-  String webApplicationId = Environment.bootPayJavaScriptKey;
-  String androidApplicationId = Environment.bootPayAndroidKey;
-  String iosApplicationId = Environment.bootPayIosKey;
+  String webApplicationId = EnvUtil.instance.isProduction
+      ? Environment.bootPayJavaScriptKey
+      : Environment.bootPayDevJavaScriptKey;
+  String androidApplicationId = EnvUtil.instance.isProduction
+      ? Environment.bootPayAndroidKey
+      : Environment.bootPayDevAndroidKey;
+  String iosApplicationId = EnvUtil.instance.isProduction
+      ? Environment.bootPayIosKey
+      : Environment.bootPayDevIosKey;
 
   String get applicationId {
     return Bootpay().applicationId(
