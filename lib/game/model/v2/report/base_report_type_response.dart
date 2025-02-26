@@ -10,13 +10,13 @@ class BaseReportTypeResponse extends IModelWithId {
   @JsonKey(name: 'report_type')
   final ReportCategoryType reportType;
 
-  @JsonKey(name: 'report_reason')
-  final List<BaseReportReasonResponse> reportReason;
+  @JsonKey(name: 'report_reasons')
+  final List<BaseReportReasonResponse> reportReasons;
 
   BaseReportTypeResponse({
     required super.id,
     required this.reportType,
-    required this.reportReason,
+    required this.reportReasons,
   });
 
   factory BaseReportTypeResponse.fromJson(Map<String, dynamic> json) =>
@@ -27,12 +27,12 @@ class BaseReportTypeResponse extends IModelWithId {
   BaseReportTypeResponse copyWith({
     int? id,
     ReportCategoryType? reportType,
-    List<BaseReportReasonResponse>? reportReason,
+    List<BaseReportReasonResponse>? reportReasons,
   }) {
     return BaseReportTypeResponse(
       id: id ?? this.id,
       reportType: reportType ?? this.reportType,
-      reportReason: reportReason ?? this.reportReason,
+      reportReasons: reportReasons ?? this.reportReasons,
     );
   }
 }

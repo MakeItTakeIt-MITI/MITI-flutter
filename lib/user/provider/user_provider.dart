@@ -65,17 +65,17 @@ class MyReview extends _$MyReview {
 
     late Future<ResponseModel<BaseReviewResponse>> futureResponse;
 
-    if (reviewType == ReviewType.hostReview &&
+    if (reviewType == ReviewType.host_review &&
         userReviewType == UserReviewType.receive) {
       /// 받은 호스트 리뷰 상세 조회API
       futureResponse = repository.getReceivedHostReviewDetail(
           userId: id, reviewId: reviewId);
-    } else if (reviewType == ReviewType.guestReview &&
+    } else if (reviewType == ReviewType.guest_review &&
         userReviewType == UserReviewType.receive) {
       /// 받은 게스트 리뷰 상세 조회 API
       futureResponse = repository.getReceivedGuestReviewDetail(
           userId: id, reviewId: reviewId);
-    } else if (reviewType == ReviewType.hostReview &&
+    } else if (reviewType == ReviewType.host_review &&
         userReviewType == UserReviewType.written) {
       /// 작성 호스트 리뷰 상세 조회 API
       futureResponse =

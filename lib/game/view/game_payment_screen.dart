@@ -133,7 +133,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
           bool validCheckBox = true;
           final result = ref.watch(agreementPolicyProvider(
-              type: AgreementRequestType.gameParticipation));
+              type: AgreementRequestType.game_participation));
           final isCheckBoxes = ref.watch(
               gameParticipationFormProvider(gameId: widget.gameId, type: type)
                   .select((s) => s.isCheckBoxes));
@@ -192,7 +192,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
                   if (result is LoadingModel) {
                     return SingleChildScrollView(
                         child: GamePaymentSkeleton(
-                      type: AgreementRequestType.gameParticipation,
+                      type: AgreementRequestType.game_participation,
                       gameId: widget.gameId,
                       payType: type,
                     ));
@@ -229,7 +229,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
                         ),
                         getDivider(),
                         PaymentCheckForm(
-                          type: AgreementRequestType.gameParticipation,
+                          type: AgreementRequestType.game_participation,
                           gameId: widget.gameId,
                           payType: type,
                         ),
@@ -504,7 +504,7 @@ class PaymentCheckFormState extends ConsumerState<PaymentCheckForm> {
 
   void onCheck(WidgetRef ref, int idx) {
     bool allChecked = false;
-    if (widget.type == AgreementRequestType.gameParticipation) {
+    if (widget.type == AgreementRequestType.game_participation) {
       allChecked = !ref
           .read(gameParticipationFormProvider(
                   gameId: widget.gameId, type: widget.payType!)
@@ -575,7 +575,7 @@ class PaymentCheckFormState extends ConsumerState<PaymentCheckForm> {
           ref.read(checkProvider(2).notifier).update((state) => !state);
           final List<bool> isCheckBoxes = List.generate(
               result.data!.length, (e) => ref.read(checkProvider(2)));
-          if (widget.type == AgreementRequestType.gameParticipation) {
+          if (widget.type == AgreementRequestType.game_participation) {
             ref
                 .read(gameParticipationFormProvider(
                         gameId: widget.gameId, type: widget.payType!)

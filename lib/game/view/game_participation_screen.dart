@@ -110,8 +110,8 @@ class _ParticipationPlayerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<String> details = [
       if (profile.gender?.displayName != null) profile.gender!.displayName,
-      if (profile.height != null) profile.height.toString(),
-      if (profile.weight != null) profile.weight.toString(),
+      if (profile.height != null) "${profile.height} cm",
+      if (profile.weight != null) "${profile.weight} kg",
       if (profile.position?.displayName != null) profile.position!.displayName,
     ];
 

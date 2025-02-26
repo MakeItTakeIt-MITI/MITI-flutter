@@ -76,9 +76,9 @@ enum PaymentResultStatusType {
 @JsonEnum(valueField: 'value')
 enum ReviewType {
   @JsonValue('host_review')
-  hostReview('호스트 리뷰', 'host_review'),
+  host_review('호스트 리뷰', 'host_review'),
   @JsonValue('guest_review')
-  guestReview('게스트 리뷰', 'guest_review');
+  guest_review('게스트 리뷰', 'guest_review');
 
   const ReviewType(this.displayName, this.value);
 
@@ -111,7 +111,7 @@ enum SettlementStatusType {
   @JsonValue('waiting')
   waiting('대기중'),
   @JsonValue('partially_completed')
-  partiallyCompleted('부분 정산'),
+  partially_completed('부분 정산'),
   @JsonValue('completed')
   completed('정산완료'),
   @JsonValue('suspended')
@@ -391,9 +391,9 @@ enum PushNotificationTopicType {
 
 enum ReportCategoryType {
   @JsonValue('host_report')
-  hostReport('호스트 신고'),
+  host_report('호스트 신고'),
   @JsonValue('guest_report')
-  guestReport('게스트 신고'),
+  guest_report('게스트 신고'),
   @JsonValue('etc')
   etc('기타 신고');
 
@@ -466,9 +466,9 @@ enum ReportStatusType {
   @JsonValue('waiting')
   waiting('대기중'),
   @JsonValue('evidence_requested')
-  evidenceRequested('자료 요청'),
+  evidence_requested('자료 요청'),
   @JsonValue('investigation_in_progress')
-  investigationInProgress('조사진행중'),
+  investigation_in_progress('조사진행중'),
   @JsonValue('concluded')
   concluded('처리완료');
 
@@ -520,7 +520,7 @@ enum ReportInvestigationResultType {
 enum PolicyType {
   policy('방침'),
   @JsonValue('terms_and_conditions')
-  termsAndConditions('약관'),
+  terms_and_conditions('약관'),
   @JsonValue('user_policy')
   userPolicy('이용정책');
 
@@ -535,13 +535,13 @@ enum AgreementRequestType {
   @JsonValue('signup')
   signup('회원가입'),
   @JsonValue('game_hosting')
-  gameHosting('경기 생성'),
+  game_hosting('경기 생성'),
   @JsonValue('game_participation')
-  gameParticipation('경기 참여'),
+  game_participation('경기 참여'),
   @JsonValue('transfer_request')
-  transferRequest('정산금 이체 요청'),
+  transfer_request('정산금 이체 요청'),
   @JsonValue('participation_refund')
-  participationRefund('참여 취소');
+  participation_refund('참여 취소');
 
   const AgreementRequestType(
     this.displayName,
@@ -656,9 +656,9 @@ enum BankTransferStatusType {
 
 enum RatingType {
   @JsonValue('host_rating')
-  hostRating('호스트 평점'),
+  host_rating('호스트 평점'),
   @JsonValue('guest_rating')
-  guestRating('게스트 평점');
+  guest_rating('게스트 평점');
 
   const RatingType(this.displayName);
 

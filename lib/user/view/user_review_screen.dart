@@ -60,9 +60,9 @@ class _UserWrittenReviewScreenState
   ReviewType? getReviewType(String? value) {
     switch (value) {
       case '호스트리뷰':
-        return ReviewType.hostReview;
+        return ReviewType.host_review;
       case '게스트리뷰':
-        return ReviewType.guestReview;
+        return ReviewType.guest_review;
       default:
         return null;
     }

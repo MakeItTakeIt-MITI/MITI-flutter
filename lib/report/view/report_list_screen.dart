@@ -50,7 +50,7 @@ class ReportListScreen extends StatelessWidget {
               (result as ResponseListModel<BaseReportTypeResponse>)
                       .data!
                       .firstOrNull
-                      ?.reportReason ??
+                      ?.reportReasons ??
                   List.empty();
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 32.h),
@@ -141,7 +141,7 @@ class ReportCard extends StatelessWidget {
               AssetUtil.getAssetPath(
                   type: AssetType.icon, name: 'chevron_right'),
               colorFilter: const ColorFilter.mode(
-                MITIColor.primary,
+                MITIColor.gray400,
                 BlendMode.srcIn,
               ),
             ),

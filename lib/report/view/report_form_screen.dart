@@ -33,7 +33,7 @@ class ReportFormScreen extends ConsumerStatefulWidget {
   final int gameId;
   final int reportId;
   final int? participationId;
-  final HostReportCategoryType type;
+  // final HostReportCategoryType type;
 
   static String get routeName => 'reportForm';
 
@@ -41,7 +41,7 @@ class ReportFormScreen extends ConsumerStatefulWidget {
     super.key,
     required this.gameId,
     required this.reportId,
-    required this.type,
+    // required this.type,
     this.participationId,
   });
 

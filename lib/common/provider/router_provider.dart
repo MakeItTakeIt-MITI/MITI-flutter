@@ -485,12 +485,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                                       participationId = int.parse(state.uri
                                           .queryParameters['participationId']!);
                                     }
-                                    final type =
-                                        state.extra as HostReportCategoryType;
+                                    // final type =
+                                    //     state.extra as HostReportCategoryType;
                                     return ReportFormScreen(
                                       gameId: gameId,
                                       reportId: reportId,
-                                      type: type,
+                                      // type: type,
                                       participationId: participationId,
                                     );
                                   },

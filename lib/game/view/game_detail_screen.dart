@@ -402,7 +402,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                       context.pushNamed(
                         ReportListScreen.routeName,
                         pathParameters: pathParameters,
-                        extra: ReportCategoryType.hostReport,
+                        extra: ReportCategoryType.host_report,
                       );
                     },
                     child: Text(

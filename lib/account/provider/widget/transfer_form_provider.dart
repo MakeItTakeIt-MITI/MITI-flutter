@@ -14,7 +14,7 @@ class TransferForm extends _$TransferForm {
   @override
   BankTransferParam build() {
     final result = ref.watch(
-        agreementPolicyProvider(type: AgreementRequestType.transferRequest));
+        agreementPolicyProvider(type: AgreementRequestType.transfer_request));
     if (result is ResponseListModel<AgreementPolicyModel>) {
       // final model = result as
       final List<bool> checkBoxes =

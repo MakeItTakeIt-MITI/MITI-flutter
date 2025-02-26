@@ -96,7 +96,7 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                   ));
                   if (result is LoadingModel) {
                     return const ReviewDetailSkeleton(
-                      reviewType: ReviewType.guestReview,
+                      reviewType: ReviewType.guest_review,
                     );
                   } else if (result is ErrorModel) {
                     // final userApiType =

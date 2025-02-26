@@ -154,7 +154,7 @@ class _SettlementListScreenState extends ConsumerState<SettlementListScreen> {
       case '정산 완료':
         return SettlementStatusType.completed;
       case '부분 정산':
-        return SettlementStatusType.partiallyCompleted;
+        return SettlementStatusType.partially_completed;
       default:
         return null;
     }

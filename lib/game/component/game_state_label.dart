@@ -58,11 +58,11 @@ class ReviewLabel extends StatelessWidget {
     late Color textColor;
 
     switch (reviewType) {
-      case ReviewType.hostReview:
+      case ReviewType.host_review:
         backgroundColor = const Color(0xFF0087E9).withOpacity(0.3);
         textColor = const Color(0xFF0087E9);
         break;
-      case ReviewType.guestReview:
+      case ReviewType.guest_review:
         backgroundColor = const Color(0xFF43D000).withOpacity(0.3);
         textColor = const Color(0xFF43D000);
         break;
@@ -108,7 +108,7 @@ class SettlementLabel extends StatelessWidget {
         break;
 
       /// 부분 정산 완료
-      case SettlementStatusType.partiallyCompleted:
+      case SettlementStatusType.partially_completed:
         textColor = const Color(0xFFFFDC62);
         break;
 
