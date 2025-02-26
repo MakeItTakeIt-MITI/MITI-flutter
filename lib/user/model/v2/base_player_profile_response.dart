@@ -4,7 +4,7 @@ import '../../../common/model/entity_enum.dart';
 
 part 'base_player_profile_response.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class BasePlayerProfileResponse {
   final GenderType? gender; // 성별
   final int? height; // 신장

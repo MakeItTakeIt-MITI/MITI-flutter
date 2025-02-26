@@ -8,7 +8,7 @@ part 'game_reviewee_list_response.g.dart';
 @JsonSerializable()
 class GameRevieweeListResponse {
   @JsonKey(name: 'user_participation_id')
-  final int userParticipationId;
+  final int? userParticipationId;
   final UserHostRatingResponse host;
   final List<ParticipationGuestRatingResponse> participations;
   @JsonKey(name: 'user_written_reviews')

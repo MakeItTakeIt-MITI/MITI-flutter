@@ -14,6 +14,7 @@ import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/user/provider/user_form_provider.dart';
 import 'package:miti/user/provider/user_provider.dart';
+import '../../common/component/defalut_flashbar.dart';
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
 
@@ -45,9 +46,11 @@ class UserPlayerProfileScreen extends StatelessWidget {
                 onPressed: valid
                     ? () async {
                         final result =
-                            ref.read(updatePlayerProfileProvider.future);
+                            await ref.read(updatePlayerProfileProvider.future);
                         if (result is ErrorModel) {
-                        } else {}
+                        } else {
+                          FlashUtil.showFlash(context, '선수 프로필이 수정되었습니다.');
+                        }
                       }
                     : null,
                 style: TextButton.styleFrom(
@@ -68,14 +71,6 @@ class UserPlayerProfileScreen extends StatelessWidget {
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
             final result = ref.watch(playerProfileProvider);
             final form = ref.watch(userPlayerProfileFormProvider);
-            // if (result is LoadingModel) {
-            //   return const CircularProgressIndicator();
-            // } else if (result is ErrorModel) {
-            //   return Text("error");
-            // }
-            // final model = (result as ResponseModel<UserPlayerProfileResponse>)
-            //     .data!
-            //     .playerProfile;
             return Container(
               padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
               child: ListView.separated(
@@ -103,7 +98,7 @@ class UserPlayerProfileScreen extends StatelessWidget {
                     );
                   },
                   separatorBuilder: (BuildContext context, int index) {
-                    return SizedBox(height: 16.h);
+                    return SizedBox(height: 0.h);
                   },
                   itemCount: PlayerProfileType.values.length),
             );
@@ -152,7 +147,11 @@ class _PlayerProfileFormState extends ConsumerState<_PlayerProfileForm> {
   @override
   Widget build(BuildContext context) {
     String? formValue = getFormValue(ref);
+    bool? formValid = getFormValid(ref);
     List<String> items = getItems();
+    String errorMessage = widget.type == PlayerProfileType.weight
+        ? '최소 입력 체중은 30kg 입니다.'
+        : '최소 입력 신장은 50cm 입니다.';
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -165,59 +164,87 @@ class _PlayerProfileFormState extends ConsumerState<_PlayerProfileForm> {
         ),
         if (widget.type == PlayerProfileType.height ||
             widget.type == PlayerProfileType.weight)
-          SizedBox(
-              width: 120.w,
-              child: CustomTextFormField(
-                textEditingController: _editingController,
-                height: 40.h,
-                hintText: widget.type.displayName,
-                keyboardType: TextInputType.number,
-                textAlign: TextAlign.center,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  NumberFormatter(
-                      minRange:
-                          widget.type == PlayerProfileType.height ? 50 : 30,
-                      maxRange:
-                          widget.type == PlayerProfileType.height ? 230 : 150),
-                ],
-                suffixIcon: Text(
-                  widget.type == PlayerProfileType.height ? "cm" : "kg",
-                  style: MITITextStyle.sm.copyWith(color: MITIColor.gray400),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              SizedBox(
+                  width: 120.w,
+                  child: CustomTextFormField(
+                    textEditingController: _editingController,
+                    height: 40.h,
+                    hintText: widget.type.displayName,
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    borderColor: formValid != null && !formValid
+                        ? MITIColor.error
+                        : null,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      NumberFormatter(
+                          minRange:
+                              widget.type == PlayerProfileType.height ? 50 : 30,
+                          maxRange: widget.type == PlayerProfileType.height
+                              ? 230
+                              : 150),
+                    ],
+                    suffixIcon: Text(
+                      widget.type == PlayerProfileType.height ? "cm" : "kg",
+                      style:
+                          MITITextStyle.sm.copyWith(color: MITIColor.gray400),
+                    ),
+                    onChanged: (v) {
+                      if (v.isNotEmpty) {
+                        if (widget.type == PlayerProfileType.height) {
+                          ref
+                              .read(userPlayerProfileFormProvider.notifier)
+                              .update(height: int.parse(v));
+                        } else {
+                          ref
+                              .read(userPlayerProfileFormProvider.notifier)
+                              .update(weight: int.parse(v));
+                        }
+                      }
+                    },
+                  )),
+              SizedBox(
+                height: 24.h,
+                child: Visibility(
+                  visible: formValid != null && !formValid,
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 4.h),
+                    child: Text(
+                      errorMessage,
+                      style: MITITextStyle.xxsm.copyWith(
+                        color: MITIColor.error,
+                      ),
+                    ),
+                  ),
                 ),
-                onChanged: (v) {
-                  if (v.isNotEmpty) {
-                    if (widget.type == PlayerProfileType.height) {
-                      ref
-                          .read(userPlayerProfileFormProvider.notifier)
-                          .update(height: int.parse(v));
-                    } else {
-                      ref
-                          .read(userPlayerProfileFormProvider.notifier)
-                          .update(weight: int.parse(v));
-                    }
-                  }
-                },
-              ))
-        else
-          GestureDetector(
-            onTap: () {
-              showBottomSheetForm(context, items, ref);
-            },
-            child: Container(
-              width: 120.w,
-              height: 40.h,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.r),
-                color: MITIColor.gray700,
               ),
-              child: Center(
-                child: Text(
-                  formValue ?? widget.type.displayName,
-                  style: MITITextStyle.md.copyWith(
-                      color: formValue == null
-                          ? MITIColor.gray500
-                          : MITIColor.gray100),
+            ],
+          )
+        else
+          Padding(
+            padding: EdgeInsets.only(bottom: 24.h),
+            child: GestureDetector(
+              onTap: () {
+                showBottomSheetForm(context, items, ref);
+              },
+              child: Container(
+                width: 120.w,
+                height: 40.h,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.r),
+                  color: MITIColor.gray700,
+                ),
+                child: Center(
+                  child: Text(
+                    formValue ?? widget.type.displayName,
+                    style: MITITextStyle.md.copyWith(
+                        color: formValue == null
+                            ? MITIColor.gray500
+                            : MITIColor.gray100),
+                  ),
                 ),
               ),
             ),
@@ -313,6 +340,17 @@ class _PlayerProfileFormState extends ConsumerState<_PlayerProfileForm> {
         return ref
             .watch(userPlayerProfileFormProvider.select((s) => s.role))
             ?.displayName;
+    }
+  }
+
+  bool? getFormValid(WidgetRef ref) {
+    switch (widget.type) {
+      case PlayerProfileType.height:
+        return ref.watch(userPlayerProfileFormProvider.notifier).validHeight();
+      case PlayerProfileType.weight:
+        return ref.watch(userPlayerProfileFormProvider.notifier).validWeight();
+      default:
+        return null;
     }
   }
 }
