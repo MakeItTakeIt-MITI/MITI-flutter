@@ -44,7 +44,8 @@ class GameParticipationScreen extends StatelessWidget {
               final result =
                   ref.watch(gamePlayerProfileProvider(gameId: gameId));
               if (result is LoadingModel) {
-                return const CircularProgressIndicator();
+                return const Expanded(
+                    child: Center(child: CircularProgressIndicator()));
               } else if (result is ErrorModel) {
                 return Text('error');
               }
@@ -52,7 +53,17 @@ class GameParticipationScreen extends StatelessWidget {
                       as ResponseListModel<ParticipationGuestPlayerResponse>)
                   .data!;
               log('model length = ${model.length}');
-
+              if (model.isEmpty) {
+                return Expanded(
+                  child: Center(
+                    child: Text(
+                      '참가한 게스트가 없습니다.',
+                      style:
+                          MITITextStyle.xxl140.copyWith(color: MITIColor.white),
+                    ),
+                  ),
+                );
+              }
               return ListView.separated(
                   shrinkWrap: true,
                   itemBuilder: (_, idx) {
@@ -131,7 +142,8 @@ class _ParticipationPlayerCard extends StatelessWidget {
                     SizedBox(width: 6.w),
                     Text(
                       "${user.guestRating.averageRating ?? 0}",
-                      style: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
+                      style:
+                          MITITextStyle.sm.copyWith(color: MITIColor.gray100),
                     ),
                     SizedBox(width: 6.w),
                     Text(
