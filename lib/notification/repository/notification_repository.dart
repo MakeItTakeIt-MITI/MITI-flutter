@@ -9,6 +9,11 @@ import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
 import '../../common/repository/base_pagination_repository.dart';
 import '../../dio/dio_interceptor.dart';
+import '../../game/model/v2/notification/base_notification_response.dart';
+import '../../game/model/v2/notification/base_push_notification_response.dart';
+import '../../game/model/v2/notification/notification_response.dart';
+import '../../game/model/v2/notification/push_notification_response.dart';
+import '../../game/model/v2/notification/push_notification_setting_response.dart';
 import '../../user/param/user_profile_param.dart';
 import '../model/push_model.dart';
 import '../model/unread_push_model.dart';
@@ -25,14 +30,14 @@ final noticePRepositoryProvider = Provider<NoticePRepository>((ref) {
 });
 
 @RestApi()
-abstract class NoticePRepository
-    extends IBasePaginationRepository<NoticeModel, NotificationParam> {
+abstract class NoticePRepository extends IBasePaginationRepository<
+    BaseNotificationResponse, NotificationParam> {
   factory NoticePRepository(Dio dio, {String baseUrl}) = _NoticePRepository;
 
   /// 공지사항 목록 조회 API
   @override
   @GET('/notifications')
-  Future<ResponseModel<PaginationModel<NoticeModel>>> paginate({
+  Future<ResponseModel<PaginationModel<BaseNotificationResponse>>> paginate({
     @Queries() required PaginationParam paginationParams,
     @Queries() NotificationParam? param,
     @Path('userId') int? path,
@@ -40,7 +45,7 @@ abstract class NoticePRepository
 
   /// 공지사항 상세 조회 API
   @GET('/notifications/{notificationId}')
-  Future<ResponseModel<NoticeDetailModel>> get({
+  Future<ResponseModel<NotificationResponse>> get({
     @Path() required int notificationId,
   });
 }
@@ -53,15 +58,16 @@ final pushPRepositoryProvider = Provider<PushPRepository>((ref) {
 });
 
 @RestApi()
-abstract class PushPRepository
-    extends IBasePaginationRepository<PushModel, NotificationParam> {
+abstract class PushPRepository extends IBasePaginationRepository<
+    BasePushNotificationResponse, NotificationParam> {
   factory PushPRepository(Dio dio, {String baseUrl}) = _PushPRepository;
 
   /// 푸시 알림 목록 조회 API
   @override
   @Headers({'token': 'true'})
   @GET('/users/{userId}/push-notifications')
-  Future<ResponseModel<PaginationModel<PushModel>>> paginate({
+  Future<ResponseModel<PaginationModel<BasePushNotificationResponse>>>
+      paginate({
     @Queries() required PaginationParam paginationParams,
     @Queries() NotificationParam? param,
     @Path('userId') int? path,
@@ -70,14 +76,14 @@ abstract class PushPRepository
   /// 푸시 알림 설정 조회 API
   @Headers({'token': 'true'})
   @GET('/users/{userId}/push-notifications/setting')
-  Future<ResponseModel<PushAllowModel>> getSetting({
+  Future<ResponseModel<PushNotificationSettingResponse>> getSetting({
     @Path() required int userId,
   });
 
   /// 푸시 알림 상세 조회 API
   @Headers({'token': 'true'})
   @GET('/users/{userId}/push-notifications/{pushId}')
-  Future<ResponseModel<PushDetailModel>> get({
+  Future<ResponseModel<PushNotificationResponse>> get({
     @Path() required int userId,
     @Path() required int pushId,
   });
@@ -85,7 +91,7 @@ abstract class PushPRepository
   /// 푸시 알림 허용 API
   @Headers({'token': 'true'})
   @PATCH('/users/{userId}/push-notifications/setting/on')
-  Future<ResponseModel<PushAllowModel>> allowPush({
+  Future<ResponseModel<PushNotificationSettingResponse>> allowPush({
     @Path() required int userId,
     @Queries() required PushSettingParam? topic,
   });
@@ -93,7 +99,7 @@ abstract class PushPRepository
   /// 푸시 알림 거부 API
   @Headers({'token': 'true'})
   @PATCH('/users/{userId}/push-notifications/setting/off')
-  Future<ResponseModel<PushAllowModel>> disallowPush({
+  Future<ResponseModel<PushNotificationSettingResponse>> disallowPush({
     @Path() required int userId,
     @Queries() required PushSettingParam? topic,
   });
@@ -105,9 +111,11 @@ abstract class PushPRepository
     @Path() required int userId,
   });
 
+  /// 푸시 알림 전체 읽음 처리 API
   @Headers({'token': 'true'})
   @PUT('/users/{userId}/push-notifications')
-  Future<ResponseModel<PaginationModel<PushModel>>> allReadPush({
+  Future<ResponseModel<PaginationModel<BasePushNotificationResponse>>>
+      allReadPush({
     @Path() required int userId,
   });
 }

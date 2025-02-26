@@ -85,7 +85,7 @@ android {
         minSdkVersion 34
         targetSdkVersion 34 //flutter.targetSdkVersion
         versionCode 21
-        versionName "1.0.5"
+        versionName "1.1.0"
         multiDexEnabled true
         manifestPlaceholders += [KAKAO_NATIVE_APP_KEY: KAKAO_NATIVE_APP_KEY]
     }

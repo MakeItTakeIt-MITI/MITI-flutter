@@ -24,6 +24,8 @@ import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
 import '../../common/provider/router_provider.dart';
+import '../../game/model/v2/notification/base_notification_response.dart';
+import '../../game/model/v2/notification/base_push_notification_response.dart';
 import '../../game/view/game_create_screen.dart';
 import '../model/notice_model.dart';
 import '../model/push_model.dart';
@@ -94,7 +96,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
                   PaginationStateParam(path: userId),
                 ),
                 itemBuilder: (BuildContext context, int index, Base pModel) {
-                  final model = (pModel as PushModel);
+                  final model = (pModel as BasePushNotificationResponse);
                   return PushCard.fromModel(model: model);
                 },
                 separateSize: 0,
@@ -133,7 +135,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
                 PaginationStateParam(),
               ),
               itemBuilder: (BuildContext context, int index, Base pModel) {
-                final model = (pModel as NoticeModel);
+                final model = (pModel as BaseNotificationResponse);
                 return NotificationCard.fromModel(model: model);
               },
               separateSize: 0,
@@ -331,7 +333,7 @@ class PushCard extends ConsumerStatefulWidget {
   final PushNotificationTopicType topic;
   final String title;
   final String body;
-  final PushDataModel data;
+  final Map<String, dynamic> data;
   final bool isRead;
   final String createdAt;
 
@@ -346,7 +348,7 @@ class PushCard extends ConsumerStatefulWidget {
     required this.createdAt,
   });
 
-  factory PushCard.fromModel({required PushModel model}) {
+  factory PushCard.fromModel({required BasePushNotificationResponse model}) {
     return PushCard(
       id: model.id,
       topic: model.topic,
@@ -397,30 +399,30 @@ class _PushCardState extends ConsumerState<PushCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (widget.data.gameId != null) {
-          final userId = ref.read(authProvider)!.id!;
-          Map<String, String> pathParameters = {
-            'gameId': widget.data.gameId.toString()
-          };
-          ref
-              .read(pushProvider(pushId: widget.id).notifier)
-              .get(pushId: widget.id);
-          ref
-              .read(pushPProvider(PaginationStateParam(path: userId)).notifier)
-              .read(pushId: widget.id, ref: ref);
-
-          context.pushNamed(
-            GameDetailScreen.routeName,
-            pathParameters: pathParameters,
-          );
-        } else {
-          Map<String, String> pathParameters = {'id': widget.id.toString()};
-          context.pushNamed(
-            NoticeDetailScreen.routeName,
-            pathParameters: pathParameters,
-            extra: NoticeScreenType.push,
-          );
-        }
+        // if (widget.data.gameId != null) {
+        //   final userId = ref.read(authProvider)!.id!;
+        //   Map<String, String> pathParameters = {
+        //     'gameId': widget.data.gameId.toString()
+        //   };
+        //   ref
+        //       .read(pushProvider(pushId: widget.id).notifier)
+        //       .get(pushId: widget.id);
+        //   ref
+        //       .read(pushPProvider(PaginationStateParam(path: userId)).notifier)
+        //       .read(pushId: widget.id, ref: ref);
+        //
+        //   context.pushNamed(
+        //     GameDetailScreen.routeName,
+        //     pathParameters: pathParameters,
+        //   );
+        // } else {
+        //   Map<String, String> pathParameters = {'id': widget.id.toString()};
+        //   context.pushNamed(
+        //     NoticeDetailScreen.routeName,
+        //     pathParameters: pathParameters,
+        //     extra: NoticeScreenType.push,
+        //   );
+        // }
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
@@ -494,7 +496,7 @@ class NotificationCard extends StatelessWidget {
     required this.date,
   });
 
-  factory NotificationCard.fromModel({required NoticeModel model}) {
+  factory NotificationCard.fromModel({required BaseNotificationResponse model}) {
     final date = DateTime.parse(model.createdAt);
 
     return NotificationCard(

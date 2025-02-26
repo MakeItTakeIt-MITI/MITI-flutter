@@ -11,6 +11,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../common/logger/custom_logger.dart';
 import '../../common/param/pagination_param.dart';
 import '../../common/provider/pagination_provider.dart';
+import '../../game/model/v2/notification/base_notification_response.dart';
+import '../../game/model/v2/notification/base_push_notification_response.dart';
 import '../../user/param/user_profile_param.dart';
 import '../model/notice_model.dart';
 import '../model/push_model.dart';
@@ -31,7 +33,7 @@ final noticePProvider = StateNotifierProvider.family.autoDispose<
   );
 });
 
-class NoticePageStateNotifier extends PaginationProvider<NoticeModel,
+class NoticePageStateNotifier extends PaginationProvider<BaseNotificationResponse,
     NotificationParam, NoticePRepository> {
   NoticePageStateNotifier({
     required super.repository,
@@ -57,7 +59,7 @@ final pushPProvider = StateNotifierProvider.family.autoDispose<
 });
 
 class PushPageStateNotifier
-    extends PaginationProvider<PushModel, NotificationParam, PushPRepository> {
+    extends PaginationProvider<BasePushNotificationResponse, NotificationParam, PushPRepository> {
   PushPageStateNotifier({
     required super.repository,
     required super.pageParams,

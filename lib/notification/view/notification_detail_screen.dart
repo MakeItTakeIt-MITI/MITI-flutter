@@ -16,6 +16,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/param/pagination_param.dart';
 import '../../etc/component/skeleton/tc_policy_detail_skeleton.dart';
+import '../../game/model/v2/notification/notification_response.dart';
+import '../../game/model/v2/notification/push_notification_response.dart';
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
 import '../provider/notification_pagination_provider.dart';
@@ -76,12 +78,12 @@ class _PushDetailScreenState extends ConsumerState<NoticeDetailScreen> {
     String title = "";
     String content = "";
     if (widget.type == NoticeScreenType.push) {
-      final model = (result as ResponseModel<PushDetailModel>).data!;
+      final model = (result as ResponseModel<PushNotificationResponse>).data!;
       date = DateTime.parse(model.createdAt);
       title = model.title;
       content = model.content;
     } else {
-      final model = (result as ResponseModel<NoticeDetailModel>).data!;
+      final model = (result as ResponseModel<NotificationResponse>).data!;
       date = DateTime.parse(model.createdAt);
       title = model.title;
       content = model.content;

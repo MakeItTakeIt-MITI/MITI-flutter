@@ -11,6 +11,7 @@ import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/param/pagination_param.dart';
 import '../../common/provider/secure_storage_provider.dart';
+import '../../game/model/v2/notification/push_notification_setting_response.dart';
 import '../model/push_model.dart';
 import '../model/unread_push_model.dart';
 import 'notification_pagination_provider.dart';
@@ -91,15 +92,15 @@ class PushSetting extends _$PushSetting {
     });
   }
 
-  void update({required PushAllowModel model}) {
-    final uState = (state as ResponseModel<PushAllowModel>);
+  void update({required PushNotificationSettingResponse model}) {
+    final uState = (state as ResponseModel<PushNotificationSettingResponse>);
     state = ResponseModel(
         status_code: uState.status_code, message: uState.message, data: model);
   }
 }
 
-PushAllowModel optimisticSetting(
-    {required PushAllowModel model,
+PushNotificationSettingResponse optimisticSetting(
+    {required PushNotificationSettingResponse model,
     required bool isOn,
     PushNotificationTopicType? topic}) {
   List<PushNotificationTopicType> topics = model.allowedTopic;
@@ -117,14 +118,14 @@ PushAllowModel optimisticSetting(
       topics.remove(topic);
     }
   }
-  return PushAllowModel(allowedTopic: topics);
+  return PushNotificationSettingResponse(allowedTopic: topics);
 }
 
 @riverpod
 Future<BaseModel> pushStatusUpdate(PushStatusUpdateRef ref,
     {required bool isOn, PushSettingParam? push}) async {
   final baseModel = ref.read(pushSettingProvider);
-  final model = (baseModel as ResponseModel<PushAllowModel>).data!;
+  final model = (baseModel as ResponseModel<PushNotificationSettingResponse>).data!;
 
   final repository = ref.watch(pushPRepositoryProvider);
   final userId = ref.read(authProvider)!.id!;

@@ -15,6 +15,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../common/component/custom_dialog.dart';
 import '../../common/model/entity_enum.dart';
+import '../../game/model/v2/notification/push_notification_setting_response.dart';
 import '../model/push_model.dart';
 
 final permissionNotiProvider = StateProvider<bool>((s) => true);
@@ -56,7 +57,7 @@ class _NotificationSettingScreenState
       final bModel = ref.read(pushSettingProvider);
       if (viewPermission) {
         topics = [];
-      } else if (bModel is ResponseModel<PushAllowModel>) {
+      } else if (bModel is ResponseModel<PushNotificationSettingResponse>) {
         topics = bModel.data!.allowedTopic;
       }
       return viewPermission;
@@ -95,7 +96,7 @@ class _NotificationSettingScreenState
     final result = ref.watch(pushSettingProvider);
     // log('prev topics = $topics');
     final viewPermission = ref.watch(permissionNotiProvider);
-    if (result is ResponseModel<PushAllowModel> && !viewPermission) {
+    if (result is ResponseModel<PushNotificationSettingResponse> && !viewPermission) {
       topics = result.data!.allowedTopic;
     }
     // log('after topics = $topics');
@@ -147,7 +148,7 @@ class _NotificationSettingScreenState
 
                 /// optimistic update
                 final model = ref.read(pushSettingProvider);
-                if (model is ResponseModel<PushAllowModel>) {
+                if (model is ResponseModel<PushNotificationSettingResponse>) {
                   ref.read(pushSettingProvider.notifier).update(
                       model:
                           optimisticSetting(isOn: value, model: model.data!));
@@ -172,7 +173,7 @@ class _NotificationSettingScreenState
 
                 /// optimistic update
                 final model = ref.read(pushSettingProvider);
-                if (model is ResponseModel<PushAllowModel>) {
+                if (model is ResponseModel<PushNotificationSettingResponse>) {
                   ref.read(pushSettingProvider.notifier).update(
                       model: optimisticSetting(
                           isOn: value,
@@ -199,7 +200,7 @@ class _NotificationSettingScreenState
 
                 /// optimistic update
                 final model = ref.read(pushSettingProvider);
-                if (model is ResponseModel<PushAllowModel>) {
+                if (model is ResponseModel<PushNotificationSettingResponse>) {
                   ref.read(pushSettingProvider.notifier).update(
                       model: optimisticSetting(
                           isOn: value,
@@ -228,7 +229,7 @@ class _NotificationSettingScreenState
 
                 /// optimistic update
                 final model = ref.read(pushSettingProvider);
-                if (model is ResponseModel<PushAllowModel>) {
+                if (model is ResponseModel<PushNotificationSettingResponse>) {
                   ref.read(pushSettingProvider.notifier).update(
                       model: optimisticSetting(
                           isOn: value,
@@ -255,7 +256,7 @@ class _NotificationSettingScreenState
 
                 /// optimistic update
                 final model = ref.read(pushSettingProvider);
-                if (model is ResponseModel<PushAllowModel>) {
+                if (model is ResponseModel<PushNotificationSettingResponse>) {
                   ref.read(pushSettingProvider.notifier).update(
                       model: optimisticSetting(
                           isOn: value,
