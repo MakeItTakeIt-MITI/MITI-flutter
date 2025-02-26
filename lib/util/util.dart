@@ -7,6 +7,39 @@ import 'package:intl/intl.dart';
 
 const String assetPathIcon = 'assets/images/v2/';
 
+enum BuildEnvironment {
+  development,
+  production,
+}
+
+class EnvUtil {
+  // Private constructor
+  EnvUtil._();
+
+  // Singleton instance
+  static final EnvUtil _instance = EnvUtil._();
+
+  // Getter for the instance
+  static EnvUtil get instance => _instance;
+
+  // Current environment
+  BuildEnvironment _environment = BuildEnvironment.development;
+
+  // Getter for current environment
+  BuildEnvironment get env => _environment;
+
+  // Method to initialize/set the environment
+  void initialize({required BuildEnvironment environment}) {
+    _environment = environment;
+    debugPrint('Environment initialized: $_environment');
+  }
+
+  // Helper methods
+  bool get isDevelopment => _environment == BuildEnvironment.development;
+  bool get isProduction => _environment == BuildEnvironment.production;
+}
+
+
 enum AssetType {
   logo,
   icon,

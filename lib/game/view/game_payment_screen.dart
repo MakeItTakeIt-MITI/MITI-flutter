@@ -43,9 +43,6 @@ import '../../env/environment.dart';
 import '../../kakaopay/param/boot_pay_approve_param.dart';
 import '../component/skeleton/game_payment_skeleton.dart';
 import '../error/game_error.dart';
-import '../model/v2/game/game_participation_payment_detail_response.dart';
-import '../model/v2/game/game_participation_payment_response.dart';
-import '../model/v2/payment/base_payment_request_response.dart';
 import 'game_create_complete_screen.dart';
 import 'game_detail_screen.dart';
 import 'package:collection/collection.dart';
@@ -62,16 +59,15 @@ class GamePaymentScreen extends ConsumerStatefulWidget {
 
 class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
   Payload payload = Payload();
-
-  String webApplicationId = dotenv.env['ENV'] == 'dev'
-      ? Environment.bootPayDevJavaScriptKey
-      : Environment.bootPayJavaScriptKey;
-  String androidApplicationId = dotenv.env['ENV'] == 'dev'
-      ? Environment.bootPayDevAndroidKey
-      : Environment.bootPayAndroidKey;
-  String iosApplicationId = dotenv.env['ENV'] == 'dev'
-      ? Environment.bootPayDevIosKey
-      : Environment.bootPayIosKey;
+  String webApplicationId = EnvUtil.instance.isProduction
+      ? Environment.bootPayJavaScriptKey
+      : Environment.bootPayDevJavaScriptKey;
+  String androidApplicationId = EnvUtil.instance.isProduction
+      ? Environment.bootPayAndroidKey
+      : Environment.bootPayDevAndroidKey;
+  String iosApplicationId = EnvUtil.instance.isProduction
+      ? Environment.bootPayIosKey
+      : Environment.bootPayDevIosKey;
 
   String get applicationId {
     return Bootpay().applicationId(

@@ -6,6 +6,7 @@ import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:app_links/app_links.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -30,14 +31,15 @@ import 'package:miti/notification_provider.dart';
 import 'package:miti/splash_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
+
 import '../common/model/entity_enum.dart';
 import '../common/provider/provider_observer.dart';
 import '../common/provider/router_provider.dart';
 import '../court/view/court_detail_screen.dart';
 import '../firebase_options.dart';
 import '../notification/provider/notification_provider.dart';
-import '../notification/provider/widget/unconfirmed_provider.dart';
 import '../notification/view/notification_screen.dart';
+import '../util/util.dart';
 
 //
 @pragma('vm:entry-point')
@@ -83,6 +85,7 @@ void _backgroundRouting(NotificationResponse details) {
 }
 
 void main(List<String> args) async {
+  EnvUtil.instance.initialize(environment: BuildEnvironment.development);
 
   print("Loading environment: .env.dev");
   log("Loading environment: .env.dev");
@@ -102,6 +105,9 @@ void main(List<String> args) async {
   );
   await Hive.initFlutter();
   await Hive.openBox<bool>('permission');
+  await Hive.openBox<String>('recentUpdateVersion');
+
+  // Firebase 초기화
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -425,13 +431,6 @@ class _MyAppState extends ConsumerState<MyApp> {
                 child: child!);
           },
           theme: ThemeData(
-              // splashFactory: InkSplash(
-              //   controller: controller,
-              //   referenceBox: referenceBox,
-              //   textDirection: TextDirection.ltr,
-              //   color: const Color(0xFF404040),
-              //   radius: 8.r
-              // ),
               colorScheme: const ColorScheme(
                 brightness: Brightness.dark,
                 primary: MITIColor.primary,
@@ -447,12 +446,10 @@ class _MyAppState extends ConsumerState<MyApp> {
                 TargetPlatform.android: CupertinoPageTransitionsBuilder(),
                 TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
               }),
-              // colorScheme: ColorScheme(background: Colors.white, brightness: null, primary: null, onPrimary: null, secondary: null, onSecondary: null, error: null, onError: null, onBackground: null, surface: null, onSurface: null,),
               fontFamily: 'Pretendard',
               inputDecorationTheme: InputDecorationTheme(
                 contentPadding:
                     EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                // constraints: BoxConstraints.loose(Size(double.infinity, 58.h)),
                 hintStyle: MITITextStyle.md.copyWith(color: MITIColor.gray500),
                 fillColor: MITIColor.gray700,
                 filled: true,
@@ -481,7 +478,6 @@ class _MyAppState extends ConsumerState<MyApp> {
           routerConfig: router,
         );
       },
-      // child: const HomeScreen(), // LoginScreen(),
     );
   }
 

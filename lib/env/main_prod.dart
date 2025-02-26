@@ -30,6 +30,7 @@ import 'package:miti/notification_provider.dart';
 import 'package:miti/splash_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:miti/util/util.dart';
 import '../common/model/entity_enum.dart';
 import '../common/provider/provider_observer.dart';
 import '../common/provider/router_provider.dart';
@@ -83,6 +84,7 @@ void _backgroundRouting(NotificationResponse details) {
 }
 
 void main(List<String> args) async {
+  EnvUtil.instance.initialize(environment: BuildEnvironment.production);
 
   print("Loading environment: .env.prod");
   log("Loading environment: .env.prod");
@@ -102,6 +104,7 @@ void main(List<String> args) async {
   );
   await Hive.initFlutter();
   await Hive.openBox<bool>('permission');
+  await Hive.openBox<String>('recentUpdateVersion');
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
