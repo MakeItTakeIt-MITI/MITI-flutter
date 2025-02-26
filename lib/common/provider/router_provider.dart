@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,6 +8,7 @@ import 'package:miti/account/view/settlement_management_screen.dart';
 import 'package:miti/auth/view/find_info/find_password_screen.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/common/error/view/pay_error_screen.dart';
+import 'package:miti/common/model/remote_config_model.dart';
 import 'package:miti/court/view/court_detail_screen.dart';
 import 'package:miti/court/view/court_game_list_screen.dart';
 import 'package:miti/etc/view/tc_policy_screen.dart';
@@ -63,6 +66,7 @@ import '../../user/view/user_participation_screen.dart';
 import '../../user/view/user_payment_detail_screen.dart';
 import '../../user/view/user_profile_update_screen.dart';
 import '../../user/view/user_review_screen.dart';
+import '../../util/update/version_check_wrapper.dart';
 import '../error/view/error_screen.dart';
 import '../model/entity_enum.dart';
 import '../view/not_found_screen.dart';
@@ -119,33 +123,37 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/login',
             parentNavigatorKey: rootNavKey,
             name: LoginScreen.routeName,
-            builder: (_, state) => const LoginScreen(),
+            builder: (_, state) =>
+                const VersionCheckWrapper(child: LoginScreen()),
             routes: [
               GoRoute(
                 path: 'signUpComplete',
                 parentNavigatorKey: rootNavKey,
                 name: SignUpCompleteScreen.routeName,
-                builder: (_, state) => SignUpCompleteScreen(),
+                builder: (_, state) =>
+                    VersionCheckWrapper(child: SignUpCompleteScreen()),
               ),
               GoRoute(
                 //
                 path: 'oauthError',
                 parentNavigatorKey: rootNavKey,
                 name: OauthErrorScreen.routeName,
-                builder: (_, state) => const OauthErrorScreen(),
+                builder: (_, state) =>
+                    const VersionCheckWrapper(child: OauthErrorScreen()),
               ),
               GoRoute(
                 path: 'completeResetPassword',
                 parentNavigatorKey: rootNavKey,
                 name: CompleteRestPasswordScreen.routeName,
-                builder: (_, state) => const CompleteRestPasswordScreen(),
+                builder: (_, state) => const VersionCheckWrapper(
+                    child: CompleteRestPasswordScreen()),
               ),
               GoRoute(
                   path: 'findInfo',
                   parentNavigatorKey: rootNavKey,
                   name: FindInfoScreen.routeName,
                   builder: (_, state) {
-                    return FindInfoScreen();
+                    return const VersionCheckWrapper(child: FindInfoScreen());
                   },
                   routes: [
                     GoRoute(
@@ -155,8 +163,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                       builder: (_, state) {
                         final email = state.uri.queryParameters['email']!;
 
-                        return FindEmailScreen(
-                          findEmail: email,
+                        return VersionCheckWrapper(
+                          child: FindEmailScreen(
+                            findEmail: email,
+                          ),
                         );
                       },
                     ),
@@ -169,9 +179,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                         final PhoneAuthType phoneType =
                             PhoneAuthType.stringToEnum(
                                 value: state.uri.queryParameters['phoneType']!);
-                        return OtherAccountScreen(
-                          authType: authType,
-                          phoneType: phoneType,
+                        return VersionCheckWrapper(
+                          child: OtherAccountScreen(
+                            authType: authType,
+                            phoneType: phoneType,
+                          ),
                         );
                       },
                     ),
@@ -180,7 +192,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                       parentNavigatorKey: rootNavKey,
                       name: NotFoundAccountScreen.routeName,
                       builder: (_, state) {
-                        return const NotFoundAccountScreen();
+                        return const VersionCheckWrapper(
+                            child: NotFoundAccountScreen());
                       },
                     ),
                     GoRoute(
@@ -193,9 +206,11 @@ final routerProvider = Provider<GoRouter>((ref) {
 
                         final int userId =
                             int.parse(state.uri.queryParameters['userId']!);
-                        return ResetPasswordScreen(
-                          password_update_token: password_update_token,
-                          userId: userId,
+                        return VersionCheckWrapper(
+                          child: ResetPasswordScreen(
+                            password_update_token: password_update_token,
+                            userId: userId,
+                          ),
                         );
                       },
                     ),
@@ -204,7 +219,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                   path: 'signUpSelect',
                   parentNavigatorKey: rootNavKey,
                   name: SignUpSelectScreen.routeName,
-                  builder: (_, state) => const SignUpSelectScreen(),
+                  builder: (_, state) =>
+                      const VersionCheckWrapper(child: SignUpSelectScreen()),
                   routes: [
                     GoRoute(
                         path: 'signUp',
@@ -279,8 +295,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                         builder: (_, state) {
                           AuthType extra = state.extra as AuthType;
 
-                          return SignUpScreen(
-                            type: extra,
+                          return VersionCheckWrapper(
+                            child: SignUpScreen(
+                              type: extra,
+                            ),
                           );
                         },
                         routes: []),
@@ -291,7 +309,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           parentNavigatorKey: rootNavKey,
           name: ErrorScreen.routeName,
           builder: (context, state) {
-            return const ErrorScreen();
+            return const VersionCheckWrapper(child: ErrorScreen());
           },
         ),
         GoRoute(
@@ -308,7 +326,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         ShellRoute(
             navigatorKey: shellNavKey,
             builder: (context, state, child) {
-              return DefaultShellScreen(body: child);
+              log("shell init");
+              return VersionCheckWrapper(
+                  child: DefaultShellScreen(body: child));
             },
             routes: [
               GoRoute(
@@ -471,7 +491,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                               parentNavigatorKey: rootNavKey,
                               name: GamePaymentScreen.routeName,
                               builder: (context, state) {
-
                                 final int gameId =
                                     int.parse(state.pathParameters['gameId']!);
                                 return GamePaymentScreen(

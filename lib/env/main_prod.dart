@@ -102,6 +102,7 @@ void main(List<String> args) async {
   );
   await Hive.initFlutter();
   await Hive.openBox<bool>('permission');
+  await Hive.openBox<String>('recentUpdateModal');
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
