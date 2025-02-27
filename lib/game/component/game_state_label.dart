@@ -165,7 +165,7 @@ class TransferLabel extends StatelessWidget {
       ),
       padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 4.h),
       child: Text(
-        transferType.name,
+        transferType.displayName,
         style: MITITextStyle.tagStyle.copyWith(
           color: textColor,
         ),

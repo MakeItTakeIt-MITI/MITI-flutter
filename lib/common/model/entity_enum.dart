@@ -636,11 +636,11 @@ enum GenderType {
 }
 
 enum BankTransferStatusType {
-  @JsonValue('이체 완료')
+  @JsonValue('completed')
   completed('이체 완료'),
-  @JsonValue('대기중')
+  @JsonValue('waiting')
   waiting('대기중'),
-  @JsonValue('이체거절')
+  @JsonValue('declined')
   declined('이체거절');
 
   const BankTransferStatusType(this.displayName);

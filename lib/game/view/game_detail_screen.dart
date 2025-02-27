@@ -440,9 +440,9 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
           button = null;
           break;
         case GameStatusType.completed:
-          if (model.user_participation_id != null) {
+          // if (model.user_participation_id != null) {
             button = reviewButton;
-          }
+          // }
           break;
       }
     } else {

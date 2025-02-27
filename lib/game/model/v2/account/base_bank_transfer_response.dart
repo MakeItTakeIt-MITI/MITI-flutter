@@ -24,7 +24,7 @@ class BaseBankTransferResponse extends IModelWithId {
   final DateTime createdAt;
 
   @JsonKey(name: 'transferred_at')
-  final DateTime transferredAt;
+  final DateTime? transferredAt;
 
   BaseBankTransferResponse({
     required super.id,
