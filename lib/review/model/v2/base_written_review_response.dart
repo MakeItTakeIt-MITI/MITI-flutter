@@ -14,7 +14,7 @@ class BaseWrittenReviewResponse extends IModelWithId{
   final int rating;
   final String comment;
   final List<PlayerReviewTagType> tags;
-  final BaseUserResponse reviewer;
+  final BaseUserResponse reviewee;
   final BaseGameResponse game;
 
   BaseWrittenReviewResponse({
@@ -23,7 +23,7 @@ class BaseWrittenReviewResponse extends IModelWithId{
     required this.rating,
     required this.comment,
     required this.tags,
-    required this.reviewer,
+    required this.reviewee,
     required this.game,
   });
 
@@ -39,7 +39,7 @@ class BaseWrittenReviewResponse extends IModelWithId{
     int? rating,
     String? comment,
     List<PlayerReviewTagType>? tags,
-    BaseUserResponse? reviewer,
+    BaseUserResponse? reviewee,
     BaseGameResponse? game,
   }) {
     return BaseWrittenReviewResponse(
@@ -49,7 +49,7 @@ class BaseWrittenReviewResponse extends IModelWithId{
       comment: comment ?? this.comment,
       tags: tags ?? List.from(this.tags),
       // 리스트는 새로운 인스턴스로 복사
-      reviewer: reviewer ?? this.reviewer,
+      reviewee: reviewee ?? this.reviewee,
       game: game ?? this.game,
     );
   }

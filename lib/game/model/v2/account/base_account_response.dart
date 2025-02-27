@@ -6,13 +6,13 @@ import '../../../../common/model/entity_enum.dart';
 part 'base_account_response.g.dart';
 
 @JsonSerializable()
-class BaseAccountResponse extends IModelWithId{
+class BaseAccountResponse extends IModelWithId {
 
   @JsonKey(name: 'account_type')
   final AccountType accountType;
 
   @JsonKey(name: 'status')
-  final BankTransferStatusType status;
+  final AccountStatusType status;
 
   @JsonKey(name: 'balance')
   final int balance;
@@ -40,7 +40,7 @@ class BaseAccountResponse extends IModelWithId{
   BaseAccountResponse copyWith({
     int? id,
     AccountType? accountType,
-    BankTransferStatusType? status,
+    AccountStatusType? status,
     int? balance,
     int? transferWaitingAmount,
     int? transferRequestableAmount,
@@ -50,8 +50,10 @@ class BaseAccountResponse extends IModelWithId{
       accountType: accountType ?? this.accountType,
       status: status ?? this.status,
       balance: balance ?? this.balance,
-      transferWaitingAmount: transferWaitingAmount ?? this.transferWaitingAmount,
-      transferRequestableAmount: transferRequestableAmount ?? this.transferRequestableAmount,
+      transferWaitingAmount: transferWaitingAmount ??
+          this.transferWaitingAmount,
+      transferRequestableAmount: transferRequestableAmount ??
+          this.transferRequestableAmount,
     );
   }
 }

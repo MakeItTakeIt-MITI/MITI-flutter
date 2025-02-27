@@ -198,13 +198,11 @@ class GameInfoComponent extends StatelessWidget {
     return GameInfoComponent(
       title: model.title,
       period: period,
-      address: model.court.address + (" ${model.court.addressDetail}" ?? ''),
+      address: model.court.address + (" ${model.court.addressDetail ?? ''}"),
       fee:
           model.fee == 0 ? '무료' : "${NumberUtil.format(model.fee.toString())}원",
     );
   }
-
-
 
   Row getGameInfo({required String title, required String desc}) {
     return Row(

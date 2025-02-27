@@ -10,6 +10,7 @@ import '../../user/model/review_model.dart';
 import '../../user/provider/user_provider.dart';
 import '../../user/view/review_detail_screen.dart';
 import '../component/skeleton/review_detail_skeleton.dart';
+import '../model/v2/guest_review_response.dart';
 import '../model/v2/host_review_response.dart';
 
 class MyReviewDetailScreen extends StatelessWidget {
@@ -72,10 +73,28 @@ class MyReviewDetailScreen extends StatelessWidget {
                   String nickname = '';
                   final model =
                       (result as ResponseModel<BaseReviewResponse>).data!;
-                  if (UserReviewType.written == userReviewType) {
-                    nickname = (model as MyWrittenReviewDetailModel).reviewee;
+                  // if (UserReviewType.written == userReviewType) {
+                  //   nickname = (model as MyWrittenReviewDetailModel).reviewee;
+                  // } else {
+                  //   nickname = (model as MyReceiveReviewDetailModel).reviewer;
+                  // }
+
+                  if (ReviewType.guest_review == reviewType) {
+                    if (UserReviewType.written == userReviewType) {
+                      nickname =
+                          (model as GuestReviewResponse).reviewee.nickname;
+                    } else {
+                      nickname =
+                          (model as GuestReviewResponse).reviewer.nickname;
+                    }
                   } else {
-                    nickname = (model as MyReceiveReviewDetailModel).reviewer;
+                    if (UserReviewType.written == userReviewType) {
+                      nickname =
+                          (model as HostReviewResponse).reviewee.nickname;
+                    } else {
+                      nickname =
+                          (model as HostReviewResponse).reviewer.nickname;
+                    }
                   }
 
                   MyReceiveReviewDetailModel;

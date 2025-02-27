@@ -700,3 +700,13 @@ enum UserGuideCategoryType {
 
   final String displayName;
 }
+
+
+enum AccountStatusType {
+  active('활성화'),
+  disabled('비활성화');
+
+  const AccountStatusType(this.displayName);
+
+  final String displayName;
+}

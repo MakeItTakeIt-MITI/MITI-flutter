@@ -163,6 +163,8 @@ class _UserDeleteScreenState extends ConsumerState<UserDeleteScreen> {
                 .signupMethod;
         if (authType == SignupMethodType.kakao) {
           UserApi.instance.unlink();
+        }else if(authType == SignupMethodType.apple){
+
         }
 
         Future.delayed(const Duration(milliseconds: 200), () {

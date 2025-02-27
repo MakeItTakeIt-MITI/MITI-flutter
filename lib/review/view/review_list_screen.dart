@@ -247,7 +247,7 @@ class ReviewCard extends StatelessWidget {
       rating: model.rating,
       tags: tags,
       onTap: onTap,
-      nickname: model.reviewer.nickname,
+      nickname: model.reviewee.nickname,
     );
   }
 

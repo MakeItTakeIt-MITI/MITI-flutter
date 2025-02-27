@@ -208,7 +208,7 @@ class _ReceiveReviewCard extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  "$reviewer 님",
+                  "${reviewer.nickname} 님",
                   style:
                       MITITextStyle.smBold.copyWith(color: MITIColor.gray100),
                 )

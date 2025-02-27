@@ -45,7 +45,9 @@ class UserPaymentDetailScreen extends StatelessWidget {
           final result = ref
               .watch(paymentDetailProvider(paymentResultId: paymentResultId));
           if (result is LoadingModel) {
-            return CircularProgressIndicator();
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           } else if (result is ErrorModel) {
             UserError.fromModel(model: result)
                 .responseError(context, UserApiType.paymentResultDetail, ref);
