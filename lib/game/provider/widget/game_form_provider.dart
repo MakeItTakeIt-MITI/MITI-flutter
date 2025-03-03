@@ -35,25 +35,25 @@ final interactionDescProvider = StateProvider.autoDispose
 class GameForm extends _$GameForm {
   @override
   GameCreateParam build() {
-    final result = ref
-        .watch(agreementPolicyProvider(type: AgreementRequestType.game_hosting));
-    if (result is ResponseListModel<AgreementPolicyModel>) {
-      final List<bool> checkBoxes =
-          List.generate(result.data!.length + 1, (e) => false);
-      return GameCreateParam(
-        title: '',
-        startdate: '',
-        starttime: '',
-        enddate: '',
-        endtime: '',
-        min_invitation: '',
-        max_invitation: '',
-        info: '',
-        fee: '',
-        court: const GameCourtParam(name: '', address: '', address_detail: ''),
-        checkBoxes: checkBoxes,
-      );
-    }
+    // final result = ref
+    //     .watch(agreementPolicyProvider(type: AgreementRequestType.game_hosting));
+    // if (result is ResponseListModel<AgreementPolicyModel>) {
+    //   final List<bool> checkBoxes =
+    //       List.generate(result.data!.length + 1, (e) => false);
+    //   return GameCreateParam(
+    //     title: '',
+    //     startdate: '',
+    //     starttime: '',
+    //     enddate: '',
+    //     endtime: '',
+    //     min_invitation: '',
+    //     max_invitation: '',
+    //     info: '',
+    //     fee: '',
+    //     court: const GameCourtParam(name: '', address: '', address_detail: ''),
+    //     checkBoxes: checkBoxes,
+    //   );
+    // }
     return const GameCreateParam(
       title: '',
       startdate: '',

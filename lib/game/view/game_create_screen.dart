@@ -38,6 +38,7 @@ import '../../common/provider/router_provider.dart';
 import '../../common/provider/widget/form_provider.dart';
 import '../../common/view/operation_term_screen.dart';
 import '../../court/component/court_list_component.dart';
+import '../../court/model/v2/court_operations_response.dart';
 import '../../util/util.dart';
 import '../component/game_recent_component.dart';
 import '../model/game_model.dart';
@@ -201,9 +202,12 @@ class _GameQuillComponentState extends State<GameQuillComponent> {
 }
 
 class GameCreateScreen extends ConsumerStatefulWidget {
+  final CourtOperationsResponse? court;
+
   static String get routeName => 'create';
 
   const GameCreateScreen({
+    this.court,
     super.key,
   });
 
@@ -268,21 +272,44 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
       });
     }
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      final result = await ref.read(gameRecentHostingProvider.future);
+      final result = ref.watch(
+          agreementPolicyProvider(type: AgreementRequestType.game_hosting));
+      if (result is ResponseListModel<AgreementPolicyModel>) {
+        final List<bool> checkBoxes =
+            List.generate(result.data!.length + 1, (e) => false);
+        ref.read(gameFormProvider.notifier).update(checkBoxes: checkBoxes);
+      }
 
-      if (result is ErrorModel) {
-      } else {
-        final model =
-            (result as ResponseListModel<GameWithCourtResponse>).data!;
-        log("model ${model.length}");
-        if (model.isNotEmpty) {
-          showCustomModalBottomSheet(
-              context,
-              GameRecentComponent(
-                models: model,
-                textEditingControllers: textEditingControllers,
-              ));
+      if (widget.court == null) {
+        final result = await ref.read(gameRecentHostingProvider.future);
+
+        if (result is ErrorModel) {
+        } else {
+          final model =
+              (result as ResponseListModel<GameWithCourtResponse>).data!;
+          if (model.isNotEmpty) {
+            showCustomModalBottomSheet(
+                context,
+                GameRecentComponent(
+                  models: model,
+                  textEditingControllers: textEditingControllers,
+                ));
+          }
         }
+      } else {
+        final name = widget.court?.name ?? '';
+        final address = widget.court?.address ?? '';
+        final addressDetail = widget.court?.addressDetail ?? '';
+        ref.read(gameFormProvider.notifier).update(
+              court: GameCourtParam(
+                name: name,
+                address: address,
+                address_detail: addressDetail,
+              ),
+            );
+        textEditingControllers[1].text = address;
+        textEditingControllers[2].text = addressDetail;
+        textEditingControllers[3].text = name;
       }
     });
   }
@@ -1576,8 +1603,8 @@ class AgreeTermComponent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final result = ref
-        .watch(agreementPolicyProvider(type: AgreementRequestType.game_hosting));
+    final result = ref.watch(
+        agreementPolicyProvider(type: AgreementRequestType.game_hosting));
     if (result is LoadingModel) {
       return SliverToBoxAdapter(child: CircularProgressIndicator());
     } else if (result is ErrorModel) {

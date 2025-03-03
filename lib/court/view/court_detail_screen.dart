@@ -294,6 +294,7 @@ class SoonestGamesComponent extends StatelessWidget {
                 }
                 final model =
                     (result as ResponseModel<CourtOperationsResponse>).data!;
+
                 if (model.soonestGames.isEmpty) {
                   return Column(
                     children: [
@@ -306,7 +307,8 @@ class SoonestGamesComponent extends StatelessWidget {
                       SizedBox(height: 20.h),
                       GestureDetector(
                         onTap: () {
-                          context.pushNamed(GameCreateScreen.routeName);
+                          context.pushNamed(GameCreateScreen.routeName,
+                              extra: model);
                         },
                         child: Container(
                           padding: EdgeInsets.only(left: 12.w, right: 16.w),

@@ -43,6 +43,7 @@ import '../../auth/view/oauth_error_screen.dart';
 import '../../auth/view/signup/signup_screen.dart';
 import '../../auth/view/signup/signup_select_screen.dart';
 import '../../court/model/court_model.dart';
+import '../../court/model/v2/court_operations_response.dart';
 import '../../court/view/court_search_screen.dart';
 import '../../game/view/game_participation_screen.dart';
 import '../../game/view/game_create_complete_screen.dart';
@@ -394,6 +395,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                         parentNavigatorKey: rootNavKey,
                         name: GameCreateScreen.routeName,
                         builder: (context, state) {
+                          if (state.extra != null) {
+                            final extra =
+                                state.extra as CourtOperationsResponse;
+                            return GameCreateScreen(court: extra);
+                          }
                           return const GameCreateScreen();
                         },
                         routes: []),
