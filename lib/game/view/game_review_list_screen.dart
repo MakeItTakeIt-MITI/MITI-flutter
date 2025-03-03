@@ -150,6 +150,7 @@ class _PlayerComponent extends StatelessWidget {
   final int? participationId;
   final BaseRatingResponse rating;
   final bool isWrittenReview;
+  final String profileImageUrl;
 
   // final List<ReviewerModel> reviews;
 
@@ -161,6 +162,7 @@ class _PlayerComponent extends StatelessWidget {
     required this.nickname,
     required this.rating,
     required this.isWrittenReview,
+    required this.profileImageUrl,
     // required this.reviews,
   });
 
@@ -176,6 +178,7 @@ class _PlayerComponent extends StatelessWidget {
       nickname: model.user.nickname,
       rating: model.user.guestRating,
       isWrittenReview: isWrittenReview,
+      profileImageUrl: model.user.profileImageUrl,
       // reviews: model.guest_reviews,
     );
   }
@@ -190,6 +193,7 @@ class _PlayerComponent extends StatelessWidget {
       nickname: model.nickname,
       rating: model.hostRating,
       isWrittenReview: isWrittenReview,
+      profileImageUrl: model.profileImageUrl,
       // reviews: model.host_reviews,
     );
   }
@@ -227,8 +231,8 @@ class _PlayerComponent extends StatelessWidget {
       alignment: Alignment.center,
       child: Row(
         children: [
-          SvgPicture.asset(
-            'assets/images/icon/user_thum.svg',
+          Image.network(
+            profileImageUrl,
             width: 36.r,
             height: 36.r,
           ),
@@ -293,8 +297,12 @@ class _PlayerComponent extends StatelessWidget {
                       Map<String, String> pathParameters = {
                         'gameId': gameId.toString(),
                       };
+
                       final model = UserReviewShortInfoModel(
-                          nickname: nickname, rating: rating);
+                        nickname: nickname,
+                        rating: rating,
+                        profileImageUrl: profileImageUrl,
+                      );
 
                       context.pushNamed(
                         ReviewScreen.routeName,
@@ -336,15 +344,17 @@ class _PlayerComponent extends StatelessWidget {
                       padding: EdgeInsets.symmetric(horizontal: 12.w),
                       minimumSize: Size(75.w, 30.h),
                       maximumSize: Size(90.w, 30.h),
-                      backgroundColor:
-                      !isWrittenReview ? MITIColor.primary : MITIColor.gray800,
+                      backgroundColor: !isWrittenReview
+                          ? MITIColor.primary
+                          : MITIColor.gray800,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20.r))),
                   child: Text(
                     !isWrittenReview ? "리뷰 쓰기" : "리뷰 보기",
                     style: MITITextStyle.smSemiBold.copyWith(
-                      color:
-                      !isWrittenReview ? MITIColor.gray800 : MITIColor.primary,
+                      color: !isWrittenReview
+                          ? MITIColor.gray800
+                          : MITIColor.primary,
                     ),
                   ));
             },

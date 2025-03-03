@@ -570,11 +570,16 @@ class _ProfileComponent extends ConsumerWidget {
               ],
             ),
           ),
-          SvgPicture.asset(
-            AssetUtil.getAssetPath(type: AssetType.icon, name: 'user_thum2'),
+          Image.network(
+            model.profileImageUrl,
             width: 60.r,
             height: 60.r,
-          )
+          ),
+          // SvgPicture.asset(
+          //   AssetUtil.getAssetPath(type: AssetType.icon, name: 'user_thum2'),
+          //   width: 60.r,
+          //   height: 60.r,
+          // )
         ],
       ),
     );

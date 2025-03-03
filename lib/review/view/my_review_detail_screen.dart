@@ -71,6 +71,7 @@ class MyReviewDetailScreen extends StatelessWidget {
                   }
 
                   String nickname = '';
+                  String profileImageUrl = '';
                   final model =
                       (result as ResponseModel<BaseReviewResponse>).data!;
                   // if (UserReviewType.written == userReviewType) {
@@ -83,17 +84,25 @@ class MyReviewDetailScreen extends StatelessWidget {
                     if (UserReviewType.written == userReviewType) {
                       nickname =
                           (model as GuestReviewResponse).reviewee.nickname;
+                      profileImageUrl =
+                          (model).reviewee.profileImageUrl;
                     } else {
                       nickname =
                           (model as GuestReviewResponse).reviewer.nickname;
+                      profileImageUrl =
+                          (model).reviewer.profileImageUrl;
                     }
                   } else {
                     if (UserReviewType.written == userReviewType) {
                       nickname =
                           (model as HostReviewResponse).reviewee.nickname;
+                      profileImageUrl =
+                          (model).reviewee.profileImageUrl;
                     } else {
                       nickname =
                           (model as HostReviewResponse).reviewer.nickname;
+                      profileImageUrl =
+                          (model).reviewer.profileImageUrl;
                     }
                   }
 
@@ -110,6 +119,7 @@ class MyReviewDetailScreen extends StatelessWidget {
                         UserInfoComponent(
                           nickname: nickname,
                           title: title,
+                          profileImageUrl: profileImageUrl,
                         ),
                         getDivider(),
                         GameInfoComponent.fromModel(model: model.game),

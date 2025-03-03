@@ -441,7 +441,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
           break;
         case GameStatusType.completed:
           // if (model.user_participation_id != null) {
-            button = reviewButton;
+          button = reviewButton;
           // }
           break;
       }
@@ -542,16 +542,15 @@ class InfoComponent extends StatelessWidget {
 }
 
 class UserShortInfoComponent extends StatelessWidget {
+  final String profileImageUrl;
   final String nickname;
   final BaseRatingResponse rating;
-
-  // final bool isHost;
 
   const UserShortInfoComponent({
     super.key,
     required this.nickname,
     required this.rating,
-    // this.isHost = true,
+    required this.profileImageUrl,
   });
 
   factory UserShortInfoComponent.fromModel(
@@ -559,6 +558,7 @@ class UserShortInfoComponent extends StatelessWidget {
     return UserShortInfoComponent(
       nickname: model.nickname,
       rating: model.rating,
+      profileImageUrl: model.profileImageUrl,
     );
   }
 
@@ -567,6 +567,7 @@ class UserShortInfoComponent extends StatelessWidget {
     return UserShortInfoComponent(
       nickname: model.nickname,
       rating: model.hostRating,
+      profileImageUrl: model.profileImageUrl,
     );
   }
 
@@ -605,12 +606,17 @@ class UserShortInfoComponent extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  SvgPicture.asset(
-                    AssetUtil.getAssetPath(
-                        type: AssetType.icon, name: "user_thum"),
+                  Image.network(
+                    profileImageUrl,
                     width: 36.r,
                     height: 36.r,
                   ),
+                  // SvgPicture.asset(
+                  //   AssetUtil.getAssetPath(
+                  //       type: AssetType.icon, name: "user_thum"),
+                  //   width: 36.r,
+                  //   height: 36.r,
+                  // ),
                   SizedBox(width: 12.w),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -746,6 +752,8 @@ class ParticipationComponent extends StatelessWidget {
                           children: [
                             _GuestTile(
                               name: participations[idx].user.nickname,
+                              profileImageUrl:
+                                  participations[idx].user.profileImageUrl,
                             ),
                             SizedBox(width: 12.w),
                           ],
@@ -773,8 +781,10 @@ class ParticipationComponent extends StatelessWidget {
 
 class _GuestTile extends StatelessWidget {
   final String name;
+  final String profileImageUrl;
 
-  const _GuestTile({super.key, required this.name});
+  const _GuestTile(
+      {super.key, required this.name, required this.profileImageUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -782,8 +792,8 @@ class _GuestTile extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SvgPicture.asset(
-          AssetUtil.getAssetPath(type: AssetType.icon, name: "user_thum"),
+        Image.network(
+          profileImageUrl,
           width: 36.r,
           height: 36.r,
         ),

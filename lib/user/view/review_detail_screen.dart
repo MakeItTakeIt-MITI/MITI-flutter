@@ -115,6 +115,7 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                       UserInfoComponent(
                         nickname: model.reviewer.nickname,
                         title: '리뷰 작성자',
+                        profileImageUrl: model.reviewer.profileImageUrl,
                       ),
                       getDivider(),
                       GameInfoComponent.fromModel(model: model.game),
@@ -134,10 +135,14 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
 
 class UserInfoComponent extends StatelessWidget {
   final String title;
+  final String profileImageUrl;
   final String nickname;
 
   const UserInfoComponent(
-      {super.key, required this.nickname, required this.title});
+      {super.key,
+      required this.nickname,
+      required this.title,
+      required this.profileImageUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -153,11 +158,16 @@ class UserInfoComponent extends StatelessWidget {
           SizedBox(height: 20.h),
           Row(
             children: [
-              SvgPicture.asset(
-                AssetUtil.getAssetPath(type: AssetType.icon, name: 'user_thum'),
+              Image.network(
+                profileImageUrl,
                 width: 36.r,
                 height: 36.r,
               ),
+              // SvgPicture.asset(
+              //   AssetUtil.getAssetPath(type: AssetType.icon, name: 'user_thum'),
+              //   width: 36.r,
+              //   height: 36.r,
+              // ),
               SizedBox(width: 12.w),
               Text(
                 '$nickname 님',
