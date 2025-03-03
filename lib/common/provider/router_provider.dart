@@ -297,6 +297,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                         // },
                         builder: (_, state) {
                           SignupMethodType extra =
+                              // SignupMethodType.kakao;
                               state.extra as SignupMethodType;
 
                           return VersionCheckWrapper(

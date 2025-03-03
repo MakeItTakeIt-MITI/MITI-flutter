@@ -11,6 +11,7 @@ import '../../dio/dio_interceptor.dart';
 import '../../dio/provider/dio_provider.dart';
 import '../../game/model/v2/account/base_account_response.dart';
 import '../../game/model/v2/account/base_bank_transfer_response.dart';
+import '../../game/model/v2/settlement/game_settlement_detail_response.dart';
 import '../../game/model/v2/settlement/game_settlement_response.dart';
 import '../model/account_model.dart';
 import '../model/transfer_model.dart';
@@ -45,7 +46,7 @@ abstract class SettlementPaginationRepository extends IBasePaginationRepository<
   /// 정산 내역 상세 조회 API
   @Headers({'token': 'true'})
   @GET('/users/{userId}/accounts/game-hosting-settlements/{settlementId}')
-  Future<ResponseModel<SettlementDetailModel>> getSettlement({
+  Future<ResponseModel<GameSettlementDetailResponse>> getSettlement({
     @Path('userId') required int userId,
     @Path('settlementId') required int settlementId,
   });

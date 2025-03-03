@@ -62,7 +62,7 @@ abstract class ReportRepository {
   });
 
   /// 요청별 동의 항목 조회 API
-  @Headers({'token': 'true'})
+  // @Headers({'token': 'true'})
   @GET('/agreement-policies/{type}')
   Future<ResponseListModel<AgreementPolicyModel>> getAgreementPolicy({
     @Path() required AgreementRequestType type,

@@ -129,6 +129,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
             )
           : null,
       bottom: bottom,
+      actions: actions,
     );
   }
 

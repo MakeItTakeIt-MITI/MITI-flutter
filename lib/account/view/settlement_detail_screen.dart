@@ -15,6 +15,8 @@ import 'package:miti/theme/text_theme.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
 import '../../common/model/entity_enum.dart';
+import '../../game/model/v2/participation/participation_settlement_response.dart';
+import '../../game/model/v2/settlement/game_settlement_detail_response.dart';
 import '../../game/view/game_detail_screen.dart';
 import '../../theme/color_theme.dart';
 import '../../util/util.dart';
@@ -86,7 +88,8 @@ class _SettlementDetailScreenState
                     return Text('에러');
                   }
                   final model =
-                      (result as ResponseModel<SettlementDetailModel>).data!;
+                      (result as ResponseModel<GameSettlementDetailResponse>)
+                          .data!;
                   return Column(
                     children: [
                       SettlementCard.fromModel(model: model),
@@ -125,26 +128,26 @@ class SettlementCard extends StatelessWidget {
   });
 
   factory SettlementCard.fromModel({
-    required SettlementDetailModel model,
+    required GameSettlementDetailResponse model,
   }) {
     final game = model.game;
 
-    final st = DateTime.parse(game.startdate);
-    final et = DateTime.parse(game.startdate);
+    final st = DateTime.parse(game.startDate);
+    final et = DateTime.parse(game.endDate);
     final fe = DateFormat('yyyy년 MM월 dd일 (E)', 'ko');
 
     final startDate = fe.format(st);
     final endDate = fe.format(et);
-    final period = game.startdate == game.enddate
-        ? "$startDate ${game.starttime.substring(0, 5)}~${game.endtime.substring(0, 5)}"
-        : "$startDate ${game.starttime.substring(0, 5)} ~\n$endDate ${game.endtime.substring(0, 5)}";
+    final period = game.startDate == game.endDate
+        ? "$startDate ${game.startTime.substring(0, 5)}~${game.endTime.substring(0, 5)}"
+        : "$startDate ${game.startTime.substring(0, 5)} ~\n$endDate ${game.endTime.substring(0, 5)}";
     return SettlementCard(
       title: game.title,
       datetime: period,
-      address: '${game.court.address} ${game.court.address_detail ?? ''}',
+      address: '${game.court.address} ${game.court.addressDetail ?? ''}',
       id: model.id,
-      expected_settlement_amount:
-          NumberUtil.format(model.expectedSettlementAmount.toString()),
+      expected_settlement_amount: NumberUtil.format(
+          model.expectedSettlementAmount.expectedSettlementAmount.toString()),
       status: model.status,
     );
   }
@@ -186,7 +189,7 @@ class SettlementCard extends StatelessWidget {
                   ),
                   SizedBox(width: 8.w),
                   Text(
-                    '$expected_settlement_amount 원',
+                    '${expected_settlement_amount} 원',
                     style: MITITextStyle.xl.copyWith(
                       color: MITIColor.gray100,
                     ),
@@ -230,10 +233,10 @@ class _SettlementComponent extends StatelessWidget {
   });
 
   factory _SettlementComponent.fromModel(
-      {required SettlementDetailModel model}) {
+      {required GameSettlementDetailResponse model}) {
     return _SettlementComponent(
-      amount: NumberUtil.format(model.amount.toString()),
-      commission: NumberUtil.format(model.commission.toString()),
+      amount: NumberUtil.format(model.settlementAmount.toString()),
+      commission: NumberUtil.format(model.commissionAmount.toString()),
       settlementAmount: NumberUtil.format(model.settlementAmount.toString()),
     );
   }
@@ -314,12 +317,12 @@ class _SettlementComponent extends StatelessWidget {
 }
 
 class _ParticipationComponent extends StatelessWidget {
-  final List<ParticipationModel> participations;
+  final List<ParticipationSettlementResponse> participations;
 
   const _ParticipationComponent({super.key, required this.participations});
 
   factory _ParticipationComponent.fromModel(
-      {required SettlementDetailModel model}) {
+      {required GameSettlementDetailResponse model}) {
     return _ParticipationComponent(
       participations: model.participations,
     );
@@ -368,15 +371,16 @@ class _ParticipationComponent extends StatelessWidget {
 }
 
 class _ParticipationCard extends StatelessWidget {
-  final ParticipationModel model;
+  final ParticipationSettlementResponse model;
 
   const _ParticipationCard({super.key, required this.model});
 
   @override
   Widget build(BuildContext context) {
     final fee = NumberUtil.format(model.fee.toString());
-    final settlementType =
-        model.is_settled ? SettlementStatusType.completed : SettlementStatusType.waiting;
+    final settlementType = model.isSettled
+        ? SettlementStatusType.completed
+        : SettlementStatusType.waiting;
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: 21.w,

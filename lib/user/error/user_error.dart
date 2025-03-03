@@ -215,7 +215,27 @@ class UserError extends ErrorBase {
               ),
             );
           });
-    } else if (this.status_code == NotFound && this.error_code == 940) {
+    } else if (this.status_code == Forbidden && this.error_code == 442) {
+      /// 완료되지 않은 참가 존재
+      showModalBottomSheet(
+          context: context,
+          builder: (_) {
+            return BottomDialog(
+              title: '회원탈퇴 실패',
+              content: '아직 처리가 완료되지 않은 신고가 존재합니다.\n처리가 완료한 뒤에 회원 탈퇴를 진행해주세요.',
+              btn: Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  return TextButton(
+                    onPressed: () => context.pop(),
+                    child: const Text(
+                      "확인",
+                    ),
+                  );
+                },
+              ),
+            );
+          });
+    }else if (this.status_code == NotFound && this.error_code == 940) {
       /// 사용자 정보 조회 실패
       context.pushReplacementNamed(ErrorScreen.routeName);
     } else {

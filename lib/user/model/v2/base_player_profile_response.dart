@@ -43,4 +43,22 @@ class BasePlayerProfileResponse {
       role: role ?? this.role,
     );
   }
+
+  bool validWeight() {
+    if (weight != null) {
+      return 30 <= weight! && weight! <= 150;
+    }
+    return true;
+  }
+
+  bool validHeight() {
+    if (height != null) {
+      return 50 <= height! && height! <= 230;
+    }
+    return true;
+  }
+
+  bool validForm() {
+    return validHeight() && validWeight();
+  }
 }

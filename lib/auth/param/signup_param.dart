@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../user/model/v2/base_player_profile_response.dart';
 import '../provider/widget/sign_up_form_provider.dart';
 
 part 'signup_param.g.dart';
@@ -9,11 +10,14 @@ class SignUpBaseParam {
   final String nickname;
   final String name;
   final String birthday;
+  @JsonKey(name: 'player_profile')
+  final BasePlayerProfileResponse? playerProfile;
 
   SignUpBaseParam({
     required this.nickname,
     required this.name,
     required this.birthday,
+     this.playerProfile,
   });
 
   Map<String, dynamic> toJson() => _$SignUpBaseParamToJson(this);
@@ -36,6 +40,7 @@ class SignUpEmailParam extends SignUpBaseParam {
     required this.password,
     required this.password_check,
     required this.signup_token,
+    required super.playerProfile,
   });
 
   factory SignUpEmailParam.fromForm({required SignFormModel model}) {
@@ -48,6 +53,7 @@ class SignUpEmailParam extends SignUpBaseParam {
       password_check: model.checkPassword!,
       birthday: model.birthDate.replaceAll(' / ', '-'),
       signup_token: model.signup_token!,
+      playerProfile: model.playerProfile,
     );
   }
 
@@ -68,6 +74,7 @@ class SignUpAppleParam extends SignUpBaseParam {
     required super.birthday,
     required this.signup_token,
     required this.userinfo_token,
+    required super.playerProfile,
   });
 
   factory SignUpAppleParam.fromForm({required SignFormModel model}) {
@@ -78,6 +85,7 @@ class SignUpAppleParam extends SignUpBaseParam {
       birthday: model.birthDate.replaceAll(' / ', '-'),
       signup_token: model.signup_token!,
       userinfo_token: model.userinfo_token!,
+      playerProfile: model.playerProfile,
     );
   }
 
@@ -94,15 +102,16 @@ class SignUpKakaoParam extends SignUpBaseParam {
     required super.name,
     required super.birthday,
     required this.userinfo_token,
+    required super.playerProfile,
   });
 
   factory SignUpKakaoParam.fromForm({required SignFormModel model}) {
-
     return SignUpKakaoParam(
       nickname: model.nickname,
       name: model.name,
       birthday: model.birthDate.replaceAll(' / ', '-'),
       userinfo_token: model.userinfo_token!,
+      playerProfile: model.playerProfile,
     );
   }
 

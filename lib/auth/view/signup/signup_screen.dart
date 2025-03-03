@@ -31,6 +31,8 @@ import '../../../common/view/operation_term_screen.dart';
 import '../../../game/view/game_refund_screen.dart';
 import '../../../report/model/agreement_policy_model.dart';
 import '../../../report/provider/report_provider.dart';
+import '../../../user/provider/user_form_provider.dart';
+import '../../../user/view/user_player_profile_screen.dart';
 import '../../../util/util.dart';
 import '../../error/auth_error.dart';
 import '../../model/signup_model.dart';
@@ -51,6 +53,7 @@ class SignUpScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(progressProvider);
     ref.watch(signUpPopProvider);
+    ref.watch(signUpFormProvider);
     final appbar = Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
         return const DefaultAppBar(
@@ -73,8 +76,6 @@ class SignUpScreen extends ConsumerWidget {
           appBar: PreferredSize(
               preferredSize: Size(double.infinity, 44.h), child: appbar),
           body: SingleChildScrollView(
-            // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            // physics: const AlwaysScrollableScrollPhysics(),
             child: Padding(
               padding: EdgeInsets.only(
                 left: 21.w,
@@ -116,22 +117,44 @@ class SignUpScreen extends ConsumerWidget {
       if (type == SignupMethodType.email) {
         return const EmailForm();
       }
-      return PersonalInfoForm(type: type);
+      return const PlayerProfileForm();
     } else if (ref.watch(progressProvider).progress == 3) {
       if (type == SignupMethodType.email) {
         return const PasswordForm();
       }
+      return PersonalInfoForm(type: type);
+    } else if (ref.watch(progressProvider).progress == 4) {
+      if (type == SignupMethodType.email) {
+        return const PlayerProfileForm();
+      }
       return Column(
         children: [SizedBox(height: 40.h), const CheckBoxForm()],
       );
-    } else if (ref.watch(progressProvider).progress == 4) {
+    } else if (ref.watch(progressProvider).progress == 5) {
       return PersonalInfoForm(type: type);
     } else {
       return Column(
         children: [SizedBox(height: 40.h), const CheckBoxForm()],
       );
     }
-    (ref.watch(progressProvider).progress == 5);
+  }
+}
+
+class PlayerProfileForm extends ConsumerWidget {
+  const PlayerProfileForm({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen(userPlayerProfileFormProvider, (prev, after) {
+      ref
+          .read(progressProvider.notifier)
+          .updateValidNext(validNext: after.validForm());
+      ref.read(signUpFormProvider.notifier).updateForm(playerProfile: after);
+    });
+    return Padding(
+      padding: EdgeInsets.only(top: 48.h),
+      child: const PlayerProfileFormComponent(),
+    );
   }
 }
 
@@ -201,7 +224,7 @@ class _ProgressComponent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final length = SignupMethodType.email == type ? 5 : 3;
+    final length = SignupMethodType.email == type ? 6 : 4;
     final currentIdx = ref.watch(progressProvider).progress;
     return Row(
       children: [
@@ -633,8 +656,8 @@ class _EmailFormState extends ConsumerState<EmailForm> {
       initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((int s)  {
-       onSubmit(context);
+    _throttler.values.listen((int s) {
+      onSubmit(context);
       Future.delayed(const Duration(seconds: 1), () {
         throttleCnt++;
       });
@@ -762,17 +785,25 @@ class DescComponent extends ConsumerWidget {
         title = '이메일을 입력해주세요.';
         desc = '이메일은 사용자의 아이디로 사용됩니다.\n입력하신 이메일로 MITI의 공지사항이 전달돼요.';
       } else {
-        title = '본인확인을 위한\n정보를 입력해주세요.';
-        desc = '입력하신 정보는 안전하게 보관되며 공개되지 않아요.';
+        title = '경기 참여에 필요한\n선수 프로필을 작성해주세요';
+        desc = '입력하신 정보는 경기 참여 시 참고용으로 사용되어요.';
       }
     } else if (ref.watch(progressProvider).progress == 3) {
       if (type == SignupMethodType.email) {
         title = '비밀번호를 입력해주세요.';
       } else {
+        title = '본인확인을 위한\n정보를 입력해주세요.';
+        desc = '입력하신 정보는 안전하게 보관되며 공개되지 않아요.';
+      }
+    } else if (ref.watch(progressProvider).progress == 4) {
+      if (type == SignupMethodType.email) {
+        title = '경기 참여에 필요한\n선수 프로필을 작성해주세요';
+        desc = '입력하신 정보는 경기 참여 시 참고용으로 사용되어요.';
+      } else {
         title = 'MITI 회원 이용약관';
         desc = '약관에 동의하시면 회원가입이 완료됩니다.';
       }
-    } else if (ref.watch(progressProvider).progress == 4) {
+    } else if (ref.watch(progressProvider).progress == 5) {
       title = '본인확인을 위한\n정보를 입력해주세요.';
       desc = '입력하신 정보는 안전하게 보관되며 공개되지 않아요.';
     } else {
@@ -910,7 +941,6 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(signUpFormProvider);
     ref.listen(dateProvider(DateTimeType.start), (previous, next) {
       if (next != null) {
         final formatDate = DateTimeUtil.getDate(dateTime: next);
@@ -1194,37 +1224,67 @@ class _NextButtonState extends ConsumerState<_NextButton> {
     final validNext = progressModel.validNext;
 
     String buttonText = '';
-    if (progress == 5 || (progress == 3 && SignupMethodType.email != widget.type)) {
+    if (progress == 6 ||
+        (progress == 4 && SignupMethodType.email != widget.type)) {
       buttonText = '가입하기';
     } else {
       buttonText = '다음으로';
     }
 
-    return Padding(
-      padding: EdgeInsets.only(left: 21.w, right: 21.w, bottom: 41.h),
-      child: SizedBox(
-        height: 48.h,
-        child: TextButton(
-            onPressed: () async {
-              if (validNext) {
-                if ((progress == 5 ||
-                    (progress == 3 && SignupMethodType.email != widget.type))) {
-                  _throttler.setValue(throttleCnt + 1);
-                } else {
-                  ref.read(progressProvider.notifier).nextProgress();
-                }
-              }
-            },
-            style: TextButton.styleFrom(
-                backgroundColor:
-                    validNext ? MITIColor.primary : MITIColor.gray500),
-            child: Text(
-              buttonText,
-              style: MITITextStyle.mdBold.copyWith(
-                color: validNext ? MITIColor.gray800 : MITIColor.gray50,
+    bool isVisible = false;
+    if(progress == 2 && SignupMethodType.email != widget.type || progress == 4 && SignupMethodType.email == widget.type){
+      isVisible = true;
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Visibility(
+          visible: isVisible,
+          child: Padding(
+            padding: EdgeInsets.only(bottom: 12.h),
+            child: GestureDetector(
+              onTap: () {
+                ref.read(progressProvider.notifier).nextProgress();
+              },
+              child: Text(
+                '다음에 작성하기',
+                style: MITITextStyle.sm.copyWith(
+                    color: MITIColor.gray100,
+                    decoration: TextDecoration.underline,
+                    decorationColor: MITIColor.gray100),
               ),
-            )),
-      ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 21.w, right: 21.w, bottom: 41.h),
+          child: SizedBox(
+            height: 48.h,
+            child: TextButton(
+                onPressed: () async {
+                  if (validNext) {
+                    if ((progress == 6 ||
+                        (progress == 4 &&
+                            SignupMethodType.email != widget.type))) {
+                      _throttler.setValue(throttleCnt + 1);
+                    } else {
+                      ref.read(progressProvider.notifier).nextProgress();
+                    }
+                  }
+                },
+                style: TextButton.styleFrom(
+                    backgroundColor:
+                        validNext ? MITIColor.primary : MITIColor.gray500),
+                child: Text(
+                  buttonText,
+                  style: MITITextStyle.mdBold.copyWith(
+                    color: validNext ? MITIColor.gray800 : MITIColor.gray50,
+                  ),
+                )),
+          ),
+        ),
+      ],
     );
   }
 

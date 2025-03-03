@@ -94,13 +94,9 @@ class ReviewListScreen extends StatelessWidget {
                   BaseReviewListResponse model;
                   if (participationId == null) {
                     result = ref.watch(hostReviewListProvider(gameId: gameId));
-                    model =
-                        (result as ResponseModel<HostReviewListResponse>).data!;
                   } else {
                     result = ref.watch(guestReviewListProvider(
                         gameId: gameId, participationId: participationId!));
-                    model = (result as ResponseModel<GuestReviewListResponse>)
-                        .data!;
                   }
                   if (result is LoadingModel) {
                     return const SliverToBoxAdapter(
@@ -108,6 +104,14 @@ class ReviewListScreen extends StatelessWidget {
                     );
                   } else if (result is ErrorModel) {
                     return const SliverToBoxAdapter(child: Text('error'));
+                  }
+
+                  if (participationId == null) {
+                    model =
+                    (result as ResponseModel<HostReviewListResponse>).data!;
+                  } else {
+                    model = (result as ResponseModel<GuestReviewListResponse>)
+                        .data!;
                   }
                   int itemCount = 0;
                   if (model is GuestReviewListResponse) {

@@ -82,7 +82,7 @@ class BottomButton extends StatelessWidget {
               )
             : null,
       ),
-      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 18.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 18.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

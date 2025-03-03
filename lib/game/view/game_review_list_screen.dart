@@ -22,6 +22,7 @@ import '../../common/error/view/error_screen.dart';
 import '../../common/model/entity_enum.dart';
 import '../../review/model/v2/base_guest_rating_response.dart';
 import '../../review/model/v2/game_reviewee_list_response.dart';
+import '../../review/model/v2/user_written_reviews.dart';
 import '../../user/model/v2/user_host_rating_response.dart';
 import '../../user/view/review_detail_screen.dart';
 import '../component/skeleton/game_participation_review_skeleton.dart';
@@ -95,7 +96,7 @@ class _GameReviewListScreenState extends State<GameReviewListScreen> {
                   final userId = ref.read(authProvider)?.id ?? 0;
 
                   /// 본인 리뷰 제거
-                  // model.participations.removeWhere((e) => e.userId == userId);
+                  model.participations.removeWhere((e) => e.user.id == userId);
 
                   if (model.participations.isEmpty) {
                     return Center(
@@ -110,12 +111,15 @@ class _GameReviewListScreenState extends State<GameReviewListScreen> {
 
                   return Column(
                     children: [
-                      if (model.host != null && model.host?.id != userId)
+                      if (model.userParticipationId != null)
                         _HostReviewComponent(
-                          host: model.host!,
+                          host: model.host,
                           gameId: widget.gameId,
+                          isWrittenReview:
+                              model.userWrittenReviews.writtenHostReviewId !=
+                                  null,
                         ),
-                      if ((model.host != null && model.host?.id != userId) &&
+                      if (model.userParticipationId != null &&
                           model.participations.isNotEmpty)
                         Container(
                           color: MITIColor.gray800,
@@ -123,6 +127,7 @@ class _GameReviewListScreenState extends State<GameReviewListScreen> {
                         ),
                       if (model.participations.isNotEmpty)
                         _GuestReviewComponent(
+                          userWrittenReviews: model.userWrittenReviews,
                           participations: model.participations,
                           gameId: widget.gameId,
                         ),
@@ -140,33 +145,37 @@ class _GameReviewListScreenState extends State<GameReviewListScreen> {
 
 class _PlayerComponent extends StatelessWidget {
   final String nickname;
-  final ParticipationStatusType? participation_status;
+  final ParticipationStatusType? participationStatus;
   final int gameId;
   final int? participationId;
   final BaseRatingResponse rating;
+  final bool isWrittenReview;
 
   // final List<ReviewerModel> reviews;
 
   const _PlayerComponent({
     super.key,
-    this.participation_status,
+    this.participationStatus,
     this.participationId,
     required this.gameId,
     required this.nickname,
     required this.rating,
+    required this.isWrittenReview,
     // required this.reviews,
   });
 
   factory _PlayerComponent.fromParticipationModel({
     required ParticipationGuestRatingResponse model,
     required int gameId,
+    required bool isWrittenReview,
   }) {
     return _PlayerComponent(
-      participation_status: model.participationStatus,
+      participationStatus: model.participationStatus,
       gameId: gameId,
       participationId: model.id,
       nickname: model.user.nickname,
       rating: model.user.guestRating,
+      isWrittenReview: isWrittenReview,
       // reviews: model.guest_reviews,
     );
   }
@@ -174,11 +183,13 @@ class _PlayerComponent extends StatelessWidget {
   factory _PlayerComponent.fromHostModel({
     required UserHostRatingResponse model,
     required int gameId,
+    required bool isWrittenReview,
   }) {
     return _PlayerComponent(
       gameId: gameId,
       nickname: model.nickname,
       rating: model.hostRating,
+      isWrittenReview: isWrittenReview,
       // reviews: model.host_reviews,
     );
   }
@@ -264,8 +275,9 @@ class _PlayerComponent extends StatelessWidget {
           Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
               final userId = ref.watch(authProvider.select((user) => user?.id));
-              final valid =
-                  true; //reviews.singleWhereOrNull((r) => r.reviewer == userId);
+              // final valid = isWrittenReview;
+              //reviews.singleWhereOrNull((r) => r.reviewer == userId);
+              log('isWrittenReview = $isWrittenReview');
 
               return TextButton(
                   onPressed: () {
@@ -277,7 +289,7 @@ class _PlayerComponent extends StatelessWidget {
                     }
 
                     /// 리뷰 쓰기
-                    if (valid == null) {
+                    if (!isWrittenReview) {
                       Map<String, String> pathParameters = {
                         'gameId': gameId.toString(),
                       };
@@ -325,14 +337,14 @@ class _PlayerComponent extends StatelessWidget {
                       minimumSize: Size(75.w, 30.h),
                       maximumSize: Size(90.w, 30.h),
                       backgroundColor:
-                          valid == null ? MITIColor.primary : MITIColor.gray800,
+                      !isWrittenReview ? MITIColor.primary : MITIColor.gray800,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20.r))),
                   child: Text(
-                    valid == null ? "리뷰 쓰기" : "리뷰 보기",
+                    !isWrittenReview ? "리뷰 쓰기" : "리뷰 보기",
                     style: MITITextStyle.smSemiBold.copyWith(
                       color:
-                          valid == null ? MITIColor.gray800 : MITIColor.primary,
+                      !isWrittenReview ? MITIColor.gray800 : MITIColor.primary,
                     ),
                   ));
             },
@@ -346,11 +358,13 @@ class _PlayerComponent extends StatelessWidget {
 class _HostReviewComponent extends StatelessWidget {
   final UserHostRatingResponse host;
   final int gameId;
+  final bool isWrittenReview;
 
   const _HostReviewComponent({
     super.key,
     required this.host,
     required this.gameId,
+    required this.isWrittenReview,
   });
 
   @override
@@ -373,6 +387,7 @@ class _HostReviewComponent extends StatelessWidget {
           _PlayerComponent.fromHostModel(
             model: host,
             gameId: gameId,
+            isWrittenReview: isWrittenReview,
           ),
         ],
       ),
@@ -381,17 +396,21 @@ class _HostReviewComponent extends StatelessWidget {
 }
 
 class _GuestReviewComponent extends StatelessWidget {
+  final UserWrittenReviews userWrittenReviews;
   final List<ParticipationGuestRatingResponse> participations;
   final int gameId;
 
   const _GuestReviewComponent({
     super.key,
+    required this.userWrittenReviews,
     required this.participations,
     required this.gameId,
   });
 
   @override
   Widget build(BuildContext context) {
+    final writtenUserIds = userWrittenReviews.writtenParticipationIds;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
       child: Column(
@@ -416,6 +435,9 @@ class _GuestReviewComponent extends StatelessWidget {
                   return _PlayerComponent.fromParticipationModel(
                     model: participations[idx],
                     gameId: gameId,
+                    isWrittenReview: writtenUserIds.contains(
+                      participations[idx].id,
+                    ),
                   );
                 },
                 separatorBuilder: (_, idx) {

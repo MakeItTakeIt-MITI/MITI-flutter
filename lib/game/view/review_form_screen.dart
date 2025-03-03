@@ -28,6 +28,7 @@ import '../../common/error/view/error_screen.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/provider/router_provider.dart';
+import '../../report/view/report_list_screen.dart';
 import '../../util/util.dart';
 import '../model/widget/user_reivew_short_info_model.dart';
 import 'game_detail_screen.dart';
@@ -91,8 +92,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
 
   Widget getDivider() {
     return Container(
-      height: 4.h,
-      color: MITIColor.gray900,
+      height: 2.h,
     );
   }
 
@@ -100,12 +100,82 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
     // log("bottomPadding = $bottomPadding");
+    log("review form");
     return Scaffold(
       appBar: DefaultAppBar(
         title: widget.participationId != null ? '게스트 리뷰' : '호스트 리뷰',
-        backgroundColor: MITIColor.gray750,
+        hasBorder: false,
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: 13.w),
+            child: GestureDetector(
+              onTap: () {
+                showModalBottomSheet(
+                    backgroundColor: Colors.transparent,
+                    context: context,
+                    builder: (_) {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 16.w, vertical: 18.h),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              height: 48.h,
+                              child: TextButton(
+                                onPressed: () {
+                                  Map<String, String> pathParameters = {
+                                    'gameId': widget.gameId.toString()
+                                  };
+                                  context.pop();
+                                  Map<String, String> queryParameters = {
+                                    'participationId':
+                                        widget.participationId.toString()
+                                  };
+                                  context.pushNamed(
+                                    ReportListScreen.routeName,
+                                    pathParameters: pathParameters,
+                                    queryParameters: queryParameters,
+                                    extra: ReportCategoryType.guest_report,
+                                  );
+                                },
+                                style: TextButton.styleFrom(
+                                    backgroundColor: MITIColor.gray800),
+                                child: Text(
+                                  "신고하기",
+                                  style: MITITextStyle.md
+                                      .copyWith(color: MITIColor.error),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 15.h,
+                            ),
+                            TextButton(
+                                onPressed: () => context.pop(),
+                                style: TextButton.styleFrom(
+                                    backgroundColor: MITIColor.gray800),
+                                child: Text(
+                                  "닫기",
+                                  style: MITITextStyle.md
+                                      .copyWith(color: MITIColor.gray400),
+                                )),
+                          ],
+                        ),
+                      );
+                    });
+              },
+              child: SvgPicture.asset(
+                AssetUtil.getAssetPath(type: AssetType.icon, name: "more"),
+                height: 24.r,
+                width: 24.r,
+                colorFilter:
+                    const ColorFilter.mode(MITIColor.white, BlendMode.srcIn),
+              ),
+            ),
+          )
+        ],
       ),
-      backgroundColor: MITIColor.gray750,
       bottomNavigationBar: Padding(
         padding: EdgeInsets.only(bottom: bottomPadding),
         child: BottomButton(
@@ -122,12 +192,15 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                       }
                     : () {},
                 style: TextButton.styleFrom(
-                    backgroundColor:
-                        valid && !isLoading ? MITIColor.primary : MITIColor.gray500),
+                    backgroundColor: valid && !isLoading
+                        ? MITIColor.primary
+                        : MITIColor.gray500),
                 child: Text(
                   '작성 완료',
                   style: MITITextStyle.mdBold.copyWith(
-                      color: valid && !isLoading ? MITIColor.gray800 : MITIColor.gray50),
+                      color: valid && !isLoading
+                          ? MITIColor.gray800
+                          : MITIColor.gray50),
                 ),
               );
             },
@@ -220,7 +293,7 @@ class _ReviewForm extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -343,7 +416,7 @@ class _RatingForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 21.w),
+      padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 16.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -437,9 +510,9 @@ class _CommentForm extends ConsumerWidget {
 
     final selected = ref.watch(selectedProvider);
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
             '어떤 점이 좋았나요? (최소 2개)',
@@ -503,7 +576,7 @@ class ReviewChip extends StatelessWidget {
                       Color(0xFF7EFDFF),
                     ])
               : null,
-          color: selected ? null : MITIColor.gray800,
+          color: selected ? null : MITIColor.gray750,
         ),
         // alignment: Alignment(0,0),
         child: Column(
@@ -512,7 +585,7 @@ class ReviewChip extends StatelessWidget {
             Text(
               title,
               style: MITITextStyle.smSemiBold.copyWith(
-                color: selected ? MITIColor.gray800 : MITIColor.gray300,
+                color: selected ? MITIColor.gray750 : MITIColor.gray300,
               ),
             ),
           ],

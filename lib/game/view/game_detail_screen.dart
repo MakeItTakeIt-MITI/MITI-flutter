@@ -600,7 +600,7 @@ class UserShortInfoComponent extends StatelessWidget {
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
         return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
           child: Column(
             children: [
               Row(
