@@ -785,7 +785,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                     parentNavigatorKey: rootNavKey,
                     name: NicknameUpdateScreen.routeName,
                     builder: (context, state) {
-                      return const NicknameUpdateScreen();
+                      final profileImageUrl =
+                          state.uri.queryParameters['profileImageUrl']!;
+                      return NicknameUpdateScreen(
+                        profileImageUrl: profileImageUrl,
+                      );
                     },
                   ),
                   GoRoute(

@@ -213,6 +213,8 @@ class PlayerProfile extends _$PlayerProfile {
       ref
           .read(userPlayerProfileFormProvider.notifier)
           .updateByModel(value.data!.playerProfile);
+
+
     }).catchError((e) {
       final error = ErrorModel.respToError(e);
       logger.e(

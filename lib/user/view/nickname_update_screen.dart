@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:miti/account/error/account_error.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
 import 'package:miti/common/component/defalut_flashbar.dart';
@@ -19,9 +20,14 @@ import 'package:miti/util/util.dart';
 import '../error/user_error.dart';
 
 class NicknameUpdateScreen extends ConsumerStatefulWidget {
+  final String profileImageUrl;
+
   static String get routeName => 'nicknameUpdate';
 
-  const NicknameUpdateScreen({super.key});
+  const NicknameUpdateScreen({
+    super.key,
+    required this.profileImageUrl,
+  });
 
   @override
   ConsumerState<NicknameUpdateScreen> createState() =>
@@ -72,9 +78,21 @@ class _NicknameUpdateScreenState extends ConsumerState<NicknameUpdateScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(height: 40.h),
-              Text(
-                '변경하고 싶은 닉네임을 입력해 주세요.',
-                style: MITITextStyle.mdBold.copyWith(color: MITIColor.gray100),
+              // Text(
+              //   '변경하고 싶은 닉네임을 입력해 주세요.',
+              //   style: MITITextStyle.mdBold.copyWith(color: MITIColor.gray100),
+              // ),
+              GestureDetector(
+                onTap: () async {
+                  final ImagePicker picker = ImagePicker();
+                  final XFile? image =
+                      await picker.pickImage(source: ImageSource.gallery);
+                },
+                child: Image.network(
+                  widget.profileImageUrl,
+                  height: 120.r,
+                  width: 120.r,
+                ),
               ),
               SizedBox(height: 40.h),
               Consumer(

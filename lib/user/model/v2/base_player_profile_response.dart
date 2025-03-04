@@ -4,6 +4,51 @@ import '../../../common/model/entity_enum.dart';
 
 part 'base_player_profile_response.g.dart';
 
+class PlayerProfileForm extends BasePlayerProfileResponse {
+  final bool enableGender;
+
+  PlayerProfileForm({
+    required this.enableGender,
+    super.gender,
+    super.height,
+    super.weight,
+    super.position,
+    super.role,
+  });
+
+  /// copyWith 메소드 추가
+  @override
+  PlayerProfileForm copyWith({
+    GenderType? gender,
+    int? height,
+    int? weight,
+    PlayerPositionType? position,
+    PlayerRoleType? role,
+    bool? enableGender,
+  }) {
+    return PlayerProfileForm(
+      gender: gender ?? this.gender,
+      height: height ?? this.height,
+      weight: weight ?? this.weight,
+      position: position ?? this.position,
+      role: role ?? this.role,
+      enableGender: enableGender ?? this.enableGender,
+    );
+  }
+
+  factory PlayerProfileForm.fromModel(
+      {required BasePlayerProfileResponse model}) {
+    return PlayerProfileForm(
+      gender: model.gender,
+      height: model.height,
+      weight: model.weight,
+      position: model.position,
+      role: model.role,
+      enableGender: model.gender == null,
+    );
+  }
+}
+
 @JsonSerializable(includeIfNull: false)
 class BasePlayerProfileResponse {
   final GenderType? gender; // 성별

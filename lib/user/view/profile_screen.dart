@@ -141,12 +141,24 @@ class _ProfileBodyState extends ConsumerState<ProfileBody> {
 //   final
 // }
 
-class _MenuComponent extends StatelessWidget {
+class _MenuComponent extends ConsumerWidget {
   const _MenuComponent({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    Map<String, List<_MenuItem>> gameMenu = getMyPageMenu(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final result = ref.watch(userInfoProvider);
+    if (result is LoadingModel) {
+      return Container();
+    } else if (result is ErrorModel) {
+      WidgetsBinding.instance.addPostFrameCallback((s) =>
+          UserError.fromModel(model: result)
+              .responseError(context, UserApiType.get, ref));
+      return const Text("error");
+    }
+    final model = (result as ResponseModel<UserInfoResponse>).data!;
+
+    Map<String, List<_MenuItem>> gameMenu = getMyPageMenu(context, model);
+
     final menu = gameMenu.keys.toList();
     return Padding(
       padding:
@@ -168,7 +180,8 @@ class _MenuComponent extends StatelessWidget {
     );
   }
 
-  Map<String, List<_MenuItem>> getMyPageMenu(BuildContext context) {
+  Map<String, List<_MenuItem>> getMyPageMenu(
+      BuildContext context, UserInfoResponse model) {
     final Map<String, List<_MenuItem>> gameMenu = {
       '경기 관련 정보': [
         _MenuItem(
@@ -192,7 +205,13 @@ class _MenuComponent extends StatelessWidget {
       ],
       '계정 설정': [
         _MenuItem(
-          onTap: () => context.pushNamed(NicknameUpdateScreen.routeName),
+          onTap: () {
+            Map<String, String> queryParameters = {
+              'profileImageUrl': model.profileImageUrl
+            };
+            context.pushNamed(NicknameUpdateScreen.routeName,
+                queryParameters: queryParameters);
+          },
           title: '프로필 수정',
         ),
         _MenuItem(
@@ -548,8 +567,13 @@ class _ProfileComponent extends ConsumerWidget {
                 ),
                 SizedBox(height: 16.h),
                 GestureDetector(
-                  onTap: () =>
-                      context.pushNamed(NicknameUpdateScreen.routeName),
+                  onTap: () {
+                    Map<String, String> queryParameters = {
+                      'profileImageUrl': model.profileImageUrl
+                    };
+                    context.pushNamed(NicknameUpdateScreen.routeName,
+                        queryParameters: queryParameters);
+                  },
                   child: Container(
                     padding:
                         EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),

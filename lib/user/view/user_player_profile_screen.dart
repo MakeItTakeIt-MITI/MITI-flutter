@@ -71,6 +71,7 @@ class UserPlayerProfileScreen extends StatelessWidget {
           child: Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
               final result = ref.watch(playerProfileProvider);
+
               return const PlayerProfileFormComponent();
             },
           ),
@@ -106,9 +107,14 @@ class PlayerProfileFormComponent extends ConsumerWidget {
             }
             return _PlayerProfileForm(type: profileValues[index], value: value);
           }
+          bool enabled = true;
+          if (PlayerProfileType.gender == profileValues[index]) {
+            enabled = form.enableGender;
+          }
 
           return _PlayerProfileForm(
             type: profileValues[index],
+            enabled: enabled,
           );
         },
         separatorBuilder: (BuildContext context, int index) {
@@ -121,11 +127,13 @@ class PlayerProfileFormComponent extends ConsumerWidget {
 class _PlayerProfileForm extends ConsumerStatefulWidget {
   final PlayerProfileType type;
   final String? value;
+  final bool enabled;
 
   const _PlayerProfileForm({
     super.key,
     required this.type,
     this.value,
+    this.enabled = true,
   });
 
   @override
@@ -224,9 +232,9 @@ class _PlayerProfileFormState extends ConsumerState<_PlayerProfileForm> {
               )
             else
               GestureDetector(
-                onTap: () {
-                  showBottomSheetForm(context, items, ref);
-                },
+                onTap: widget.enabled
+                    ? () => showBottomSheetForm(context, items, ref)
+                    : null,
                 child: Container(
                   width: 120.w,
                   height: 40.h,
@@ -238,9 +246,11 @@ class _PlayerProfileFormState extends ConsumerState<_PlayerProfileForm> {
                     child: Text(
                       formValue ?? widget.type.displayName,
                       style: MITITextStyle.md.copyWith(
-                          color: formValue == null
-                              ? MITIColor.gray500
-                              : MITIColor.gray100),
+                          color: !widget.enabled
+                              ? MITIColor.gray600
+                              : formValue == null
+                                  ? MITIColor.gray500
+                                  : MITIColor.gray100),
                     ),
                   ),
                 ),

@@ -75,13 +75,14 @@ class UserPasswordForm extends _$UserPasswordForm {
 @riverpod
 class UserPlayerProfileForm extends _$UserPlayerProfileForm {
   @override
-  BasePlayerProfileResponse build() {
-    return BasePlayerProfileResponse(
+  PlayerProfileForm build() {
+    return PlayerProfileForm(
       gender: null,
       weight: null,
       height: null,
       position: null,
       role: null,
+      enableGender: true,
     );
   }
 
@@ -91,6 +92,7 @@ class UserPlayerProfileForm extends _$UserPlayerProfileForm {
     int? height,
     PlayerPositionType? position,
     PlayerRoleType? role,
+    bool? enableGender,
   }) {
     state = state.copyWith(
       gender: gender,
@@ -98,11 +100,12 @@ class UserPlayerProfileForm extends _$UserPlayerProfileForm {
       height: height,
       position: position,
       role: role,
+      enableGender: enableGender,
     );
   }
 
   void updateByModel(BasePlayerProfileResponse model) {
-    state = model;
+    state = PlayerProfileForm.fromModel(model: model);
   }
 
   bool validWeight() {
