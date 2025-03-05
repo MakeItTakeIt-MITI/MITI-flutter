@@ -103,6 +103,7 @@ dependencies:
   image_picker: ^1.1.2
   image_cropper: ^9.0.0
   flutter_image_compress: ^2.3.0
+  dotted_border: ^2.1.0
 
   firebase_remote_config: ^5.4.1
   package_info_plus: ^8.2.1

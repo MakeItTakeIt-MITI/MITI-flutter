@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/account/view/settlement_management_screen.dart';
@@ -26,6 +27,7 @@ import 'package:miti/notification/view/notification_screen.dart';
 import 'package:miti/support/view/faq_screen.dart';
 import 'package:miti/support/view/guide_screen.dart';
 import 'package:miti/support/view/support_form_screen.dart';
+import 'package:miti/user/view/image_crop_screen.dart';
 import 'package:miti/user/view/user_delete_screen.dart';
 import 'package:miti/user/view/user_payment_screen.dart';
 import 'package:miti/user/view/user_player_profile_screen.dart';
@@ -781,13 +783,25 @@ final routerProvider = Provider<GoRouter>((ref) {
                     },
                   ),
                   GoRoute(
-                    path: 'profileUpdate',
-                    parentNavigatorKey: rootNavKey,
-                    name: ProfileUpdateScreen.routeName,
-                    builder: (context, state) {
-                      return const ProfileUpdateScreen();
-                    },
-                  ),
+                      path: 'profileUpdate',
+                      parentNavigatorKey: rootNavKey,
+                      name: ProfileUpdateScreen.routeName,
+                      builder: (context, state) {
+                        return const ProfileUpdateScreen();
+                      },
+                      routes: [
+                        GoRoute(
+                          path: 'imageCrop',
+                          parentNavigatorKey: rootNavKey,
+                          name: ImageCropScreen.routeName,
+                          builder: (context, state) {
+                            final pickedFile = state.extra as XFile;
+                            return ImageCropScreen(
+                              pickedFile: pickedFile,
+                            );
+                          },
+                        )
+                      ]),
                   GoRoute(
                     path: 'myPayment',
                     parentNavigatorKey: rootNavKey,

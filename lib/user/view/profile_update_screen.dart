@@ -19,6 +19,7 @@ import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/provider/user_form_provider.dart';
 import 'package:miti/user/provider/user_provider.dart';
+import 'package:miti/user/view/image_crop_screen.dart';
 import 'package:miti/util/util.dart';
 
 import '../error/user_error.dart';
@@ -114,38 +115,42 @@ class _NicknameUpdateScreenState extends ConsumerState<ProfileUpdateScreen> {
                                                 source: ImageSource.gallery);
                                         final dio = ref.read(dioProvider);
 
-                                        if (image != null) {
-                                          final imageFile = File(image.path);
-                                          final imageBytes =
-                                              imageFile.readAsBytes();
+                                        context.pushNamed(
+                                            ImageCropScreen.routeName,
+                                            extra: image);
 
-                                          final options = Options(
-                                            contentType: 'image/png',
-                                          );
-
-                                          log("model url = ${model.profileImageUpdateUrl}");
-
-                                          final response = await dio.put(
-                                              model.profileImageUpdateUrl,
-                                              options: options,
-                                              data: imageBytes);
-
-                                          log("response statusCode = ${response.statusCode}");
-                                          log("response data =  ${response.data}");
-                                          if (response.statusCode == 200) {
-                                            context.pop();
-                                            ref
-                                                .read(userProfileProvider
-                                                    .notifier)
-                                                .getInfo();
-                                            Future.delayed(
-                                                const Duration(
-                                                    milliseconds: 100), () {
-                                              FlashUtil.showFlash(context,
-                                                  '프로필 이미지가 변경 되었습니다.');
-                                            });
-                                          }
-                                        }
+                                        // if (image != null) {
+                                        //   final imageFile = File(image.path);
+                                        //   final imageBytes =
+                                        //       imageFile.readAsBytes();
+                                        //
+                                        //   final options = Options(
+                                        //     contentType: 'image/png',
+                                        //   );
+                                        //
+                                        //   log("model url = ${model.profileImageUpdateUrl}");
+                                        //
+                                        //   final response = await dio.put(
+                                        //       model.profileImageUpdateUrl,
+                                        //       options: options,
+                                        //       data: imageBytes);
+                                        //
+                                        //   log("response statusCode = ${response.statusCode}");
+                                        //   log("response data =  ${response.data}");
+                                        //   if (response.statusCode == 200) {
+                                        //     context.pop();
+                                        //     ref
+                                        //         .read(userProfileProvider
+                                        //             .notifier)
+                                        //         .getInfo();
+                                        //     Future.delayed(
+                                        //         const Duration(
+                                        //             milliseconds: 100), () {
+                                        //       FlashUtil.showFlash(context,
+                                        //           '프로필 이미지가 변경 되었습니다.');
+                                        //     });
+                                        //   }
+                                        // }
                                       },
                                       style: TextButton.styleFrom(
                                           backgroundColor: MITIColor.gray800),
