@@ -20,7 +20,8 @@ import '../../common/provider/router_provider.dart';
 import '../../theme/color_theme.dart';
 
 enum UserApiType {
-  updateNickname,
+  resetProfileImage,
+  updateProfileInfo,
   delete,
   get,
   writtenReviewDetail,
@@ -63,7 +64,7 @@ class UserError extends ErrorBase {
       case UserApiType.receiveReviewDetail:
         _getReceiveReviewDetail(context, ref);
         break;
-      case UserApiType.updateNickname:
+      case UserApiType.updateProfileInfo:
         _updateNickname(context, ref);
         break;
       case UserApiType.updatePassword:

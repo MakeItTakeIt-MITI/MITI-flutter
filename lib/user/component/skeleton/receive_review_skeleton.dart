@@ -6,7 +6,7 @@ import 'package:miti/common/component/skeleton.dart';
 import '../../../theme/color_theme.dart';
 import '../../../theme/text_theme.dart';
 import '../../../util/util.dart';
-import '../../view/profile_screen.dart';
+import '../../view/profile_menu_screen.dart';
 
 class ReceiveReviewSkeleton extends StatelessWidget {
   const ReceiveReviewSkeleton({super.key});

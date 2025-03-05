@@ -57,8 +57,10 @@ abstract class UserRepository {
   /// todo error
   @Headers({'token': 'true'})
   @PATCH('/users/{userId}/user-profile')
-  Future<ResponseModel<BaseUserProfileResponse>> updateUserProfileInfo(
-      {@Path() required int userId});
+  Future<ResponseModel<BaseUserProfileResponse>> updateUserProfileInfo({
+    @Path() required int userId,
+    @Body() required UserNicknameParam param,
+  });
 
   /// 프로필 이미지 초기화 API
   /// todo error
@@ -80,13 +82,6 @@ abstract class UserRepository {
   Future<ResponseModel<UserPlayerProfileResponse>> updatePlayerInfo({
     @Path() required int userId,
     @Body() required BasePlayerProfileResponse param,
-  });
-
-  @Headers({'token': 'true'})
-  @PATCH('/users/{userId}/update-profile')
-  Future<ResponseModel<UserInfoModel>> updateNickname({
-    @Path() required int userId,
-    @Body() required UserNicknameParam param,
   });
 
   // @Headers({'token': 'true'})
@@ -155,8 +150,8 @@ final userWrittenReviewsPRepositoryProvider =
 });
 
 @RestApi()
-abstract class UserWrittenReviewsPRepository
-    extends IBasePaginationRepository<BaseWrittenReviewResponse, UserReviewParam> {
+abstract class UserWrittenReviewsPRepository extends IBasePaginationRepository<
+    BaseWrittenReviewResponse, UserReviewParam> {
   factory UserWrittenReviewsPRepository(Dio dio, {String baseUrl}) =
       _UserWrittenReviewsPRepository;
 
@@ -180,8 +175,8 @@ final userReceiveReviewsPRepositoryProvider =
 });
 
 @RestApi()
-abstract class UserReceiveReviewsPRepository
-    extends IBasePaginationRepository<BaseReceivedReviewResponse, UserReviewParam> {
+abstract class UserReceiveReviewsPRepository extends IBasePaginationRepository<
+    BaseReceivedReviewResponse, UserReviewParam> {
   factory UserReceiveReviewsPRepository(Dio dio, {String baseUrl}) =
       _UserReceiveReviewsPRepository;
 

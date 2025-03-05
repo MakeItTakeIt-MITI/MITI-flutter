@@ -22,7 +22,7 @@ import 'package:miti/report/model/agreement_policy_model.dart';
 import 'package:miti/report/provider/report_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
-import 'package:miti/user/view/profile_screen.dart';
+import 'package:miti/user/view/profile_menu_screen.dart';
 
 import '../../auth/view/signup/signup_screen.dart';
 import '../../common/component/default_appbar.dart';

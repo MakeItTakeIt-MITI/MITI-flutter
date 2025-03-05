@@ -129,17 +129,59 @@ class UserInfo extends _$UserInfo {
   }
 }
 
+@Riverpod(keepAlive: true)
+class UserProfile extends _$UserProfile {
+  @override
+  BaseModel build() {
+    getInfo();
+    return LoadingModel();
+  }
+
+  void getInfo() async {
+    state = LoadingModel();
+    final repository = ref.watch(userRepositoryProvider);
+    final id = ref.read(authProvider)!.id!;
+    await repository.getUserProfileInfo(userId: id).then((value) {
+      logger.i(value);
+      state = value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state = error;
+    });
+  }
+}
+
 @riverpod
-Future<BaseModel> updateNickname(UpdateNicknameRef ref) async {
+Future<BaseModel> updateProfileInfo(UpdateProfileInfoRef ref) async {
   final userId = ref.watch(authProvider)!.id!;
   final param = ref.watch(userNicknameFormProvider);
   log("updateNickname!!");
   return await ref
       .watch(userRepositoryProvider)
-      .updateNickname(userId: userId, param: param)
+      .updateUserProfileInfo(userId: userId, param: param)
       .then<BaseModel>((value) {
     logger.i(value);
     ref.read(userInfoProvider.notifier).updateNickname(param.nickname);
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
+}
+
+@riverpod
+Future<BaseModel> resetProfileImage(ResetProfileImageRef ref) async {
+  final userId = ref.watch(authProvider)!.id!;
+  log("resetProfileImage!!");
+  return await ref
+      .watch(userRepositoryProvider)
+      .resetProfileImage(userId: userId)
+      .then<BaseModel>((value) {
+    logger.i(value);
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
@@ -213,8 +255,6 @@ class PlayerProfile extends _$PlayerProfile {
       ref
           .read(userPlayerProfileFormProvider.notifier)
           .updateByModel(value.data!.playerProfile);
-
-
     }).catchError((e) {
       final error = ErrorModel.respToError(e);
       logger.e(

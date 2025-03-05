@@ -59,15 +59,15 @@ import '../../review/view/my_review_detail_screen.dart';
 import '../../review/view/receive_review_list_screen.dart';
 import '../../review/view/review_list_screen.dart';
 import '../../review/view/written_review_list_screen.dart';
-import '../../user/view/nickname_update_screen.dart';
-import '../../user/view/profile_screen.dart';
+import '../../user/view/profile_update_screen.dart';
+import '../../user/view/profile_menu_screen.dart';
 import '../../splash_screen.dart';
 import '../../support/view/support_detail_screen.dart';
 import '../../support/view/support_screen.dart';
 import '../../user/provider/user_provider.dart';
 import '../../user/view/user_participation_screen.dart';
 import '../../user/view/user_payment_detail_screen.dart';
-import '../../user/view/user_profile_update_screen.dart';
+import '../../user/view/profile_screen.dart';
 import '../../user/view/user_review_screen.dart';
 import '../../util/update/version_check_wrapper.dart';
 import '../error/view/error_screen.dart';
@@ -781,15 +781,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                     },
                   ),
                   GoRoute(
-                    path: 'nicknameUpdate',
+                    path: 'profileUpdate',
                     parentNavigatorKey: rootNavKey,
-                    name: NicknameUpdateScreen.routeName,
+                    name: ProfileUpdateScreen.routeName,
                     builder: (context, state) {
-                      final profileImageUrl =
-                          state.uri.queryParameters['profileImageUrl']!;
-                      return NicknameUpdateScreen(
-                        profileImageUrl: profileImageUrl,
-                      );
+                      return const ProfileUpdateScreen();
                     },
                   ),
                   GoRoute(
@@ -846,11 +842,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                     },
                   ),
                   GoRoute(
-                      path: 'profileUpdate',
+                      path: 'profile',
                       parentNavigatorKey: rootNavKey,
-                      name: UserProfileUpdateScreen.routeName,
+                      name: UserProfileScreen.routeName,
                       builder: (context, state) {
-                        return const UserProfileUpdateScreen();
+                        return const UserProfileScreen();
                       },
                       routes: [
                         GoRoute(

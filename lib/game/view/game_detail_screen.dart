@@ -41,7 +41,7 @@ import '../../default_screen.dart';
 import '../../report/view/report_list_screen.dart';
 import '../../review/model/v2/base_guest_rating_response.dart';
 import '../../user/model/v2/user_host_rating_response.dart';
-import '../../user/view/profile_screen.dart';
+import '../../user/view/profile_menu_screen.dart';
 import '../../user/model/review_model.dart';
 import '../../util/util.dart';
 import '../component/skeleton/game_detail_skeleton.dart';

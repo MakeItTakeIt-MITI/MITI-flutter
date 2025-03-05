@@ -13,7 +13,7 @@ import 'package:miti/util/util.dart';
 import 'court/view/court_map_screen.dart';
 import 'court/view/court_search_screen.dart';
 import 'game/view/game_screen.dart';
-import 'user/view/profile_screen.dart';
+import 'user/view/profile_menu_screen.dart';
 
 final contextProvider = StateProvider<BuildContext?>((ref) => null);
 

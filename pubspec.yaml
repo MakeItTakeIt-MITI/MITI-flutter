@@ -101,7 +101,7 @@ dependencies:
   flutter_dotenv: ^5.2.1
 
   image_picker: ^1.1.2
-#  image_cropper: ^8.0.2
+  image_cropper: ^9.0.0
   flutter_image_compress: ^2.3.0
 
   firebase_remote_config: ^5.4.1
