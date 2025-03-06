@@ -119,16 +119,17 @@ class _ParticipationPlayerCard extends StatelessWidget {
       padding: EdgeInsets.all(16.r),
       child: Row(
         children: [
-          Image.network(
-            user.profileImageUrl,
-            width: 36.r,
-            height: 36.r,
-          ),
-          // SvgPicture.asset(
-          //   AssetUtil.getAssetPath(type: AssetType.icon, name: "user_thum2"),
-          //   height: 36.r,
-          //   width: 36.r,
-          // ),
+          if (user.profileImageUrl != null)
+            CircleAvatar(
+              radius: 18.r,
+              backgroundImage: NetworkImage(user.profileImageUrl, scale: 36.r),
+            )
+          else
+            SvgPicture.asset(
+              AssetUtil.getAssetPath(type: AssetType.icon, name: 'user_thum'),
+              width: 36.r,
+              height: 36.r,
+            ),
           SizedBox(width: 12.w),
           Expanded(
             child: Column(

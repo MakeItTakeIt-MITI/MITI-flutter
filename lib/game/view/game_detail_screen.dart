@@ -606,17 +606,17 @@ class UserShortInfoComponent extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Image.network(
-                    profileImageUrl,
-                    width: 36.r,
-                    height: 36.r,
-                  ),
-                  // SvgPicture.asset(
-                  //   AssetUtil.getAssetPath(
-                  //       type: AssetType.icon, name: "user_thum"),
-                  //   width: 36.r,
-                  //   height: 36.r,
-                  // ),
+                  if(profileImageUrl != null)
+                    CircleAvatar(
+                      radius: 18.r,
+                      backgroundImage: NetworkImage(profileImageUrl, scale: 36.r),
+                    )else
+                    SvgPicture.asset(
+                      AssetUtil.getAssetPath(
+                          type: AssetType.icon, name: 'user_thum'),
+                      width: 36.r,
+                      height: 36.r,
+                    ),
                   SizedBox(width: 12.w),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -792,11 +792,17 @@ class _GuestTile extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Image.network(
-          profileImageUrl,
-          width: 36.r,
-          height: 36.r,
-        ),
+        if(profileImageUrl != null)
+          CircleAvatar(
+            radius: 18.r,
+            backgroundImage: NetworkImage(profileImageUrl, scale: 36.r),
+          )else
+          SvgPicture.asset(
+            AssetUtil.getAssetPath(
+                type: AssetType.icon, name: 'user_thum'),
+            width: 36.r,
+            height: 36.r,
+          ),
         SizedBox(height: 8.h),
         Text(
           "$subName 님",

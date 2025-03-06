@@ -209,12 +209,20 @@ class _NicknameUpdateScreenState extends ConsumerState<ProfileUpdateScreen> {
                       },
                       child: Stack(
                         children: [
-                          Image.network(
-                            model.profileImageUrl,
-                            height: 120.r,
-                            width: 120.r,
-                            fit: BoxFit.fill,
-                          ),
+                          if (model.profileImageUrl != null)
+                            CircleAvatar(
+                              radius: 60.r,
+                              backgroundImage: NetworkImage(
+                                  model.profileImageUrl,
+                                  scale: 120.r),
+                            )
+                          else
+                            SvgPicture.asset(
+                              AssetUtil.getAssetPath(
+                                  type: AssetType.icon, name: 'user_thum'),
+                              width: 120.r,
+                              height: 120.r,
+                            ),
                           Positioned(
                             bottom: 0,
                             right: 0,
