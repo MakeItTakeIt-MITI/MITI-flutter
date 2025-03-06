@@ -6,6 +6,7 @@ import 'package:miti/common/model/default_model.dart';
 
 import '../../common/model/entity_enum.dart';
 import '../../theme/color_theme.dart';
+import '../../user/error/user_error.dart';
 import '../../user/model/review_model.dart';
 import '../../user/provider/user_provider.dart';
 import '../../user/view/review_detail_screen.dart';
@@ -65,7 +66,9 @@ class MyReviewDetailScreen extends StatelessWidget {
                       ),
                     );
                   } else if (result is ErrorModel) {
-                    return SliverToBoxAdapter(
+                    UserError.fromModel(model: result)
+                        .responseError(context, UserApiType.getReviewDetail, ref);
+                    return const SliverToBoxAdapter(
                       child: Text('error'),
                     );
                   }
@@ -84,25 +87,21 @@ class MyReviewDetailScreen extends StatelessWidget {
                     if (UserReviewType.written == userReviewType) {
                       nickname =
                           (model as GuestReviewResponse).reviewee.nickname;
-                      profileImageUrl =
-                          (model).reviewee.profileImageUrl;
+                      profileImageUrl = (model).reviewee.profileImageUrl;
                     } else {
                       nickname =
                           (model as GuestReviewResponse).reviewer.nickname;
-                      profileImageUrl =
-                          (model).reviewer.profileImageUrl;
+                      profileImageUrl = (model).reviewer.profileImageUrl;
                     }
                   } else {
                     if (UserReviewType.written == userReviewType) {
                       nickname =
                           (model as HostReviewResponse).reviewee.nickname;
-                      profileImageUrl =
-                          (model).reviewee.profileImageUrl;
+                      profileImageUrl = (model).reviewee.profileImageUrl;
                     } else {
                       nickname =
                           (model as HostReviewResponse).reviewer.nickname;
-                      profileImageUrl =
-                          (model).reviewer.profileImageUrl;
+                      profileImageUrl = (model).reviewer.profileImageUrl;
                     }
                   }
 

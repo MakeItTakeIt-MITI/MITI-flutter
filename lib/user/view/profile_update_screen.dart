@@ -85,6 +85,8 @@ class _NicknameUpdateScreenState extends ConsumerState<ProfileUpdateScreen> {
               if (result is LoadingModel) {
                 return const Center(child: CircularProgressIndicator());
               } else if (result is ErrorModel) {
+                UserError.fromModel(model: result)
+                    .responseError(context, UserApiType.getPlayerProfile, ref);
                 return Text("error");
               }
               final model =

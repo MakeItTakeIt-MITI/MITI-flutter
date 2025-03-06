@@ -119,7 +119,6 @@ class SignFormModel extends Equatable {
   bool? get stringify => true;
 
   @override
-  // TODO: implement props
   List<Object?> get props => [
         nickname,
         email,

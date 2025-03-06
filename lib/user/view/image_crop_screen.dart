@@ -62,7 +62,6 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
   // // }
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _getImageSizeSimple();
     WidgetsBinding.instance.addPostFrameCallback((s) {

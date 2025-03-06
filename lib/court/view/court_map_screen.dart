@@ -724,7 +724,6 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     for (int i = 0; i < 14; i++) {
       dayKeys.add(GlobalKey());

@@ -47,14 +47,12 @@ abstract class UserRepository {
       {@Path() required int userId});
 
   /// 유저 프로필 조회 API
-  /// todo error
   @Headers({'token': 'true'})
   @GET('/users/{userId}/user-profile')
   Future<ResponseModel<BaseUserProfileResponse>> getUserProfileInfo(
       {@Path() required int userId});
 
   /// 유저 프로필 수정 API
-  /// todo error
   @Headers({'token': 'true'})
   @PATCH('/users/{userId}/user-profile')
   Future<ResponseModel<BaseUserProfileResponse>> updateUserProfileInfo({
@@ -63,7 +61,6 @@ abstract class UserRepository {
   });
 
   /// 프로필 이미지 초기화 API
-  /// todo error
   @Headers({'token': 'true'})
   @PUT('/users/{userId}/user-profile')
   Future<ResponseModel<BaseUserProfileResponse>> resetProfileImage(

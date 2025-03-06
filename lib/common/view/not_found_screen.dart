@@ -52,7 +52,7 @@ class NotFoundScreen extends StatelessWidget {
               child: GestureDetector(
                 onTap: () async {
                   final uri = Uri.parse(
-                      'https://www.makeittakeit.kr/support/inquiries/new');
+                      'https://www.makeittakeit.kr/inquiries');
                   if (await canLaunchUrl(uri)) {
                     await launchUrl(uri);
                   }

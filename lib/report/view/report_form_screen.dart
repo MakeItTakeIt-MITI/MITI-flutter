@@ -28,13 +28,10 @@ import '../../theme/text_theme.dart';
 import '../error/report_error.dart';
 import '../model/report_model.dart';
 
-// todo 신고 작성 api
 class ReportFormScreen extends ConsumerStatefulWidget {
   final int gameId;
   final int reportId;
   final int? participationId;
-
-  // final HostReportCategoryType type;
 
   static String get routeName => 'reportForm';
 
@@ -42,7 +39,6 @@ class ReportFormScreen extends ConsumerStatefulWidget {
     super.key,
     required this.gameId,
     required this.reportId,
-    // required this.type,
     this.participationId,
   });
 
@@ -127,7 +123,7 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
             final result =
                 ref.watch(reportDetailProvider(reportId: widget.reportId));
             if (result is LoadingModel) {
-              return const CircularProgressIndicator();
+              return const Center(child: CircularProgressIndicator());
             } else if (result is ErrorModel) {
               ReportError.fromModel(model: result)
                   .responseError(context, ReportApiType.get, ref);

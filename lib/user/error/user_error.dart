@@ -24,8 +24,7 @@ enum UserApiType {
   updateProfileInfo,
   delete,
   get,
-  writtenReviewDetail,
-  receiveReviewDetail,
+  getReviewDetail,
   updatePassword,
   paymentResultDetail,
   getPlayerProfile,
@@ -58,14 +57,11 @@ class UserError extends ErrorBase {
       case UserApiType.get:
         _getUserInfo(context, ref);
         break;
-      case UserApiType.writtenReviewDetail:
-        _getWrittenReviewDetail(context, ref);
-        break;
-      case UserApiType.receiveReviewDetail:
-        _getReceiveReviewDetail(context, ref);
+      case UserApiType.getReviewDetail:
+        _getReviewDetail(context, ref);
         break;
       case UserApiType.updateProfileInfo:
-        _updateNickname(context, ref);
+        _updateProfileInfo(context, ref);
         break;
       case UserApiType.updatePassword:
         _updatePassword(context, ref);
@@ -78,6 +74,9 @@ class UserError extends ErrorBase {
         break;
       case UserApiType.updatePlayerProfile:
         _updatePlayerProfile(context, ref);
+        break;
+      case UserApiType.resetProfileImage:
+        _resetProfileImage(context, ref);
         break;
       default:
         break;
@@ -236,7 +235,7 @@ class UserError extends ErrorBase {
               ),
             );
           });
-    }else if (this.status_code == NotFound && this.error_code == 940) {
+    } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 사용자 정보 조회 실패
       context.pushReplacementNamed(ErrorScreen.routeName);
     } else {
@@ -253,100 +252,25 @@ class UserError extends ErrorBase {
     }
   }
 
-  /// 작성 리뷰 상세 조회 API
-  void _getWrittenReviewDetail(BuildContext context, WidgetRef ref) {
-    if (this.status_code == UnAuthorized && this.error_code == 501) {
-      /// 토큰 미제공
-      WidgetsBinding.instance.addPostFrameCallback((s) {
-        context.goNamed(LoginScreen.routeName);
-        Future.delayed(
-            const Duration(milliseconds: 200),
-            () => showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return const CustomDialog(
-                      title: '리뷰 조회 실패',
-                      content: '다시 로그인 해주세요.',
-                    );
-                  },
-                ));
-      });
-    } else if (this.status_code == UnAuthorized && this.error_code == 502) {
-      /// 엑세스 토큰 오류
-      WidgetsBinding.instance.addPostFrameCallback((s) {
-        context.goNamed(LoginScreen.routeName);
-        Future.delayed(
-            const Duration(milliseconds: 200),
-            () => showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return const CustomDialog(
-                      title: '리뷰 조회 실패',
-                      content: '다시 로그인 해주세요.',
-                    );
-                  },
-                ));
-      });
-    } else if (this.status_code == Forbidden && this.error_code == 940) {
+  /// 리뷰 상세 조회 API
+  void _getReviewDetail(BuildContext context, WidgetRef ref) {
+    if (this.status_code == Forbidden && this.error_code == 940) {
       /// 요청 권한 없음(review 작성자 x)
-      context.pushReplacementNamed(ErrorScreen.routeName);
+      WidgetsBinding.instance.addPostFrameCallback(
+          (s) => context.pushReplacementNamed(ErrorScreen.routeName));
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 리뷰 조회 결과 없음
-      context.pushReplacementNamed(ErrorScreen.routeName);
+      WidgetsBinding.instance.addPostFrameCallback(
+          (s) => context.pushReplacementNamed(ErrorScreen.routeName));
     } else {
       /// 서버 오류
-      context.pushReplacementNamed(ErrorScreen.routeName);
+      WidgetsBinding.instance.addPostFrameCallback(
+          (s) => context.pushReplacementNamed(ErrorScreen.routeName));
     }
   }
 
-  /// 내 리뷰 상세 조회 API
-  void _getReceiveReviewDetail(BuildContext context, WidgetRef ref) {
-    if (this.status_code == UnAuthorized && this.error_code == 501) {
-      /// 토큰 미제공
-      WidgetsBinding.instance.addPostFrameCallback((s) {
-        context.goNamed(LoginScreen.routeName);
-        Future.delayed(
-            const Duration(milliseconds: 200),
-            () => showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return const CustomDialog(
-                      title: '리뷰 조회 실패',
-                      content: '다시 로그인 해주세요.',
-                    );
-                  },
-                ));
-      });
-    } else if (this.status_code == UnAuthorized && this.error_code == 502) {
-      /// 엑세스 토큰 오류
-      WidgetsBinding.instance.addPostFrameCallback((s) {
-        context.goNamed(LoginScreen.routeName);
-        Future.delayed(
-            const Duration(milliseconds: 200),
-            () => showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return const CustomDialog(
-                      title: '리뷰 조회 실패',
-                      content: '다시 로그인 해주세요.',
-                    );
-                  },
-                ));
-      });
-    } else if (this.status_code == Forbidden && this.error_code == 940) {
-      /// 요청 권한 없음(reviewee x)
-      context.pushReplacementNamed(ErrorScreen.routeName);
-    } else if (this.status_code == NotFound && this.error_code == 940) {
-      /// 리뷰 조회 결과 없음
-      context.pushReplacementNamed(ErrorScreen.routeName);
-    } else {
-      /// 서버 오류
-      context.pushReplacementNamed(ErrorScreen.routeName);
-    }
-  }
-
-  /// 닉네임 변경 API
-  void _updateNickname(BuildContext context, WidgetRef ref) {
+  /// 유저 프로필 수정 API
+  void _updateProfileInfo(BuildContext context, WidgetRef ref) {
     if (this.status_code == BadRequest && this.error_code == 101) {
       /// 유효성 검증 실패
       ref
@@ -569,6 +493,23 @@ class UserError extends ErrorBase {
     if (this.status_code == Forbidden && this.error_code == 940) {
       /// 요청 권한 없음
       FlashUtil.showFlash(context, "선수 프로필 수정에 실패하였습니다.",
+          textColor: MITIColor.error);
+    } else {
+      /// 서버 오류
+      WidgetsBinding.instance.addPostFrameCallback(
+          (s) => context.pushReplacementNamed(ErrorScreen.routeName));
+    }
+  }
+
+  /// 프로필 이미지 초기화 API
+  void _resetProfileImage(BuildContext context, WidgetRef ref) {
+    if (this.status_code == Forbidden && this.error_code == 940) {
+      /// 요청 권한 없음
+      FlashUtil.showFlash(context, "프로필 이미지 초기화에 실패하였습니다.",
+          textColor: MITIColor.error);
+    } else if (this.status_code == NotFound && this.error_code == 940) {
+      /// 요청 권한 없음
+      FlashUtil.showFlash(context, "프로필 이미지 초기화에 실패하였습니다.",
           textColor: MITIColor.error);
     } else {
       /// 서버 오류

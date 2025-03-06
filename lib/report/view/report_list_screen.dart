@@ -43,7 +43,7 @@ class ReportListScreen extends StatelessWidget {
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
           final result = ref.watch(reportProvider(reportType: reportType));
           if (result is LoadingModel) {
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           } else if (result is ErrorModel) {
             ReportError.fromModel(model: result)
                 .responseError(context, ReportApiType.reports, ref);

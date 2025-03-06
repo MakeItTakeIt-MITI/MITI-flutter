@@ -43,7 +43,6 @@ abstract class ReviewRepository {
     @Path() required int gameId,
   });
 
-  /// todo error
   /// 받은 호스트 리뷰 상세 조회API
   @Headers({'token': 'true'})
   @GET('/users/{userId}/received-reviews/host-reviews/{reviewId}')
