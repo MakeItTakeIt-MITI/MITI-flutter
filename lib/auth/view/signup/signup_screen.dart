@@ -117,21 +117,21 @@ class SignUpScreen extends ConsumerWidget {
       if (type == SignupMethodType.email) {
         return const EmailForm();
       }
-      return const PlayerProfileForm();
+      return PersonalInfoForm(type: type);
     } else if (ref.watch(progressProvider).progress == 3) {
       if (type == SignupMethodType.email) {
         return const PasswordForm();
       }
-      return PersonalInfoForm(type: type);
+      return const PlayerProfileForm();
     } else if (ref.watch(progressProvider).progress == 4) {
       if (type == SignupMethodType.email) {
-        return const PlayerProfileForm();
+        return PersonalInfoForm(type: type);
       }
       return Column(
         children: [SizedBox(height: 40.h), const CheckBoxForm()],
       );
     } else if (ref.watch(progressProvider).progress == 5) {
-      return PersonalInfoForm(type: type);
+      return const PlayerProfileForm();
     } else {
       return Column(
         children: [SizedBox(height: 40.h), const CheckBoxForm()],
@@ -1232,7 +1232,8 @@ class _NextButtonState extends ConsumerState<_NextButton> {
     }
 
     bool isVisible = false;
-    if(progress == 2 && SignupMethodType.email != widget.type || progress == 4 && SignupMethodType.email == widget.type){
+    if (progress == 3 && SignupMethodType.email != widget.type ||
+        progress == 5 && SignupMethodType.email == widget.type) {
       isVisible = true;
     }
 

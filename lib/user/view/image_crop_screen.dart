@@ -23,11 +23,57 @@ class ImageCropScreen extends StatefulWidget {
 
 class _ImageCropScreenState extends State<ImageCropScreen> {
   CroppedFile? _croppedFile;
+  File? _image;
+  String _imageInfo = '';
+
+  // final dio = ref.read(dioProvider);
+  //
+  // // if (image != null) {
+  // //   final imageFile = File(image.path);
+  // //   final imageBytes =
+  // //       imageFile.readAsBytes();
+  // //
+  // //   final options = Options(
+  // //     contentType: 'image/png',
+  // //   );
+  // //
+  // //   log("model url = ${model.profileImageUpdateUrl}");
+  // //
+  // //   final response = await dio.put(
+  // //       model.profileImageUpdateUrl,
+  // //       options: options,
+  // //       data: imageBytes);
+  // //
+  // //   log("response statusCode = ${response.statusCode}");
+  // //   log("response data =  ${response.data}");
+  // //   if (response.statusCode == 200) {
+  // //     context.pop();
+  // //     ref
+  // //         .read(userProfileProvider
+  // //             .notifier)
+  // //         .getInfo();
+  // //     Future.delayed(
+  // //         const Duration(
+  // //             milliseconds: 100), () {
+  // //       FlashUtil.showFlash(context,
+  // //           '프로필 이미지가 변경 되었습니다.');
+  // //     });
+  // //   }
+  // // }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getImageSizeSimple();
+    WidgetsBinding.instance.addPostFrameCallback((s) {
+      _cropImage();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: !kIsWeb ? AppBar(title: const Text("widget.title")) : null,
+      // appBar: !kIsWeb ? AppBar(title: const Text("widget.title")) : null,
       body: Column(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,7 +118,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
               elevation: 4.0,
               child: Padding(
                 padding: const EdgeInsets.all(kIsWeb ? 24.0 : 16.0),
-                child: _image(),
+                child: _imageComponent(),
               ),
             ),
           ),
@@ -83,7 +129,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
     );
   }
 
-  Widget _image() {
+  Widget _imageComponent() {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     if (_croppedFile != null) {
@@ -113,18 +159,18 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (_croppedFile == null)
-          Padding(
-            padding: const EdgeInsets.only(left: 32.0),
-            child: FloatingActionButton(
-              onPressed: () {
-                _cropImage();
-              },
-              backgroundColor: const Color(0xFFBC764A),
-              tooltip: 'Crop',
-              child: const Icon(Icons.crop),
-            ),
-          )
+        // if (_croppedFile == null)
+        Padding(
+          padding: const EdgeInsets.only(left: 32.0),
+          child: FloatingActionButton(
+            onPressed: () {
+              _cropImage();
+            },
+            backgroundColor: const Color(0xFFBC764A),
+            tooltip: 'Crop',
+            child: const Icon(Icons.crop),
+          ),
+        )
       ],
     );
   }
@@ -202,6 +248,33 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
     );
   }
 
+  // 대체 방법: 이미지 크기만 더 간단하게 확인하기
+  Future<void> _getImageSizeSimple() async {
+    try {
+      final XFile? pickedFile = widget.pickedFile;
+
+      if (pickedFile != null) {
+        File file = File(pickedFile.path);
+        int fileSize = await file.length();
+
+        // 이미지 디코딩하여 크기 확인
+        final decodedImage = await decodeImageFromList(file.readAsBytesSync());
+
+        setState(() {
+          _image = file;
+          _imageInfo = '파일 크기: ${(fileSize / 1024).toStringAsFixed(2)} KB\n'
+              '이미지 너비: ${decodedImage.width} px\n'
+              '이미지 높이: ${decodedImage.height} px';
+          log('_imageInfo = $_imageInfo');
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _imageInfo = '이미지 정보를 가져오는 중 오류 발생: $e';
+      });
+    }
+  }
+
   Future<void> _cropImage() async {
     if (widget.pickedFile != null) {
       final croppedFile = await ImageCropper().cropImage(
@@ -210,7 +283,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
         compressQuality: 100,
         uiSettings: [
           AndroidUiSettings(
-            toolbarTitle: 'Cropper',
+            toolbarTitle: '이미지 설정',
             toolbarColor: Colors.black,
             toolbarWidgetColor: Colors.white,
             // initAspectRatio: CropAspectRatioPreset.square,
@@ -243,7 +316,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
     }
   }
 
-  // Future<void> _uploadImage() async {
+// Future<void> _uploadImage() async {
 //   final pickedFile =
 //       await ImagePicker().pickImage(source: ImageSource.gallery);
 //   if (pickedFile != null) {
