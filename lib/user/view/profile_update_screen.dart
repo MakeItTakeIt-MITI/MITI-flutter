@@ -22,6 +22,8 @@ import 'package:miti/user/provider/user_provider.dart';
 import 'package:miti/user/view/image_crop_screen.dart';
 import 'package:miti/util/util.dart';
 
+import '../../common/model/entity_enum.dart';
+import '../../common/provider/widget/form_provider.dart';
 import '../error/user_error.dart';
 import '../model/v2/base_user_profile_response.dart';
 
@@ -119,7 +121,6 @@ class _NicknameUpdateScreenState extends ConsumerState<ProfileUpdateScreen> {
                                               ImageCropScreen.routeName,
                                               extra: image);
                                         }
-
                                       },
                                       style: TextButton.styleFrom(
                                           backgroundColor: MITIColor.gray800),
@@ -212,13 +213,36 @@ class _NicknameUpdateScreenState extends ConsumerState<ProfileUpdateScreen> {
                   Consumer(
                     builder:
                         (BuildContext context, WidgetRef ref, Widget? child) {
+                      final nicknameInteraction =
+                          ref.watch(formInfoProvider(InputFormType.nickname));
                       return CustomTextFormField(
                         hintText: '닉네임을 입력해 주세요.',
                         label: '닉네임',
+                        interactionDesc: nicknameInteraction.interactionDesc,
+                        borderColor: nicknameInteraction.borderColor,
                         onChanged: (v) {
                           ref
                               .read(userNicknameFormProvider.notifier)
                               .update(nickname: v);
+                          final valid = ref
+                              .read(userNicknameFormProvider.notifier)
+                              .validNickname();
+
+                          if (valid) {
+                            ref
+                                .read(formInfoProvider(InputFormType.nickname)
+                                    .notifier)
+                                .reset();
+                          } else {
+                            ref
+                                .read(formInfoProvider(InputFormType.nickname)
+                                    .notifier)
+                                .update(
+                                    borderColor: MITIColor.error,
+                                    interactionDesc: InteractionDesc(
+                                        isSuccess: false,
+                                        desc: '2-15자의 한글,영어,숫자로만 설정이 가능합니다.'));
+                          }
                         },
                       );
                     },

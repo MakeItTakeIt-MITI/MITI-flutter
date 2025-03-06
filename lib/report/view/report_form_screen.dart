@@ -202,13 +202,15 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
         context.goNamed(GameDetailScreen.routeName,
             pathParameters: pathParameters);
         Future.delayed(const Duration(milliseconds: 200), () {
+          String reportType = widget.participationId != null ? '게스트' : '호스트';
+
           showModalBottomSheet(
               isDismissible: false,
               context: rootNavKey.currentState!.context!,
               builder: (_) {
                 return BottomDialog(
-                  title: '경기 신고 완료',
-                  content: '‘${model.title}’ 경기의 신고가 접수되었습니다.',
+                  title: '$reportType 신고 완료',
+                  content: '경기 $reportType 신고가 완료되었습니다.',
                   btn: Consumer(
                     builder:
                         (BuildContext context, WidgetRef ref, Widget? child) {

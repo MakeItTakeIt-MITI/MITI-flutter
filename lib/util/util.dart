@@ -156,7 +156,7 @@ class ValidRegExp {
   }
 
   static bool userNickname(String input) {
-    RegExp regex = RegExp(r'^[가-힣a-zA-Z0-9]{3,15}$');
+    RegExp regex = RegExp(r'^[가-힣a-zA-Z0-9]{2,15}$');
     return regex.hasMatch(input);
   }
 
