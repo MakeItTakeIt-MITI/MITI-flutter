@@ -34,10 +34,10 @@ class CustomDialog extends StatelessWidget {
           width: 333.w,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20.r),
-            color: MITIColor.gray700,
+            color: MITIColor.gray800,
           ),
           padding:
-              EdgeInsets.only(left: 20.w, right: 20.w, top: 30.h, bottom: 20.h),
+              EdgeInsets.only(left: 20.w, right: 20.w, top: 28.h, bottom: 20.h),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -75,8 +75,9 @@ class CustomDialog extends StatelessWidget {
                       ),
                     ),
                   ),
-                ),
-              if (button != null) button!
+                )
+              else
+                button!
             ],
           ),
         ),

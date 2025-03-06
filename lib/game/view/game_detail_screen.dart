@@ -385,34 +385,56 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
     );
     final reportButton = TextButton(
         onPressed: () {
-          showModalBottomSheet(
-              context: context,
-              builder: (_) {
-                return BottomDialog(
-                  title: '경기 신고하기',
-                  content: '‘${model.title}’ 경기를 신고하시겠습니까?',
-                  btn: TextButton(
-                    style:
-                        TextButton.styleFrom(backgroundColor: MITIColor.error),
-                    onPressed: () {
-                      Map<String, String> pathParameters = {
-                        'gameId': model.id.toString()
-                      };
-                      context.pop();
-                      context.pushNamed(
-                        ReportListScreen.routeName,
-                        pathParameters: pathParameters,
-                        extra: ReportCategoryType.host_report,
-                      );
-                    },
-                    child: Text(
-                      "신고하기",
-                      style: MITITextStyle.mdBold
-                          .copyWith(color: MITIColor.gray100),
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return CustomDialog(
+                title: '경기 신고하기',
+                content: '‘${model.title}’ 경기를 신고하시겠습니까?',
+                button: Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                            backgroundColor: MITIColor.gray700),
+                        onPressed: () => context.pop(),
+                        child: Text(
+                          '취소하기',
+                          style: MITITextStyle.mdSemiBold.copyWith(
+                            color: MITIColor.gray200,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                );
-              });
+                    SizedBox(width: 12.w),
+                    Expanded(
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                            backgroundColor: MITIColor.error),
+                        onPressed: () {
+                          Map<String, String> pathParameters = {
+                            'gameId': model.id.toString()
+                          };
+                          context.pop();
+                          context.pushNamed(
+                            ReportListScreen.routeName,
+                            pathParameters: pathParameters,
+                            extra: ReportCategoryType.host_report,
+                          );
+                        },
+                        child: Text(
+                          '신고하기',
+                          style: MITITextStyle.mdSemiBold.copyWith(
+                            color: MITIColor.gray200,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
         },
         style: TextButton.styleFrom(
           fixedSize: Size(98.w, 48.h),
@@ -606,11 +628,13 @@ class UserShortInfoComponent extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  if(profileImageUrl != null)
+                  if (profileImageUrl != null)
                     CircleAvatar(
                       radius: 18.r,
-                      backgroundImage: NetworkImage(profileImageUrl, scale: 36.r),
-                    )else
+                      backgroundImage:
+                          NetworkImage(profileImageUrl, scale: 36.r),
+                    )
+                  else
                     SvgPicture.asset(
                       AssetUtil.getAssetPath(
                           type: AssetType.icon, name: 'user_thum'),
@@ -792,14 +816,14 @@ class _GuestTile extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if(profileImageUrl != null)
+        if (profileImageUrl != null)
           CircleAvatar(
             radius: 18.r,
             backgroundImage: NetworkImage(profileImageUrl, scale: 36.r),
-          )else
+          )
+        else
           SvgPicture.asset(
-            AssetUtil.getAssetPath(
-                type: AssetType.icon, name: 'user_thum'),
+            AssetUtil.getAssetPath(type: AssetType.icon, name: 'user_thum'),
             width: 36.r,
             height: 36.r,
           ),
