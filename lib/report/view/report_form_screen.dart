@@ -33,6 +33,7 @@ class ReportFormScreen extends ConsumerStatefulWidget {
   final int gameId;
   final int reportId;
   final int? participationId;
+
   // final HostReportCategoryType type;
 
   static String get routeName => 'reportForm';
@@ -126,9 +127,11 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
             final result =
                 ref.watch(reportDetailProvider(reportId: widget.reportId));
             if (result is LoadingModel) {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             } else if (result is ErrorModel) {
-              return Text('error');
+              ReportError.fromModel(model: result)
+                  .responseError(context, ReportApiType.get, ref);
+              return const Text('error');
             }
             final model =
                 (result as ResponseModel<BaseReportReasonResponse>).data!;
@@ -184,8 +187,13 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
         .future);
     if (context.mounted) {
       if (result is ErrorModel) {
-        ReportError.fromModel(model: result)
-            .responseError(context, ReportApiType.report, ref);
+        if (widget.participationId != null) {
+          ReportError.fromModel(model: result)
+              .responseError(context, ReportApiType.guestReport, ref);
+        } else {
+          ReportError.fromModel(model: result)
+              .responseError(context, ReportApiType.hostReport, ref);
+        }
       } else {
         final model = (ref.read(gameDetailProvider(gameId: widget.gameId))
                 as ResponseModel<GameDetailResponse>)

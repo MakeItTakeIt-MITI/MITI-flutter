@@ -15,6 +15,7 @@ import '../../common/model/entity_enum.dart';
 import '../../game/model/v2/report/base_report_reason_response.dart';
 import '../../game/model/v2/report/base_report_type_response.dart';
 import '../../util/util.dart';
+import '../error/report_error.dart';
 
 class ReportListScreen extends StatelessWidget {
   final int gameId;
@@ -44,6 +45,8 @@ class ReportListScreen extends StatelessWidget {
           if (result is LoadingModel) {
             return const CircularProgressIndicator();
           } else if (result is ErrorModel) {
+            ReportError.fromModel(model: result)
+                .responseError(context, ReportApiType.reports, ref);
             return const Text('error');
           }
           final List<BaseReportReasonResponse> modelList =

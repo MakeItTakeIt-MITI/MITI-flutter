@@ -98,10 +98,14 @@ class GameError extends ErrorBase {
   void _get(BuildContext context, WidgetRef ref) {
     if (this.status_code == NotFound && this.error_code == 940) {
       /// 해당 경기 정보 조회 실패
-      context.pushReplacementNamed(ErrorScreen.routeName);
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.pushReplacementNamed(ErrorScreen.routeName);
+      });
     } else {
       /// 서버 오류
-      context.pushReplacementNamed(ErrorScreen.routeName);
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.pushReplacementNamed(ErrorScreen.routeName);
+      });
     }
   }
 
@@ -398,25 +402,39 @@ class GameError extends ErrorBase {
       });
     } else if (this.status_code == Forbidden && this.error_code == 940) {
       /// 요청자 참여자 불일치
-      context.pushReplacementNamed(ErrorScreen.routeName);
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.pushReplacementNamed(ErrorScreen.routeName);
+      });
     } else if (this.status_code == Forbidden && this.error_code == 941) {
       /// 참여 미확정 참여
-      context.pushReplacementNamed(ErrorScreen.routeName);
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.pushReplacementNamed(ErrorScreen.routeName);
+      });
     } else if (this.status_code == Forbidden && this.error_code == 942) {
       /// 경기 참여 취소 시간 제한 초과
-      context.pushReplacementNamed(ErrorScreen.routeName);
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.pushReplacementNamed(ErrorScreen.routeName);
+      });
     } else if (this.status_code == Forbidden && this.error_code == 943) {
       /// 참여 취소 불가 경기
-      context.pushReplacementNamed(ErrorScreen.routeName);
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.pushReplacementNamed(ErrorScreen.routeName);
+      });
     } else if (this.status_code == Forbidden && this.error_code == 944) {
       /// 미완료 결제 상태
-      context.pushReplacementNamed(ErrorScreen.routeName);
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.pushReplacementNamed(ErrorScreen.routeName);
+      });
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 참여 정보 조회 실패
-      context.pushReplacementNamed(ErrorScreen.routeName);
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.pushReplacementNamed(ErrorScreen.routeName);
+      });
     } else {
       /// 서버 오류
-      context.pushReplacementNamed(ErrorScreen.routeName);
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.pushReplacementNamed(ErrorScreen.routeName);
+      });
     }
   }
 
@@ -456,10 +474,14 @@ class GameError extends ErrorBase {
       });
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 평점 정보 조회 실패
-      context.pushReplacementNamed(ErrorScreen.routeName);
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.pushReplacementNamed(ErrorScreen.routeName);
+      });
     } else {
       /// 서버 오류
-      context.pushReplacementNamed(ErrorScreen.routeName);
+      WidgetsBinding.instance.addPostFrameCallback((s) {
+        context.pushReplacementNamed(ErrorScreen.routeName);
+      });
     }
   }
 
