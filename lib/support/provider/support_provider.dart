@@ -13,6 +13,7 @@ import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
 import '../../common/provider/pagination_provider.dart';
+import '../../game/model/v2/support/base_user_question_response.dart';
 import '../model/support_model.dart';
 import '../param/support_param.dart';
 import '../repository/support_repository.dart';
@@ -36,7 +37,7 @@ final supportPageProvider = StateNotifierProvider.family.autoDispose<
 });
 
 class SupportPageStateNotifier
-    extends PaginationProvider<SupportModel, SupportParam, SupportPRepository> {
+    extends PaginationProvider<BaseUserQuestionResponse, SupportParam, SupportPRepository> {
   SupportPageStateNotifier({
     required super.repository,
     required super.pageParams,

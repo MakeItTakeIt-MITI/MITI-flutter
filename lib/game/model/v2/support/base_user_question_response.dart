@@ -12,10 +12,10 @@ class BaseUserQuestionResponse extends IModelWithId {
   final int numOfAnswers;
 
   @JsonKey(name: 'created_at')
-  final String createdAt;
+  final DateTime createdAt;
 
   @JsonKey(name: 'modified_at')
-  final String? modifiedAt;
+  final DateTime? modifiedAt;
 
   BaseUserQuestionResponse({
     required super.id,
@@ -34,8 +34,8 @@ class BaseUserQuestionResponse extends IModelWithId {
     int? id,
     String? title,
     int? numOfAnswers,
-    String? createdAt,
-    String? modifiedAt,
+    DateTime? createdAt,
+    DateTime? modifiedAt,
   }) {
     return BaseUserQuestionResponse(
       id: id ?? this.id,

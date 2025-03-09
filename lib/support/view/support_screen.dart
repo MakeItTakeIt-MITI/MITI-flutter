@@ -18,6 +18,7 @@ import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
 import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
+import '../../game/model/v2/support/base_user_question_response.dart';
 import '../component/qna_label.dart';
 import '../component/skeleton/support_skeleton.dart';
 import '../model/support_model.dart';
@@ -97,13 +98,15 @@ class _SupportScreenState extends State<SupportScreen> {
                     ),
                   ),
                   Consumer(
-                    builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                    builder:
+                        (BuildContext context, WidgetRef ref, Widget? child) {
                       final userId = ref.watch(authProvider)!.id!;
-                      return  DisposeSliverPaginationListView(
-                        provider: supportPageProvider(PaginationStateParam(path:userId )),
+                      return DisposeSliverPaginationListView(
+                        provider: supportPageProvider(
+                            PaginationStateParam(path: userId)),
                         itemBuilder:
                             (BuildContext context, int index, Base pModel) {
-                          final model = pModel as SupportModel;
+                          final model = pModel as BaseUserQuestionResponse;
 
                           return _SupportCard.fromModel(
                             model: model,
@@ -151,7 +154,7 @@ class _SupportCard extends StatelessWidget {
   final String title;
   final int num_of_answers;
   final String created_at;
-  final DateTime modified_at;
+  // final String modified_at;
 
   const _SupportCard({
     super.key,
@@ -159,18 +162,20 @@ class _SupportCard extends StatelessWidget {
     required this.title,
     required this.num_of_answers,
     required this.created_at,
-    required this.modified_at,
+    // required this.modified_at,
   });
 
-  factory _SupportCard.fromModel({required SupportModel model}) {
+  factory _SupportCard.fromModel({required BaseUserQuestionResponse model}) {
     DateFormat dateFormat = DateFormat('yyyy년 MM월 dd일', 'ko');
-    final datetime = dateFormat.format(model.created_at);
+    final datetime = dateFormat.format(model.createdAt);
+    // final modified_at =
+    //     model.modifiedAt != null ? dateFormat.format(model.modifiedAt!) : null;
     return _SupportCard(
       id: model.id,
       title: model.title,
-      num_of_answers: model.num_of_answers,
+      num_of_answers: model.numOfAnswers,
       created_at: datetime,
-      modified_at: model.modified_at,
+      // modified_at: modified_at,
     );
   }
 

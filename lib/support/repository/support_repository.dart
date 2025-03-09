@@ -9,6 +9,7 @@ import '../../common/param/pagination_param.dart';
 import '../../common/repository/base_pagination_repository.dart';
 import '../../dio/dio_interceptor.dart';
 import '../../dio/provider/dio_provider.dart';
+import '../../game/model/v2/support/base_user_question_response.dart';
 import '../../user/model/user_model.dart';
 import '../../user/param/user_profile_param.dart';
 import '../param/support_param.dart';
@@ -24,14 +25,14 @@ final supportPRepositoryProvider = Provider<SupportPRepository>((ref) {
 
 @RestApi()
 abstract class SupportPRepository
-    extends IBasePaginationRepository<SupportModel, SupportParam> {
+    extends IBasePaginationRepository<BaseUserQuestionResponse, SupportParam> {
   factory SupportPRepository(Dio dio, {String baseUrl}) = _SupportPRepository;
 
   /// 나의 문의 내역 조회 API
   @override
   @Headers({'token': 'true'})
   @GET('/users/{userId}/qna')
-  Future<ResponseModel<PaginationModel<SupportModel>>> paginate({
+  Future<ResponseModel<PaginationModel<BaseUserQuestionResponse>>> paginate({
     @Queries() required PaginationParam paginationParams,
     @Queries() SupportParam? param,
     @Path('userId') int? path,
@@ -40,7 +41,7 @@ abstract class SupportPRepository
   /// 문의 작성 API
   @Headers({'token': 'true'})
   @POST('/users/{userId}/qna')
-  Future<ResponseModel<QuestionModel>> createSupport({
+  Future<ResponseModel<BaseUserQuestionResponse>> createSupport({
     @Body() required SupportParam param,
     @Path() required int userId,
   });
