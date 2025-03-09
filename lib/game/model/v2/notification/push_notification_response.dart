@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:miti/common/model/entity_enum.dart';
+import 'package:miti/notification/model/push_model.dart';
 import '../../../../common/model/model_id.dart';
 
 part 'push_notification_response.g.dart';
@@ -22,7 +23,7 @@ class PushNotificationResponse extends IModelWithId {
   final String content;
 
   @JsonKey(name: 'data')
-  final Map<String, dynamic> data;
+  final PushDataModel data;
 
   @JsonKey(name: 'is_read')
   final bool isRead;
@@ -37,10 +38,10 @@ class PushNotificationResponse extends IModelWithId {
   final String modifiedAt;
 
   @JsonKey(name: 'expire_at')
-  final String expireAt;
+  final String? expireAt;
 
   PushNotificationResponse({
-    required int id,
+    required super.id,
     required this.topic,
     required this.status,
     required this.title,
@@ -52,7 +53,7 @@ class PushNotificationResponse extends IModelWithId {
     required this.createdAt,
     required this.modifiedAt,
     required this.expireAt,
-  }) : super(id: id);
+  });
 
   factory PushNotificationResponse.fromJson(Map<String, dynamic> json) =>
       _$PushNotificationResponseFromJson(json);
@@ -66,7 +67,7 @@ class PushNotificationResponse extends IModelWithId {
     String? title,
     String? body,
     String? content,
-    Map<String, dynamic>? data,
+    PushDataModel? data,
     bool? isRead,
     bool? isSent,
     String? createdAt,

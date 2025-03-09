@@ -2,6 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 import '../../../../common/model/entity_enum.dart';
 import '../../../../common/model/model_id.dart';
+import '../../../../notification/model/push_model.dart';
 
 part 'base_push_notification_response.g.dart';
 
@@ -20,7 +21,7 @@ class BasePushNotificationResponse extends IModelWithId {
   final String body;
 
   @JsonKey(name: 'data')
-  final Map<String, dynamic> data;
+  final PushDataModel data;
 
   @JsonKey(name: 'created_at')
   final String createdAt;
@@ -46,7 +47,7 @@ class BasePushNotificationResponse extends IModelWithId {
     bool? isRead,
     String? title,
     String? body,
-    Map<String, dynamic>? data,
+    PushDataModel? data,
     String? createdAt,
   }) {
     return BasePushNotificationResponse(

@@ -310,32 +310,35 @@ class _MenuItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Text(
-                title,
-                style: MITITextStyle.mdLight.copyWith(
-                  color: MITIColor.gray100,
+      child: Container(
+        color: MITIColor.gray800,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Text(
+                  title,
+                  style: MITITextStyle.mdLight.copyWith(
+                    color: MITIColor.gray100,
+                  ),
                 ),
+                SizedBox(width: 12.w),
+                if (option != null) option!,
+              ],
+            ),
+            SvgPicture.asset(
+              AssetUtil.getAssetPath(
+                type: AssetType.icon,
+                name: 'chevron_right',
               ),
-              SizedBox(width: 12.w),
-              if (option != null) option!,
-            ],
-          ),
-          SvgPicture.asset(
-            AssetUtil.getAssetPath(
-              type: AssetType.icon,
-              name: 'chevron_right',
+              colorFilter: const ColorFilter.mode(
+                MITIColor.gray400,
+                BlendMode.srcIn,
+              ),
             ),
-            colorFilter: const ColorFilter.mode(
-              MITIColor.gray400,
-              BlendMode.srcIn,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

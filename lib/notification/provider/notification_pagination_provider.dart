@@ -69,7 +69,7 @@ class PushPageStateNotifier
 
   /// optimistic response
   void read({required int pushId, required WidgetRef ref}) {
-    final model = (state as ResponseModel<PaginationModel<PushModel>>);
+    final model = (state as ResponseModel<PaginationModel<BasePushNotificationResponse>>);
     final pState = model.data!;
     bool hasUnConfirmed = false;
     final newPageContent = pState.page_content.map((e) {

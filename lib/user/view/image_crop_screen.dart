@@ -4,10 +4,11 @@ import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ImageCropScreen extends StatefulWidget {
+class ImageCropScreen extends ConsumerStatefulWidget {
   final XFile? pickedFile;
 
   static String get routeName => 'imageCrop';
@@ -18,10 +19,10 @@ class ImageCropScreen extends StatefulWidget {
   });
 
   @override
-  _ImageCropScreenState createState() => _ImageCropScreenState();
+  ConsumerState createState() => _ImageCropScreenState();
 }
 
-class _ImageCropScreenState extends State<ImageCropScreen> {
+class _ImageCropScreenState extends ConsumerState<ImageCropScreen> {
   CroppedFile? _croppedFile;
   File? _image;
   String _imageInfo = '';

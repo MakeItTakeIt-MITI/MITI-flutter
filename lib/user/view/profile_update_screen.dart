@@ -145,6 +145,10 @@ class _NicknameUpdateScreenState extends ConsumerState<ProfileUpdateScreen> {
                                                   UserApiType.resetProfileImage,
                                                   ref);
                                         } else {
+                                          ref
+                                              .read(
+                                                  userProfileProvider.notifier)
+                                              .getInfo();
                                           Future.delayed(
                                               const Duration(milliseconds: 100),
                                               () {

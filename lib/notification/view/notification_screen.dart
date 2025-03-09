@@ -10,6 +10,7 @@ import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/component/dispose_sliver_pagination_list_view.dart';
 import 'package:miti/common/component/sliver_delegate.dart';
 import 'package:miti/common/param/pagination_param.dart';
+import 'package:miti/game/model/v2/notification/notification_response.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/notification/param/notification_param.dart';
 import 'package:miti/notification/provider/notification_pagination_provider.dart';
@@ -333,7 +334,7 @@ class PushCard extends ConsumerStatefulWidget {
   final PushNotificationTopicType topic;
   final String title;
   final String body;
-  final Map<String, dynamic> data;
+  final BaseNotificationModel data;
   final bool isRead;
   final String createdAt;
 
@@ -399,30 +400,41 @@ class _PushCardState extends ConsumerState<PushCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // if (widget.data.gameId != null) {
-        //   final userId = ref.read(authProvider)!.id!;
-        //   Map<String, String> pathParameters = {
-        //     'gameId': widget.data.gameId.toString()
-        //   };
-        //   ref
-        //       .read(pushProvider(pushId: widget.id).notifier)
-        //       .get(pushId: widget.id);
-        //   ref
-        //       .read(pushPProvider(PaginationStateParam(path: userId)).notifier)
-        //       .read(pushId: widget.id, ref: ref);
-        //
-        //   context.pushNamed(
-        //     GameDetailScreen.routeName,
-        //     pathParameters: pathParameters,
-        //   );
-        // } else {
-        //   Map<String, String> pathParameters = {'id': widget.id.toString()};
-        //   context.pushNamed(
-        //     NoticeDetailScreen.routeName,
-        //     pathParameters: pathParameters,
-        //     extra: NoticeScreenType.push,
-        //   );
-        // }
+        if (widget.data is PushDataModel) {
+          final data = widget.data as PushDataModel;
+          if (data.gameId != null) {
+            final userId = ref.read(authProvider)!.id!;
+            Map<String, String> pathParameters = {
+              'gameId': data.gameId.toString()
+            };
+            ref
+                .read(pushProvider(pushId: widget.id).notifier)
+                .get(pushId: widget.id);
+            ref
+                .read(
+                    pushPProvider(PaginationStateParam(path: userId)).notifier)
+                .read(pushId: widget.id, ref: ref);
+
+            context.pushNamed(
+              GameDetailScreen.routeName,
+              pathParameters: pathParameters,
+            );
+          } else {
+            Map<String, String> pathParameters = {'id': data.pushId.toString()};
+            context.pushNamed(
+              NoticeDetailScreen.routeName,
+              pathParameters: pathParameters,
+              extra: NoticeScreenType.push,
+            );
+          }
+        } else {
+          Map<String, String> pathParameters = {'id': widget.id.toString()};
+          context.pushNamed(
+            NoticeDetailScreen.routeName,
+            pathParameters: pathParameters,
+            extra: NoticeScreenType.push,
+          );
+        }
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
@@ -496,7 +508,8 @@ class NotificationCard extends StatelessWidget {
     required this.date,
   });
 
-  factory NotificationCard.fromModel({required BaseNotificationResponse model}) {
+  factory NotificationCard.fromModel(
+      {required BaseNotificationResponse model}) {
     final date = DateTime.parse(model.createdAt);
 
     return NotificationCard(

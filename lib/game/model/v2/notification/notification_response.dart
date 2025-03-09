@@ -3,13 +3,31 @@ import 'base_notification_response.dart';
 
 part 'notification_response.g.dart';
 
+abstract class BaseNotificationModel{
+
+}
+
+
+@JsonSerializable(includeIfNull: true)
+class NotificationDataModel extends BaseNotificationModel {
+  @JsonKey(name: "notification_id")
+  final String? notificationId;
+
+  NotificationDataModel({
+     this.notificationId,
+  });
+
+  factory NotificationDataModel.fromJson(Map<String, dynamic> json) =>
+      _$NotificationDataModelFromJson(json);
+}
+
 @JsonSerializable()
 class NotificationResponse extends BaseNotificationResponse {
   @JsonKey(name: 'content')
   final String content;
 
   @JsonKey(name: 'data')
-  final Map<String, dynamic> data;
+  final NotificationDataModel data;
 
   NotificationResponse({
     required super.id,
@@ -31,7 +49,7 @@ class NotificationResponse extends BaseNotificationResponse {
     int? id,
     String? title,
     String? content,
-    Map<String, dynamic>? data,
+    NotificationDataModel? data,
     String? createdAt,
     String? modifiedAt,
   }) {

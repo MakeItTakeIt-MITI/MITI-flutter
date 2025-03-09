@@ -2,10 +2,12 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/common/model/model_id.dart';
 
+import '../../game/model/v2/notification/notification_response.dart';
+
 part 'push_model.g.dart';
 
 @JsonSerializable()
-class PushDataModel {
+class PushDataModel extends BaseNotificationModel{
   @JsonKey(name: "game_id")
   final String? gameId;
   @JsonKey(name: "push_notification_id")
