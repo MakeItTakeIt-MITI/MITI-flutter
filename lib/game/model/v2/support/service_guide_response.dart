@@ -20,10 +20,10 @@ class ServiceGuideResponse extends IModelWithId{
   final List<String> image;
 
   @JsonKey(name: 'created_at')
-  final String createdAt;
+  final DateTime createdAt;
 
   @JsonKey(name: 'modified_at')
-  final String? modifiedAt;
+  final DateTime? modifiedAt;
 
   ServiceGuideResponse({
     required super.id,
@@ -46,8 +46,8 @@ class ServiceGuideResponse extends IModelWithId{
     String? title,
     String? content,
     List<String>? image,
-    String? createdAt,
-    String? modifiedAt,
+    DateTime? createdAt,
+    DateTime? modifiedAt,
   }) {
     return ServiceGuideResponse(
       id: id ?? this.id,

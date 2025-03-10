@@ -10,10 +10,10 @@ class BaseUserQuestionAnswerResponse extends IModelWithId{
   final String content;
 
   @JsonKey(name: 'created_at')
-  final String createdAt;
+  final DateTime createdAt;
 
   @JsonKey(name: 'modified_at')
-  final String? modifiedAt;
+  final DateTime? modifiedAt;
 
   BaseUserQuestionAnswerResponse({
     required super.id,
@@ -30,8 +30,8 @@ class BaseUserQuestionAnswerResponse extends IModelWithId{
   BaseUserQuestionAnswerResponse copyWith({
     int? id,
     String? content,
-    String? createdAt,
-    String? modifiedAt,
+    DateTime? createdAt,
+    DateTime? modifiedAt,
   }) {
     return BaseUserQuestionAnswerResponse(
       id: id ?? this.id,

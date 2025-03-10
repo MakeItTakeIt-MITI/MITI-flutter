@@ -10,6 +10,9 @@ import '../../common/repository/base_pagination_repository.dart';
 import '../../dio/dio_interceptor.dart';
 import '../../dio/provider/dio_provider.dart';
 import '../../game/model/v2/support/base_user_question_response.dart';
+import '../../game/model/v2/support/frequently_asked_question_response.dart';
+import '../../game/model/v2/support/service_guide_response.dart';
+import '../../game/model/v2/support/user_question_response.dart';
 import '../../user/model/user_model.dart';
 import '../../user/param/user_profile_param.dart';
 import '../param/support_param.dart';
@@ -49,20 +52,20 @@ abstract class SupportPRepository
   /// 나의 문의 내역 상세 조회 API
   @Headers({'token': 'true'})
   @GET('/users/{userId}/qna/{questionId}')
-  Future<ResponseModel<QuestionModel>> getQuestion({
+  Future<ResponseModel<UserQuestionResponse>> getQuestion({
     @Path() required int questionId,
     @Path() required int userId,
   });
 
   /// FAQ 목록 조회 API
   @GET('/support/faq')
-  Future<ResponseListModel<FAQModel>> getFAQ({
+  Future<ResponseListModel<FrequentlyAskedQuestionResponse>> getFAQ({
     @Query('search') String? search,
   });
 
   /// 서비스 이용 안내 조회 API
   @GET('/support/guide')
-  Future<ResponseListModel<GuideModel>> getGuide(
+  Future<ResponseListModel<ServiceGuideResponse>> getGuide(
       {@Query('category') String? category});
 }
 //

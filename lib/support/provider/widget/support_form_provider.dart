@@ -31,6 +31,6 @@ class FAQSearchForm extends _$FAQSearchForm {
   }
 }
 
-final faqCategoryProvider = StateProvider.autoDispose<FAQType>((ref) {
-  return FAQType.all;
+final faqCategoryProvider = StateProvider.autoDispose<FaqCategoryType>((ref) {
+  return FaqCategoryType.all;
 });

@@ -673,8 +673,16 @@ enum AdvertisementStatusType {
 
   final String displayName;
 }
-
+/*
+  all('전체'),
+  game('경기'),
+  settlement('정산'),
+  review('리뷰'),
+  report('신고'),
+  etc('기타');
+ */
 enum FaqCategoryType {
+  all('전체'),
   game('경기'),
   participation('참가'),
   settlement('정산'),

@@ -15,6 +15,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:collection/collection.dart';
 import 'package:miti/util/util.dart';
+import '../../game/model/v2/support/service_guide_response.dart';
 import '../component/skeleton/guide_skeleton.dart';
 import '../model/support_model.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -34,7 +35,7 @@ final serviceFilterKeyProvider =
 });
 
 class _GuideScreenState extends ConsumerState<GuideScreen> {
-  UserGuideType category = UserGuideType.game;
+  UserGuideCategoryType category = UserGuideCategoryType.game;
   int currentIdx = 0;
   late CarouselSliderController carouselController;
 
@@ -65,7 +66,7 @@ class _GuideScreenState extends ConsumerState<GuideScreen> {
           } else if (result is ErrorModel) {
             return Text("error");
           }
-          final model = (result as ResponseListModel<GuideModel>).data!;
+          final model = (result as ResponseListModel<ServiceGuideResponse>).data!;
           final List<String> images =
               model.firstWhereOrNull((m) => m.category == category)?.image ??
                   [];

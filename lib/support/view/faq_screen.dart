@@ -17,6 +17,7 @@ import 'package:miti/util/util.dart';
 import 'package:expandable/expandable.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../common/component/default_appbar.dart';
+import '../../game/model/v2/support/frequently_asked_question_response.dart';
 import '../../theme/text_theme.dart';
 import '../component/skeleton/faq_skeleton.dart';
 
@@ -32,7 +33,7 @@ class FAQScreen extends StatefulWidget {
 }
 
 class _FAQScreenState extends State<FAQScreen> {
-  List<FAQType> faqCategories = FAQType.values;
+  List<FaqCategoryType> faqCategories = FaqCategoryType.values;
 
   late final ScrollController _scrollController;
 
@@ -115,9 +116,11 @@ class _FAQScreenState extends State<FAQScreen> {
                   } else if (result is ErrorModel) {
                     return Text('error');
                   }
-                  final modelList =
-                      (result as ResponseListModel<FAQModel>).data!.where((f) {
-                    if (selectCategory == FAQType.all) {
+                  final modelList = (result
+                          as ResponseListModel<FrequentlyAskedQuestionResponse>)
+                      .data!
+                      .where((f) {
+                    if (selectCategory == FaqCategoryType.all) {
                       return true;
                     } else if (f.category == selectCategory) {
                       return true;
@@ -128,7 +131,7 @@ class _FAQScreenState extends State<FAQScreen> {
                   final form = ref.watch(fAQSearchFormProvider);
 
                   /// 검색 결과가 없을 때
-                  if (modelList.isEmpty) {
+                  if (modelList.isEmpty && form.search.isNotEmpty) {
                     return Expanded(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -153,7 +156,6 @@ class _FAQScreenState extends State<FAQScreen> {
                     return Expanded(
                       child: SingleChildScrollView(
                         child: ListView.separated(
-
                           physics: const NeverScrollableScrollPhysics(),
                           itemBuilder: (_, idx) {
                             return _FAQComponent.fromModel(
@@ -207,7 +209,7 @@ class _FAQScreenState extends State<FAQScreen> {
                         Expanded(
                           child: SingleChildScrollView(
                             keyboardDismissBehavior:
-                            ScrollViewKeyboardDismissBehavior.onDrag,
+                                ScrollViewKeyboardDismissBehavior.onDrag,
                             child: ListView.separated(
                               physics: const NeverScrollableScrollPhysics(),
                               itemBuilder: (_, idx) {
@@ -237,11 +239,11 @@ class _FAQScreenState extends State<FAQScreen> {
 
 class _FAQComponent extends ConsumerWidget {
   final int id;
-  final FAQType category;
+  final FaqCategoryType category;
   final String title;
   final String content;
   final DateTime created_at;
-  final DateTime modified_at;
+  final DateTime? modified_at;
 
   const _FAQComponent(
       {super.key,
@@ -252,12 +254,13 @@ class _FAQComponent extends ConsumerWidget {
       required this.modified_at,
       required this.id});
 
-  factory _FAQComponent.fromModel({required FAQModel model}) {
+  factory _FAQComponent.fromModel(
+      {required FrequentlyAskedQuestionResponse model}) {
     return _FAQComponent(
       title: model.title,
       content: model.content,
-      created_at: model.created_at,
-      modified_at: model.modified_at,
+      created_at: model.createdAt,
+      modified_at: model.modifiedAt,
       id: model.id,
       category: model.category,
     );

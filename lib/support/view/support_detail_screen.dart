@@ -11,6 +11,8 @@ import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
+import '../../game/model/v2/support/base_user_question_answer_response.dart';
+import '../../game/model/v2/support/user_question_response.dart';
 import '../component/skeleton/support_detail_skeleton.dart';
 import '../model/support_model.dart';
 
@@ -72,14 +74,15 @@ class _SupportDetailScreenState extends State<SupportDetailScreen> {
                     });
                     return Text('에러');
                   }
-                  final model = (result as ResponseModel<QuestionModel>).data!;
+                  final model =
+                      (result as ResponseModel<UserQuestionResponse>).data!;
                   return Padding(
                     padding:
                         EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        QnaLabel(num_of_answers: model.num_of_answers),
+                        QnaLabel(num_of_answers: model.numOfAnswers),
                         SizedBox(height: 20.h),
                         _QuestionComponent.fromModel(model: model),
                         _AnswerComponent(
@@ -103,7 +106,7 @@ class _QuestionComponent extends StatelessWidget {
   final String content;
   final int num_of_answers;
   final String created_at;
-  final DateTime modified_at;
+  final DateTime? modified_at;
 
   const _QuestionComponent(
       {super.key,
@@ -113,13 +116,13 @@ class _QuestionComponent extends StatelessWidget {
       required this.modified_at,
       required this.content});
 
-  factory _QuestionComponent.fromModel({required QuestionModel model}) {
-    final created_at = DateFormat('yyyy년 MM월 dd일').format(model.created_at);
+  factory _QuestionComponent.fromModel({required UserQuestionResponse model}) {
+    final created_at = DateFormat('yyyy년 MM월 dd일').format(model.createdAt);
     return _QuestionComponent(
       title: model.title,
-      num_of_answers: model.num_of_answers,
+      num_of_answers: model.numOfAnswers,
       created_at: created_at,
-      modified_at: model.modified_at,
+      modified_at: model.modifiedAt,
       content: model.content,
     );
   }
@@ -155,7 +158,7 @@ class _QuestionComponent extends StatelessWidget {
 }
 
 class _AnswerComponent extends StatelessWidget {
-  final List<AnswerModel> answers;
+  final List<BaseUserQuestionAnswerResponse> answers;
 
   const _AnswerComponent({super.key, required this.answers});
 
@@ -188,7 +191,7 @@ class _AnswerComponent extends StatelessWidget {
 class _AnswerCard extends StatelessWidget {
   final String content;
   final String created_at;
-  final DateTime modified_at;
+  final DateTime? modified_at;
 
   const _AnswerCard({
     super.key,
@@ -197,12 +200,13 @@ class _AnswerCard extends StatelessWidget {
     required this.modified_at,
   });
 
-  factory _AnswerCard.fromModel({required AnswerModel model}) {
-    final created_at = DateFormat('yyyy년 MM월 dd일').format(model.created_at);
+  factory _AnswerCard.fromModel(
+      {required BaseUserQuestionAnswerResponse model}) {
+    final created_at = DateFormat('yyyy년 MM월 dd일').format(model.createdAt);
     return _AnswerCard(
       content: model.content,
       created_at: created_at,
-      modified_at: model.modified_at,
+      modified_at: model.modifiedAt,
     );
   }
 
