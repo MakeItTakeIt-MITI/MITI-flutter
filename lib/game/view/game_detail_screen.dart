@@ -631,6 +631,7 @@ class UserShortInfoComponent extends StatelessWidget {
                   if (profileImageUrl != null)
                     CircleAvatar(
                       radius: 18.r,
+                      backgroundColor: Colors.transparent,
                       backgroundImage:
                           NetworkImage(profileImageUrl, scale: 36.r),
                     )
@@ -818,6 +819,7 @@ class _GuestTile extends StatelessWidget {
       children: [
         if (profileImageUrl != null)
           CircleAvatar(
+            backgroundColor: Colors.transparent,
             radius: 18.r,
             backgroundImage: NetworkImage(profileImageUrl, scale: 36.r),
           )

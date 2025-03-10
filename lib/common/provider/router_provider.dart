@@ -795,9 +795,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                           parentNavigatorKey: rootNavKey,
                           name: ImageCropScreen.routeName,
                           builder: (context, state) {
-                            final pickedFile = state.extra as XFile;
+                            final profileImageUpdateUrl = state
+                                .uri.queryParameters['profileImageUpdateUrl']!;
+                            final pickedFilePath =
+                                state.uri.queryParameters['pickedFilePath']!;
                             return ImageCropScreen(
-                              pickedFile: pickedFile,
+                              pickedFilePath: pickedFilePath,
+                              profileImageUpdateUrl: profileImageUpdateUrl,
                             );
                           },
                         )

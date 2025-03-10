@@ -1,21 +1,40 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image/image.dart' as img;
+import 'package:miti/auth/view/find_info/find_email_screen.dart';
+import 'package:miti/common/component/default_appbar.dart';
+import 'package:miti/common/component/default_layout.dart';
+import 'package:miti/theme/color_theme.dart';
+import 'package:miti/theme/text_theme.dart';
+import 'package:miti/util/FileSizeUtil.dart';
+
+import '../../common/component/defalut_flashbar.dart';
+import '../../dio/provider/dio_provider.dart';
+import '../provider/user_provider.dart'; // image 패키지 추가 필요
+
+final imageValidProvider = StateProvider.autoDispose<bool>((s) => false);
 
 class ImageCropScreen extends ConsumerStatefulWidget {
-  final XFile? pickedFile;
+  final String pickedFilePath;
+  final String profileImageUpdateUrl;
 
   static String get routeName => 'imageCrop';
 
   const ImageCropScreen({
     super.key,
-    required this.pickedFile,
+    required this.pickedFilePath,
+    required this.profileImageUpdateUrl,
   });
 
   @override
@@ -24,56 +43,53 @@ class ImageCropScreen extends ConsumerStatefulWidget {
 
 class _ImageCropScreenState extends ConsumerState<ImageCropScreen> {
   CroppedFile? _croppedFile;
-  File? _image;
-  String _imageInfo = '';
 
-  // final dio = ref.read(dioProvider);
-  //
-  // // if (image != null) {
-  // //   final imageFile = File(image.path);
-  // //   final imageBytes =
-  // //       imageFile.readAsBytes();
-  // //
-  // //   final options = Options(
-  // //     contentType: 'image/png',
-  // //   );
-  // //
-  // //   log("model url = ${model.profileImageUpdateUrl}");
-  // //
-  // //   final response = await dio.put(
-  // //       model.profileImageUpdateUrl,
-  // //       options: options,
-  // //       data: imageBytes);
-  // //
-  // //   log("response statusCode = ${response.statusCode}");
-  // //   log("response data =  ${response.data}");
-  // //   if (response.statusCode == 200) {
-  // //     context.pop();
-  // //     ref
-  // //         .read(userProfileProvider
-  // //             .notifier)
-  // //         .getInfo();
-  // //     Future.delayed(
-  // //         const Duration(
-  // //             milliseconds: 100), () {
-  // //       FlashUtil.showFlash(context,
-  // //           '프로필 이미지가 변경 되었습니다.');
-  // //     });
-  // //   }
-  // // }
   @override
   void initState() {
     super.initState();
-    _getImageSizeSimple();
-    WidgetsBinding.instance.addPostFrameCallback((s) {
-      _cropImage();
+    WidgetsBinding.instance.addPostFrameCallback((s) async {
+      late File file;
+      if (_croppedFile != null) {
+        file = File(_croppedFile!.path);
+      } else {
+        file = File(widget.pickedFilePath);
+      }
+      final valid = !await FileSizeUtil.isLargerThan(file, 20);
+      ref.read(imageValidProvider.notifier).update((s) => valid);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const DefaultAppBar(
+        title: "프로필 이미지",
+        hasBorder: false,
+      ),
       // appBar: !kIsWeb ? AppBar(title: const Text("widget.title")) : null,
+      bottomNavigationBar: Consumer(
+        builder: (BuildContext context, WidgetRef ref, Widget? child) {
+          final valid = ref.watch(imageValidProvider);
+
+          return BottomButton(
+            button: TextButton(
+              style: TextButton.styleFrom(
+                  backgroundColor:
+                      valid ? MITIColor.primary : MITIColor.gray500),
+              onPressed: valid
+                  ? () {
+                      _registProfileImage();
+                    }
+                  : null,
+              child: Text("이미지 변경하기",
+                  style: MITITextStyle.mdBold.copyWith(
+                    color: valid ? MITIColor.gray800 : MITIColor.gray50,
+                  )),
+            ),
+            hasBorder: false,
+          );
+        },
+      ),
       body: Column(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,12 +112,55 @@ class _ImageCropScreenState extends ConsumerState<ImageCropScreen> {
   }
 
   Widget _body() {
-    if (_croppedFile != null || widget.pickedFile != null) {
+    if (_croppedFile != null || widget.pickedFilePath != null) {
       log("cropFile");
       return _imageCard();
     } else {
       log("cropFile");
       return _uploaderCard();
+    }
+  }
+
+  Future<void> _registProfileImage() async {
+    String path =
+        _croppedFile == null ? widget.pickedFilePath : _croppedFile!.path;
+
+    final dio = ref.read(dioProvider);
+    final imageFile = File(path);
+    final imageBytes = await imageFile.readAsBytes();
+
+    final options = Options(
+      contentType: 'image/png',
+    );
+
+    log("profileImageUpdateUrl = ${widget.profileImageUpdateUrl}");
+
+    try {
+      final response = await dio.put(widget.profileImageUpdateUrl,
+          options: options, data: imageBytes);
+
+      log("response statusCode = ${response.statusCode}");
+      log("response data =  ${response.data}");
+      if (response.statusCode == 200) {
+        context.pop();
+        imageCache.clear();
+        ref.read(userProfileProvider.notifier).getInfo();
+        Future.delayed(const Duration(milliseconds: 200), () {
+          FlashUtil.showFlash(context, '프로필 이미지가 변경 되었습니다.');
+        });
+      } else {
+        ref.read(userInfoProvider.notifier).getUserInfo();
+        Future.delayed(const Duration(milliseconds: 200), () {
+          FlashUtil.showFlash(context, '프로필 이미지 변경을 실패했습니다.',
+              textColor: MITIColor.error);
+        });
+      }
+    } catch (e) {
+      ref.read(userInfoProvider.notifier).getUserInfo();
+      Future.delayed(const Duration(milliseconds: 200), () {
+        FlashUtil.showFlash(context, '프로필 이미지 변경을 실패했습니다.',
+            textColor: MITIColor.error);
+      });
     }
   }
 
@@ -111,18 +170,38 @@ class _ImageCropScreenState extends ConsumerState<ImageCropScreen> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: kIsWeb ? 24.0 : 16.0),
-            child: Card(
-              elevation: 4.0,
-              child: Padding(
-                padding: const EdgeInsets.all(kIsWeb ? 24.0 : 16.0),
-                child: _imageComponent(),
+          Flexible(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: kIsWeb ? 24.0 : 16.0),
+              child: Card(
+                elevation: 4.0,
+                child: Padding(
+                  padding: const EdgeInsets.all(kIsWeb ? 24.0 : 16.0),
+                  child: _imageComponent(),
+                ),
               ),
             ),
           ),
-          const SizedBox(height: 24.0),
+          SizedBox(height: 20.h),
+          Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              final valid = ref.watch(imageValidProvider);
+              return Visibility(
+                visible: !valid,
+                child: child!,
+              );
+            },
+            child: Column(
+              children: [
+                Text(
+                  "이미지 크기가 20MB 이상입니다.",
+                  style: MITITextStyle.md.copyWith(color: MITIColor.error),
+                ),
+                SizedBox(height: 20.h),
+              ],
+            ),
+          ),
           _menu(),
         ],
       ),
@@ -139,10 +218,18 @@ class _ImageCropScreenState extends ConsumerState<ImageCropScreen> {
           maxWidth: 0.8 * screenWidth,
           maxHeight: 0.7 * screenHeight,
         ),
-        child: kIsWeb ? Image.network(path) : Image.file(File(path)),
+        child: kIsWeb
+            ? Image.network(
+                path,
+                // fit: BoxFit.cover,
+              )
+            : Image.file(
+                File(path),
+                // fit: BoxFit.cover,
+              ),
       );
-    } else if (widget.pickedFile != null) {
-      final path = widget.pickedFile!.path;
+    } else if (widget.pickedFilePath != null) {
+      final path = widget.pickedFilePath;
       return ConstrainedBox(
         constraints: BoxConstraints(
           maxWidth: 0.8 * screenWidth,
@@ -160,16 +247,13 @@ class _ImageCropScreenState extends ConsumerState<ImageCropScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         // if (_croppedFile == null)
-        Padding(
-          padding: const EdgeInsets.only(left: 32.0),
-          child: FloatingActionButton(
-            onPressed: () {
-              _cropImage();
-            },
-            backgroundColor: const Color(0xFFBC764A),
-            tooltip: 'Crop',
-            child: const Icon(Icons.crop),
-          ),
+        FloatingActionButton(
+          onPressed: () {
+            _cropImage();
+          },
+          backgroundColor: const Color(0xFFBC764A),
+          tooltip: '자르기',
+          child: const Icon(Icons.crop),
         )
       ],
     );
@@ -210,19 +294,9 @@ class _ImageCropScreenState extends ConsumerState<ImageCropScreen> {
                           ),
                           const SizedBox(height: 24.0),
                           Text(
-                            'Upload an image to start',
-                            style: kIsWeb
-                                ? Theme.of(context)
-                                    .textTheme
-                                    .headlineSmall!
-                                    .copyWith(
-                                        color: Theme.of(context).highlightColor)
-                                : Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .copyWith(
-                                        color:
-                                            Theme.of(context).highlightColor),
+                            '갤러리에서 가져오기',
+                            style: MITITextStyle.md
+                                .copyWith(color: MITIColor.gray500),
                           )
                         ],
                       ),
@@ -230,17 +304,6 @@ class _ImageCropScreenState extends ConsumerState<ImageCropScreen> {
                   ),
                 ),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(vertical: 24.0),
-              //   child: ElevatedButton(
-              //     onPressed: () {
-              //       _uploadImage();
-              //     },
-              //     style:
-              //         ElevatedButton.styleFrom(foregroundColor: Colors.white),
-              //     child: const Text('Upload'),
-              //   ),
-              // ),
             ],
           ),
         ),
@@ -248,90 +311,119 @@ class _ImageCropScreenState extends ConsumerState<ImageCropScreen> {
     );
   }
 
-  // 대체 방법: 이미지 크기만 더 간단하게 확인하기
-  Future<void> _getImageSizeSimple() async {
-    try {
-      final XFile? pickedFile = widget.pickedFile;
-
-      if (pickedFile != null) {
-        File file = File(pickedFile.path);
-        int fileSize = await file.length();
-
-        // 이미지 디코딩하여 크기 확인
-        final decodedImage = await decodeImageFromList(file.readAsBytesSync());
-
-        setState(() {
-          _image = file;
-          _imageInfo = '파일 크기: ${(fileSize / 1024).toStringAsFixed(2)} KB\n'
-              '이미지 너비: ${decodedImage.width} px\n'
-              '이미지 높이: ${decodedImage.height} px';
-          log('_imageInfo = $_imageInfo');
-        });
-      }
-    } catch (e) {
+  Future<void> _cropImage() async {
+    final croppedFile = await ImageCropper().cropImage(
+      sourcePath: widget.pickedFilePath,
+      compressFormat: ImageCompressFormat.png,
+      compressQuality: 70,
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: '이미지 설정',
+          toolbarColor: Colors.black,
+          toolbarWidgetColor: Colors.white,
+          initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio:false,
+          // aspectRatioPresets: [
+          //   CropAspectRatioPreset.square,
+          // ],
+        ),
+        IOSUiSettings(
+          title: 'Cropper',
+          cropStyle: CropStyle.circle,
+          // aspectRatioPresets: [
+          //   CropAspectRatioPreset.square,
+          // ],
+        ),
+      ],
+    );
+    if (croppedFile != null) {
       setState(() {
-        _imageInfo = '이미지 정보를 가져오는 중 오류 발생: $e';
+        _croppedFile = croppedFile;
+
+        /// 이미지 압축
+        final file = File(_croppedFile!.path);
+        exampleUsage(file);
       });
     }
   }
 
-  Future<void> _cropImage() async {
-    if (widget.pickedFile != null) {
-      final croppedFile = await ImageCropper().cropImage(
-        sourcePath: widget.pickedFile!.path,
-        compressFormat: ImageCompressFormat.png,
-        compressQuality: 100,
-        uiSettings: [
-          AndroidUiSettings(
-            toolbarTitle: '이미지 설정',
-            toolbarColor: Colors.black,
-            toolbarWidgetColor: Colors.white,
-            // initAspectRatio: CropAspectRatioPreset.square,
-            lockAspectRatio: false,
-            // cropStyle: CropStyle.circle,
-            aspectRatioPresets: [
-              CropAspectRatioPreset.original,
-              CropAspectRatioPreset.square,
-              CropAspectRatioPreset.ratio4x3,
-              CropAspectRatioPresetCustom(),
-            ],
-          ),
-          IOSUiSettings(
-            title: 'Cropper',
-            cropStyle: CropStyle.circle,
-            aspectRatioPresets: [
-              CropAspectRatioPreset.original,
-              CropAspectRatioPreset.square,
-              CropAspectRatioPreset.ratio4x3,
-              CropAspectRatioPresetCustom(),
-            ],
-          ),
-        ],
+  Future<Map<String, dynamic>?> getCompressedImageInfo(File file) async {
+    try {
+      // 원본 파일 정보 (비교를 위해)
+      int originalFileSize = await file.length();
+
+      // 이미지 압축 (Future<Uint8List?>를 반환하므로 await 필요)
+      final Uint8List? byteImage = await FlutterImageCompress.compressWithFile(
+        file.path,
+        quality: 70,
+        format: CompressFormat.png,
       );
-      if (croppedFile != null) {
-        setState(() {
-          _croppedFile = croppedFile;
-        });
+
+      if (byteImage != null) {
+        // 압축된 이미지의 바이트 크기
+        int compressedSize = byteImage.length;
+
+        // 파일 크기를 KB 단위로 변환
+        double originalSizeKB = originalFileSize / 1024;
+        double compressedSizeKB = compressedSize / 1024;
+
+        print('원본 이미지 크기: ${originalSizeKB.toStringAsFixed(2)} KB');
+        print('압축된 이미지 크기: ${compressedSizeKB.toStringAsFixed(2)} KB');
+        print(
+            '압축률: ${(100 - (compressedSizeKB / originalSizeKB) * 100).toStringAsFixed(2)}%');
+
+        // 이미지 해상도(너비, 높이) 확인하기
+        // 방법 1: image 패키지 사용
+        img.Image? decodedImage = img.decodeImage(byteImage);
+        if (decodedImage != null) {
+          print(
+              '압축된 이미지 해상도: ${decodedImage.width} x ${decodedImage.height} 픽셀');
+        }
+
+        // 방법 2: Flutter의 기본 이미지 디코딩 사용
+        final decodedImageFromPixels = await decodeImageFromList(byteImage);
+        print(
+            '압축된 이미지 해상도(방법 2): ${decodedImageFromPixels.width} x ${decodedImageFromPixels.height} 픽셀');
+
+        // 압축된 이미지를 임시 파일로 저장 (필요한 경우)
+        // final tempDir =
+        //     await Directory.systemTemp.createTemp('compressed_img_');
+        // final tempFile = File('${tempDir.path}/compressed.png');
+        // await tempFile.writeAsBytes(byteImage);
+        //
+        // print('압축된 이미지 저장 경로: ${tempFile.path}');
+
+        return {
+          'originalSize': originalSizeKB,
+          'compressedSize': compressedSizeKB,
+          'compressionRatio': 100 - (compressedSizeKB / originalSizeKB) * 100,
+          'width': decodedImageFromPixels.width,
+          'height': decodedImageFromPixels.height,
+          // 'compressedFile': tempFile
+        };
+      } else {
+        print('이미지 압축 실패');
+        return null;
       }
+    } catch (e) {
+      print('이미지 정보 확인 중 오류 발생: $e');
+      return null;
     }
   }
 
-// Future<void> _uploadImage() async {
-//   final pickedFile =
-//       await ImagePicker().pickImage(source: ImageSource.gallery);
-//   if (pickedFile != null) {
-//     setState(() {
-//       widget.pickedFile = pickedFile;
-//     });
-//   }
-// }
-//
-// void _clear() {
-//   setState(() {
-//     widget.pickedFile = null;
-//     _croppedFile = null;
-//   });
-// }
+// 사용 예시
+  void exampleUsage(File imageFile) async {
+    // 압축된 이미지 정보 가져오기
+    var imageInfo = await getCompressedImageInfo(imageFile);
+
+    if (imageInfo != null) {
+      print('압축된 이미지 정보:');
+      print('- 원본 크기: ${imageInfo['originalSize']} KB');
+      print('- 압축 크기: ${imageInfo['compressedSize']} KB');
+      print('- 압축률: ${imageInfo['compressionRatio']}%');
+      print('- 해상도: ${imageInfo['width']} x ${imageInfo['height']} 픽셀');
+    }
+  }
 }
 
 class CropAspectRatioPresetCustom implements CropAspectRatioPresetData {

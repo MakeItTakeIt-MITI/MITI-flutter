@@ -121,6 +121,7 @@ class _ParticipationPlayerCard extends StatelessWidget {
         children: [
           if (user.profileImageUrl != null)
             CircleAvatar(
+              backgroundColor: Colors.transparent,
               radius: 18.r,
               backgroundImage: NetworkImage(user.profileImageUrl, scale: 36.r),
             )

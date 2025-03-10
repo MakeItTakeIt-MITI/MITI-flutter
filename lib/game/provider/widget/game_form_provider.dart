@@ -248,7 +248,7 @@ class GameForm extends _$GameForm {
 
   bool formValid() {
     log('validInvitation() = ${validInvitation()} validDatetime() = ${validDateTime()}');
-    final formValid = ValidRegExp.gameTitle(state.title) &
+    final formValid = state.title.isNotEmpty &
         ValidRegExp.gameAddress(state.court.address) &
         // ValidRegExp.gameAddressDetail(state.court.address_detail) &
         ValidRegExp.courtName(state.court.name);

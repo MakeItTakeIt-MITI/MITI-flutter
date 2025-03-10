@@ -109,6 +109,7 @@ dependencies:
   package_info_plus: ^8.2.1
 
   snapping_sheet: ^3.1.0
+  image: ^4.3.0
 
 dependency_overrides:
   fading_edge_scrollview: ^4.1.1

@@ -143,6 +143,7 @@ class UserProfile extends _$UserProfile {
     final id = ref.read(authProvider)!.id!;
     await repository.getUserProfileInfo(userId: id).then((value) {
       logger.i(value);
+      logger.i(value.data?.profileImageUrl);
       state = value;
     }).catchError((e) {
       final error = ErrorModel.respToError(e);

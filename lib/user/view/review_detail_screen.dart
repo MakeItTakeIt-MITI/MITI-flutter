@@ -160,6 +160,7 @@ class UserInfoComponent extends StatelessWidget {
             children: [
               if (profileImageUrl != null)
                 CircleAvatar(
+                  backgroundColor: Colors.transparent,
                   radius: 18.r,
                   backgroundImage: NetworkImage(profileImageUrl, scale: 36.r),
                 )

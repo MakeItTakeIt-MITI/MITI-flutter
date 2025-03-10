@@ -591,6 +591,7 @@ class _ProfileComponent extends ConsumerWidget {
           ),
           if(model.profileImageUrl != null)
             CircleAvatar(
+              backgroundColor: Colors.transparent,
               radius: 30.r,
               backgroundImage: NetworkImage(model.profileImageUrl, scale: 60.r),
             )else

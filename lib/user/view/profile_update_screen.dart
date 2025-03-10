@@ -106,7 +106,7 @@ class _NicknameUpdateScreenState extends ConsumerState<ProfileUpdateScreen> {
                             builder: (_) {
                               return Padding(
                                 padding: EdgeInsets.symmetric(
-                                    horizontal: 20.w, vertical: 18.h),
+                                    horizontal: 20.w, vertical: 20.h),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
@@ -119,13 +119,29 @@ class _NicknameUpdateScreenState extends ConsumerState<ProfileUpdateScreen> {
                                                 source: ImageSource.gallery);
 
                                         if (image != null) {
+                                          context.pop();
+                                          Map<String, String> queryParameters =
+                                              {
+                                            'profileImageUpdateUrl':
+                                                model.profileImageUpdateUrl,
+                                            'pickedFilePath': image.path,
+                                          };
                                           context.pushNamed(
-                                              ImageCropScreen.routeName,
-                                              extra: image);
+                                            ImageCropScreen.routeName,
+                                            queryParameters: queryParameters,
+                                          );
                                         }
                                       },
                                       style: TextButton.styleFrom(
-                                          backgroundColor: MITIColor.gray800),
+                                        backgroundColor: MITIColor.gray800,
+                                        shape: RoundedRectangleBorder(
+                                          side: const BorderSide(
+                                              color: Colors.transparent),
+                                          borderRadius: BorderRadius.vertical(
+                                            top: Radius.circular(8.r),
+                                          ),
+                                        ),
+                                      ),
                                       child: Text(
                                         '앨범에서 택하기',
                                         style: MITITextStyle.md.copyWith(
@@ -145,6 +161,7 @@ class _NicknameUpdateScreenState extends ConsumerState<ProfileUpdateScreen> {
                                                   UserApiType.resetProfileImage,
                                                   ref);
                                         } else {
+                                          imageCache.clear();
                                           ref
                                               .read(
                                                   userProfileProvider.notifier)
@@ -159,7 +176,15 @@ class _NicknameUpdateScreenState extends ConsumerState<ProfileUpdateScreen> {
                                         }
                                       },
                                       style: TextButton.styleFrom(
-                                          backgroundColor: MITIColor.gray800),
+                                        backgroundColor: MITIColor.gray800,
+                                        shape: RoundedRectangleBorder(
+                                          side: const BorderSide(
+                                              color: Colors.transparent),
+                                          borderRadius: BorderRadius.vertical(
+                                            bottom: Radius.circular(8.r),
+                                          ),
+                                        ),
+                                      ),
                                       child: Text(
                                         '기본 프로필로 변경하기',
                                         style: MITITextStyle.md.copyWith(
@@ -186,11 +211,20 @@ class _NicknameUpdateScreenState extends ConsumerState<ProfileUpdateScreen> {
                       child: Stack(
                         children: [
                           if (model.profileImageUrl != null)
-                            CircleAvatar(
-                              radius: 60.r,
-                              backgroundImage: NetworkImage(
-                                  model.profileImageUrl,
-                                  scale: 120.r),
+                            Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.transparent,
+                                ),
+                              ),
+                              child: CircleAvatar(
+                                radius: 60.r,
+                                backgroundColor: Colors.transparent,
+                                backgroundImage: NetworkImage(
+                                    model.profileImageUrl,
+                                    scale: 120.r),
+                              ),
                             )
                           else
                             SvgPicture.asset(

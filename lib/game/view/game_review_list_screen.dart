@@ -232,6 +232,7 @@ class _PlayerComponent extends StatelessWidget {
       child: Row(
         children: [
           CircleAvatar(
+            backgroundColor: Colors.transparent,
             radius: 18.r,
             backgroundImage: NetworkImage(profileImageUrl, scale: 36.r),
           ),
