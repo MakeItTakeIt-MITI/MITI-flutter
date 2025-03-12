@@ -74,67 +74,73 @@ class _GameReviewListScreenState extends State<GameReviewListScreen> {
         },
         body: CustomScrollView(
           slivers: [
-            SliverFillRemaining(
-              child: Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  final result =
-                      ref.watch(gamePlayersProvider(gameId: widget.gameId));
-                  if (result is LoadingModel) {
-                    return const GameParticipationReviewSkeleton();
-                  } else if (result is ErrorModel) {
-                    WidgetsBinding.instance.addPostFrameCallback((s) =>
-                        context.pushReplacementNamed(ErrorScreen.routeName));
-                    return const Column(
+            Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                final result =
+                    ref.watch(gamePlayersProvider(gameId: widget.gameId));
+                if (result is LoadingModel) {
+                  return const SliverToBoxAdapter(
+                      child: GameParticipationReviewSkeleton());
+                } else if (result is ErrorModel) {
+                  WidgetsBinding.instance.addPostFrameCallback((s) =>
+                      context.pushReplacementNamed(ErrorScreen.routeName));
+                  return const SliverToBoxAdapter(
+                    child: Column(
                       children: [
                         Text('에러'),
                       ],
-                    );
-                  }
+                    ),
+                  );
+                }
 
-                  final model =
-                      (result as ResponseModel<GameRevieweeListResponse>).data!;
-                  final userId = ref.read(authProvider)?.id ?? 0;
+                final model =
+                    (result as ResponseModel<GameRevieweeListResponse>).data!;
+                final userId = ref.read(authProvider)?.id ?? 0;
 
-                  /// 본인 리뷰 제거
-                  model.participations.removeWhere((e) => e.user.id == userId);
+                /// 본인 리뷰 제거
+                model.participations.removeWhere((e) => e.user.id == userId);
 
-                  if (model.participations.isEmpty) {
-                    return Center(
+                if (model.participations.isEmpty) {
+                  return SliverFillRemaining(
+                    child: Center(
                       child: Text(
                         '리뷰를 작성할\n플레이어가 없습니다.',
                         style: MITITextStyle.xxl140
                             .copyWith(color: MITIColor.white),
                         textAlign: TextAlign.center,
                       ),
-                    );
-                  }
+                    ),
+                  );
+                }
 
-                  return Column(
-                    children: [
-                      if (model.userParticipationId != null)
-                        _HostReviewComponent(
+                return SliverMainAxisGroup(
+                  slivers: [
+                    if (model.userParticipationId != null)
+                      SliverToBoxAdapter(
+                        child: _HostReviewComponent(
                           host: model.host,
                           gameId: widget.gameId,
                           isWrittenReview:
                               model.userWrittenReviews.writtenHostReviewId !=
                                   null,
                         ),
-                      if (model.userParticipationId != null &&
-                          model.participations.isNotEmpty)
-                        Container(
-                          color: MITIColor.gray800,
+                      ),
+                    if (model.userParticipationId != null &&
+                        model.participations.isNotEmpty)
+                      SliverToBoxAdapter(
+                        child: Container(
                           height: 4.h,
                         ),
-                      if (model.participations.isNotEmpty)
-                        _GuestReviewComponent(
-                          userWrittenReviews: model.userWrittenReviews,
-                          participations: model.participations,
-                          gameId: widget.gameId,
-                        ),
-                    ],
-                  );
-                },
-              ),
+                      ),
+                    if (model.participations.isNotEmpty)
+                      _GuestReviewComponent(
+                        userWrittenReviews: model.userWrittenReviews,
+                        participations: model.participations,
+                        gameId: widget.gameId,
+                      ),
+                  ],
+                );
+              },
             )
           ],
         ),
@@ -421,26 +427,26 @@ class _GuestReviewComponent extends StatelessWidget {
   Widget build(BuildContext context) {
     final writtenUserIds = userWrittenReviews.writtenParticipationIds;
 
-    return Padding(
+    return SliverPadding(
       padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(left: 12.w),
-            child: Text(
-              '게스트',
-              style: MITITextStyle.mdBold.copyWith(
-                color: MITIColor.gray100,
+      sliver: SliverMainAxisGroup(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.only(left: 12.w),
+              child: Text(
+                '게스트',
+                style: MITITextStyle.mdBold.copyWith(
+                  color: MITIColor.gray100,
+                ),
               ),
             ),
           ),
-          if (participations.isEmpty) getEmptyWidget(),
-          SizedBox(height: 12.h),
+          if (participations.isEmpty)
+            SliverToBoxAdapter(child: getEmptyWidget()),
+          SliverToBoxAdapter(child: SizedBox(height: 12.h)),
           if (participations.isNotEmpty)
-            ListView.separated(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
+            SliverList.separated(
                 itemBuilder: (_, idx) {
                   return _PlayerComponent.fromParticipationModel(
                     model: participations[idx],
@@ -453,7 +459,7 @@ class _GuestReviewComponent extends StatelessWidget {
                 separatorBuilder: (_, idx) {
                   return SizedBox(height: 10.h);
                 },
-                itemCount: participations.length),
+                itemCount: participations.length ),
         ],
       ),
     );

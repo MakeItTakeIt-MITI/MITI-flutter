@@ -415,7 +415,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       splitScreenMode: false,
       builder: (_, child) {
         return MaterialApp.router(
-          debugShowCheckedModeBanner: false,
+          debugShowCheckedModeBanner: true,
           localizationsDelegates: const [
             GlobalMaterialLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,

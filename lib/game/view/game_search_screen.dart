@@ -91,7 +91,7 @@ class _GameSearchScreenState extends ConsumerState<GameSearchScreen> {
                   handle: _firstHandle,
                   sliver: const DefaultAppBar(
                     isSliver: true,
-                    title: '경기장 조회',
+                    title: '경기 목록',
                     hasBorder: false,
                   ),
                 ),
@@ -107,6 +107,7 @@ class _GameSearchScreenState extends ConsumerState<GameSearchScreen> {
                           child: SearchComponent(
                             selectRegion: selectRegion,
                             onChanged: searchGame,
+                            placeholder: '경기 제목을 입력해주세요.',
                           )),
                     ),
                   ),
@@ -133,7 +134,7 @@ class _GameSearchScreenState extends ConsumerState<GameSearchScreen> {
                               builder: (BuildContext context, WidgetRef ref,
                                   Widget? child) {
                                 final form = ref.watch(gameSearchProvider);
-        
+
                                 return DisposeSliverPaginationListView(
                                   provider:
                                       gamePageProvider(PaginationStateParam()),

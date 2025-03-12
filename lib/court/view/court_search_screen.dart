@@ -104,7 +104,7 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
                         height: 58.h,
                         child: SearchComponent(
                           onChanged: searchCourt,
-                          selectRegion: selectRegion,
+                          selectRegion: selectRegion, placeholder: '경기장 (주소/경기장 명)을 검색해주세요',
                         )),
                   ),
                 ),
@@ -166,7 +166,7 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
 
   void selectRegion(String? region) {
     final district =
-        region == '전체' ? null : DistrictType.stringToEnum(value: region!);
+        region == '지역' ? null : DistrictType.stringToEnum(value: region!);
     final form = ref
         .read(courtSearchProvider.notifier)
         .update(district: district, isAll: district == null);
@@ -215,20 +215,25 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
 typedef SelectRegion = void Function(String? region);
 
 class SearchComponent extends StatefulWidget {
+  final String placeholder;
   final ValueChanged<String> onChanged;
   final SelectRegion selectRegion;
 
-  const SearchComponent(
-      {super.key, required this.onChanged, required this.selectRegion});
+  const SearchComponent({
+    super.key,
+    required this.onChanged,
+    required this.selectRegion,
+    required this.placeholder,
+  });
 
   @override
   State<SearchComponent> createState() => _SearchComponentState();
 }
 
 class _SearchComponentState extends State<SearchComponent> {
-  String region = '전체';
+  String region = '지역';
   final items = [
-    '전체',
+    '지역',
     '서울',
     '경기',
     '인천',
@@ -269,7 +274,7 @@ class _SearchComponentState extends State<SearchComponent> {
                     border: OutlineInputBorder(
                         borderSide: BorderSide.none,
                         borderRadius: BorderRadius.circular(100.r)),
-                    hintText: '경기장 (주소/경기장 명)을 검색해주세요',
+                    hintText: widget.placeholder,
                     hintStyle: MITITextStyle.xxsmSemiBold.copyWith(
                       height: 1,
                       color: MITIColor.gray500,
