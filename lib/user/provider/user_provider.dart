@@ -269,12 +269,17 @@ class PlayerProfile extends _$PlayerProfile {
 Future<BaseModel> updatePlayerProfile(UpdatePlayerProfileRef ref) async {
   final userId = ref.watch(authProvider)!.id!;
   final param = ref.watch(userPlayerProfileFormProvider);
+
   return await ref
       .watch(userRepositoryProvider)
       .updatePlayerInfo(userId: userId, param: param)
       .then<BaseModel>((value) {
     logger.i(value);
-    // ref.read(userInfoProvider.notifier).getUserInfo();
+    if(param.gender != null && param.enableGender){
+      ref
+          .read(userPlayerProfileFormProvider.notifier)
+          .update(enableGender: false);
+    }
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
