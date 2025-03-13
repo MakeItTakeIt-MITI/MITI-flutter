@@ -177,7 +177,7 @@ class _GameSearchScreenState extends ConsumerState<GameSearchScreen> {
 
   void selectRegion(String? region) {
     final district =
-        region == '전체' ? null : DistrictType.stringToEnum(value: region!);
+        region == '지역' ? null : DistrictType.stringToEnum(value: region!);
     final form = ref
         .read(gameSearchProvider.notifier)
         .update(district: district, isAll: district == null);

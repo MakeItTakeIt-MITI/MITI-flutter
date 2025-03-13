@@ -31,7 +31,7 @@ import '../component/game_list_component.dart';
 import '../model/game_model.dart';
 
 final currentGameTypeProvider =
-    StateProvider.autoDispose<UserGameType>((ref) => UserGameType.host);
+    StateProvider.autoDispose<UserGameType>((ref) => UserGameType.participation);
 
 class GameScreen extends ConsumerStatefulWidget {
   static String get routeName => 'game';
@@ -62,8 +62,8 @@ class _GameScreenState extends ConsumerState<GameScreen>
     )..addListener(() {
         ref.read(currentGameTypeProvider.notifier).update((s) =>
             tabController.index == 0
-                ? UserGameType.host
-                : UserGameType.participation);
+                ? UserGameType.participation
+                : UserGameType.host);
         ref
             .read(dropDownValueProvider(DropButtonType.game).notifier)
             .update((s) => null);
@@ -135,11 +135,11 @@ class _GameScreenState extends ConsumerState<GameScreen>
                     tabs: [
                       Tab(
                         height: 44.h,
-                        child: const Text('호스트 경기'),
+                        child: const Text('게스트 경기'),
                       ),
                       Tab(
                         height: 44.h,
-                        child: const Text('게스트 경기'),
+                        child: const Text('호스트 경기'),
                       ),
                     ],
                   )),
@@ -163,11 +163,11 @@ class _GameScreenState extends ConsumerState<GameScreen>
             },
             body: TabBarView(controller: tabController, children: const [
               UserParticipationScreen(
-                type: UserGameType.host,
+                type: UserGameType.participation,
               ),
               UserParticipationScreen(
-                type: UserGameType.participation,
-              )
+                type: UserGameType.host,
+              ),
             ])),
       ),
     );
