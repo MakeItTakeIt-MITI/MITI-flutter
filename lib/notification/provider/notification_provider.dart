@@ -125,7 +125,8 @@ PushNotificationSettingResponse optimisticSetting(
 Future<BaseModel> pushStatusUpdate(PushStatusUpdateRef ref,
     {required bool isOn, PushSettingParam? push}) async {
   final baseModel = ref.read(pushSettingProvider);
-  final model = (baseModel as ResponseModel<PushNotificationSettingResponse>).data!;
+  final model =
+      (baseModel as ResponseModel<PushNotificationSettingResponse>).data!;
 
   final repository = ref.watch(pushPRepositoryProvider);
   final userId = ref.read(authProvider)!.id!;
@@ -201,6 +202,19 @@ class UnreadPush extends _$UnreadPush {
       if (isAllow) {
         secureProvider.write(key: 'pushCnt', value: '0');
         AppBadgePlus.updateBadge(0);
+      }
+    });
+  }
+
+  void read() {
+    final newState = state as ResponseModel<UnreadPushModel>;
+    final count = newState.data!.pushCnt - 1;
+    state = newState.copyWith(data: newState.data!.copyWith(pushCnt: count));
+    final secureProvider = ref.read(secureStorageProvider);
+    AppBadgePlus.isSupported().then((isAllow) {
+      if (isAllow) {
+        secureProvider.write(key: 'pushCnt', value: count.toString());
+        AppBadgePlus.updateBadge(count);
       }
     });
   }

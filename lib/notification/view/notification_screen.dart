@@ -435,6 +435,9 @@ class _PushCardState extends ConsumerState<PushCard> {
             extra: NoticeScreenType.push,
           );
         }
+        if (!widget.isRead) {
+          ref.read(unreadPushProvider.notifier).read();
+        }
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
