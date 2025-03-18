@@ -33,8 +33,8 @@ class Update extends _$Update {
 
       // 기본값 설정 (Firebase 연결 실패 시 사용)
       await _remoteConfig.setDefaults({
-        RemoteConfigKeys.recommendedAppVersion: '1.0.5',
-        RemoteConfigKeys.minimumAppVersion: '1.0.5',
+        RemoteConfigKeys.recommendedAppVersion: '1.2.1',
+        RemoteConfigKeys.minimumAppVersion: '1.2.1',
         RemoteConfigKeys.recommendUpdateMessage: '앱 업데이트가 필요합니다.',
         RemoteConfigKeys.appStoreUrl:
             'https://apps.apple.com/us/app/miti/id6503062372',
