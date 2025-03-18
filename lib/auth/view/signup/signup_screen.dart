@@ -785,27 +785,27 @@ class DescComponent extends ConsumerWidget {
         title = '이메일을 입력해주세요.';
         desc = '이메일은 사용자의 아이디로 사용됩니다.\n입력하신 이메일로 MITI의 공지사항이 전달돼요.';
       } else {
-        title = '경기 참여에 필요한\n선수 프로필을 작성해주세요';
-        desc = '입력하신 정보는 경기 참여 시 참고용으로 사용되어요.';
+        title = '본인확인을 위한\n정보를 입력해주세요.';
+        desc = '입력하신 정보는 안전하게 보관되며 공개되지 않아요.';
       }
     } else if (ref.watch(progressProvider).progress == 3) {
       if (type == SignupMethodType.email) {
         title = '비밀번호를 입력해주세요.';
       } else {
-        title = '본인확인을 위한\n정보를 입력해주세요.';
-        desc = '입력하신 정보는 안전하게 보관되며 공개되지 않아요.';
-      }
-    } else if (ref.watch(progressProvider).progress == 4) {
-      if (type == SignupMethodType.email) {
         title = '경기 참여에 필요한\n선수 프로필을 작성해주세요';
         desc = '입력하신 정보는 경기 참여 시 참고용으로 사용되어요.';
+  }
+    } else if (ref.watch(progressProvider).progress == 4) {
+      if (type == SignupMethodType.email) {
+        title = '본인확인을 위한\n정보를 입력해주세요.';
+        desc = '입력하신 정보는 안전하게 보관되며 공개되지 않아요.';
       } else {
         title = 'MITI 회원 이용약관';
         desc = '약관에 동의하시면 회원가입이 완료됩니다.';
       }
     } else if (ref.watch(progressProvider).progress == 5) {
-      title = '본인확인을 위한\n정보를 입력해주세요.';
-      desc = '입력하신 정보는 안전하게 보관되며 공개되지 않아요.';
+      title = '경기 참여에 필요한\n선수 프로필을 작성해주세요';
+      desc = '입력하신 정보는 경기 참여 시 참고용으로 사용되어요.';
     } else {
       title = 'MITI 회원 이용약관';
       desc = '약관에 동의하시면 회원가입이 완료됩니다.';

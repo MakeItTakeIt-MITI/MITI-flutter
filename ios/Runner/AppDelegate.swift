@@ -22,4 +22,17 @@ import Firebase // Add Line.
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
+
+   // 유니버설 링크 처리
+    override func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+      // 유니버설 링크로 앱이 실행된 경우
+      if userActivity.activityType == NSUserActivityTypeBrowsingWeb, let url = userActivity.webpageURL {
+        // Flutter로 딥링크 정보 전달
+        let controller = window?.rootViewController as! FlutterViewController
+        let flutterChannel = FlutterMethodChannel(name: "app/deeplink", binaryMessenger: controller.binaryMessenger)
+        flutterChannel.invokeMethod("handleDeepLink", arguments: url.absoluteString)
+        return true
+      }
+      return false
+    }
 }

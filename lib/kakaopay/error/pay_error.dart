@@ -12,7 +12,7 @@ import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../dio/response_code.dart';
 
-enum PayApiType { ready, approval, bootPayApproval }
+enum PayApiType { ready, bootPayApproval }
 
 class PayError extends ErrorBase {
   final Object? object;
@@ -33,9 +33,6 @@ class PayError extends ErrorBase {
     switch (payApiType) {
       case PayApiType.ready:
         _ready(context, ref);
-        break;
-      case PayApiType.approval:
-        _approval(context, ref);
         break;
       case PayApiType.bootPayApproval:
         _bootPayApproval(context, ref);
@@ -150,32 +147,6 @@ class PayError extends ErrorBase {
           );
         },
       );
-    }
-  }
-
-  /// 카카오 결제 승인 API
-  void _approval(BuildContext context, WidgetRef ref) {
-    if (this.status_code == BadRequest && this.error_code == 101) {
-      /// pg 토큰 유효성 오류
-      context.pushReplacementNamed(ErrorScreen.routeName);
-    } else if (this.status_code == Forbidden && this.error_code == 440) {
-      /// 모집 마감 경기
-      context.pushReplacementNamed(ErrorScreen.routeName);
-    } else if (this.status_code == NotFound && this.error_code == 940) {
-      /// payment request 조회 실패
-      context.pushReplacementNamed(ErrorScreen.routeName);
-    } else if (this.status_code == ServerError && this.error_code == 440) {
-      /// 경기 참여 실패
-      context.pushReplacementNamed(ErrorScreen.routeName);
-    } else if (this.status_code == ServerError && this.error_code == 460) {
-      /// 결제 완료 api 호출 실패
-      context.pushReplacementNamed(ErrorScreen.routeName);
-    } else if (this.status_code == ServerError && this.error_code == 461) {
-      /// 결제 완료 응답 처리 실패
-      context.pushReplacementNamed(ErrorScreen.routeName);
-    } else {
-      /// 서버 오류
-      context.pushReplacementNamed(ErrorScreen.routeName);
     }
   }
 

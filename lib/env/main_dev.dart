@@ -132,6 +132,7 @@ class MyApp extends ConsumerStatefulWidget {
 class _MyAppState extends ConsumerState<MyApp> {
   late AppLinks _appLinks;
   StreamSubscription<Uri>? _linkSubscription;
+  static const platform = MethodChannel('app/deeplink');
 
   @override
   void initState() {
@@ -141,6 +142,24 @@ class _MyAppState extends ConsumerState<MyApp> {
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {});
     initDeepLinks();
+    platform.setMethodCallHandler(_handleMethod);
+  }
+
+  Future<dynamic> _handleMethod(MethodCall call) async {
+    switch (call.method) {
+      case 'handleDeepLink':
+        final String url = call.arguments;
+        _processDeepLink(url);
+        break;
+      default:
+        print('Unknown method ${call.method}');
+    }
+  }
+
+  void _processDeepLink(String url) {
+    print('Received deep link: $url');
+    // URL을 파싱하여 필요한 작업 수행
+    // 예: 특정 화면으로 이동, 데이터 처리 등
   }
 
   Future<void> getFcmToken(WidgetRef ref) async {

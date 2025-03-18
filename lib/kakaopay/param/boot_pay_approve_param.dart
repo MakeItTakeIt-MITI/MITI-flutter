@@ -13,7 +13,7 @@ class BootPayApproveParam extends Equatable {
   @JsonKey(name: 'order_id')
   final String orderId;
 
-  BootPayApproveParam({
+  const BootPayApproveParam({
     required this.event,
     required this.receiptId,
     required this.gatewayUrl,
@@ -23,6 +23,7 @@ class BootPayApproveParam extends Equatable {
   @override
   List<Object?> get props => [event, receiptId, gatewayUrl, orderId];
 
+  @override
   bool? get stringify => true;
 
   Map<String, dynamic> toJson() => _$BootPayApproveParamToJson(this);

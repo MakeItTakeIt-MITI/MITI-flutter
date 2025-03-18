@@ -8,15 +8,18 @@ import 'base_participation_response.dart';
 part 'participation_game_response.g.dart';
 
 @JsonSerializable()
-class ParticipationGameResponse extends BaseParticipationResponse
-    implements PayBaseModel {
+class ParticipationGameResponse extends PayBaseModel {
+  final int id;
+  @JsonKey(name: 'participation_status')
+  final ParticipationStatusType participationStatus;
+  final BaseUserResponse user;
   final BaseGameResponse game;
 
   ParticipationGameResponse({
-    required super.id,
+    required this.id,
     required this.game,
-    required super.user,
-    required super.participationStatus,
+    required this.user,
+    required this.participationStatus,
   });
 
   factory ParticipationGameResponse.fromJson(Map<String, dynamic> json) =>
@@ -24,7 +27,6 @@ class ParticipationGameResponse extends BaseParticipationResponse
 
   Map<String, dynamic> toJson() => _$ParticipationGameResponseToJson(this);
 
-  @override
   ParticipationGameResponse copyWith({
     int? id,
     ParticipationStatusType? participationStatus,

@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
+import '../../game/model/v2/payment/base_payment_request_response.dart';
 import '../../game/provider/game_provider.dart';
 import '../model/boot_pay_request_model.dart';
 import '../model/pay_model.dart';
@@ -28,7 +29,7 @@ Future<BaseModel> readyPay(ReadyPayRef ref,
             .get(gameId: gameId);
         break;
       default:
-        model as BootPayRequestModel;
+        model as BasePaymentRequestResponse;
         final orderId = model.orderId;
         logger.i('readyPay orderId = $orderId!');
         break;
@@ -41,25 +42,25 @@ Future<BaseModel> readyPay(ReadyPayRef ref,
     return error;
   });
 }
-
-@Riverpod()
-Future<BaseModel> approvalPay(ApprovalPayRef ref,
-    {required int requestId, required String pgToken}) async {
-  final repository = ref.watch(payRepositoryProvider);
-  return repository
-      .approvalPay(pgToken: pgToken, requestId: requestId)
-      .then<BaseModel>((value) async {
-    logger.i('approvalPay = !');
-    final model = value.data!;
-
-    return value;
-  }).catchError((e) {
-    final error = ErrorModel.respToError(e);
-    logger.e(
-        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
-    return error;
-  });
-}
+//
+// @Riverpod()
+// Future<BaseModel> approvalPay(ApprovalPayRef ref,
+//     {required int requestId, required String pgToken}) async {
+//   final repository = ref.watch(payRepositoryProvider);
+//   return repository
+//       .approvalPay(pgToken: pgToken, requestId: requestId)
+//       .then<BaseModel>((value) async {
+//     logger.i('approvalPay = !');
+//     final model = value.data!;
+//
+//     return value;
+//   }).catchError((e) {
+//     final error = ErrorModel.respToError(e);
+//     logger.e(
+//         'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+//     return error;
+//   });
+// }
 
 // @Riverpod()
 // Future<BaseModel> requestBootPay(RequestBootPayRef ref,

@@ -228,11 +228,11 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
     final gameStatus = model.game_status;
     final startTime = DateTime.parse('${model.startdate} ${model.starttime}');
     final createdAt = DateTime.parse('${model.created_at}');
-
-    final policyValid = DateTime.now().difference(startTime).inHours <= -2;
+    final policyValid = startTime.difference(DateTime.now()).inHours > 2;
     final policyCreatedAtValid =
-        DateTime.now().difference(createdAt).inHours <= -2;
-    log('policyValid $policyValid policyCreatedAtValid = $policyCreatedAtValid');
+        createdAt.difference(DateTime.now()).inHours >= -2;
+    log('policyValid $policyValid policyCreatedAtValid = $policyCreatedAtValid ');
+    log('DateTime.now().difference(createdAt).inHours = ${createdAt.difference(DateTime.now()).inHours}');
     final editValid = policyValid && policyCreatedAtValid;
     final buttonTextStyle = MITITextStyle.btnTextBStyle.copyWith(
       color: Colors.white,

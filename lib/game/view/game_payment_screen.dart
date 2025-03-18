@@ -46,6 +46,7 @@ import '../error/game_error.dart';
 import '../model/v2/game/game_participation_payment_detail_response.dart';
 import '../model/v2/game/game_participation_payment_response.dart';
 import '../model/v2/payment/base_payment_request_response.dart';
+import '../model/v2/payment/payment_completed_response.dart';
 import 'game_create_complete_screen.dart';
 import 'game_detail_screen.dart';
 import 'package:collection/collection.dart';
@@ -408,7 +409,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
         PayError.fromModel(model: result, object: widget.gameId)
             .responseError(context, PayApiType.bootPayApproval, ref);
       } else {
-        final model = (result as ResponseModel<BootPayApproveModel>).data!;
+        final model = (result as ResponseModel<PaymentCompletedResponse>).data!;
         switch (model.status) {
           case PaymentResultStatusType.approved:
             {

@@ -64,16 +64,18 @@ class GameParticipationScreen extends StatelessWidget {
                   ),
                 );
               }
-              return ListView.separated(
-                  shrinkWrap: true,
-                  itemBuilder: (_, idx) {
-                    return _ParticipationPlayerCard.fromModel(
-                        model: model[idx]);
-                  },
-                  separatorBuilder: (_, idx) {
-                    return SizedBox(height: 12.h);
-                  },
-                  itemCount: model.length);
+
+              return Expanded(
+                child: ListView.separated(
+                    itemBuilder: (_, idx) {
+                      return _ParticipationPlayerCard.fromModel(
+                          model: model[idx]);
+                    },
+                    separatorBuilder: (_, idx) {
+                      return SizedBox(height: 12.h);
+                    },
+                    itemCount: model.length),
+              );
             },
           ),
         ],

@@ -11,6 +11,7 @@ import 'package:miti/court/model/court_model.dart';
 import 'package:miti/game/model/game_model.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../game/model/v2/game/game_detail_response.dart';
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
 import '../../util/util.dart';
@@ -178,8 +179,8 @@ class ShareFabComponent extends StatelessWidget {
                   String desc = "";
 
                   if (model != null) {
-                    if (model is GameDetailModel) {
-                      final gameModel = model as GameDetailModel;
+                    if (model is GameDetailResponse) {
+                      final gameModel = model as GameDetailResponse;
 
                       final start = DateTime.parse(
                           "${gameModel.startdate} ${gameModel.starttime}");
@@ -197,7 +198,7 @@ class ShareFabComponent extends StatelessWidget {
                           ? '$startDate $time'
                           : '$startDate ${gameModel.starttime.substring(0, 5)} ~ $endDate ${gameModel.endtime.substring(0, 5)}';
                       final address =
-                          '${gameModel.court.address} ${gameModel.court.address_detail ?? ''}';
+                          '${gameModel.court.address} ${gameModel.court.addressDetail ?? ''}';
 
                       title = gameModel.title;
                       desc = "$gameDate $address";
