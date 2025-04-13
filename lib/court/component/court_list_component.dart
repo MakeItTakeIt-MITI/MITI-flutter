@@ -19,6 +19,7 @@ import '../../common/model/default_model.dart';
 import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
 import '../../game/component/skeleton/game_list_skeleton.dart';
+import '../../game/param/game_param.dart';
 import '../model/court_model.dart';
 import '../model/v2/court_map_response.dart';
 import '../param/court_pagination_param.dart';
@@ -26,12 +27,16 @@ import '../provider/court_pagination_provider.dart';
 import '../provider/court_provider.dart';
 import '../provider/widget/court_search_provider.dart';
 
+typedef LoadCourtInfoCallback = void Function(GameCourtParam court);
+
 final selectedProvider = StateProvider.autoDispose<int?>((ref) => null);
 final selectedCourtProvider =
     StateProvider.autoDispose<CourtMapResponse?>((ref) => null);
 
 class CourtListComponent extends ConsumerStatefulWidget {
-  const CourtListComponent({super.key});
+  final LoadCourtInfoCallback loadCallback;
+
+  const CourtListComponent({super.key, required this.loadCallback});
 
   @override
   ConsumerState<CourtListComponent> createState() => _CourtListComponentState();
@@ -152,7 +157,7 @@ class _CourtListComponentState extends ConsumerState<CourtListComponent> {
             return TextButton(
                 onPressed: selected != null
                     ? () {
-                        selectCourt(ref, context);
+                        selectCourt(ref, context, widget.loadCallback);
                       }
                     : () {},
                 style: ButtonStyle(
@@ -202,7 +207,8 @@ class _CourtListComponentState extends ConsumerState<CourtListComponent> {
     }
   }
 
-  void selectCourt(WidgetRef ref, BuildContext context) {
+  void selectCourt(
+      WidgetRef ref, BuildContext context, LoadCourtInfoCallback loadCallback) {
     /// 게임 생성 폼을 닫은 후 늦게 갱신 !!
     /// 게임 폼이 부모 트리에 있기 때문에 갱신 되면 build를 하면서
     /// 자식인 해당 다이어로그까지 build 되어 닫히는게 버벅이는 현상이 있기 때문
@@ -211,6 +217,12 @@ class _CourtListComponentState extends ConsumerState<CourtListComponent> {
     final court = ref.read(gameFormProvider).court;
     final newCourt =
         court.copyWith(name: model.name, address_detail: model.addressDetail);
+
+    loadCallback(newCourt);
+
+    // ref.read(gameFormProvider.notifier).selectGameHistory(
+    //     model: model, textEditingControllers: textEditingControllers);
+
 
     ref.read(gameFormProvider.notifier).update(court: newCourt);
 

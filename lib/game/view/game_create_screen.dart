@@ -985,8 +985,10 @@ class _TimePickerState extends State<_TimePicker> {
 
 class AddressComponent extends StatefulWidget {
   final GameCourtParam court;
+  final LoadCourtInfoCallback loadCallback;
 
-  const AddressComponent({super.key, required this.court});
+  const AddressComponent(
+      {super.key, required this.court, required this.loadCallback});
 
   @override
   State<AddressComponent> createState() => _AddressComponentState();
@@ -1088,7 +1090,9 @@ class _AddressComponentState extends State<AddressComponent> {
                                   if (mounted) {
                                     await showCustomModalBottomSheet(
                                         parent!.context,
-                                        const CourtListComponent());
+                                        CourtListComponent(
+                                          loadCallback: widget.loadCallback,
+                                        ));
                                   }
 
                                   log("show!! modal");
@@ -1161,6 +1165,11 @@ class _AddressFormState extends ConsumerState<_AddressForm> {
         children: [
           AddressComponent(
             court: court,
+            loadCallback: (GameCourtParam court) {
+              addressController.text = court.address;
+              addressDetailController.text = court.address_detail ?? '';
+              nameController.text = court.name;
+            },
           ),
           SizedBox(height: 32.h),
           CustomTextFormField(

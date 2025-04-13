@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -271,7 +273,6 @@ class GameParticipationParam extends Equatable {
   bool? get stringify => true;
 }
 
-
 @JsonSerializable()
 class GameRefundParam extends Equatable {
   @JsonKey(includeToJson: false)
@@ -284,8 +285,7 @@ class GameRefundParam extends Equatable {
   GameRefundParam copyWith({
     List<bool>? isCheckBoxes,
   }) {
-    return GameRefundParam(
-        isCheckBoxes: isCheckBoxes ?? this.isCheckBoxes);
+    return GameRefundParam(isCheckBoxes: isCheckBoxes ?? this.isCheckBoxes);
   }
 
   Map<String, dynamic> toJson() => _$GameRefundParamToJson(this);
