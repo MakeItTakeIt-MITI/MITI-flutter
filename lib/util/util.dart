@@ -36,9 +36,9 @@ class EnvUtil {
 
   // Helper methods
   bool get isDevelopment => _environment == BuildEnvironment.development;
+
   bool get isProduction => _environment == BuildEnvironment.production;
 }
-
 
 enum AssetType {
   logo,
@@ -177,8 +177,7 @@ class ValidRegExp {
   }
 
   static bool courtName(String input) {
-    RegExp regex = RegExp(r'^[a-zA-Z0-9가-힣\s\-.()]{2,32}$');
-    return regex.hasMatch(input);
+    return input.isNotEmpty && input.length < 30;
   }
 
   static bool validForm(String min_invitation, String max_invitation) {

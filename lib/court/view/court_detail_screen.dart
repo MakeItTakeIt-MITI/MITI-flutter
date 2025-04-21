@@ -65,6 +65,8 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
 
     final model = (result as ResponseModel<CourtOperationsResponse>).data!;
 
+
+
     return Scaffold(
       backgroundColor: MITIColor.gray750,
       floatingActionButtonLocation: ExpandableFab.location,

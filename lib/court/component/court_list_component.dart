@@ -34,9 +34,14 @@ final selectedCourtProvider =
     StateProvider.autoDispose<CourtMapResponse?>((ref) => null);
 
 class CourtListComponent extends ConsumerStatefulWidget {
+  final List<CourtMapResponse> models;
   final LoadCourtInfoCallback loadCallback;
 
-  const CourtListComponent({super.key, required this.loadCallback});
+  const CourtListComponent({
+    super.key,
+    required this.loadCallback,
+    required this.models,
+  });
 
   @override
   ConsumerState<CourtListComponent> createState() => _CourtListComponentState();
@@ -61,9 +66,9 @@ class _CourtListComponentState extends ConsumerState<CourtListComponent> {
   Widget build(BuildContext context) {
     log("build!!");
     // final form = ref.watch(courtSearchProvider);
-    final search = ref.watch(gameFormProvider).court.address;
-    log("search address = $search");
-    final param = CourtPaginationParam(search: search);
+    // final search = ref.watch(gameFormProvider).court.address;
+    // log("search address = $search");
+    // final param = CourtPaginationParam(search: search);
     // final result = ref.watch(courtListProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -85,41 +90,56 @@ class _CourtListComponentState extends ConsumerState<CourtListComponent> {
           ],
         ),
         SizedBox(height: 20.h),
-        ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height / 2,
-          ),
-          child: CustomScrollView(
-            shrinkWrap: true,
-            controller: _scrollController,
-            slivers: [
-              Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  final selected = ref.watch(selectedCourtProvider);
-                  return DisposeSliverPaginationListView(
-                    provider: courtPageProvider(PaginationStateParam(
-                      param: param,
-                    )),
-                    itemBuilder: (BuildContext context, int index, Base model) {
-                      model as CourtMapResponse;
-                      return CourtAddressCard.fromModel(
-                        model: model,
-                        selected: selected?.id == model.id,
-                        onTap: () {
-                          ref.read(selectedCourtProvider.notifier).update(
-                              (state) =>
-                                  selected?.id != model.id ? model : null);
-                        },
-                      );
+        Align(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height / 2,
+            ),
+            child: Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                final selected = ref.watch(selectedCourtProvider);
+                return ListView.separated(
+                  shrinkWrap: true,
+                  itemBuilder: (_, idx) => CourtAddressCard.fromModel(
+                    model: widget.models[idx],
+                    selected: selected?.id == widget.models[idx].id,
+                    onTap: () {
+                      ref.read(selectedCourtProvider.notifier).update((state) =>
+                          selected?.id != widget.models[idx].id
+                              ? widget.models[idx]
+                              : null);
                     },
-                    param: param,
-                    skeleton: const CourtListSkeleton(),
-                    controller: _scrollController,
-                    emptyWidget: Container(),
-                  );
-                },
-              ),
-            ],
+                  ),
+                  separatorBuilder: (_, idx) => SizedBox(
+                    height: 16.h,
+                  ),
+                  itemCount: widget.models.length,
+                );
+
+                // return DisposeSliverPaginationListView(
+                //   provider: courtPageProvider(PaginationStateParam(
+                //     param: param,
+                //   )),
+                //   itemBuilder:
+                //       (BuildContext context, int index, Base model) {
+                //     model as CourtMapResponse;
+                //     return CourtAddressCard.fromModel(
+                //       model: model,
+                //       selected: selected?.id == model.id,
+                //       onTap: () {
+                //         ref.read(selectedCourtProvider.notifier).update(
+                //                 (state) =>
+                //             selected?.id != model.id ? model : null);
+                //       },
+                //     );
+                //   },
+                //   param: param,
+                //   skeleton: const CourtListSkeleton(),
+                //   controller: _scrollController,
+                //   emptyWidget: Container(),
+                // );
+              },
+            ),
           ),
         ),
         // Consumer(
@@ -222,7 +242,6 @@ class _CourtListComponentState extends ConsumerState<CourtListComponent> {
 
     // ref.read(gameFormProvider.notifier).selectGameHistory(
     //     model: model, textEditingControllers: textEditingControllers);
-
 
     ref.read(gameFormProvider.notifier).update(court: newCourt);
 

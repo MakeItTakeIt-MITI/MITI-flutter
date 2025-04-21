@@ -437,7 +437,7 @@ class _GameSearchCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        '$fee',
+                        NumberUtil.format(fee.toString()),
                         style: MITITextStyle.mdBold.copyWith(
                           color: MITIColor.primary,
                         ),
