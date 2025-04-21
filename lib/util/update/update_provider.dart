@@ -32,9 +32,10 @@ class Update extends _$Update {
       ));
 
       // 기본값 설정 (Firebase 연결 실패 시 사용)
+      /// todo 버전 변경 될 때마다 변경
       await _remoteConfig.setDefaults({
-        RemoteConfigKeys.recommendedAppVersion: '1.2.1',
-        RemoteConfigKeys.minimumAppVersion: '1.2.1',
+        RemoteConfigKeys.recommendedAppVersion: '1.2.2',
+        RemoteConfigKeys.minimumAppVersion: '1.2.2',
         RemoteConfigKeys.recommendUpdateMessage: '앱 업데이트가 필요합니다.',
         RemoteConfigKeys.appStoreUrl:
             'https://apps.apple.com/us/app/miti/id6503062372',
