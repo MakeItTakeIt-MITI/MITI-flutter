@@ -96,7 +96,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
             )
           : null,
       title: Text(
-        title ?? '',
+         title ?? '',
         style: MITITextStyle.mdBold.copyWith(
           color: MITIColor.white,
         ),

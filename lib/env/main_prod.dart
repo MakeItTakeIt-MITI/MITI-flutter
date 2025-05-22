@@ -444,7 +444,7 @@ class _MyAppState extends ConsumerState<MyApp> {
                 error: MITIColor.error,
                 onError: MITIColor.error,
                 surface: MITIColor.gray800,
-                onSurface: MITIColor.gray800,
+                onSurface: MITIColor.gray100,
               ),
               pageTransitionsTheme: const PageTransitionsTheme(builders: {
                 TargetPlatform.android: CupertinoPageTransitionsBuilder(),

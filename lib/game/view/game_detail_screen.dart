@@ -32,6 +32,7 @@ import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../account/model/account_model.dart';
+import '../../chat/view/chat_room_screen.dart';
 import '../../common/component/share_fab_component.dart';
 import '../../common/error/view/error_screen.dart';
 import '../../common/model/entity_enum.dart';
@@ -69,6 +70,7 @@ class GameDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
+  late final FocusNode focusNode;
   int? participationId;
   final fabKey = GlobalKey<ExpandableFabState>();
   late final ScrollController _scrollController;
@@ -78,6 +80,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
   @override
   void initState() {
     super.initState();
+    focusNode = FocusNode();
     _throttler = Throttle(
       const Duration(seconds: 1),
       initialValue: 0,
@@ -97,129 +100,161 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
     _throttler.cancel();
     _scrollController.dispose();
     fabKey.currentState?.dispose();
+    focusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButtonLocation: ExpandableFab.location,
-      floatingActionButton: Consumer(
-        builder: (BuildContext context, WidgetRef ref, Widget? child) {
-          GameDetailResponse? model;
-          final result = ref.watch(gameDetailProvider(gameId: widget.gameId));
-          if (result is ResponseModel<GameDetailResponse>) {
-            model = result.data!;
-          }
-          return ShareFabComponent(
-            id: widget.gameId,
-            type: ShareType.games,
-            globalKey: fabKey,
-            model: model,
-          );
-        },
-      ),
-      bottomNavigationBar: Consumer(
-        builder: (BuildContext context, WidgetRef ref, Widget? child) {
-          final result = ref.watch(gameDetailProvider(gameId: widget.gameId));
-          if (result is LoadingModel) {
-            // todo skeleton
-            return const SizedBox(height: 0);
-          } else if (result is ErrorModel) {
-            return const SizedBox(height: 0);
-          }
-          result as ResponseModel<GameDetailResponse>;
-          final model = result.data!;
-          final button = getBottomButton(model, ref, context);
-          return button != null
-              ? BottomButton(
-                  button: button,
-                )
-              : const SizedBox();
-        },
-      ),
-      body: NestedScrollView(
-        controller: _scrollController,
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return [
-            const DefaultAppBar(
-              title: '경기 상세 정보',
-              isSliver: true,
-              hasBorder: false,
-            ),
-          ];
-        },
-        body: Consumer(
-          builder: (BuildContext context, WidgetRef ref, Widget? child) {
-            final result = ref.watch(gameDetailProvider(gameId: widget.gameId));
-            if (result is LoadingModel) {
-              return const SingleChildScrollView(child: GameDetailSkeleton());
-            } else if (result is ErrorModel) {
-              WidgetsBinding.instance.addPostFrameCallback((s) =>
-                  GameError.fromModel(model: result)
-                      .responseError(context, GameApiType.get, ref));
-              return Text('에러입니다.');
-            }
-            result as ResponseModel<GameDetailResponse>;
-            final model = result.data!;
-            // log('model is_host ${model.is_host} model.is_participated = ${model.is_participated}');
+    return SelectableRegion(
+        focusNode: focusNode,
+        selectionControls: materialTextSelectionControls,
+        child: Scaffold(
+          floatingActionButtonLocation: ExpandableFab.location,
+          floatingActionButton: Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              GameDetailResponse? model;
+              final result =
+                  ref.watch(gameDetailProvider(gameId: widget.gameId));
+              if (result is ResponseModel<GameDetailResponse>) {
+                model = result.data!;
+              }
+              return ShareFabComponent(
+                id: widget.gameId,
+                type: ShareType.games,
+                globalKey: fabKey,
+                model: model,
+              );
+            },
+          ),
+          bottomNavigationBar: Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              final result =
+                  ref.watch(gameDetailProvider(gameId: widget.gameId));
+              if (result is LoadingModel) {
+                // todo skeleton
+                return const SizedBox(height: 0);
+              } else if (result is ErrorModel) {
+                return const SizedBox(height: 0);
+              }
+              result as ResponseModel<GameDetailResponse>;
+              final model = result.data!;
+              final button = getBottomButton(model, ref, context);
+              return button != null
+                  ? BottomButton(
+                      button: button,
+                    )
+                  : const SizedBox();
+            },
+          ),
+          body: NestedScrollView(
+            controller: _scrollController,
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
+              return [
+                DefaultAppBar(
+                  title: '경기 상세 정보',
+                  isSliver: true,
+                  hasBorder: false,
+                  actions: [
+                    Padding(
+                      padding: EdgeInsets.only(right: 13.w),
+                      child: InkWell(
+                        onTap: () {
+                          Map<String, String> pathParameters = {
+                            'gameId': widget.gameId.toString()
+                          };
 
-            participationId = model.user_participation_id;
-            return CustomScrollView(
-              slivers: [
-                SliverFillRemaining(
-                  child: Stack(
-                    children: [
-                      SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 13.r),
-                              child: CourtMapComponent(
-                                latLng: NLatLng(
-                                  double.parse(model.court.latitude),
-                                  double.parse(model.court.longitude),
-                                ),
-                              ),
-                            ),
-                            SummaryComponent.fromDetailModel(model: model),
-                            getDivider(),
-                            ParticipationComponent.fromModel(model: model),
-                            getDivider(),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                SizedBox(height: 20.h),
-                                Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 21.w),
-                                  child: Text(
-                                    '호스트 소개',
-                                    style: MITITextStyle.mdBold
-                                        .copyWith(color: MITIColor.gray100),
-                                  ),
-                                ),
-                                UserShortInfoComponent.fromHostModel(
-                                    model: model.host),
-                              ],
-                            ),
-                            getDivider(),
-                            InfoComponent(
-                              info: model.info,
-                            ),
-                            SizedBox(height: 60.h),
-                          ],
+                          context.pushNamed(ChatRoomScreen.routeName,
+                              pathParameters: pathParameters);
+                        },
+                        child: SvgPicture.asset(
+                          AssetUtil.getAssetPath(
+                              type: AssetType.icon, name: 'comments'),
+                          width: 24.r,
+                          height: 24.r,
                         ),
                       ),
-                    ],
-                  ),
+                    )
+                  ],
                 ),
-              ],
-            );
-          },
-        ),
-      ),
-    );
+              ];
+            },
+            body: Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                final result =
+                    ref.watch(gameDetailProvider(gameId: widget.gameId));
+                if (result is LoadingModel) {
+                  return const SingleChildScrollView(
+                      child: GameDetailSkeleton());
+                } else if (result is ErrorModel) {
+                  WidgetsBinding.instance.addPostFrameCallback((s) =>
+                      GameError.fromModel(model: result)
+                          .responseError(context, GameApiType.get, ref));
+                  return Text('에러입니다.');
+                }
+                result as ResponseModel<GameDetailResponse>;
+                final model = result.data!;
+                // log('model is_host ${model.is_host} model.is_participated = ${model.is_participated}');
+
+                participationId = model.user_participation_id;
+                return CustomScrollView(
+                  slivers: [
+                    SliverFillRemaining(
+                      child: Stack(
+                        children: [
+                          SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 13.r),
+                                  child: CourtMapComponent(
+                                    latLng: NLatLng(
+                                      double.parse(model.court.latitude),
+                                      double.parse(model.court.longitude),
+                                    ),
+                                  ),
+                                ),
+                                SummaryComponent.fromDetailModel(model: model),
+                                getDivider(),
+                                ParticipationComponent.fromModel(model: model),
+                                getDivider(),
+                                Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    SizedBox(height: 20.h),
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 21.w),
+                                      child: Text(
+                                        '호스트 소개',
+                                        style: MITITextStyle.mdBold
+                                            .copyWith(color: MITIColor.gray100),
+                                      ),
+                                    ),
+                                    UserShortInfoComponent.fromHostModel(
+                                        model: model.host),
+                                  ],
+                                ),
+                                getDivider(),
+                                InfoComponent(
+                                  info: model.info,
+                                ),
+                                SizedBox(height: 60.h),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ));
   }
 
   Widget? getBottomButton(

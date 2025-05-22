@@ -62,6 +62,11 @@ class DateTimeUtil {
   // // 현지 시간을 한국시간으로 변환할때 사용
   // static final korTimeZone = getLocation('Asia/Seoul');
 
+  static String formatDateTime(DateTime dateTime) {
+    final formatter = DateFormat("MM월 dd일 HH:mm");
+    return formatter.format(dateTime);
+  }
+
   static DateTime getyMd({required DateTime dateTime}) {
     return DateTime(dateTime.year, dateTime.month, dateTime.day);
   }
