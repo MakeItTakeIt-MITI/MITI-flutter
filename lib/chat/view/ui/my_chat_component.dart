@@ -4,11 +4,29 @@ import 'package:miti/chat/model/chat_ui_model.dart';
 import 'package:miti/chat/view/ui/other_chat_component.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:miti/util/util.dart';
 
-class MyChatComponent extends StatelessWidget {
-  final UserChatModel chat;
+import '../../model/base_game_chat_message_response.dart';
 
-  const MyChatComponent({super.key, required this.chat});
+class MyChatBubble extends StatelessWidget {
+  final String time;
+  final String message;
+  final bool isTimeLastUserMessage;
+
+  const MyChatBubble({
+    super.key,
+    required this.time,
+    required this.message,
+    required this.isTimeLastUserMessage,
+  });
+
+  factory MyChatBubble.fromModel({required ChatModel chat}) {
+    return MyChatBubble(
+      time: chat.time,
+      message: chat.message,
+      isTimeLastUserMessage: chat.showTime,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,12 +36,18 @@ class MyChatComponent extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(
-              "오후 13:13",
-              style: MITITextStyle.sm.copyWith(color: MITIColor.gray500),
+            Visibility(
+              visible: isTimeLastUserMessage,
+              child: Text(
+                time,
+                style: MITITextStyle.sm.copyWith(color: MITIColor.gray500),
+              ),
             ),
             SizedBox(width: 5.w),
-            const ChatBox(isMine: true),
+            ChatBox(
+              isMine: true,
+              message: message,
+            ),
           ],
         )
       ],

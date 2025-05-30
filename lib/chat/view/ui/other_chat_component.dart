@@ -3,8 +3,39 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
-class OtherChatComponent extends StatelessWidget {
-  const OtherChatComponent({super.key});
+import '../../model/chat_ui_model.dart';
+
+class OtherChatBubble extends StatelessWidget {
+  final String profileImageUrl;
+  final String nickname;
+  final String message;
+  final String time;
+  final bool isMine;
+  final bool showTime;
+  final bool showUserInfo;
+
+  const OtherChatBubble({
+    super.key,
+    required this.profileImageUrl,
+    required this.nickname,
+    required this.message,
+    required this.isMine,
+    required this.time,
+    required this.showTime,
+    required this.showUserInfo,
+  });
+
+  factory OtherChatBubble.fromModel({required ChatModel chat}) {
+    return OtherChatBubble(
+      profileImageUrl: chat.user.profileImageUrl,
+      nickname: chat.user.nickname,
+      message: chat.message,
+      isMine: chat.isMine,
+      time: chat.time,
+      showTime: chat.showTime,
+      showUserInfo: chat.showUserInfo,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,41 +43,54 @@ class OtherChatComponent extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CircleAvatar(
-          radius: 12.r,
-          backgroundColor: Colors.transparent,
-          backgroundImage: NetworkImage(
-              'https://image-dev.makeittakeit.kr/user-profile-images/user_2.png',
-              scale: 24.r),
-        ),
+        if (showUserInfo)
+          CircleAvatar(
+            radius: 12.r,
+            backgroundColor: Colors.transparent,
+            backgroundImage: NetworkImage(profileImageUrl, scale: 24.r),
+          )
+        else
+          SizedBox(
+            width: 24.r,
+          ),
         SizedBox(width: 8.w),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              Visibility(
+                visible: showUserInfo,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      nickname,
+                      style: MITITextStyle.sm,
+                    ),
+                    SizedBox(height: 4.h),
+                  ],
+                ),
+              ),
               Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    "nickname",
-                    style: MITITextStyle.sm,
+                  ChatBox(
+                    message: message,
+                    isMine: isMine,
                   ),
                   SizedBox(
                     width: 5.w,
                   ),
-                  Text(
-                    "오후 12:00",
-                    style: MITITextStyle.sm.copyWith(color: MITIColor.gray500),
+                  Visibility(
+                    visible: showTime,
+                    child: Text(
+                      time,
+                      style:
+                          MITITextStyle.sm.copyWith(color: MITIColor.gray500),
+                    ),
                   )
                 ],
-              ),
-              SizedBox(height: 4.h),
-              ChatBox(
-                isMine: false,
-              ),
-              SizedBox(height: 8.h),
-              ChatBox(
-                isMine: false,
               )
             ],
           ),
@@ -57,9 +101,10 @@ class OtherChatComponent extends StatelessWidget {
 }
 
 class ChatBox extends StatelessWidget {
+  final String message;
   final bool isMine;
 
-  const ChatBox({super.key, required this.isMine});
+  const ChatBox({super.key, required this.isMine, required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +117,7 @@ class ChatBox extends StatelessWidget {
             borderRadius: BorderRadius.circular(8.r),
             color: isMine ? MITIColor.primary : MITIColor.gray750),
         child: Text(
-          "GAME CHAT MESSAGE LENGTH RANGE 1~1500 MAX LINE HEIGHT 130% LETTER SPACING -2%",
+          message,
           style: MITITextStyle.sm.copyWith(
             color: isMine ? MITIColor.gray900 : MITIColor.gray100,
           ),

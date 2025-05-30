@@ -40,4 +40,6 @@ class BaseGameChatMessageResponse extends IModelWithId {
       user: user ?? this.user,
     );
   }
+
+
 }

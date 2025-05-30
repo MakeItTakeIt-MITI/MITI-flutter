@@ -1,52 +1,156 @@
+import 'dart:developer';
+import 'dart:math' hide log;
+
 import 'package:miti/common/model/default_model.dart';
+import 'package:miti/util/util.dart';
 
-class DateChatModel extends BaseModel {
-  final int endIndex;
-  final int currentIndex;
-  final Map<String, List<UserChatModel>> chatsByDate;
+import '../../user/model/v2/base_user_response.dart';
+import 'base_game_chat_message_response.dart';
 
-  DateChatModel({
-    required this.endIndex,
-    required this.currentIndex,
-    required this.chatsByDate,
+class ChatModel {
+  final String message;
+  final String date; // 01월 01일
+  final String time; // 오후 01:01
+  final BaseUserResponse user;
+  final bool isMine;
+  final bool showTime; // 사용자 별 시간의 마지막 메세지
+  final bool showDate; // 오늘 첫 메세지
+  final bool isLastMessage; // 전체 메세지 중 마지막 메세지
+  final bool showUserInfo;
+
+  ChatModel({
+    required this.message,
+    required this.date,
+    required this.time,
+    required this.user,
+    required this.isMine,
+    required this.showTime,
+    required this.showDate,
+    required this.isLastMessage,
+    required this.showUserInfo,
   });
 
-  DateChatModel copyWith(
-      {required int? endIndex,
-      required int? currentIndex,
-      required Map<String, List<UserChatModel>>? chatsByDate}) {
-    return DateChatModel(
-      endIndex: endIndex ?? this.endIndex,
-      currentIndex: currentIndex ?? this.currentIndex,
-      chatsByDate: chatsByDate ?? this.chatsByDate,
+  factory ChatModel.fromResponse({
+    required BaseGameChatMessageResponse response,
+    required bool isMine,
+    required bool showTime,
+    required bool showDate,
+    required bool isLastMessage,
+    required bool showUserInfo,
+  }) {
+    return ChatModel(
+      message: response.body,
+      date: DateTimeUtil.formatDate(response.createdAt),
+      time: DateTimeUtil.formatTime(response.createdAt),
+      user: response.user,
+      isMine: isMine,
+      showTime: showTime,
+      showDate: showDate,
+      isLastMessage: isLastMessage,
+      showUserInfo: showUserInfo,
+    );
+  }
+
+  // copyWith 메서드
+  ChatModel copyWith({
+    String? message,
+    String? date,
+    String? time,
+    BaseUserResponse? user,
+    bool? isMine,
+    bool? showTime,
+    bool? showDate,
+    bool? isLastMessage,
+    bool? showUserInfo,
+  }) {
+    return ChatModel(
+      message: message ?? this.message,
+      date: date ?? this.date,
+      time: time ?? this.time,
+      user: user ?? this.user,
+      isMine: isMine ?? this.isMine,
+      showTime: showTime ?? this.showTime,
+      showDate: showDate ?? this.showDate,
+      isLastMessage: isLastMessage ?? this.isLastMessage,
+      showUserInfo: showUserInfo ?? this.showUserInfo,
     );
   }
 }
 
-class UserChatModel {
-  final int userId;
-  final bool isMine;
-  final String nickname;
-  final String imageUrl;
-  final List<ChatModel> chats;
+extension ChatModelValidation on List<ChatModel> {
+  bool shouldShowTimeAt(int index) {
+    if (isEmpty || index < 0 || index >= length) return false;
 
-  UserChatModel({
-    required this.userId,
-    required this.isMine,
-    required this.nickname,
-    required this.imageUrl,
-    required this.chats,
-  });
-}
+    final current = this[index];
 
-class ChatModel {
-  final int chatId;
-  final String time;
-  final String message;
+    // 첫 번째 메시지는 항상 시간 표시
+    if (index == length - 1) return true;
 
-  ChatModel({
-    required this.chatId,
-    required this.time,
-    required this.message,
-  });
+    // 마지막 메시지 처리
+    if (index == 0) {
+      final next = this[index + 1];
+
+      // 이전 사용자와 다르면 시간 표시
+      if (current.user.id != next.user.id) return true;
+
+      // 같은 사용자지만 시간이 같으면 시간 숨김
+      if (DateTimeUtil.isSameTime(
+          _parseDateTime(next), _parseDateTime(current))) {
+        return false;
+      }
+
+      return true;
+    }
+
+    final next = this[index + 1];
+    final prev = this[index - 1];
+
+    if (current.user.id != next.user.id) return true;
+
+    if (DateTimeUtil.isSameTime(
+        _parseDateTime(next), _parseDateTime(current))) {
+      return false;
+    }
+
+    if (!DateTimeUtil.isSameTime(
+        _parseDateTime(current), _parseDateTime(prev))) {
+      return true;
+    }
+
+    if (!DateTimeUtil.isSameDay(
+        _parseDateTime(current), _parseDateTime(prev))) {
+      return true;
+    }
+
+    return true;
+  }
+
+  bool shouldShowDateAt(int index) {
+    if (isEmpty || index < 0 || index >= length) return false;
+
+    // 마지막 메시지는 무조건 날짜 표시
+    if (index == 0) return true;
+
+    final current = this[index];
+    final prev = this[index - 1];
+
+    return !DateTimeUtil.isSameDay(
+        _parseDateTime(current), _parseDateTime(prev));
+  }
+
+  bool shouldShowUserInfoAt(int index) {
+    if (isEmpty || index < 0 || index >= length) return false;
+
+    final current = this[index];
+
+    // 마지막 메시지는 무조건 사용자 정보 표시
+    if (index == 0) return true;
+    final prev = this[index - 1];
+    return current.user.id != prev.user.id;
+  }
+
+  // ChatModel의 date, time을 DateTime으로 변환하는 헬퍼
+  DateTime _parseDateTime(ChatModel message) {
+    return DateTimeUtil.parseDateTime(message.date, message.time);
+  }
 }
