@@ -14,6 +14,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:miti/auth/provider/auth_provider.dart';
+import 'package:miti/chat/provider/chat_approve_provider.dart';
 import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/component/defalut_flashbar.dart';
 import 'package:miti/common/component/default_appbar.dart';
@@ -32,6 +34,7 @@ import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../account/model/account_model.dart';
+import '../../chat/model/game_chat_room_approved_users_response.dart';
 import '../../chat/view/chat_room_screen.dart';
 import '../../common/component/share_fab_component.dart';
 import '../../common/error/view/error_screen.dart';
@@ -157,22 +160,44 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                   isSliver: true,
                   hasBorder: false,
                   actions: [
-                    Padding(
-                      padding: EdgeInsets.only(right: 13.w),
-                      child: InkWell(
-                        onTap: () {
-                          Map<String, String> pathParameters = {
-                            'gameId': widget.gameId.toString()
-                          };
+                    Consumer(
+                      builder:
+                          (BuildContext context, WidgetRef ref, Widget? child) {
+                        final userId = ref.watch(authProvider)?.id;
 
-                          context.pushNamed(ChatRoomScreen.routeName,
-                              pathParameters: pathParameters);
-                        },
-                        child: SvgPicture.asset(
-                          AssetUtil.getAssetPath(
-                              type: AssetType.icon, name: 'comments'),
-                          width: 24.r,
-                          height: 24.r,
+                        final result = ref
+                            .watch(chatApproveProvider(gameId: widget.gameId));
+                        bool visible = false;
+                        if (result is LoadingModel || result is ErrorModel) {
+                          visible = false;
+                        } else {
+                          final model = (result as ResponseModel<
+                                  GameChatRoomApprovedUsersResponse>)
+                              .data!;
+                          visible = model.approvedUsers.contains(userId);
+                        }
+
+                        return Visibility(
+                          visible: visible,
+                          child: child!,
+                        );
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 13.w),
+                        child: InkWell(
+                          onTap: () {
+                            Map<String, String> pathParameters = {
+                              'gameId': widget.gameId.toString()
+                            };
+                            context.pushNamed(ChatRoomScreen.routeName,
+                                pathParameters: pathParameters);
+                          },
+                          child: SvgPicture.asset(
+                            AssetUtil.getAssetPath(
+                                type: AssetType.icon, name: 'comments'),
+                            width: 24.r,
+                            height: 24.r,
+                          ),
                         ),
                       ),
                     )

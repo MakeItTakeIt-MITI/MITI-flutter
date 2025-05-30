@@ -1,10 +1,19 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:miti/account/error/account_error.dart';
 import 'package:miti/chat/provider/chat_form_provider.dart';
+import 'package:miti/chat/provider/chat_notice_provider.dart';
+import 'package:miti/chat/view/chat_notification_list_screen.dart';
 import 'package:miti/common/component/default_appbar.dart';
+import 'package:miti/common/model/default_model.dart';
 import 'package:miti/theme/color_theme.dart';
 
+import '../../common/component/defalut_flashbar.dart';
 import '../../theme/text_theme.dart';
 import 'chat_room_screen.dart';
 
@@ -29,7 +38,10 @@ class _ChatNotificationFormScreenState
 
   @override
   void initState() {
-    titleTextController = TextEditingController();
+    titleTextController = TextEditingController()
+      ..addListener(() {
+        // titleTextController.text.length
+      });
     bodyTextController = TextEditingController();
 
     bodyTextController.addListener(_updateLength);
@@ -41,8 +53,6 @@ class _ChatNotificationFormScreenState
     if (mounted) {
       // todo form update
       // ref.read(chatFormProvider.notifier).update(body)
-
-
     }
   }
 
@@ -67,16 +77,41 @@ class _ChatNotificationFormScreenState
         actions: [
           Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              final valid = ref.watch(chatFormProvider.notifier).valid();
+              final form = ref.watch(chatFormProvider);
+              final valid = form.title.isNotEmpty &&
+                  form.title.length <= 32 &&
+                  form.body.isNotEmpty &&
+                  form.body.length <= 3000;
+
+              log("valid = ${valid}");
               return Container(
                 margin: EdgeInsets.only(right: 13.w),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(100.r),
-                  onTap: valid ? () {} : null,
+                  onTap: valid
+                      ? () async {
+                          final result = ref.read(
+                              chatNoticeCreateProvider(gameId: widget.gameId)
+                                  .future);
+
+                          if (result is ErrorModel) {
+                            FlashUtil.showFlash(
+                                context, '요청이 정상적으로 처리되지 않았습니다.',
+                                textColor: MITIColor.error);
+                          } else {
+                            Map<String, String> pathParameters = {
+                              'gameId': widget.gameId.toString()
+                            };
+                            context.pushReplacementNamed(
+                                ChatNotificationListScreen.routeName,
+                                pathParameters: pathParameters);
+                          }
+                        }
+                      : null,
                   child: Container(
                     // Adding padding around the text to increase the tappable area
                     padding:
-                    EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                        EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
                     child: Text(
                       "작성",
                       style: MITITextStyle.mdLight.copyWith(
@@ -99,26 +134,44 @@ class _ChatNotificationFormScreenState
               style: MITITextStyle.mdBold.copyWith(color: Colors.white),
             ),
             SizedBox(height: 12.h),
-            TextField(
-              textInputAction: TextInputAction.next,
-              controller: titleTextController,
-              decoration: InputDecoration(
-                  hintText: "제목을 입력해주세요",
-                  hintStyle: MITITextStyle.sm.copyWith(
-                    color: MITIColor.gray600,
+            Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                final title =
+                    ref.watch(chatFormProvider.select((s) => s.title));
+
+                return TextField(
+                  textInputAction: TextInputAction.next,
+                  controller: titleTextController,
+                  decoration: InputDecoration(
+                      hintText: "제목을 입력해주세요",
+                      hintStyle: MITITextStyle.sm.copyWith(
+                        color: MITIColor.gray600,
+                      ),
+                      enabledBorder: inputBorder,
+                      border: inputBorder,
+                      focusedBorder: inputBorder,
+                      contentPadding: EdgeInsets.all(0.r),
+                      counterText: "",
+                      filled: false,
+                      suffixText: "(${title.length}/32)",
+                      suffixStyle: MITITextStyle.sm.copyWith(
+                        color: MITIColor.gray600,
+                      )),
+                  maxLength: 32,
+                  maxLengthEnforcement:
+                      MaxLengthEnforcement.truncateAfterCompositionEnds,
+                  style: MITITextStyle.sm.copyWith(
+                    color: MITIColor.gray100,
                   ),
-                  enabledBorder: inputBorder,
-                  border: inputBorder,
-                  focusedBorder: inputBorder,
-                  contentPadding: EdgeInsets.all(0.r),
-                  filled: false,
-                  suffixText: "(32)",
-                  suffixStyle: MITITextStyle.sm.copyWith(
-                    color: MITIColor.gray600,
-                  )),
-              style: MITITextStyle.sm.copyWith(
-                color: MITIColor.gray100,
-              ),
+                  onChanged: (v) {
+                    if (v.length > 32) {
+                      return;
+                    }
+
+                    ref.read(chatFormProvider.notifier).update(title: v);
+                  },
+                );
+              },
             ),
             SizedBox(height: 35.h),
             Consumer(
@@ -133,8 +186,9 @@ class _ChatNotificationFormScreenState
                     textController: bodyTextController,
                     inputBorder: inputBorder,
                     onChanged: (v) {
-                      if (v.length > 3000)
+                      if (v.length > 3000) {
                         return;
+                      }
 
                       ref.read(chatFormProvider.notifier).update(body: v);
                     },
@@ -154,10 +208,11 @@ class _MultiLineTextField extends StatelessWidget {
   final InputBorder inputBorder;
   final ValueChanged<String> onChanged;
 
-  const _MultiLineTextField({super.key,
-    required this.textController,
-    required this.inputBorder,
-    required this.onChanged});
+  const _MultiLineTextField(
+      {super.key,
+      required this.textController,
+      required this.inputBorder,
+      required this.onChanged});
 
   @override
   Widget build(BuildContext context) {

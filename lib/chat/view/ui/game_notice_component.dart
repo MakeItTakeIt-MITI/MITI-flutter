@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:miti/account/error/account_error.dart';
 import 'package:miti/auth/view/find_info/find_email_screen.dart';
 import 'package:miti/chat/provider/chat_notice_provider.dart';
+import 'package:miti/chat/view/chat_notification_list_screen.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
@@ -81,66 +82,80 @@ class GameNoticeComponent extends ConsumerWidget {
               );
             }
 
-            return ListView.separated(
-              shrinkWrap: true,
-              itemBuilder: (_, idx) => _NoticeItem.fromModel(
-                model: models[idx],
-                onTap: () {
-                  Map<String, String> pathParameters = {
-                    'gameId': gameId.toString(),
-                    'notificationId': models[idx].id.toString()
-                  };
+            return Column(
+              children: [
+                ListView.separated(
+                  shrinkWrap: true,
+                  itemBuilder: (_, idx) => NoticeItem.fromModel(
+                    model: models[idx],
+                    onTap: () {
+                      Map<String, String> pathParameters = {
+                        'gameId': gameId.toString(),
+                        'notificationId': models[idx].id.toString()
+                      };
 
-                  context.pushNamed(ChatNotificationScreen.routeName,
-                      pathParameters: pathParameters);
-                },
-              ),
-              separatorBuilder: (_, idx) => const SizedBox(height: 0),
-              itemCount: min(models.length, 4),
+                      context.pushNamed(ChatNotificationScreen.routeName,
+                          pathParameters: pathParameters);
+                    },
+                  ),
+                  separatorBuilder: (_, idx) => const SizedBox(height: 0),
+                  itemCount: min(models.length, 4),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10.h),
+                  child: GestureDetector(
+                    onTap: () {
+                      Map<String, String> pathParameters = {
+                        'gameId': gameId.toString()
+                      };
+                      context.pushNamed(ChatNotificationListScreen.routeName,
+                          pathParameters: pathParameters);
+                    },
+                    child: Text(
+                      "공지사항 전체 보기",
+                      style:
+                          MITITextStyle.sm.copyWith(color: MITIColor.gray500),
+                    ),
+                  ),
+                )
+              ],
             );
           },
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 10.h),
-          child: GestureDetector(
-            onTap: () {},
-            child: Text(
-              "공지사항 전체 보기",
-              style: MITITextStyle.sm.copyWith(color: MITIColor.gray500),
-            ),
-          ),
-        )
       ],
     );
   }
 }
 
-class _NoticeItem extends StatelessWidget {
+class NoticeItem extends StatelessWidget {
   final int id;
   final String title;
   final DateTime createdAt;
   final DateTime? modifiedAt;
   final VoidCallback onTap;
+  final bool expand;
 
-  const _NoticeItem({
+  const NoticeItem({
     super.key,
     required this.id,
     required this.title,
     required this.createdAt,
     this.modifiedAt,
     required this.onTap,
+    required this.expand,
   });
 
-  factory _NoticeItem.fromModel({
-    required BaseGameChatNotificationResponse model,
-    required VoidCallback onTap,
-  }) {
-    return _NoticeItem(
+  factory NoticeItem.fromModel(
+      {required BaseGameChatNotificationResponse model,
+      required VoidCallback onTap,
+      bool expand = false}) {
+    return NoticeItem(
       id: model.id,
       title: model.title,
       createdAt: model.createdAt,
       modifiedAt: model.modifiedAt,
       onTap: onTap,
+      expand: expand,
     );
   }
 
@@ -148,41 +163,51 @@ class _NoticeItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final dateTime = DateTimeUtil.formatDateTime(modifiedAt ?? createdAt);
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-        child: Row(
-          children: [
-            SvgPicture.asset(
-              AssetUtil.getAssetPath(type: AssetType.icon, name: 'pin'),
-              width: 12.r,
-              height: 12.r,
-            ),
-            SizedBox(width: 12.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    title,
-                    style: MITITextStyle.md.copyWith(
-                      color: MITIColor.white,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    dateTime,
-                    style: MITITextStyle.xxsm.copyWith(
-                      color: MITIColor.gray500,
-                    ),
-                  )
-                ],
+    return Container(
+      decoration: expand
+          ? const BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+              color: MITIColor.gray750,
+            )))
+          : null,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+              horizontal: 10.w, vertical: expand ? 15.h : 5.h),
+          child: Row(
+            children: [
+              SvgPicture.asset(
+                AssetUtil.getAssetPath(type: AssetType.icon, name: 'pin'),
+                width: 12.r,
+                height: 12.r,
               ),
-            )
-          ],
+              SizedBox(width: 12.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      title,
+                      style: MITITextStyle.md.copyWith(
+                        color: MITIColor.white,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      dateTime,
+                      style: MITITextStyle.xxsm.copyWith(
+                        color: MITIColor.gray500,
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

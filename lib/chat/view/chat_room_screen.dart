@@ -17,7 +17,10 @@ import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/util/util.dart';
 
+import '../../auth/provider/auth_provider.dart';
 import '../../common/component/defalut_flashbar.dart';
+import '../model/game_chat_room_approved_users_response.dart';
+import '../provider/chat_approve_provider.dart';
 
 class ChatRoomScreen extends ConsumerStatefulWidget {
   static String get routeName => 'chatRoom';
@@ -105,7 +108,8 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                     child: Align(
                   alignment: Alignment.topCenter,
                   child: ListView.separated(
-                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
                     controller: _scrollController,
                     reverse: true,
                     shrinkWrap: true,
@@ -138,41 +142,78 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                     top: BorderSide(
               color: MITIColor.gray750,
             ))),
-            child: Row(
-              children: [
-                Expanded(
-                    child: MultiLineTextField(
-                  controller: textController,
-                  hintText: "메세지를 입력해주세요",
-                )),
-                SizedBox(
-                  width: 10.w,
-                ),
-                SizedBox(
-                  width: 41.w,
-                  child: TextButton(
-                      onPressed: () async {
-                        log("sendMessage = ${textController.text}");
-                        final result = await ref
-                            .read(chatPaginationProvider(gameId: widget.gameId)
-                                .notifier)
-                            .sendMessage(message: textController.text);
-                        if (result is ErrorModel) {
-                          FlashUtil.showFlash(context, "요청이 정상적으로 처리되지 않았습니다.",
-                              textColor: MITIColor.error);
-                        } else {
-                          textController.clear();
-                          _scrollController.jumpTo(0);
-                        }
+            child: Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                final userId = ref.watch(authProvider)?.id;
+
+                final result =
+                    ref.watch(chatApproveProvider(gameId: widget.gameId));
+                bool isExpired = true;
+                if (result is LoadingModel || result is ErrorModel) {
+                  isExpired = false;
+                } else {
+                  final model = (result
+                          as ResponseModel<GameChatRoomApprovedUsersResponse>)
+                      .data!;
+                  isExpired =
+                      model.approvedUsers.contains(userId) && !model.isExpired;
+                }
+                final enabled = !isExpired && textController.text.isNotEmpty;
+                return Row(
+                  children: [
+                    Expanded(
+                        child: MultiLineTextField(
+                      controller: textController,
+                      hintText: "메세지를 입력해주세요",
+                      enabled: isExpired,
+                    )),
+                    SizedBox(
+                      width: 10.w,
+                    ),
+                    Consumer(
+                      builder:
+                          (BuildContext context, WidgetRef ref, Widget? child) {
+                        return SizedBox(
+                          width: 41.w,
+                          child: TextButton(
+                              onPressed: enabled
+                                  ? () async {
+                                      log("sendMessage = ${textController.text}");
+                                      final result = await ref
+                                          .read(chatPaginationProvider(
+                                                  gameId: widget.gameId)
+                                              .notifier)
+                                          .sendMessage(
+                                              message: textController.text);
+                                      if (result is ErrorModel) {
+                                        FlashUtil.showFlash(
+                                            context, "요청이 정상적으로 처리되지 않았습니다.",
+                                            textColor: MITIColor.error);
+                                      } else {
+                                        textController.clear();
+                                        _scrollController.jumpTo(0);
+                                      }
+                                    }
+                                  : () {},
+                              style: ButtonStyle(
+                                  backgroundColor: WidgetStateProperty.all(
+                                      enabled
+                                          ? MITIColor.primary
+                                          : MITIColor.gray500)),
+                              child: Text(
+                                "확인",
+                                style: MITITextStyle.xxsm.copyWith(
+                                  color: enabled
+                                      ? MITIColor.gray800
+                                      : MITIColor.gray50,
+                                ),
+                              )),
+                        );
                       },
-                      child: Text(
-                        "확인",
-                        style: MITITextStyle.xxsm.copyWith(
-                          color: MITIColor.gray800,
-                        ),
-                      )),
-                )
-              ],
+                    )
+                  ],
+                );
+              },
             ),
           )
         ],
@@ -238,6 +279,7 @@ class MultiLineTextField extends StatefulWidget {
   final int maxLength;
   final bool showCounter;
   final String? Function(String?)? validator;
+  final bool enabled;
 
   const MultiLineTextField({
     super.key,
@@ -250,6 +292,7 @@ class MultiLineTextField extends StatefulWidget {
     this.maxLength = 1500,
     this.showCounter = true,
     this.validator,
+    this.enabled = true,
   });
 
   @override
@@ -290,6 +333,7 @@ class _MultiLineTextFieldState extends State<MultiLineTextField> {
       child: TextFormField(
         controller: widget.controller,
         focusNode: widget.focusNode,
+        enabled: widget.enabled,
         style: widget.style ?? MITITextStyle.md,
         maxLines: null,
         // 줄 수 제한 없음

@@ -46,6 +46,7 @@ import '../../auth/view/find_info/find_info_screen.dart';
 import '../../auth/view/oauth_error_screen.dart';
 import '../../auth/view/signup/signup_screen.dart';
 import '../../auth/view/signup/signup_select_screen.dart';
+import '../../chat/view/chat_notification_list_screen.dart';
 import '../../chat/view/chat_notification_screen.dart';
 import '../../court/model/court_model.dart';
 import '../../court/model/v2/court_operations_response.dart';
@@ -432,6 +433,18 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 );
                               },
                               routes: [
+                                GoRoute(
+                                    path: 'notification',
+                                    parentNavigatorKey: rootNavKey,
+                                    name: ChatNotificationListScreen.routeName,
+                                    builder: (context, state) {
+                                      final int gameId = int.parse(
+                                          state.pathParameters['gameId']!);
+
+                                      return ChatNotificationListScreen(
+                                        gameId: gameId,
+                                      );
+                                    }),
                                 GoRoute(
                                     path: 'notification/form',
                                     parentNavigatorKey: rootNavKey,
