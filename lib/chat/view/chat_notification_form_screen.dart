@@ -38,22 +38,9 @@ class _ChatNotificationFormScreenState
 
   @override
   void initState() {
-    titleTextController = TextEditingController()
-      ..addListener(() {
-        // titleTextController.text.length
-      });
+    titleTextController = TextEditingController();
     bodyTextController = TextEditingController();
-
-    bodyTextController.addListener(_updateLength);
-
     super.initState();
-  }
-
-  void _updateLength() {
-    if (mounted) {
-      // todo form update
-      // ref.read(chatFormProvider.notifier).update(body)
-    }
   }
 
   @override

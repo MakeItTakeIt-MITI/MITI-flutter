@@ -102,6 +102,18 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
               final model =
                   viewModel as ResponseModel<PaginationModel<ChatModel>>;
               final chatMessages = model.data!.page_content;
+              if (chatMessages.isEmpty) {
+                return Expanded(
+                    child: Column(
+                  children: [
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
+                      child: _InitChatMessageInfo(),
+                    ),
+                  ],
+                ));
+              }
 
               return Expanded(
                 child: Scrollbar(
@@ -158,24 +170,29 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                   isExpired =
                       model.approvedUsers.contains(userId) && !model.isExpired;
                 }
+                isExpired = false;
+                log("isExpired ${isExpired}");
+                final hintText = isExpired ? "비활성화된 라커룸입니다." : "메세지를 입력해주세요";
                 final enabled = !isExpired && textController.text.isNotEmpty;
+                log("textController.text = ${textController.text} enabled = $enabled");
                 return Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Expanded(
-                        child: MultiLineTextField(
-                      controller: textController,
-                      hintText: "메세지를 입력해주세요",
-                      enabled: isExpired,
-                    )),
-                    SizedBox(
-                      width: 10.w,
+                      child: MultiLineTextField(
+                        controller: textController,
+                        hintText: hintText,
+                        enabled: !isExpired,
+                      ),
                     ),
-                    Consumer(
-                      builder:
-                          (BuildContext context, WidgetRef ref, Widget? child) {
-                        return SizedBox(
-                          width: 41.w,
-                          child: TextButton(
+                    SizedBox(width: 10.w),
+                    SizedBox(
+                      width: 41.w,
+                      height: 30.h,
+                      child: Consumer(
+                        builder:
+                            (BuildContext context, WidgetRef ref, Widget? child) {
+                          return TextButton(
                               onPressed: enabled
                                   ? () async {
                                       log("sendMessage = ${textController.text}");
@@ -195,21 +212,21 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                                       }
                                     }
                                   : () {},
-                              style: ButtonStyle(
-                                  backgroundColor: WidgetStateProperty.all(
-                                      enabled
-                                          ? MITIColor.primary
-                                          : MITIColor.gray500)),
+                              style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  backgroundColor: enabled
+                                      ? MITIColor.primary
+                                      : MITIColor.gray500),
                               child: Text(
-                                "확인",
+                                "전송",
                                 style: MITITextStyle.xxsm.copyWith(
                                   color: enabled
                                       ? MITIColor.gray800
                                       : MITIColor.gray50,
                                 ),
-                              )),
-                        );
-                      },
+                              ));
+                        },
+                      ),
                     )
                   ],
                 );
@@ -325,56 +342,58 @@ class _MultiLineTextFieldState extends State<MultiLineTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        minHeight: 30.h,
-        maxHeight: 4 * 20.h + 24.h, // 4줄 + 패딩
+    return TextFormField(
+      controller: widget.controller,
+      focusNode: widget.focusNode,
+      enabled: widget.enabled,
+      style: widget.style ?? MITITextStyle.xxsm,
+      textAlignVertical: TextAlignVertical.center,
+      maxLines: null,
+      // 줄 수 제한 없음
+      minLines: 1,
+      // 최소 1줄
+      textInputAction: TextInputAction.newline,
+      decoration: (widget.decoration ??
+              InputDecoration(
+                hintText: widget.hintText,
+                hintStyle:
+                    MITITextStyle.xxsm.copyWith(color: MITIColor.gray500),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                  borderSide: BorderSide.none,
+                  // borderSide: BorderSide(color: MITIColor.primary),
+                ),
+
+                // 최소 높이 설정 및 contentPadding 을 적용하기 위해  isDense true 설정
+                isDense: true,
+                contentPadding: EdgeInsets.symmetric(horizontal: 12.w,vertical: 11),// EdgeInsets.all(12.r),
+                constraints: BoxConstraints(
+                  minHeight: 30.h,
+                  maxHeight: 4 * 20.h + 24.h, // 4줄 + 패딩
+                ),
+              ))
+          .copyWith(
+        // 카운터는 별도로 표시
+        counterText: '',
       ),
-      child: TextFormField(
-        controller: widget.controller,
-        focusNode: widget.focusNode,
-        enabled: widget.enabled,
-        style: widget.style ?? MITITextStyle.md,
-        maxLines: null,
-        // 줄 수 제한 없음
-        minLines: 1,
-        // 최소 1줄
-        textInputAction: TextInputAction.newline,
-        decoration: (widget.decoration ??
-                InputDecoration(
-                  hintText: widget.hintText,
-                  hintStyle:
-                      MITITextStyle.md.copyWith(color: MITIColor.gray500),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.r),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.r),
-                    borderSide: BorderSide.none,
-                    // borderSide: BorderSide(color: MITIColor.primary),
-                  ),
-                  contentPadding: EdgeInsets.all(12.r),
-                ))
-            .copyWith(
-          // 카운터는 별도로 표시
-          counterText: '',
-        ),
-        maxLength: widget.maxLength,
-        validator: widget.validator,
-        onChanged: (value) {
-          if (widget.onChanged != null) {
-            widget.onChanged!(value);
-          }
-          // 최대 글자 수 제한
-          if (value.length > widget.maxLength) {
-            widget.controller.text = value.substring(0, widget.maxLength);
-            widget.controller.selection = TextSelection.fromPosition(
-              TextPosition(offset: widget.maxLength),
-            );
-          }
-        },
-      ),
+      maxLength: widget.maxLength,
+      validator: widget.validator,
+      onChanged: (value) {
+        if (widget.onChanged != null) {
+          widget.onChanged!(value);
+        }
+        // 최대 글자 수 제한
+        if (value.length > widget.maxLength) {
+          widget.controller.text = value.substring(0, widget.maxLength);
+          widget.controller.selection = TextSelection.fromPosition(
+            TextPosition(offset: widget.maxLength),
+          );
+        }
+      },
     );
   }
 }
