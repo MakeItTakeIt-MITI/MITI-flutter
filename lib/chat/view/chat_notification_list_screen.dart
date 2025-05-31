@@ -18,10 +18,12 @@ import 'chat_notification_screen.dart';
 
 class ChatNotificationListScreen extends StatelessWidget {
   final int gameId;
+  final bool isHost;
 
   static String get routeName => 'chatNotificationList';
 
-  const ChatNotificationListScreen({super.key, required this.gameId});
+  const ChatNotificationListScreen(
+      {super.key, required this.gameId, required this.isHost});
 
   @override
   Widget build(BuildContext context) {
@@ -30,24 +32,27 @@ class ChatNotificationListScreen extends StatelessWidget {
       appBar: DefaultAppBar(
         title: "공지사항",
         actions: [
-          Container(
-            margin: EdgeInsets.only(right: 13.w),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(100.r),
-              onTap: () {
-                Map<String, String> pathParameters = {
-                  'gameId': gameId.toString()
-                };
-                context.pushNamed(ChatNotificationFormScreen.createRouteName,
-                    pathParameters: pathParameters);
-              },
-              child: Container(
-                // Adding padding around the text to increase the tappable area
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                child: Text(
-                  "작성",
-                  style: MITITextStyle.xxsmLight
-                      .copyWith(color: MITIColor.primary),
+          Visibility(
+            visible: isHost,
+            child: Container(
+              margin: EdgeInsets.only(right: 13.w),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(100.r),
+                onTap: () {
+                  Map<String, String> pathParameters = {
+                    'gameId': gameId.toString()
+                  };
+                  context.pushNamed(ChatNotificationFormScreen.createRouteName,
+                      pathParameters: pathParameters);
+                },
+                child: Container(
+                  // Adding padding around the text to increase the tappable area
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                  child: Text(
+                    "작성",
+                    style: MITITextStyle.xxsmLight
+                        .copyWith(color: MITIColor.primary),
+                  ),
                 ),
               ),
             ),

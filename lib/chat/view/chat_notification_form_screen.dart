@@ -44,9 +44,46 @@ class _ChatNotificationFormScreenState
 
   @override
   void initState() {
+    super.initState();
     titleTextController = TextEditingController();
     bodyTextController = TextEditingController();
-    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      if (!isEdit) {
+        final result = ref.read(userChatNoticeProvider(gameId: widget.gameId));
+      }
+
+      // if (widget.court == null) {
+      //   final result = await ref.read(gameRecentHostingProvider.future);
+      //
+      //   if (result is ErrorModel) {
+      //   } else {
+      //     final model =
+      //     (result as ResponseListModel<GameWithCourtResponse>).data!;
+      //     if (model.isNotEmpty) {
+      //       showCustomModalBottomSheet(
+      //           context,
+      //           GameRecentComponent(
+      //             models: model,
+      //             textEditingControllers: textEditingControllers,
+      //           ));
+      //     }
+      //   }
+      // } else {
+      //   final name = widget.court?.name ?? '';
+      //   final address = widget.court?.address ?? '';
+      //   final addressDetail = widget.court?.addressDetail ?? '';
+      //   ref.read(gameFormProvider.notifier).update(
+      //     court: GameCourtParam(
+      //       name: name,
+      //       address: address,
+      //       address_detail: addressDetail,
+      //     ),
+      //   );
+      //   textEditingControllers[1].text = address;
+      //   textEditingControllers[2].text = addressDetail;
+      //   textEditingControllers[3].text = name;
+      // }
+    });
   }
 
   @override
@@ -105,8 +142,10 @@ class _ChatNotificationFormScreenState
                                 pathParameters: pathParameters);
                             Future.delayed(const Duration(milliseconds: 200),
                                 () {
-                              FlashUtil.showFlash(context, "공지사항이 수정되었습니다.",
-                                 );
+                              FlashUtil.showFlash(
+                                context,
+                                "공지사항이 수정되었습니다.",
+                              );
                             });
                           }
                         }
@@ -156,8 +195,10 @@ class _ChatNotificationFormScreenState
                               'gameId': widget.gameId.toString()
                             };
                             context.goNamed(
-                                ChatNotificationListScreen.routeName,
-                                pathParameters: pathParameters);
+                              ChatNotificationListScreen.routeName,
+                              pathParameters: pathParameters,
+                              extra: true,
+                            );
                             String flashText = "";
                             if (isEdit) {
                               // 삭제

@@ -57,7 +57,7 @@ abstract class ChatRepository {
   Future<ResponseModel<PaginationModel<BaseGameChatMessageResponse>>>
       postChatMessage({
     @Path('gameId') required int gameId,
-    @Body() required String body,
+    @Field("body") required String body,
   });
 
   /// 경기 채팅 공지사항 목록 조회 API

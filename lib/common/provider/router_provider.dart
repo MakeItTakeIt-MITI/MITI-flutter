@@ -440,9 +440,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                                     builder: (context, state) {
                                       final int gameId = int.parse(
                                           state.pathParameters['gameId']!);
-
+                                      final isHost =
+                                      state.extra! as bool;
                                       return ChatNotificationListScreen(
-                                        gameId: gameId,
+                                        gameId: gameId, isHost: isHost,
                                       );
                                     }),
                                 GoRoute(

@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/account/error/account_error.dart';
+import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/auth/view/find_info/find_email_screen.dart';
 import 'package:miti/chat/provider/chat_notice_provider.dart';
 import 'package:miti/chat/view/chat_notification_list_screen.dart';
@@ -16,6 +17,8 @@ import 'package:miti/theme/text_theme.dart';
 
 import '../../../notification/model/base_game_chat_notification_response.dart';
 import '../../../util/util.dart';
+import '../../model/game_chat_member_response.dart';
+import '../../provider/chat_member_provider.dart';
 import '../chat_notification_form_screen.dart';
 import '../chat_notification_screen.dart';
 
@@ -29,6 +32,14 @@ class GameNoticeComponent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final chatMemberResult = ref.watch(chatMemberProvider(gameId: gameId));
+
+    bool isHost = false;
+    if (chatMemberResult is ResponseModel<GameChatMemberResponse>) {
+      final userId = ref.watch(authProvider)?.id;
+      isHost = chatMemberResult.data!.host.id == userId;
+    }
+
     return Column(
       children: [
         Padding(
@@ -42,18 +53,22 @@ class GameNoticeComponent extends ConsumerWidget {
                   color: MITIColor.gray100,
                 ),
               ),
-              InkWell(
-                onTap: () {
-                  Map<String, String> pathParameters = {
-                    'gameId': gameId.toString()
-                  };
-                  context.pushNamed(ChatNotificationFormScreen.createRouteName,
-                      pathParameters: pathParameters);
-                },
-                child: SvgPicture.asset(
-                  AssetUtil.getAssetPath(type: AssetType.icon, name: 'plus'),
-                  width: 18.r,
-                  height: 18.r,
+              Visibility(
+                visible: isHost,
+                child: InkWell(
+                  onTap: () {
+                    Map<String, String> pathParameters = {
+                      'gameId': gameId.toString()
+                    };
+                    context.pushNamed(
+                        ChatNotificationFormScreen.createRouteName,
+                        pathParameters: pathParameters);
+                  },
+                  child: SvgPicture.asset(
+                    AssetUtil.getAssetPath(type: AssetType.icon, name: 'plus'),
+                    width: 18.r,
+                    height: 18.r,
+                  ),
                 ),
               ),
             ],
@@ -109,7 +124,7 @@ class GameNoticeComponent extends ConsumerWidget {
                         'gameId': gameId.toString()
                       };
                       context.pushNamed(ChatNotificationListScreen.routeName,
-                          pathParameters: pathParameters);
+                          pathParameters: pathParameters, extra: isHost);
                     },
                     child: Text(
                       "공지사항 전체 보기",
@@ -178,12 +193,12 @@ class NoticeItem extends StatelessWidget {
               horizontal: 10.w, vertical: expand ? 15.h : 5.h),
           child: Row(
             children: [
-              SvgPicture.asset(
-                AssetUtil.getAssetPath(type: AssetType.icon, name: 'pin'),
-                width: 12.r,
-                height: 12.r,
-              ),
-              SizedBox(width: 12.w),
+              // SvgPicture.asset(
+              //   AssetUtil.getAssetPath(type: AssetType.icon, name: 'pin'),
+              //   width: 12.r,
+              //   height: 12.r,
+              // ),
+              // SizedBox(width: 12.w),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,

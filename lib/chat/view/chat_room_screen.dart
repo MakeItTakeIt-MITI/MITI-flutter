@@ -225,7 +225,7 @@ class _ChatFormState extends State<_ChatForm> {
                 (result as ResponseModel<GameChatRoomApprovedUsersResponse>)
                     .data!;
             isExpired =
-                model.approvedUsers.contains(userId) && !model.isExpired;
+                model.approvedUsers.contains(userId) && model.isExpired;
           }
           log("isExpired ${isExpired}");
           final hintText = isExpired ? "비활성화된 라커룸입니다." : "메세지를 입력해주세요";

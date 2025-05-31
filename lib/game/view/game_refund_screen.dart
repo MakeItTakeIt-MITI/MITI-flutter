@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:miti/chat/provider/chat_approve_provider.dart';
 import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/model/entity_enum.dart';
@@ -196,16 +197,23 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
       await ref
           .read(gameDetailProvider(gameId: widget.gameId).notifier)
           .get(gameId: widget.gameId);
+      await ref
+          .read(chatApproveProvider(gameId: widget.gameId).notifier)
+          .get(gameId: widget.gameId);
       if (context.mounted) {
+        context.pop();
         Map<String, String> pathParameters = {
           'gameId': widget.gameId.toString()
         };
-        context.goNamed(
-          GameDetailScreen.routeName,
-          pathParameters: pathParameters,
-        );
+
         Future.delayed(const Duration(milliseconds: 100), () {
-          FlashUtil.showFlash(context, '경기 참여가 취소되었습니다.');
+          if (context.mounted) {
+            context.goNamed(
+              GameDetailScreen.routeName,
+              pathParameters: pathParameters,
+            );
+            FlashUtil.showFlash(context, '경기 참여가 취소되었습니다.');
+          }
         });
       }
     }

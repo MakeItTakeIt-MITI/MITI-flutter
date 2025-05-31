@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/chat/provider/chat_notice_provider.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/theme/color_theme.dart';
@@ -30,28 +31,44 @@ class ChatNotificationScreen extends StatelessWidget {
       appBar: DefaultAppBar(
         title: "공지사항",
         actions: [
-          Container(
-            margin: EdgeInsets.only(right: 13.w),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(100.r),
-              onTap: () {
-                Map<String, String> pathParameters = {
-                  'gameId': gameId.toString(),
-                };
-                Map<String, String> queryParameters = {
-                  'notificationId': notificationId.toString(),
-                };
-                context.pushNamed(ChatNotificationFormScreen.createRouteName,
-                    pathParameters: pathParameters,
-                    queryParameters: queryParameters);
-              },
-              child: Container(
-                // Adding padding around the text to increase the tappable area
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                child: Text(
-                  "수정",
-                  style: MITITextStyle.xxsmLight
-                      .copyWith(color: MITIColor.primary),
+          Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              final result = ref.watch(chatNoticeDetailProvider(
+                  gameId: gameId, notificationId: notificationId));
+              if (result is LoadingModel) {
+                return Container();
+              } else if (result is ErrorModel) {
+                return Container();
+              }
+              final model =
+                  (result as ResponseModel<GameChatNotificationResponse>).data!;
+              final userId = ref.watch(authProvider)?.id;
+              final isHost = model.host.id == userId;
+              return Visibility(visible: isHost, child: child!);
+            },
+            child: Container(
+              margin: EdgeInsets.only(right: 13.w),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(100.r),
+                onTap: () {
+                  Map<String, String> pathParameters = {
+                    'gameId': gameId.toString(),
+                  };
+                  Map<String, String> queryParameters = {
+                    'notificationId': notificationId.toString(),
+                  };
+                  context.pushNamed(ChatNotificationFormScreen.createRouteName,
+                      pathParameters: pathParameters,
+                      queryParameters: queryParameters);
+                },
+                child: Container(
+                  // Adding padding around the text to increase the tappable area
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                  child: Text(
+                    "수정",
+                    style: MITITextStyle.xxsmLight
+                        .copyWith(color: MITIColor.primary),
+                  ),
                 ),
               ),
             ),

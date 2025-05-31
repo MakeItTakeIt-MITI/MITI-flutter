@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
@@ -7,6 +8,8 @@ import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
+
+import '../../chat/provider/chat_approve_provider.dart';
 
 enum GameCompleteType {
   create,
@@ -189,23 +192,32 @@ class GameCompleteScreen extends StatelessWidget {
                       itemCount: 3),
                 ),
                 const Spacer(),
-                SizedBox(
-                  height: 48.h,
-                  child: TextButton(
-                    onPressed: () {
-                      Map<String, String> pathParameters = {
-                        'gameId': gameId.toString()
-                      };
+                Consumer(
+                  builder:
+                      (BuildContext context, WidgetRef ref, Widget? child) {
+                    return SizedBox(
+                      height: 48.h,
+                      child: TextButton(
+                        onPressed: () async {
+                          await ref
+                              .read(
+                                  chatApproveProvider(gameId: gameId).notifier)
+                              .get(gameId: gameId);
+                          Map<String, String> pathParameters = {
+                            'gameId': gameId.toString()
+                          };
 
-                      context.goNamed(
-                        GameDetailScreen.routeName,
-                        pathParameters: pathParameters,
-                      );
-                    },
-                    style: TextButton.styleFrom(
-                        fixedSize: Size(double.infinity, 48.h)),
-                    child: const Text('경기 상세 정보 보기'),
-                  ),
+                          context.goNamed(
+                            GameDetailScreen.routeName,
+                            pathParameters: pathParameters,
+                          );
+                        },
+                        style: TextButton.styleFrom(
+                            fixedSize: Size(double.infinity, 48.h)),
+                        child: const Text('경기 상세 정보 보기'),
+                      ),
+                    );
+                  },
                 ),
                 SizedBox(height: 20.h),
               ],

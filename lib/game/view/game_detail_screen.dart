@@ -95,7 +95,25 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
         throttleCnt++;
       });
     });
+
     _scrollController = ScrollController();
+    //  todo 경기 취소 할 때 호출이 안됨
+    ref
+        .read(chatApproveProvider(gameId: widget.gameId).notifier)
+        .get(gameId: widget.gameId);
+    log("gameDetail initState");
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    log("gameDetail didChangeDependencies");
+  }
+
+  @override
+  void didUpdateWidget(covariant GameDetailScreen oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -942,7 +960,7 @@ class SummaryComponent extends StatelessWidget {
     final gameDate = startDate == endDate
         ? '$startDate $time'
         : '$startDate ${model.starttime.substring(0, 5)} ~ $endDate ${model.endtime.substring(0, 5)}';
-    final address = '${model.court.address} ${model.court.addressDetail ?? ''}';
+    final address = '${model.court.address}\n${model.court.name}';
     return SummaryComponent(
       gameId: model.id,
       gameStatus: model.game_status,
@@ -1024,7 +1042,7 @@ class SummaryComponent extends StatelessWidget {
       Expanded(
         child: Text(
           title,
-          maxLines: 1,
+          maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
           textAlign: TextAlign.left,

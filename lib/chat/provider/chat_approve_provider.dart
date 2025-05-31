@@ -12,7 +12,7 @@ part 'chat_approve_provider.g.dart';
 class ChatApprove extends _$ChatApprove {
   @override
   BaseModel build({required int gameId}) {
-    get(gameId: gameId);
+    // get(gameId: gameId);
     return LoadingModel();
   }
 

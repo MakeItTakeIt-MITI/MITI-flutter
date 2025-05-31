@@ -1,6 +1,7 @@
 import 'package:miti/chat/param/chat_notice_param.dart';
 import 'package:miti/chat/provider/chat_form_provider.dart';
 import 'package:miti/chat/repository/chat_repository.dart';
+import 'package:miti/common/param/pagination_param.dart';
 import 'package:miti/notification/provider/notification_provider.dart';
 import 'package:miti/notification/repository/notification_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -82,7 +83,8 @@ Future<BaseModel> chatNoticeCreate(ChatNoticeCreateRef ref,
 Future<BaseModel> chatNoticeUpdate(ChatNoticeUpdateRef ref,
     {required int gameId, required int notificationId}) async {
   final repository = ref.watch(chatRepositoryProvider);
-  final form = ref.watch(chatFormProvider(gameId: gameId, notificationId: notificationId));
+  final form = ref
+      .watch(chatFormProvider(gameId: gameId, notificationId: notificationId));
   final param = ChatNoticeParam(title: form.title, body: form.body);
 
   return await repository
@@ -117,4 +119,33 @@ Future<BaseModel> chatNoticeDelete(ChatNoticeDeleteRef ref,
         'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
     return error;
   });
+}
+
+@Riverpod(keepAlive: false)
+class UserChatNotice extends _$UserChatNotice {
+  @override
+  BaseModel build({
+    required int gameId,
+    PaginationParam paginationParam = const PaginationParam(page: 1),
+  }) {
+    get(gameId: gameId, paginationParam: paginationParam);
+    return LoadingModel();
+  }
+
+  Future<void> get(
+      {required int gameId, required PaginationParam paginationParam}) async {
+    final repository = ref.watch(chatRepositoryProvider);
+    repository
+        .getUserChatNotifications(
+            gameId: gameId, paginationParam: paginationParam)
+        .then((value) {
+      logger.i(value);
+      state = value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      state = error;
+    });
+  }
 }
