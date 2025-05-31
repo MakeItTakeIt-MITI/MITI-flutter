@@ -1,3 +1,4 @@
+import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/chat/param/chat_notice_param.dart';
 import 'package:miti/chat/provider/chat_form_provider.dart';
 import 'package:miti/chat/repository/chat_repository.dart';
@@ -121,31 +122,22 @@ Future<BaseModel> chatNoticeDelete(ChatNoticeDeleteRef ref,
   });
 }
 
-@Riverpod(keepAlive: false)
-class UserChatNotice extends _$UserChatNotice {
-  @override
-  BaseModel build({
-    required int gameId,
-    PaginationParam paginationParam = const PaginationParam(page: 1),
-  }) {
-    get(gameId: gameId, paginationParam: paginationParam);
-    return LoadingModel();
-  }
+@riverpod
+Future<BaseModel> userChatNotice(UserChatNoticeRef ref,
+    {PaginationParam paginationParam = const PaginationParam(page: 1)}) async {
 
-  Future<void> get(
-      {required int gameId, required PaginationParam paginationParam}) async {
-    final repository = ref.watch(chatRepositoryProvider);
-    repository
-        .getUserChatNotifications(
-            gameId: gameId, paginationParam: paginationParam)
-        .then((value) {
-      logger.i(value);
-      state = value;
-    }).catchError((e) {
-      final error = ErrorModel.respToError(e);
-      logger.e(
-          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
-      state = error;
-    });
-  }
+  final repository = ref.watch(chatRepositoryProvider);
+  final userId = ref.read(authProvider)?.id ?? 0;
+  return await repository
+      .getUserChatNotifications(
+          userId: userId, paginationParam: paginationParam)
+      .then<BaseModel>((value) {
+    logger.i(value);
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
 }

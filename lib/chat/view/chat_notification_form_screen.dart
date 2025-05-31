@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/chat/provider/chat_form_provider.dart';
 import 'package:miti/chat/provider/chat_notice_provider.dart';
@@ -14,16 +15,19 @@ import 'package:miti/common/component/default_layout.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/theme/color_theme.dart';
 
+import '../../common/component/custom_bottom_sheet.dart';
 import '../../common/component/defalut_flashbar.dart';
+import '../../court/component/court_list_component.dart';
+import '../../game/component/game_recent_component.dart';
+import '../../notification/model/game_chat_notification_response.dart';
 import '../../theme/text_theme.dart';
+import '../../util/util.dart';
 
 class ChatNotificationFormScreen extends ConsumerStatefulWidget {
   final int gameId;
   final int? notificationId;
 
   static String get createRouteName => 'createChatNotificationForm';
-
-  static String get editRouteName => 'editChatNotificationForm';
 
   const ChatNotificationFormScreen(
       {super.key, required this.gameId, this.notificationId});
@@ -49,7 +53,32 @@ class _ChatNotificationFormScreenState
     bodyTextController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       if (!isEdit) {
-        final result = ref.read(userChatNoticeProvider(gameId: widget.gameId));
+        final result = await ref.read(userChatNoticeProvider().future);
+
+        if (result is ErrorModel) {
+        } else {
+          final model = (result as ResponseModel<
+                  PaginationModel<GameChatNotificationResponse>>)
+              .data!;
+          if (model.page_content.isNotEmpty) {
+            showCustomModalBottomSheet(
+                context,
+                UserChatNoticeComponent(
+                  models: model.page_content,
+                  onSelect: () {
+                    final selected = ref.read(selectedProvider);
+                    final select =
+                        model.page_content.firstWhere((m) => m.id == selected);
+                    ref
+                        .read(chatFormProvider(gameId: widget.gameId).notifier)
+                        .update(title: select.title, body: select.body);
+                    titleTextController.text = select.title;
+                    bodyTextController.text = select.body;
+                    context.pop();
+                  },
+                ));
+          }
+        }
       }
 
       // if (widget.court == null) {
@@ -376,6 +405,83 @@ class _MultiLineTextField extends StatelessWidget {
       style: MITITextStyle.sm.copyWith(
         color: MITIColor.gray100,
       ),
+    );
+  }
+}
+
+class UserChatNoticeComponent extends ConsumerWidget {
+  final List<GameChatNotificationResponse> models;
+  final VoidCallback onSelect;
+
+  const UserChatNoticeComponent({
+    super.key,
+    required this.models,
+    required this.onSelect,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 4.h),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "경기 공지사항",
+                  style: MITITextStyle.mdBold.copyWith(
+                    color: MITIColor.gray100,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => context.pop(),
+                  child: SvgPicture.asset(
+                    AssetUtil.getAssetPath(
+                        type: AssetType.icon, name: 'remove'),
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
+        SizedBox(height: 20.h),
+        ListView.separated(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemBuilder: (_, idx) {
+              return GameBottomSheetCard.fromUserChatNoticeModel(
+                model: models[idx],
+              );
+            },
+            separatorBuilder: (_, idx) => SizedBox(
+                  height: 12.h,
+                ),
+            itemCount: models.length),
+        SizedBox(height: 20.h),
+        Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final selected = ref.watch(selectedProvider);
+            return TextButton(
+                onPressed: selected != null ? onSelect : () {},
+                style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all(selected != null
+                        ? MITIColor.primary
+                        : MITIColor.gray500)),
+                child: Text(
+                  "공지사항 불러오기",
+                  style: MITITextStyle.mdBold.copyWith(
+                      color: selected != null
+                          ? MITIColor.gray800
+                          : MITIColor.gray50),
+                ));
+          },
+        ),
+      ],
     );
   }
 }

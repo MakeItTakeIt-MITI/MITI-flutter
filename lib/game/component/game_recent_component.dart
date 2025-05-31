@@ -9,6 +9,7 @@ import 'package:miti/theme/text_theme.dart';
 import 'package:miti/util/util.dart';
 
 import '../../court/component/court_list_component.dart';
+import '../../notification/model/game_chat_notification_response.dart';
 import '../model/v2/game/base_game_with_court_response.dart';
 import '../model/v2/game/game_response.dart';
 import '../model/v2/game/game_with_court_response.dart';
@@ -63,7 +64,7 @@ class GameRecentComponent extends ConsumerWidget {
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemBuilder: (_, idx) {
-              return _GameRecentCard.fromModel(
+              return GameBottomSheetCard.fromRecentModel(
                 model: models[idx],
               );
             },
@@ -106,26 +107,36 @@ class GameRecentComponent extends ConsumerWidget {
   }
 }
 
-class _GameRecentCard extends ConsumerWidget {
+class GameBottomSheetCard extends ConsumerWidget {
   final int id;
   final String title;
-  final String address;
+  final String content;
 
-  const _GameRecentCard({
+  const GameBottomSheetCard({
     super.key,
     required this.id,
     required this.title,
-    required this.address,
+    required this.content,
   });
 
-  factory _GameRecentCard.fromModel({
+  factory GameBottomSheetCard.fromRecentModel({
     required GameWithCourtResponse model,
   }) {
     final address =
         '${model.court.address} ${(model.court.addressDetail ?? '')}';
-    return _GameRecentCard(
+    return GameBottomSheetCard(
       title: model.title,
-      address: address,
+      content: address,
+      id: model.id,
+    );
+  }
+
+  factory GameBottomSheetCard.fromUserChatNoticeModel({
+    required GameChatNotificationResponse model,
+  }) {
+    return GameBottomSheetCard(
+      title: model.title,
+      content: model.body,
       id: model.id,
     );
   }
@@ -165,7 +176,7 @@ class _GameRecentCard extends ConsumerWidget {
                   ),
                   SizedBox(height: 4.h),
                   Text(
-                    address,
+                    content,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: MITITextStyle.xxsm.copyWith(

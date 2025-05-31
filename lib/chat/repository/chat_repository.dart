@@ -105,10 +105,10 @@ abstract class ChatRepository {
 
   /// 작성 경기 채팅 공지사항 목록 조회 API
   @Headers({'token': 'true'})
-  @GET('users/{userId}/game-chat-notifications')
+  @GET('/users/{userId}/game-chat-notifications')
   Future<ResponseModel<PaginationModel<GameChatNotificationResponse>>>
       getUserChatNotifications({
-    @Path('userId') required int gameId,
+    @Path('userId') required int userId,
     @Queries() required PaginationParam paginationParam,
   });
 }
