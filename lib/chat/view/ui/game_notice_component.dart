@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:miti/account/error/account_error.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/auth/view/find_info/find_email_screen.dart';
+import 'package:miti/chat/component/chat_notice_skeleton.dart';
 import 'package:miti/chat/provider/chat_notice_provider.dart';
 import 'package:miti/chat/view/chat_notification_list_screen.dart';
 import 'package:miti/common/model/default_model.dart';
@@ -78,7 +79,7 @@ class GameNoticeComponent extends ConsumerWidget {
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
             final result = ref.watch(chatNoticeProvider(gameId: gameId));
             if (result is LoadingModel) {
-              return const CircularProgressIndicator();
+              return const ChatNoticeSkeleton();
             } else if (result is ErrorModel) {
               return Text("Error");
             }

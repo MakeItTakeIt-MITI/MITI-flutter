@@ -8,6 +8,7 @@ import 'package:miti/theme/text_theme.dart';
 import '../../../common/model/entity_enum.dart';
 import '../../../theme/color_theme.dart';
 import '../../../user/model/v2/user_player_profile_response.dart';
+import '../../component/chat_member_skeleton.dart';
 import '../../model/game_chat_member_response.dart';
 
 class ChatMemberComponent extends ConsumerWidget {
@@ -22,7 +23,7 @@ class ChatMemberComponent extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final result = ref.watch(chatMemberProvider(gameId: gameId));
     if (result is LoadingModel) {
-      return CircularProgressIndicator();
+      return const ChatMemberSkeleton();
     } else if (result is ErrorModel) {
       return Text("Error");
     }

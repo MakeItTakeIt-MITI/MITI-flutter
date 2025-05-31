@@ -35,25 +35,6 @@ final interactionDescProvider = StateProvider.autoDispose
 class GameForm extends _$GameForm {
   @override
   GameCreateParam build() {
-    // final result = ref
-    //     .watch(agreementPolicyProvider(type: AgreementRequestType.game_hosting));
-    // if (result is ResponseListModel<AgreementPolicyModel>) {
-    //   final List<bool> checkBoxes =
-    //       List.generate(result.data!.length + 1, (e) => false);
-    //   return GameCreateParam(
-    //     title: '',
-    //     startdate: '',
-    //     starttime: '',
-    //     enddate: '',
-    //     endtime: '',
-    //     min_invitation: '',
-    //     max_invitation: '',
-    //     info: '',
-    //     fee: '',
-    //     court: const GameCourtParam(name: '', address: '', address_detail: ''),
-    //     checkBoxes: checkBoxes,
-    //   );
-    // }
     return const GameCreateParam(
       title: '',
       startdate: '',
@@ -114,20 +95,6 @@ class GameForm extends _$GameForm {
     if (fee != null) {
       fee = fee.replaceAll(',', '');
     }
-
-    // if (startDateTime != null) {
-    //   final dateFormat = DateFormat('yyyy-MM-dd');
-    //   final timeFormat = DateFormat('HH:mm');
-    //   startdate = dateFormat.format(startDateTime);
-    //   starttime = timeFormat.format(startDateTime);
-    // }
-    // if (endDateTime != null) {
-    //   final dateFormat = DateFormat('yyyy-MM-dd');
-    //   final timeFormat = DateFormat('HH:mm');
-    //   enddate = dateFormat.format(endDateTime);
-    //   endtime = timeFormat.format(endDateTime);
-    // }
-
     state = state.copyWith(
       title: title,
       startdate: startdate,

@@ -19,6 +19,7 @@ import 'package:miti/util/util.dart';
 
 import '../../auth/provider/auth_provider.dart';
 import '../../common/component/defalut_flashbar.dart';
+import '../component/chat_bubble_skeleton.dart';
 import '../model/game_chat_room_approved_users_response.dart';
 import '../provider/chat_approve_provider.dart';
 
