@@ -5,23 +5,25 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:miti/account/error/account_error.dart';
 import 'package:miti/chat/provider/chat_form_provider.dart';
 import 'package:miti/chat/provider/chat_notice_provider.dart';
 import 'package:miti/chat/view/chat_notification_list_screen.dart';
+import 'package:miti/chat/view/chat_notification_screen.dart';
 import 'package:miti/common/component/default_appbar.dart';
+import 'package:miti/common/component/default_layout.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/theme/color_theme.dart';
 
 import '../../common/component/defalut_flashbar.dart';
 import '../../theme/text_theme.dart';
-import 'chat_room_screen.dart';
 
 class ChatNotificationFormScreen extends ConsumerStatefulWidget {
   final int gameId;
   final int? notificationId;
 
-  static String get routeName => 'chatNotificationForm';
+  static String get createRouteName => 'createChatNotificationForm';
+
+  static String get editRouteName => 'editChatNotificationForm';
 
   const ChatNotificationFormScreen(
       {super.key, required this.gameId, this.notificationId});
@@ -36,11 +38,26 @@ class _ChatNotificationFormScreenState
   late final TextEditingController bodyTextController;
   late final TextEditingController titleTextController;
 
+  bool get isEdit => widget.notificationId != null;
+
+  String get buttonText => isEdit ? "삭제" : "작성";
+
   @override
   void initState() {
     titleTextController = TextEditingController();
     bodyTextController = TextEditingController();
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (isEdit) {
+      final form = ref.read(chatFormProvider(
+          gameId: widget.gameId, notificationId: widget.notificationId));
+      titleTextController.text = form.title;
+      bodyTextController.text = form.body;
+    }
   }
 
   @override
@@ -55,8 +72,57 @@ class _ChatNotificationFormScreenState
     const inputBorder = UnderlineInputBorder(
         borderSide: BorderSide(color: MITIColor.gray600, width: .5));
 
+    Widget? bottomButton;
+    if (isEdit) {
+      bottomButton = Consumer(
+        builder: (BuildContext context, WidgetRef ref, Widget? child) {
+          final valid = validButton(ref);
+
+          return BottomButton(
+              button: TextButton(
+                  style: TextButton.styleFrom(
+                      backgroundColor:
+                          valid ? MITIColor.primary : MITIColor.gray500),
+                  onPressed: valid
+                      ? () async {
+                          final result = await ref.read(
+                              chatNoticeUpdateProvider(
+                                      gameId: widget.gameId,
+                                      notificationId: widget.notificationId!)
+                                  .future);
+
+                          if (result is ErrorModel) {
+                            FlashUtil.showFlash(
+                                context, '요청이 정상적으로 처리되지 않았습니다.',
+                                textColor: MITIColor.error);
+                          } else {
+                            Map<String, String> pathParameters = {
+                              'gameId': widget.gameId.toString(),
+                              'notificationId': widget.notificationId.toString()
+                            };
+
+                            context.goNamed(ChatNotificationScreen.routeName,
+                                pathParameters: pathParameters);
+                            Future.delayed(const Duration(milliseconds: 200),
+                                () {
+                              FlashUtil.showFlash(context, "공지사항이 수정되었습니다.",
+                                 );
+                            });
+                          }
+                        }
+                      : null,
+                  child: Text(
+                    "수정하기",
+                    style: MITITextStyle.mdBold.copyWith(
+                        color: valid ? MITIColor.gray800 : MITIColor.gray50),
+                  )));
+        },
+      );
+    }
+
     return Scaffold(
       backgroundColor: MITIColor.gray800,
+      bottomNavigationBar: bottomButton,
       appBar: DefaultAppBar(
         backgroundColor: MITIColor.gray800,
         hasBorder: false,
@@ -64,21 +130,21 @@ class _ChatNotificationFormScreenState
         actions: [
           Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              final form = ref.watch(chatFormProvider);
-              final valid = form.title.isNotEmpty &&
-                  form.title.length <= 32 &&
-                  form.body.isNotEmpty &&
-                  form.body.length <= 3000;
+              final valid = validButton(ref) || isEdit;
 
-              log("valid = ${valid}");
               return Container(
                 margin: EdgeInsets.only(right: 13.w),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(100.r),
                   onTap: valid
                       ? () async {
-                          final result = ref.read(
-                              chatNoticeCreateProvider(gameId: widget.gameId)
+                          final result = isEdit
+                              ? await ref.read(chatNoticeDeleteProvider(
+                                      gameId: widget.gameId,
+                                      notificationId: widget.notificationId!)
+                                  .future)
+                              : await ref.read(chatNoticeCreateProvider(
+                                      gameId: widget.gameId)
                                   .future);
 
                           if (result is ErrorModel) {
@@ -89,20 +155,38 @@ class _ChatNotificationFormScreenState
                             Map<String, String> pathParameters = {
                               'gameId': widget.gameId.toString()
                             };
-                            context.pushReplacementNamed(
+                            context.goNamed(
                                 ChatNotificationListScreen.routeName,
                                 pathParameters: pathParameters);
+                            String flashText = "";
+                            if (isEdit) {
+                              // 삭제
+                              flashText = "공지사항이 삭제되었습니다.";
+                            } else {
+                              // 생성
+                              flashText = "공지사항이 작성되었습니다.";
+                            }
+                            Future.delayed(const Duration(milliseconds: 200),
+                                () {
+                              FlashUtil.showFlash(
+                                context,
+                                flashText,
+                              );
+                            });
                           }
                         }
                       : null,
                   child: Container(
-                    // Adding padding around the text to increase the tappable area
                     padding:
                         EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
                     child: Text(
-                      "작성",
+                      buttonText,
                       style: MITITextStyle.mdLight.copyWith(
-                          color: valid ? MITIColor.primary : MITIColor.gray600),
+                          color: valid
+                              ? isEdit
+                                  ? MITIColor.error
+                                  : MITIColor.primary
+                              : MITIColor.gray600),
                     ),
                   ),
                 ),
@@ -123,8 +207,10 @@ class _ChatNotificationFormScreenState
             SizedBox(height: 12.h),
             Consumer(
               builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                final title =
-                    ref.watch(chatFormProvider.select((s) => s.title));
+                final title = ref.watch(chatFormProvider(
+                        gameId: widget.gameId,
+                        notificationId: widget.notificationId)
+                    .select((s) => s.title));
 
                 return TextField(
                   textInputAction: TextInputAction.next,
@@ -155,7 +241,12 @@ class _ChatNotificationFormScreenState
                       return;
                     }
 
-                    ref.read(chatFormProvider.notifier).update(title: v);
+                    ref
+                        .read(chatFormProvider(
+                                gameId: widget.gameId,
+                                notificationId: widget.notificationId)
+                            .notifier)
+                        .update(title: v);
                   },
                 );
               },
@@ -163,7 +254,10 @@ class _ChatNotificationFormScreenState
             SizedBox(height: 35.h),
             Consumer(
               builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                final body = ref.watch(chatFormProvider.select((s) => s.body));
+                final body = ref.watch(chatFormProvider(
+                        gameId: widget.gameId,
+                        notificationId: widget.notificationId)
+                    .select((s) => s.body));
 
                 return child!;
               },
@@ -177,16 +271,32 @@ class _ChatNotificationFormScreenState
                         return;
                       }
 
-                      ref.read(chatFormProvider.notifier).update(body: v);
+                      ref
+                          .read(chatFormProvider(
+                                  gameId: widget.gameId,
+                                  notificationId: widget.notificationId)
+                              .notifier)
+                          .update(body: v);
                     },
                   ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
     );
+  }
+
+  bool validButton(WidgetRef ref) {
+    final form = ref.watch(chatFormProvider(
+      gameId: widget.gameId,
+      notificationId: widget.notificationId,
+    ));
+    return form.title.isNotEmpty &&
+        form.title.length <= 32 &&
+        form.body.isNotEmpty &&
+        form.body.length <= 3000;
   }
 }
 

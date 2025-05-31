@@ -20,7 +20,7 @@ class ChatNotice extends _$ChatNotice {
 
   Future<void> get({required int gameId}) async {
     final repository = ref.watch(chatRepositoryProvider);
-    repository.getChatNotifications(gameId: gameId).then((value) {
+    repository.getGameChatNotifications(gameId: gameId).then((value) {
       logger.i(value);
       state = value;
     }).catchError((e) {
@@ -61,11 +61,52 @@ class ChatNoticeDetail extends _$ChatNoticeDetail {
 Future<BaseModel> chatNoticeCreate(ChatNoticeCreateRef ref,
     {required int gameId}) async {
   final repository = ref.watch(chatRepositoryProvider);
-  final form = ref.watch(chatFormProvider);
+  final form = ref.watch(chatFormProvider(gameId: gameId));
   final param = ChatNoticeParam(title: form.title, body: form.body);
 
   return await repository
       .postChatNotifications(param: param, gameId: gameId)
+      .then<BaseModel>((value) {
+    logger.i(value);
+    ref.read(chatNoticeProvider(gameId: gameId).notifier).get(gameId: gameId);
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
+}
+
+@riverpod
+Future<BaseModel> chatNoticeUpdate(ChatNoticeUpdateRef ref,
+    {required int gameId, required int notificationId}) async {
+  final repository = ref.watch(chatRepositoryProvider);
+  final form = ref.watch(chatFormProvider(gameId: gameId, notificationId: notificationId));
+  final param = ChatNoticeParam(title: form.title, body: form.body);
+
+  return await repository
+      .putChatNotification(
+          param: param, gameId: gameId, notificationId: notificationId)
+      .then<BaseModel>((value) {
+    logger.i(value);
+    ref.read(chatNoticeProvider(gameId: gameId).notifier).get(gameId: gameId);
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
+}
+
+@riverpod
+Future<BaseModel> chatNoticeDelete(ChatNoticeDeleteRef ref,
+    {required int gameId, required int notificationId}) async {
+  final repository = ref.watch(chatRepositoryProvider);
+
+  return await repository
+      .deleteChatNotification(gameId: gameId, notificationId: notificationId)
       .then<BaseModel>((value) {
     logger.i(value);
     ref.read(chatNoticeProvider(gameId: gameId).notifier).get(gameId: gameId);

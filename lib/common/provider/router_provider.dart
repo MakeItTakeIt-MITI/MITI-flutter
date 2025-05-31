@@ -448,16 +448,19 @@ final routerProvider = Provider<GoRouter>((ref) {
                                 GoRoute(
                                     path: 'notification/form',
                                     parentNavigatorKey: rootNavKey,
-                                    name: ChatNotificationFormScreen.routeName,
+                                    name: ChatNotificationFormScreen
+                                        .createRouteName,
                                     builder: (context, state) {
                                       final int gameId = int.parse(
                                           state.pathParameters['gameId']!);
                                       int? notificationId;
-                                      // if (state.pathParameters
-                                      //     .containsKey('notificationId')) {
-                                      //   notificationId = int.parse(state
-                                      //       .pathParameters['notificationId']!);
-                                      // }
+
+                                      if (state.uri.queryParameters
+                                          .containsKey("notificationId")) {
+                                        notificationId = int.parse(
+                                            state.uri.queryParameters[
+                                                'notificationId']!);
+                                      }
 
                                       return ChatNotificationFormScreen(
                                         gameId: gameId,

@@ -147,92 +147,11 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
               );
             },
           ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
-            decoration: const BoxDecoration(
-                border: Border(
-                    top: BorderSide(
-              color: MITIColor.gray750,
-            ))),
-            child: Consumer(
-              builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                final userId = ref.watch(authProvider)?.id;
-
-                final result =
-                    ref.watch(chatApproveProvider(gameId: widget.gameId));
-                bool isExpired = true;
-                if (result is LoadingModel || result is ErrorModel) {
-                  isExpired = false;
-                } else {
-                  final model = (result
-                          as ResponseModel<GameChatRoomApprovedUsersResponse>)
-                      .data!;
-                  isExpired =
-                      model.approvedUsers.contains(userId) && !model.isExpired;
-                }
-                isExpired = false;
-                log("isExpired ${isExpired}");
-                final hintText = isExpired ? "비활성화된 라커룸입니다." : "메세지를 입력해주세요";
-                final enabled = !isExpired && textController.text.isNotEmpty;
-                log("textController.text = ${textController.text} enabled = $enabled");
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Expanded(
-                      child: MultiLineTextField(
-                        controller: textController,
-                        hintText: hintText,
-                        enabled: !isExpired,
-                      ),
-                    ),
-                    SizedBox(width: 10.w),
-                    SizedBox(
-                      width: 41.w,
-                      height: 30.h,
-                      child: Consumer(
-                        builder:
-                            (BuildContext context, WidgetRef ref, Widget? child) {
-                          return TextButton(
-                              onPressed: enabled
-                                  ? () async {
-                                      log("sendMessage = ${textController.text}");
-                                      final result = await ref
-                                          .read(chatPaginationProvider(
-                                                  gameId: widget.gameId)
-                                              .notifier)
-                                          .sendMessage(
-                                              message: textController.text);
-                                      if (result is ErrorModel) {
-                                        FlashUtil.showFlash(
-                                            context, "요청이 정상적으로 처리되지 않았습니다.",
-                                            textColor: MITIColor.error);
-                                      } else {
-                                        textController.clear();
-                                        _scrollController.jumpTo(0);
-                                      }
-                                    }
-                                  : () {},
-                              style: TextButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  backgroundColor: enabled
-                                      ? MITIColor.primary
-                                      : MITIColor.gray500),
-                              child: Text(
-                                "전송",
-                                style: MITITextStyle.xxsm.copyWith(
-                                  color: enabled
-                                      ? MITIColor.gray800
-                                      : MITIColor.gray50,
-                                ),
-                              ));
-                        },
-                      ),
-                    )
-                  ],
-                );
-              },
-            ),
-          )
+          _ChatForm(
+            gameId: widget.gameId,
+            textController: textController,
+            scrollController: _scrollController,
+          ),
         ],
       ),
     );
@@ -257,6 +176,118 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     }
 
     return Column(children: chat);
+  }
+}
+
+class _ChatForm extends StatefulWidget {
+  final int gameId;
+  final TextEditingController textController;
+  final ScrollController scrollController;
+
+  const _ChatForm(
+      {super.key,
+      required this.gameId,
+      required this.textController,
+      required this.scrollController});
+
+  @override
+  State<_ChatForm> createState() => _ChatFormState();
+}
+
+class _ChatFormState extends State<_ChatForm> {
+  @override
+  void initState() {
+    super.initState();
+    widget.textController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
+      decoration: const BoxDecoration(
+          border: Border(
+              top: BorderSide(
+        color: MITIColor.gray750,
+      ))),
+      child: Consumer(
+        builder: (BuildContext context, WidgetRef ref, Widget? child) {
+          final userId = ref.watch(authProvider)?.id;
+
+          final result = ref.watch(chatApproveProvider(gameId: widget.gameId));
+          bool isExpired = true;
+          if (result is LoadingModel || result is ErrorModel) {
+            isExpired = false;
+          } else {
+            final model =
+                (result as ResponseModel<GameChatRoomApprovedUsersResponse>)
+                    .data!;
+            isExpired =
+                model.approvedUsers.contains(userId) && !model.isExpired;
+          }
+          log("isExpired ${isExpired}");
+          final hintText = isExpired ? "비활성화된 라커룸입니다." : "메세지를 입력해주세요";
+          final enabled = !isExpired && widget.textController.text.isNotEmpty;
+          log("textController.text = ${widget.textController.text} enabled = $enabled");
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: MultiLineTextField(
+                  controller: widget.textController,
+                  hintText: hintText,
+                  enabled: !isExpired,
+                ),
+              ),
+              SizedBox(width: 10.w),
+              SizedBox(
+                width: 41.w,
+                height: 30.h,
+                child: Consumer(
+                  builder:
+                      (BuildContext context, WidgetRef ref, Widget? child) {
+                    return TextButton(
+                        onPressed: enabled
+                            ? () async {
+                                log("sendMessage = ${widget.textController.text}");
+                                final result = await ref
+                                    .read(chatPaginationProvider(
+                                            gameId: widget.gameId)
+                                        .notifier)
+                                    .sendMessage(
+                                        message: widget.textController.text);
+                                if (result is ErrorModel) {
+                                  FlashUtil.showFlash(
+                                      context, "요청이 정상적으로 처리되지 않았습니다.",
+                                      textColor: MITIColor.error);
+                                } else {
+                                  widget.textController.clear();
+                                  widget.scrollController.jumpTo(0);
+                                }
+                              }
+                            : () {},
+                        style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            backgroundColor: enabled
+                                ? MITIColor.primary
+                                : MITIColor.gray500),
+                        child: Text(
+                          "전송",
+                          style: MITITextStyle.xxsm.copyWith(
+                            color:
+                                enabled ? MITIColor.gray800 : MITIColor.gray50,
+                          ),
+                        ));
+                  },
+                ),
+              )
+            ],
+          );
+        },
+      ),
+    );
   }
 }
 
@@ -370,7 +401,9 @@ class _MultiLineTextFieldState extends State<MultiLineTextField> {
 
                 // 최소 높이 설정 및 contentPadding 을 적용하기 위해  isDense true 설정
                 isDense: true,
-                contentPadding: EdgeInsets.symmetric(horizontal: 12.w,vertical: 11),// EdgeInsets.all(12.r),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 12.w, vertical: 11),
+                // EdgeInsets.all(12.r),
                 constraints: BoxConstraints(
                   minHeight: 30.h,
                   maxHeight: 4 * 20.h + 24.h, // 4줄 + 패딩

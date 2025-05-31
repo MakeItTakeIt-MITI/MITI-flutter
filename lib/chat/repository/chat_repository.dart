@@ -64,7 +64,7 @@ abstract class ChatRepository {
   @Headers({'token': 'true'})
   @GET('/games/{gameId}/chat-room/notifications')
   Future<ResponseListModel<BaseGameChatNotificationResponse>>
-      getChatNotifications({
+      getGameChatNotifications({
     @Path('gameId') required int gameId,
   });
 
@@ -89,8 +89,7 @@ abstract class ChatRepository {
   /// 경기 채팅 공지사항 삭제 API
   @Headers({'token': 'true'})
   @DELETE('/games/{gameId}/chat-room/notifications/{notificationId}')
-  Future<ResponseModel<GameChatNotificationResponse?>>
-  deleteChatNotification({
+  Future<ResponseModel<GameChatNotificationResponse?>> deleteChatNotification({
     @Path('gameId') required int gameId,
     @Path('notificationId') required int notificationId,
   });
@@ -98,11 +97,18 @@ abstract class ChatRepository {
   /// 경기 채팅 공지사항 수정 API
   @Headers({'token': 'true'})
   @PUT('/games/{gameId}/chat-room/notifications/{notificationId}')
-  Future<ResponseModel<GameChatNotificationResponse?>>
-  putChatNotification({
+  Future<ResponseModel<GameChatNotificationResponse?>> putChatNotification({
     @Path('gameId') required int gameId,
     @Path('notificationId') required int notificationId,
     @Body() required ChatNoticeParam param,
   });
 
+  /// 작성 경기 채팅 공지사항 목록 조회 API
+  @Headers({'token': 'true'})
+  @GET('users/{userId}/game-chat-notifications')
+  Future<ResponseModel<PaginationModel<GameChatNotificationResponse>>>
+      getUserChatNotifications({
+    @Path('userId') required int gameId,
+    @Queries() required PaginationParam paginationParam,
+  });
 }

@@ -47,7 +47,7 @@ class GameNoticeComponent extends ConsumerWidget {
                   Map<String, String> pathParameters = {
                     'gameId': gameId.toString()
                   };
-                  context.pushNamed(ChatNotificationFormScreen.routeName,
+                  context.pushNamed(ChatNotificationFormScreen.createRouteName,
                       pathParameters: pathParameters);
                 },
                 child: SvgPicture.asset(
