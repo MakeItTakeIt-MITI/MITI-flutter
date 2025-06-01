@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -45,6 +46,14 @@ class _ChatNotificationFormScreenState
   bool get isEdit => widget.notificationId != null;
 
   String get buttonText => isEdit ? "삭제" : "작성";
+  late Throttle<int> _updateThrottler;
+  int updateThrottleCnt = 0;
+  bool isBottomLoading = false;
+
+  // 추가, 삭제
+  late Throttle<int> _throttler;
+  int throttleCnt = 0;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -80,38 +89,41 @@ class _ChatNotificationFormScreenState
           }
         }
       }
+    });
 
-      // if (widget.court == null) {
-      //   final result = await ref.read(gameRecentHostingProvider.future);
-      //
-      //   if (result is ErrorModel) {
-      //   } else {
-      //     final model =
-      //     (result as ResponseListModel<GameWithCourtResponse>).data!;
-      //     if (model.isNotEmpty) {
-      //       showCustomModalBottomSheet(
-      //           context,
-      //           GameRecentComponent(
-      //             models: model,
-      //             textEditingControllers: textEditingControllers,
-      //           ));
-      //     }
-      //   }
-      // } else {
-      //   final name = widget.court?.name ?? '';
-      //   final address = widget.court?.address ?? '';
-      //   final addressDetail = widget.court?.addressDetail ?? '';
-      //   ref.read(gameFormProvider.notifier).update(
-      //     court: GameCourtParam(
-      //       name: name,
-      //       address: address,
-      //       address_detail: addressDetail,
-      //     ),
-      //   );
-      //   textEditingControllers[1].text = address;
-      //   textEditingControllers[2].text = addressDetail;
-      //   textEditingControllers[3].text = name;
-      // }
+    _updateThrottler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: 0,
+      checkEquality: true,
+    );
+    _updateThrottler.values.listen((int s) async {
+      setState(() {
+        isBottomLoading = true;
+      });
+      log("message");
+      Future.delayed(const Duration(seconds: 1), () {
+        updateThrottleCnt++;
+      });
+      // await updateNotification(ref, context);
+      setState(() {
+        isBottomLoading = false;
+      });
+    });
+
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: 0,
+      checkEquality: true,
+    );
+    _throttler.values.listen((int s) async {
+      setState(() {
+        isLoading = true;
+      });
+      await onClickAction(ref, context);
+      throttleCnt++;
+      setState(() {
+        isLoading = false;
+      });
     });
   }
 
@@ -128,6 +140,8 @@ class _ChatNotificationFormScreenState
 
   @override
   void dispose() {
+    _throttler.cancel();
+    _updateThrottler.cancel();
     titleTextController.dispose();
     bodyTextController.dispose();
     super.dispose();
@@ -142,7 +156,8 @@ class _ChatNotificationFormScreenState
     if (isEdit) {
       bottomButton = Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
-          final valid = validButton(ref);
+          log("isBottomLoading = $isBottomLoading");
+          final valid = validButton(ref) && !isBottomLoading;
 
           return BottomButton(
               button: TextButton(
@@ -151,32 +166,7 @@ class _ChatNotificationFormScreenState
                           valid ? MITIColor.primary : MITIColor.gray500),
                   onPressed: valid
                       ? () async {
-                          final result = await ref.read(
-                              chatNoticeUpdateProvider(
-                                      gameId: widget.gameId,
-                                      notificationId: widget.notificationId!)
-                                  .future);
-
-                          if (result is ErrorModel) {
-                            FlashUtil.showFlash(
-                                context, '요청이 정상적으로 처리되지 않았습니다.',
-                                textColor: MITIColor.error);
-                          } else {
-                            Map<String, String> pathParameters = {
-                              'gameId': widget.gameId.toString(),
-                              'notificationId': widget.notificationId.toString()
-                            };
-
-                            context.goNamed(ChatNotificationScreen.routeName,
-                                pathParameters: pathParameters);
-                            Future.delayed(const Duration(milliseconds: 200),
-                                () {
-                              FlashUtil.showFlash(
-                                context,
-                                "공지사항이 수정되었습니다.",
-                              );
-                            });
-                          }
+                          _updateThrottler.setValue(updateThrottleCnt + 1);
                         }
                       : null,
                   child: Text(
@@ -198,7 +188,7 @@ class _ChatNotificationFormScreenState
         actions: [
           Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              final valid = validButton(ref) || isEdit;
+              final valid = (validButton(ref) || isEdit) && !isLoading;
 
               return Container(
                 margin: EdgeInsets.only(right: 13.w),
@@ -206,44 +196,7 @@ class _ChatNotificationFormScreenState
                   borderRadius: BorderRadius.circular(100.r),
                   onTap: valid
                       ? () async {
-                          final result = isEdit
-                              ? await ref.read(chatNoticeDeleteProvider(
-                                      gameId: widget.gameId,
-                                      notificationId: widget.notificationId!)
-                                  .future)
-                              : await ref.read(chatNoticeCreateProvider(
-                                      gameId: widget.gameId)
-                                  .future);
-
-                          if (result is ErrorModel) {
-                            FlashUtil.showFlash(
-                                context, '요청이 정상적으로 처리되지 않았습니다.',
-                                textColor: MITIColor.error);
-                          } else {
-                            Map<String, String> pathParameters = {
-                              'gameId': widget.gameId.toString()
-                            };
-                            context.goNamed(
-                              ChatNotificationListScreen.routeName,
-                              pathParameters: pathParameters,
-                              extra: true,
-                            );
-                            String flashText = "";
-                            if (isEdit) {
-                              // 삭제
-                              flashText = "공지사항이 삭제되었습니다.";
-                            } else {
-                              // 생성
-                              flashText = "공지사항이 작성되었습니다.";
-                            }
-                            Future.delayed(const Duration(milliseconds: 200),
-                                () {
-                              FlashUtil.showFlash(
-                                context,
-                                flashText,
-                              );
-                            });
-                          }
+                          _throttler.setValue(throttleCnt + 1);
                         }
                       : null,
                   child: Container(
@@ -356,6 +309,66 @@ class _ChatNotificationFormScreenState
         ),
       ),
     );
+  }
+
+  Future<void> onClickAction(WidgetRef ref, BuildContext context) async {
+    final result = isEdit
+        ? await ref.read(chatNoticeDeleteProvider(
+                gameId: widget.gameId, notificationId: widget.notificationId!)
+            .future)
+        : await ref
+            .read(chatNoticeCreateProvider(gameId: widget.gameId).future);
+
+    if (result is ErrorModel) {
+      FlashUtil.showFlash(context, '요청이 정상적으로 처리되지 않았습니다.',
+          textColor: MITIColor.error);
+    } else {
+      Map<String, String> pathParameters = {'gameId': widget.gameId.toString()};
+      context.goNamed(
+        ChatNotificationListScreen.routeName,
+        pathParameters: pathParameters,
+        extra: true,
+      );
+      String flashText = "";
+      if (isEdit) {
+        // 삭제
+        flashText = "공지사항이 삭제되었습니다.";
+      } else {
+        // 생성
+        flashText = "공지사항이 작성되었습니다.";
+      }
+      Future.delayed(const Duration(milliseconds: 200), () {
+        FlashUtil.showFlash(
+          context,
+          flashText,
+        );
+      });
+    }
+  }
+
+  Future<void> updateNotification(WidgetRef ref, BuildContext context) async {
+    final result = await ref.read(chatNoticeUpdateProvider(
+            gameId: widget.gameId, notificationId: widget.notificationId!)
+        .future);
+
+    if (result is ErrorModel) {
+      FlashUtil.showFlash(context, '요청이 정상적으로 처리되지 않았습니다.',
+          textColor: MITIColor.error);
+    } else {
+      Map<String, String> pathParameters = {
+        'gameId': widget.gameId.toString(),
+        'notificationId': widget.notificationId.toString()
+      };
+
+      context.goNamed(ChatNotificationScreen.routeName,
+          pathParameters: pathParameters);
+      Future.delayed(const Duration(milliseconds: 200), () {
+        FlashUtil.showFlash(
+          context,
+          "공지사항이 수정되었습니다.",
+        );
+      });
+    }
   }
 
   bool validButton(WidgetRef ref) {

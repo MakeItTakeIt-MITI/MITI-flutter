@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,14 +36,30 @@ class ChatRoomScreen extends ConsumerStatefulWidget {
 
 class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   TextEditingController textController = TextEditingController();
+  late final FocusNode focusNode;
   late final ScrollController _scrollController;
   final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>(); // Scaffold 키 추가
+  late Throttle<int> _throttler;
+  int throttleCnt = 0;
 
   @override
   void initState() {
     super.initState();
+    focusNode = FocusNode();
     _scrollController = ScrollController()..addListener(_scrollListener);
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: 0,
+      checkEquality: true,
+    );
+    _throttler.values.listen((int s) {
+      log("api call sendMessage");
+      // _cancel(ref, context);
+      Future.delayed(const Duration(seconds: 1), () {
+        throttleCnt++;
+      });
+    });
   }
 
   void _scrollListener() {
@@ -54,9 +71,11 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
 
   @override
   void dispose() {
+    _throttler.cancel();
     textController.dispose();
     _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
+    focusNode.dispose();
     super.dispose();
   }
 
@@ -71,89 +90,97 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey, // Scaffold에 키 설정
-      endDrawer: ChatDrawerComponent(
-        gameId: widget.gameId,
-      ), // 오른쪽 드로어 추가
-      appBar: DefaultAppBar(
-        title: "라커룸 채팅",
-        actions: [
-          IconButton(
-            onPressed: () {
-              _scaffoldKey.currentState?.openEndDrawer(); // 오른쪽 드로어 열기
-            },
-            icon: const Icon(Icons.menu),
-          )
-        ],
-      ),
-      body: Column(
-        children: [
-          Consumer(
-            builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              final viewModel =
-                  ref.watch(chatPaginationProvider(gameId: widget.gameId));
-              if (viewModel is LoadingModel) {
-                return const Expanded(
-                    child: Center(child: CircularProgressIndicator()));
-              } else if (viewModel is ErrorModel) {
-                return const Expanded(child: Text("Error"));
-              }
+    return SelectableRegion(
+      focusNode: focusNode,
+      selectionControls: materialTextSelectionControls,
+      child: Scaffold(
+        key: _scaffoldKey, // Scaffold에 키 설정
+        endDrawer: ChatDrawerComponent(
+          gameId: widget.gameId,
+        ), // 오른쪽 드로어 추가
+        appBar: DefaultAppBar(
+          title: "라커룸 채팅",
+          actions: [
+            IconButton(
+              onPressed: () {
+                _scaffoldKey.currentState?.openEndDrawer(); // 오른쪽 드로어 열기
+              },
+              icon: const Icon(Icons.menu),
+            )
+          ],
+        ),
+        body: Column(
+          children: [
+            Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                final viewModel =
+                    ref.watch(chatPaginationProvider(gameId: widget.gameId));
+                if (viewModel is LoadingModel) {
+                  return const Expanded(
+                      child: Center(child: CircularProgressIndicator()));
+                } else if (viewModel is ErrorModel) {
+                  return const Expanded(child: Text("Error"));
+                }
 
-              final model =
-                  viewModel as ResponseModel<PaginationModel<ChatModel>>;
-              final chatMessages = model.data!.page_content;
-              if (chatMessages.isEmpty) {
+                final model = viewModel
+                    as ResponseModel<CursorPaginationModel<ChatModel>>;
+                final chatMessages = model.data!.messages;
+                if (chatMessages.isEmpty) {
+                  return Expanded(
+                      child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 8.w, vertical: 10.h),
+                        child: _InitChatMessageInfo(),
+                      ),
+                    ],
+                  ));
+                }
+
                 return Expanded(
-                    child: Column(
-                  children: [
-                    Padding(
+                  child: Scrollbar(
+                      child: Align(
+                    alignment: Alignment.topCenter,
+                    child: ListView.separated(
                       padding:
                           EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
-                      child: _InitChatMessageInfo(),
-                    ),
-                  ],
-                ));
-              }
-
-              return Expanded(
-                child: Scrollbar(
-                    child: Align(
-                  alignment: Alignment.topCenter,
-                  child: ListView.separated(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
-                    controller: _scrollController,
-                    reverse: true,
-                    shrinkWrap: true,
-                    itemBuilder: (_, index) {
-                      final actualIndex = chatMessages.length - 1 - index;
-                      final message = chatMessages[actualIndex];
-                      return _buildChatItem(message, actualIndex);
-                    },
-                    separatorBuilder: (_, index) {
-                      if (chatMessages[chatMessages.length - 1 - index]
-                          .showDate) {
+                      controller: _scrollController,
+                      reverse: true,
+                      shrinkWrap: true,
+                      itemBuilder: (_, index) {
+                        final actualIndex = chatMessages.length - 1 - index;
+                        final message = chatMessages[actualIndex];
+                        return _buildChatItem(message, actualIndex);
+                      },
+                      separatorBuilder: (_, index) {
+                        if (chatMessages[chatMessages.length - 1 - index]
+                            .showDate) {
+                          return SizedBox(
+                            height: 0.h,
+                          );
+                        }
                         return SizedBox(
-                          height: 0.h,
+                          height: 11.h,
                         );
-                      }
-                      return SizedBox(
-                        height: 11.h,
-                      );
-                    },
-                    itemCount: chatMessages.length,
-                  ),
-                )),
-              );
-            },
-          ),
-          _ChatForm(
-            gameId: widget.gameId,
-            textController: textController,
-            scrollController: _scrollController,
-          ),
-        ],
+                      },
+                      itemCount: chatMessages.length,
+                    ),
+                  )),
+                );
+              },
+            ),
+            _ChatForm(
+              gameId: widget.gameId,
+              textController: textController,
+              scrollController: _scrollController,
+              sendMessage: () async {
+                log("click sendMessage = ${textController.text}");
+                _throttler.setValue(throttleCnt + 1);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -178,18 +205,32 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
 
     return Column(children: chat);
   }
+
+  void sendMessage() async {
+    final result = await ref
+        .read(chatPaginationProvider(gameId: widget.gameId).notifier)
+        .sendMessage(message: textController.text);
+    if (result is ErrorModel) {
+      FlashUtil.showFlash(context, "요청이 정상적으로 처리되지 않았습니다.",
+          textColor: MITIColor.error);
+    } else {
+      textController.clear();
+    }
+  }
 }
 
 class _ChatForm extends StatefulWidget {
   final int gameId;
   final TextEditingController textController;
   final ScrollController scrollController;
+  final VoidCallback sendMessage;
 
   const _ChatForm(
       {super.key,
       required this.gameId,
       required this.textController,
-      required this.scrollController});
+      required this.scrollController,
+      required this.sendMessage});
 
   @override
   State<_ChatForm> createState() => _ChatFormState();
@@ -225,8 +266,7 @@ class _ChatFormState extends State<_ChatForm> {
             final model =
                 (result as ResponseModel<GameChatRoomApprovedUsersResponse>)
                     .data!;
-            isExpired =
-                model.approvedUsers.contains(userId) && model.isExpired;
+            isExpired = model.approvedUsers.contains(userId) && model.isExpired;
           }
           log("isExpired ${isExpired}");
           final hintText = isExpired ? "비활성화된 라커룸입니다." : "메세지를 입력해주세요";
@@ -252,21 +292,23 @@ class _ChatFormState extends State<_ChatForm> {
                     return TextButton(
                         onPressed: enabled
                             ? () async {
-                                log("sendMessage = ${widget.textController.text}");
-                                final result = await ref
-                                    .read(chatPaginationProvider(
-                                            gameId: widget.gameId)
-                                        .notifier)
-                                    .sendMessage(
-                                        message: widget.textController.text);
-                                if (result is ErrorModel) {
-                                  FlashUtil.showFlash(
-                                      context, "요청이 정상적으로 처리되지 않았습니다.",
-                                      textColor: MITIColor.error);
-                                } else {
-                                  widget.textController.clear();
-                                  widget.scrollController.jumpTo(0);
-                                }
+                                widget.sendMessage();
+                                widget.scrollController.jumpTo(0);
+
+                                // final result = await ref
+                                //     .read(chatPaginationProvider(
+                                //             gameId: widget.gameId)
+                                //         .notifier)
+                                //     .sendMessage(
+                                //         message: widget.textController.text);
+                                // if (result is ErrorModel) {
+                                //   FlashUtil.showFlash(
+                                //       context, "요청이 정상적으로 처리되지 않았습니다.",
+                                //       textColor: MITIColor.error);
+                                // } else {
+                                //   widget.textController.clear();
+                                //   widget.scrollController.jumpTo(0);
+                                // }
                               }
                             : () {},
                         style: TextButton.styleFrom(

@@ -52,7 +52,7 @@ class _UserDeleteScreenState extends ConsumerState<UserDeleteScreen> {
       initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((int s) {
+    _throttler.values.listen((int s) async {
       _deleteUser(context);
       Future.delayed(const Duration(seconds: 1), () {
         throttleCnt++;

@@ -97,7 +97,6 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
     });
 
     _scrollController = ScrollController();
-    //  todo 경기 취소 할 때 호출이 안됨
     ref
         .read(chatApproveProvider(gameId: widget.gameId).notifier)
         .get(gameId: widget.gameId);
@@ -823,26 +822,29 @@ class ParticipationComponent extends StatelessWidget {
                 pathParameters: pathParameters,
               );
             },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "참가 완료된 게스트 ($num_of_confirmed_participations / $max_invitation)",
-                  style:
-                      MITITextStyle.mdBold.copyWith(color: MITIColor.gray100),
-                  textAlign: TextAlign.left,
-                ),
-                SvgPicture.asset(
-                  AssetUtil.getAssetPath(
-                    type: AssetType.icon,
-                    name: 'chevron_right',
+            child: Container(
+              color: MITIColor.gray800,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "참가 완료된 게스트 ($num_of_confirmed_participations / $max_invitation)",
+                    style:
+                        MITITextStyle.mdBold.copyWith(color: MITIColor.gray100),
+                    textAlign: TextAlign.left,
                   ),
-                  colorFilter: const ColorFilter.mode(
-                    MITIColor.gray400,
-                    BlendMode.srcIn,
+                  SvgPicture.asset(
+                    AssetUtil.getAssetPath(
+                      type: AssetType.icon,
+                      name: 'chevron_right',
+                    ),
+                    colorFilter: const ColorFilter.mode(
+                      MITIColor.gray400,
+                      BlendMode.srcIn,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           SizedBox(height: 20.h),

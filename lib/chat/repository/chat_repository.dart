@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retrofit/http.dart';
 
 import '../../common/model/default_model.dart';
+import '../../common/param/cursor_pagination_param.dart';
 import '../../common/param/pagination_param.dart';
 import '../../dio/provider/dio_provider.dart';
 import '../../notification/model/base_game_chat_notification_response.dart';
@@ -44,17 +45,17 @@ abstract class ChatRepository {
   /// 경기 채팅 메세지 조회 API
   @Headers({'token': 'true'})
   @GET('/games/{gameId}/chat-room/messages')
-  Future<ResponseModel<PaginationModel<BaseGameChatMessageResponse>>>
+  Future<ResponseModel<CursorPaginationModel<BaseGameChatMessageResponse>>>
       getChatMessages({
     @Path('gameId') required int gameId,
-    @Queries() required PaginationParam paginationParams,
+    @Queries() required CursorPaginationParam cursorParams,
   });
 
   // todo 채팅 메세지 페이지네이션 구현
   /// 경기 채팅 메세지 작성 API
   @Headers({'token': 'true'})
   @POST('/games/{gameId}/chat-room/messages')
-  Future<ResponseModel<PaginationModel<BaseGameChatMessageResponse>>>
+  Future<ResponseModel<CursorPaginationModel<BaseGameChatMessageResponse>>>
       postChatMessage({
     @Path('gameId') required int gameId,
     @Field("body") required String body,

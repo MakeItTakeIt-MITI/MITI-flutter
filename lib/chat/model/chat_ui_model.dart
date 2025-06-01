@@ -8,6 +8,7 @@ import '../../user/model/v2/base_user_response.dart';
 import 'base_game_chat_message_response.dart';
 
 class ChatModel {
+  final int id;
   final String message;
   final String date; // 01월 01일
   final String time; // 오후 01:01
@@ -19,6 +20,7 @@ class ChatModel {
   final bool showUserInfo;
 
   ChatModel({
+    required this.id,
     required this.message,
     required this.date,
     required this.time,
@@ -39,6 +41,7 @@ class ChatModel {
     required bool showUserInfo,
   }) {
     return ChatModel(
+      id: response.id,
       message: response.body,
       date: DateTimeUtil.formatDate(response.createdAt),
       time: DateTimeUtil.formatTime(response.createdAt),
@@ -53,6 +56,7 @@ class ChatModel {
 
   // copyWith 메서드
   ChatModel copyWith({
+    int? id,
     String? message,
     String? date,
     String? time,
@@ -64,6 +68,7 @@ class ChatModel {
     bool? showUserInfo,
   }) {
     return ChatModel(
+      id: id ?? this.id,
       message: message ?? this.message,
       date: date ?? this.date,
       time: time ?? this.time,
