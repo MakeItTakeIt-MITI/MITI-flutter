@@ -1169,7 +1169,7 @@ class SummaryComponent extends StatelessWidget {
       "$num_of_participations / $max_invitation",
       address,
     ];
-    final svgPath = ["clock", "map_pin", "people"];
+    final svgPath = ["clock", "people", "map_pin"];
 
     return Container(
       width: MediaQuery.of(context).size.width,
