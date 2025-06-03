@@ -55,7 +55,8 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     );
     _throttler.values.listen((int s) {
       log("api call sendMessage");
-      // _cancel(ref, context);
+
+      sendMessage();
       Future.delayed(const Duration(seconds: 1), () {
         throttleCnt++;
       });
@@ -117,7 +118,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                     ref.watch(chatPaginationProvider(gameId: widget.gameId));
                 if (viewModel is LoadingModel) {
                   return const Expanded(
-                      child: Center(child: CircularProgressIndicator()));
+                      child: ChatBubbleSkeleton());
                 } else if (viewModel is ErrorModel) {
                   return const Expanded(child: Text("Error"));
                 }
@@ -189,7 +190,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     final chat = <Widget>[];
 
     // ⭐ 첫 번째 메시지(가장 오래된)에 초기 정보 표시
-    if (actualIndex == 0) {
+    if (message.isFirstMessage) {
       chat.add(const _InitChatMessageInfo());
     }
 

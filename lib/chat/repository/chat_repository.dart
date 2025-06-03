@@ -59,6 +59,7 @@ abstract class ChatRepository {
       postChatMessage({
     @Path('gameId') required int gameId,
     @Field("body") required String body,
+    @Field("cursor") int? cursor,
   });
 
   /// 경기 채팅 공지사항 목록 조회 API

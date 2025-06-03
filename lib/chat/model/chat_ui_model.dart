@@ -16,7 +16,7 @@ class ChatModel {
   final bool isMine;
   final bool showTime; // 사용자 별 시간의 마지막 메세지
   final bool showDate; // 오늘 첫 메세지
-  final bool isLastMessage; // 전체 메세지 중 마지막 메세지
+  final bool isFirstMessage; // 전체 메세지 중 마지막 메세지
   final bool showUserInfo;
 
   ChatModel({
@@ -28,7 +28,7 @@ class ChatModel {
     required this.isMine,
     required this.showTime,
     required this.showDate,
-    required this.isLastMessage,
+    required this.isFirstMessage,
     required this.showUserInfo,
   });
 
@@ -37,7 +37,7 @@ class ChatModel {
     required bool isMine,
     required bool showTime,
     required bool showDate,
-    required bool isLastMessage,
+    required bool isFirstMessage,
     required bool showUserInfo,
   }) {
     return ChatModel(
@@ -49,7 +49,7 @@ class ChatModel {
       isMine: isMine,
       showTime: showTime,
       showDate: showDate,
-      isLastMessage: isLastMessage,
+      isFirstMessage: isFirstMessage,
       showUserInfo: showUserInfo,
     );
   }
@@ -64,7 +64,7 @@ class ChatModel {
     bool? isMine,
     bool? showTime,
     bool? showDate,
-    bool? isLastMessage,
+    bool? isFirstMessage,
     bool? showUserInfo,
   }) {
     return ChatModel(
@@ -76,7 +76,7 @@ class ChatModel {
       isMine: isMine ?? this.isMine,
       showTime: showTime ?? this.showTime,
       showDate: showDate ?? this.showDate,
-      isLastMessage: isLastMessage ?? this.isLastMessage,
+      isFirstMessage: isFirstMessage ?? this.isFirstMessage,
       showUserInfo: showUserInfo ?? this.showUserInfo,
     );
   }

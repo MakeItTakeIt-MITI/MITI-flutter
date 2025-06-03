@@ -21,7 +21,7 @@ class CursorPaginationParam extends Equatable {
   const CursorPaginationParam({
     this.cursor,
     this.direction,
-    this.limit,
+    this.limit = 20,
   });
 
   CursorPaginationParam copyWith({
