@@ -14,6 +14,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:marquee/marquee.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/chat/provider/chat_approve_provider.dart';
 import 'package:miti/common/component/custom_dialog.dart';
@@ -927,6 +928,7 @@ class SummaryComponent extends StatelessWidget {
   final String title;
   final String gameDate;
   final String address;
+  final String? courtName;
   final String? fee;
   final String duration;
   final int max_invitation;
@@ -940,6 +942,7 @@ class SummaryComponent extends StatelessWidget {
       required this.title,
       required this.gameDate,
       required this.address,
+      this.courtName,
       this.fee,
       required this.max_invitation,
       required this.num_of_participations,
@@ -962,13 +965,13 @@ class SummaryComponent extends StatelessWidget {
     final gameDate = startDate == endDate
         ? '$startDate $time'
         : '$startDate ${model.starttime.substring(0, 5)} ~ $endDate ${model.endtime.substring(0, 5)}';
-    final address = '${model.court.address}\n${model.court.name}';
     return SummaryComponent(
       gameId: model.id,
       gameStatus: model.game_status,
       title: model.title,
       gameDate: gameDate,
-      address: address,
+      address: model.court.address,
+      courtName: model.court.name!,
       fee: NumberUtil.format(model.fee.toString()),
       max_invitation: model.max_invitation,
       num_of_participations: model.num_of_participations,
@@ -1029,7 +1032,8 @@ class SummaryComponent extends StatelessWidget {
     );
   }
 
-  Row gameInfoComponent({required String title, required String svgPath}) {
+  Row gameInfoComponent(
+      {required String title, String? content, required String svgPath}) {
     return Row(children: [
       SvgPicture.asset(
         width: 16.r,
@@ -1042,12 +1046,28 @@ class SummaryComponent extends StatelessWidget {
       ),
       SizedBox(width: 8.w),
       Expanded(
-        child: Text(
-          title,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
-          textAlign: TextAlign.left,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
+              textAlign: TextAlign.left,
+            ),
+            if (content != null)
+              Padding(
+                padding: EdgeInsets.only(top: 4.h),
+                child: Text(
+                  content,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
+                  textAlign: TextAlign.left,
+                ),
+              ),
+          ],
         ),
       )
     ]);
@@ -1146,8 +1166,8 @@ class SummaryComponent extends StatelessWidget {
   Widget build(BuildContext context) {
     final desc = [
       "$duration분 경기",
+      "$num_of_participations / $max_invitation",
       address,
-      "$num_of_participations / $max_invitation"
     ];
     final svgPath = ["clock", "map_pin", "people"];
 
@@ -1178,8 +1198,10 @@ class SummaryComponent extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemBuilder: (_, idx) {
+                final content = idx == 2 ? courtName : null;
                 return gameInfoComponent(
                   title: desc[idx],
+                  content: content,
                   svgPath: svgPath[idx],
                 );
               },

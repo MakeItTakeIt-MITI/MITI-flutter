@@ -249,7 +249,7 @@ class _ChatFormState extends State<_ChatForm> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
+      padding: EdgeInsets.only(left: 15.w,right:15.w, top: 10.h, bottom: 30.h),
       decoration: const BoxDecoration(
           border: Border(
               top: BorderSide(

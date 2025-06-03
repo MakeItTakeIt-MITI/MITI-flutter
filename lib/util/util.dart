@@ -73,7 +73,7 @@ class DateTimeUtil {
   }
 
   static String formatTime(DateTime dateTime) {
-    final formatter = DateFormat('a hh:mm', 'ko_KR');
+    final formatter = DateFormat('a hh:mm', "ko");
     return formatter.format(dateTime);
   }
 

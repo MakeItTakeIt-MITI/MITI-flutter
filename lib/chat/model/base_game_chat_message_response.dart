@@ -9,7 +9,10 @@ part 'base_game_chat_message_response.g.dart';
 class BaseGameChatMessageResponse extends IModelWithId {
   final String body;
 
-  @JsonKey(name: 'created_at')
+  @JsonKey(name: 'created_at',
+    fromJson: _dateTimeFromJson,
+    toJson: _dateTimeToJson,
+  )
   final DateTime createdAt;
 
   @JsonKey(name: 'user')
@@ -21,6 +24,15 @@ class BaseGameChatMessageResponse extends IModelWithId {
     required this.createdAt,
     required this.user,
   });
+
+  static DateTime _dateTimeFromJson(String json) {
+    // 로컬 시간대 유지
+    return DateTime.parse(json).toLocal();
+  }
+
+  static String _dateTimeToJson(DateTime dateTime) {
+    return dateTime.toIso8601String();
+  }
 
   factory BaseGameChatMessageResponse.fromJson(Map<String, dynamic> json) =>
       _$BaseGameChatMessageResponseFromJson(json);
