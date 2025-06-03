@@ -93,6 +93,8 @@ class _ChatMemberComponent extends StatelessWidget {
         else
           ListView.separated(
               shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+
               itemBuilder: (_, idx) => _MemberCard.fromResponse(
                     isHost: isHost,
                     model: members[idx],

@@ -102,6 +102,7 @@ class GameNoticeComponent extends ConsumerWidget {
               children: [
                 ListView.separated(
                   shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (_, idx) => NoticeItem.fromModel(
                     model: models[idx],
                     onTap: () {
