@@ -369,7 +369,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
             NCameraPosition(
                 target: NLatLng(
                     overlay.position.latitude, overlay.position.longitude),
-                zoom: 15)));
+                zoom: 13)));
         for (int j = 0; j < futureMarkerList.length; j++) {
           final compareMarker = await futureMarkerList[j];
 
@@ -1375,7 +1375,7 @@ class CourtMapBackground extends ConsumerWidget {
           options: const NaverMapViewOptions(
             initialCameraPosition: NCameraPosition(
               target: NLatLng(37.5666, 126.979),
-              zoom: 15,
+              zoom: 13,
             ),
             locale: Locale('ko'),
           ),

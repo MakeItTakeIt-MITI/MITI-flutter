@@ -282,11 +282,11 @@ class _NewPasswordFormState extends ConsumerState<_NewPasswordForm> {
       checkEquality: true,
     );
     _throttler.values.listen((int s) async {
-      Future.delayed(const Duration(seconds: 1), () {
-        throttleCnt++;
-      });
       setState(() {
         isLoading = true;
+      });
+       Future.delayed(const Duration(seconds: 1), () {
+        throttleCnt++;
       });
       await updatePassword(context);
       setState(() {

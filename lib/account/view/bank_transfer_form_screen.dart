@@ -489,7 +489,7 @@ class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
       setState(() {
         isLoading = true;
       });
-      Future.delayed(const Duration(seconds: 1), () {
+       Future.delayed(const Duration(seconds: 1), () {
         throttleCnt++;
       });
       await requestTransfer(ref, context);

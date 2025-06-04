@@ -56,7 +56,7 @@ class _NicknameUpdateScreenState extends ConsumerState<ProfileUpdateScreen> {
       setState(() {
         isLoading = true;
       });
-      Future.delayed(const Duration(seconds: 1), () {
+       Future.delayed(const Duration(seconds: 1), () {
         throttleCnt++;
       });
       await _updateNickname(ref, context);
@@ -293,24 +293,23 @@ class _NicknameUpdateScreenState extends ConsumerState<ProfileUpdateScreen> {
                         (BuildContext context, WidgetRef ref, Widget? child) {
                       final nickname =
                           ref.watch(userNicknameFormProvider).nickname;
-                      final valid = ValidRegExp.userNickname(nickname);
+                      final valid =
+                          ValidRegExp.userNickname(nickname) && !isLoading;
                       return TextButton(
-                          onPressed: valid && !isLoading
+                          onPressed: valid
                               ? () async {
                                   _throttler.setValue(throttleCnt + 1);
                                 }
                               : () {},
                           style: TextButton.styleFrom(
-                            backgroundColor: valid && !isLoading
-                                ? MITIColor.primary
-                                : MITIColor.gray500,
+                            backgroundColor:
+                                valid ? MITIColor.primary : MITIColor.gray500,
                           ),
                           child: Text(
                             '저장하기',
                             style: MITITextStyle.mdBold.copyWith(
-                              color: valid && !isLoading
-                                  ? MITIColor.gray800
-                                  : MITIColor.gray50,
+                              color:
+                                  valid ? MITIColor.gray800 : MITIColor.gray50,
                             ),
                           ));
                     },

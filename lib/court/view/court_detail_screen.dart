@@ -38,12 +38,14 @@ class CourtDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
+  late final FocusNode focusNode;
   late final ScrollController _scrollController;
   final fabKey = GlobalKey<ExpandableFabState>();
 
   @override
   void initState() {
     super.initState();
+    focusNode = FocusNode();
     _scrollController = ScrollController();
   }
 
@@ -51,6 +53,7 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
   void dispose() {
     _scrollController.dispose();
     fabKey.currentState?.dispose();
+    focusNode.dispose();
     super.dispose();
   }
 
@@ -65,55 +68,59 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
 
     final model = (result as ResponseModel<CourtOperationsResponse>).data!;
 
-    return Scaffold(
-      backgroundColor: MITIColor.gray750,
-      floatingActionButtonLocation: ExpandableFab.location,
-      floatingActionButton: Consumer(
-        builder: (BuildContext context, WidgetRef ref, Widget? child) {
-          return ShareFabComponent(
-            id: widget.courtId,
-            type: ShareType.courts,
-            globalKey: fabKey,
-            model: model,
-          );
-        },
-      ),
-      body: NestedScrollView(
-        controller: _scrollController,
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return [
-            DefaultAppBar(
-              title: model.name,
-              backgroundColor: MITIColor.gray750,
-              isSliver: true,
-              hasBorder: false,
-            )
-          ];
-        },
-        body: CustomScrollView(
-          slivers: [
-            SliverMainAxisGroup(slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.all(13.r),
-                  child: CourtMapComponent(
-                    latLng: NLatLng(
-                      double.parse(model.latitude),
-                      double.parse(model.longitude),
+    return SelectableRegion(
+      focusNode: focusNode,
+      selectionControls: materialTextSelectionControls,
+      child: Scaffold(
+        backgroundColor: MITIColor.gray750,
+        floatingActionButtonLocation: ExpandableFab.location,
+        floatingActionButton: Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            return ShareFabComponent(
+              id: widget.courtId,
+              type: ShareType.courts,
+              globalKey: fabKey,
+              model: model,
+            );
+          },
+        ),
+        body: NestedScrollView(
+          controller: _scrollController,
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return [
+              DefaultAppBar(
+                title: model.name,
+                backgroundColor: MITIColor.gray750,
+                isSliver: true,
+                hasBorder: false,
+              )
+            ];
+          },
+          body: CustomScrollView(
+            slivers: [
+              SliverMainAxisGroup(slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.all(13.r),
+                    child: CourtMapComponent(
+                      latLng: NLatLng(
+                        double.parse(model.latitude),
+                        double.parse(model.longitude),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              getDivider(),
-              _CourtInfoComponent(
-                model: model,
-              ),
-              getDivider(),
-              SoonestGamesComponent(
-                courtId: widget.courtId,
-              ),
-            ]),
-          ],
+                getDivider(),
+                _CourtInfoComponent(
+                  model: model,
+                ),
+                getDivider(),
+                SoonestGamesComponent(
+                  courtId: widget.courtId,
+                ),
+              ]),
+            ],
+          ),
         ),
       ),
     );

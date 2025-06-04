@@ -8,6 +8,8 @@ import 'package:go_router/go_router.dart';
 import 'package:miti/account/view/settlement_management_screen.dart';
 import 'package:miti/auth/view/find_info/find_password_screen.dart';
 import 'package:miti/auth/view/login_screen.dart';
+import 'package:miti/chat/view/chat_notification_form_screen.dart';
+import 'package:miti/chat/view/chat_room_screen.dart';
 import 'package:miti/common/error/view/pay_error_screen.dart';
 import 'package:miti/common/model/remote_config_model.dart';
 import 'package:miti/court/view/court_detail_screen.dart';
@@ -44,6 +46,8 @@ import '../../auth/view/find_info/find_info_screen.dart';
 import '../../auth/view/oauth_error_screen.dart';
 import '../../auth/view/signup/signup_screen.dart';
 import '../../auth/view/signup/signup_select_screen.dart';
+import '../../chat/view/chat_notification_list_screen.dart';
+import '../../chat/view/chat_notification_screen.dart';
 import '../../court/model/court_model.dart';
 import '../../court/model/v2/court_operations_response.dart';
 import '../../court/view/court_search_screen.dart';
@@ -417,6 +421,68 @@ final routerProvider = Provider<GoRouter>((ref) {
                           );
                         },
                         routes: [
+                          GoRoute(
+                              path: 'chatroom',
+                              parentNavigatorKey: rootNavKey,
+                              name: ChatRoomScreen.routeName,
+                              builder: (context, state) {
+                                final int gameId =
+                                    int.parse(state.pathParameters['gameId']!);
+                                return ChatRoomScreen(
+                                  gameId: gameId,
+                                );
+                              },
+                              routes: [
+                                GoRoute(
+                                    path: 'notification',
+                                    parentNavigatorKey: rootNavKey,
+                                    name: ChatNotificationListScreen.routeName,
+                                    builder: (context, state) {
+                                      final int gameId = int.parse(
+                                          state.pathParameters['gameId']!);
+                                      final isHost =
+                                      state.extra! as bool;
+                                      return ChatNotificationListScreen(
+                                        gameId: gameId, isHost: isHost,
+                                      );
+                                    }),
+                                GoRoute(
+                                    path: 'notification/form',
+                                    parentNavigatorKey: rootNavKey,
+                                    name: ChatNotificationFormScreen
+                                        .createRouteName,
+                                    builder: (context, state) {
+                                      final int gameId = int.parse(
+                                          state.pathParameters['gameId']!);
+                                      int? notificationId;
+
+                                      if (state.uri.queryParameters
+                                          .containsKey("notificationId")) {
+                                        notificationId = int.parse(
+                                            state.uri.queryParameters[
+                                                'notificationId']!);
+                                      }
+
+                                      return ChatNotificationFormScreen(
+                                        gameId: gameId,
+                                        notificationId: notificationId,
+                                      );
+                                    }),
+                                GoRoute(
+                                    path: 'notification/:notificationId',
+                                    parentNavigatorKey: rootNavKey,
+                                    name: ChatNotificationScreen.routeName,
+                                    builder: (context, state) {
+                                      final int gameId = int.parse(
+                                          state.pathParameters['gameId']!);
+                                      final int notificationId = int.parse(state
+                                          .pathParameters['notificationId']!);
+                                      return ChatNotificationScreen(
+                                        gameId: gameId,
+                                        notificationId: notificationId,
+                                      );
+                                    }),
+                              ]),
                           GoRoute(
                               path: 'participation',
                               parentNavigatorKey: rootNavKey,

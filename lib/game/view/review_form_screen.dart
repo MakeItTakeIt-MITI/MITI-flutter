@@ -55,8 +55,8 @@ class ReviewScreen extends ConsumerStatefulWidget {
 }
 
 class _ReviewScreenState extends ConsumerState<ReviewScreen> {
-  late Throttle<int> _throttler;
   late final ScrollController _scrollController;
+  late Throttle<int> _throttler;
   int throttleCnt = 0;
   bool isLoading = false;
 
@@ -72,7 +72,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
       setState(() {
         isLoading = true;
       });
-      Future.delayed(const Duration(seconds: 1), () {
+       Future.delayed(const Duration(seconds: 1), () {
         throttleCnt++;
       });
       await createReview(ref, context, widget.userInfoModel.nickname);

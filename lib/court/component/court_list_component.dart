@@ -19,6 +19,7 @@ import '../../common/model/default_model.dart';
 import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
 import '../../game/component/skeleton/game_list_skeleton.dart';
+import '../../game/param/game_param.dart';
 import '../model/court_model.dart';
 import '../model/v2/court_map_response.dart';
 import '../param/court_pagination_param.dart';
@@ -26,12 +27,21 @@ import '../provider/court_pagination_provider.dart';
 import '../provider/court_provider.dart';
 import '../provider/widget/court_search_provider.dart';
 
+typedef LoadCourtInfoCallback = void Function(GameCourtParam court);
+
 final selectedProvider = StateProvider.autoDispose<int?>((ref) => null);
 final selectedCourtProvider =
     StateProvider.autoDispose<CourtMapResponse?>((ref) => null);
 
 class CourtListComponent extends ConsumerStatefulWidget {
-  const CourtListComponent({super.key});
+  final List<CourtMapResponse> models;
+  final LoadCourtInfoCallback loadCallback;
+
+  const CourtListComponent({
+    super.key,
+    required this.loadCallback,
+    required this.models,
+  });
 
   @override
   ConsumerState<CourtListComponent> createState() => _CourtListComponentState();
@@ -56,9 +66,9 @@ class _CourtListComponentState extends ConsumerState<CourtListComponent> {
   Widget build(BuildContext context) {
     log("build!!");
     // final form = ref.watch(courtSearchProvider);
-    final search = ref.watch(gameFormProvider).court.address;
-    log("search address = $search");
-    final param = CourtPaginationParam(search: search);
+    // final search = ref.watch(gameFormProvider).court.address;
+    // log("search address = $search");
+    // final param = CourtPaginationParam(search: search);
     // final result = ref.watch(courtListProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -80,41 +90,56 @@ class _CourtListComponentState extends ConsumerState<CourtListComponent> {
           ],
         ),
         SizedBox(height: 20.h),
-        ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height / 2,
-          ),
-          child: CustomScrollView(
-            shrinkWrap: true,
-            controller: _scrollController,
-            slivers: [
-              Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  final selected = ref.watch(selectedCourtProvider);
-                  return DisposeSliverPaginationListView(
-                    provider: courtPageProvider(PaginationStateParam(
-                      param: param,
-                    )),
-                    itemBuilder: (BuildContext context, int index, Base model) {
-                      model as CourtMapResponse;
-                      return CourtAddressCard.fromModel(
-                        model: model,
-                        selected: selected?.id == model.id,
-                        onTap: () {
-                          ref.read(selectedCourtProvider.notifier).update(
-                              (state) =>
-                                  selected?.id != model.id ? model : null);
-                        },
-                      );
+        Align(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height / 2,
+            ),
+            child: Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                final selected = ref.watch(selectedCourtProvider);
+                return ListView.separated(
+                  shrinkWrap: true,
+                  itemBuilder: (_, idx) => CourtAddressCard.fromModel(
+                    model: widget.models[idx],
+                    selected: selected?.id == widget.models[idx].id,
+                    onTap: () {
+                      ref.read(selectedCourtProvider.notifier).update((state) =>
+                          selected?.id != widget.models[idx].id
+                              ? widget.models[idx]
+                              : null);
                     },
-                    param: param,
-                    skeleton: const CourtListSkeleton(),
-                    controller: _scrollController,
-                    emptyWidget: Container(),
-                  );
-                },
-              ),
-            ],
+                  ),
+                  separatorBuilder: (_, idx) => SizedBox(
+                    height: 16.h,
+                  ),
+                  itemCount: widget.models.length,
+                );
+
+                // return DisposeSliverPaginationListView(
+                //   provider: courtPageProvider(PaginationStateParam(
+                //     param: param,
+                //   )),
+                //   itemBuilder:
+                //       (BuildContext context, int index, Base model) {
+                //     model as CourtMapResponse;
+                //     return CourtAddressCard.fromModel(
+                //       model: model,
+                //       selected: selected?.id == model.id,
+                //       onTap: () {
+                //         ref.read(selectedCourtProvider.notifier).update(
+                //                 (state) =>
+                //             selected?.id != model.id ? model : null);
+                //       },
+                //     );
+                //   },
+                //   param: param,
+                //   skeleton: const CourtListSkeleton(),
+                //   controller: _scrollController,
+                //   emptyWidget: Container(),
+                // );
+              },
+            ),
           ),
         ),
         // Consumer(
@@ -152,7 +177,7 @@ class _CourtListComponentState extends ConsumerState<CourtListComponent> {
             return TextButton(
                 onPressed: selected != null
                     ? () {
-                        selectCourt(ref, context);
+                        selectCourt(ref, context, widget.loadCallback);
                       }
                     : () {},
                 style: ButtonStyle(
@@ -202,7 +227,8 @@ class _CourtListComponentState extends ConsumerState<CourtListComponent> {
     }
   }
 
-  void selectCourt(WidgetRef ref, BuildContext context) {
+  void selectCourt(
+      WidgetRef ref, BuildContext context, LoadCourtInfoCallback loadCallback) {
     /// 게임 생성 폼을 닫은 후 늦게 갱신 !!
     /// 게임 폼이 부모 트리에 있기 때문에 갱신 되면 build를 하면서
     /// 자식인 해당 다이어로그까지 build 되어 닫히는게 버벅이는 현상이 있기 때문
@@ -211,6 +237,11 @@ class _CourtListComponentState extends ConsumerState<CourtListComponent> {
     final court = ref.read(gameFormProvider).court;
     final newCourt =
         court.copyWith(name: model.name, address_detail: model.addressDetail);
+
+    loadCallback(newCourt);
+
+    // ref.read(gameFormProvider.notifier).selectGameHistory(
+    //     model: model, textEditingControllers: textEditingControllers);
 
     ref.read(gameFormProvider.notifier).update(court: newCourt);
 

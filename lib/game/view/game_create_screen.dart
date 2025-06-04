@@ -34,11 +34,15 @@ import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/custom_time_picker.dart';
+import '../../common/param/pagination_param.dart';
 import '../../common/provider/router_provider.dart';
 import '../../common/provider/widget/form_provider.dart';
 import '../../common/view/operation_term_screen.dart';
 import '../../court/component/court_list_component.dart';
+import '../../court/model/v2/court_map_response.dart';
 import '../../court/model/v2/court_operations_response.dart';
+import '../../court/param/court_pagination_param.dart';
+import '../../court/provider/court_pagination_provider.dart';
 import '../../util/util.dart';
 import '../component/game_recent_component.dart';
 import '../model/game_model.dart';
@@ -985,8 +989,10 @@ class _TimePickerState extends State<_TimePicker> {
 
 class AddressComponent extends StatefulWidget {
   final GameCourtParam court;
+  final LoadCourtInfoCallback loadCallback;
 
-  const AddressComponent({super.key, required this.court});
+  const AddressComponent(
+      {super.key, required this.court, required this.loadCallback});
 
   @override
   State<AddressComponent> createState() => _AddressComponentState();
@@ -1086,9 +1092,28 @@ class _AddressComponentState extends State<AddressComponent> {
                                     const Duration(milliseconds: 500),
                                     () async {
                                   if (mounted) {
-                                    await showCustomModalBottomSheet(
-                                        parent!.context,
-                                        const CourtListComponent());
+                                    final search = ref
+                                        .read(gameFormProvider)
+                                        .court
+                                        .address;
+                                    final param =
+                                        CourtPaginationParam(search: search);
+                                    final result = await ref.read(
+                                        courtSinglePageProvider(param: param)
+                                            .future);
+                                    if (result is ResponseModel<
+                                        PaginationModel<CourtMapResponse>>) {
+                                      final model = (result).data!.page_content;
+
+                                      if (model.isNotEmpty) {
+                                        await showCustomModalBottomSheet(
+                                            parent!.context,
+                                            CourtListComponent(
+                                              loadCallback: widget.loadCallback,
+                                              models: model,
+                                            ));
+                                      }
+                                    }
                                   }
 
                                   log("show!! modal");
@@ -1161,6 +1186,11 @@ class _AddressFormState extends ConsumerState<_AddressForm> {
         children: [
           AddressComponent(
             court: court,
+            loadCallback: (GameCourtParam court) {
+              addressController.text = court.address;
+              addressDetailController.text = court.address_detail ?? '';
+              nameController.text = court.name;
+            },
           ),
           SizedBox(height: 32.h),
           CustomTextFormField(

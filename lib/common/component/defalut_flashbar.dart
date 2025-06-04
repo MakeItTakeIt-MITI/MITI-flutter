@@ -41,7 +41,7 @@ class DefaultFlash extends StatelessWidget {
         controller: controller,
         useSafeArea: false,
         // toolbarHeight 추가
-        margin: EdgeInsets.only(top: 98.h, left: 78.w, right: 78.w),
+        margin: EdgeInsets.only(top: 98.h, left: 60.w, right: 60.w),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
         backgroundColor: MITIColor.gray700,
         padding: EdgeInsets.all(10.r),

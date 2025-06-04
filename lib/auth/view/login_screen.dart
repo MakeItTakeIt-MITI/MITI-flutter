@@ -116,8 +116,8 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
       initialValue: 0,
       checkEquality: true,
     );
-    _throttler.values.listen((int s)  {
-       login();
+    _throttler.values.listen((int s) async {
+      login();
       Future.delayed(const Duration(seconds: 1), () {
         throttleCnt++;
       });
@@ -342,8 +342,8 @@ class KakaoLoginButton extends ConsumerWidget {
       final KakaoLoginParam param =
           KakaoLoginParam(access_token: token.accessToken);
 
-      final result = await ref
-          .read(loginProvider(param: param, type: SignupMethodType.kakao).future);
+      final result = await ref.read(
+          loginProvider(param: param, type: SignupMethodType.kakao).future);
       if (context.mounted) {
         if (result is ErrorModel) {
           if (result.status_code == Forbidden && result.error_code == 540) {
@@ -493,11 +493,9 @@ class HelpComponent extends StatelessWidget {
           children: [
             InkWell(
               onTap: () async {
-                final uri = Uri.parse(
-                    'https://www.makeittakeit.kr/inquiries');
+                final uri = Uri.parse('https://www.makeittakeit.kr/inquiries');
                 if (await canLaunchUrl(uri)) {
                   await launchUrl(uri);
-
                 }
               },
               child: Text(
