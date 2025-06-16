@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miti/board/view/board_list_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/util/util.dart';
@@ -36,14 +37,16 @@ class _DefaultShellScreenState extends ConsumerState<DefaultShellScreen> {
   }
 
   int getIndex(BuildContext context) {
-    if (GoRouterState.of(context).matchedLocation.startsWith('/home')) {
+    if (GoRouterState.of(context).matchedLocation.startsWith('/board')) {
       return 0;
-    } else if (GoRouterState.of(context).matchedLocation.startsWith('/game')) {
-      return 1;
     } else if (GoRouterState.of(context).matchedLocation.startsWith('/court')) {
+      return 1;
+    } else if (GoRouterState.of(context).matchedLocation.startsWith('/home')) {
       return 2;
-    } else {
+    } else if (GoRouterState.of(context).matchedLocation.startsWith('/game')) {
       return 3;
+    } else {
+      return 4;
     }
   }
 
@@ -64,26 +67,32 @@ class _DefaultShellScreenState extends ConsumerState<DefaultShellScreen> {
                 if (page == 0) {
                   if (GoRouterState.of(context)
                       .matchedLocation
-                      .startsWith('/home')) {
-
+                      .startsWith('/board')) {
                   } else {
-                    context.goNamed(CourtMapScreen.routeName);
+                    context.goNamed(BoardListScreen.routeName);
                   }
                 } else if (page == 1) {
-                  if (GoRouterState.of(context)
-                      .matchedLocation
-                      .startsWith('/game')) {
-                    _scrollTop(scrollController);
-                  } else {
-                    context.goNamed(GameScreen.routeName);
-                  }
-                } else if (page == 2) {
                   if (GoRouterState.of(context)
                       .matchedLocation
                       .startsWith('/court')) {
                     _scrollTop(scrollController);
                   } else {
                     context.goNamed(CourtSearchListScreen.routeName);
+                  }
+                } else if (page == 2) {
+                  if (GoRouterState.of(context)
+                      .matchedLocation
+                      .startsWith('/home')) {
+                  } else {
+                    context.goNamed(CourtMapScreen.routeName);
+                  }
+                } else if (page == 3) {
+                  if (GoRouterState.of(context)
+                      .matchedLocation
+                      .startsWith('/game')) {
+                    _scrollTop(scrollController);
+                  } else {
+                    context.goNamed(GameScreen.routeName);
                   }
                 } else {
                   if (GoRouterState.of(context)
@@ -134,36 +143,41 @@ class CustomBottomNavigationBar extends StatelessWidget {
             onTap: () {
               onTap(0);
             },
-            label: '홈',
+            label: '게시판',
             selected: index == 0,
-            iconName: index == 0 ? 'home' : 'home',
+            iconName: index == 0 ? 'board' : 'board',
           ),
-          // const Spacer(),
           CustomBottomItem(
             onTap: () {
               onTap(1);
             },
-            label: '내 경기',
+            label: '경기장',
             selected: index == 1,
-            iconName: index == 1 ? 'game' : 'game',
+            iconName: index == 1 ? 'court' : 'court',
           ),
-          // const Spacer(),
           CustomBottomItem(
             onTap: () {
               onTap(2);
             },
-            label: '경기장',
+            label: '홈',
             selected: index == 2,
-            iconName: index == 2 ? 'court' : 'court',
+            iconName: index == 2 ? 'home' : 'home',
           ),
-          // const Spacer(),
           CustomBottomItem(
             onTap: () {
               onTap(3);
             },
-            label: '마이페이지',
+            label: '내 경기',
             selected: index == 3,
-            iconName: index == 3 ? 'profile' : 'profile',
+            iconName: index == 3 ? 'game' : 'game',
+          ),
+          CustomBottomItem(
+            onTap: () {
+              onTap(4);
+            },
+            label: '마이페이지',
+            selected: index == 4,
+            iconName: index == 4 ? 'mypage' : 'mypage',
           ),
           // SizedBox(height: 40.w),
         ],
@@ -201,14 +215,14 @@ class CustomBottomItem extends StatelessWidget {
             height: 24.r,
             width: 24.r,
             colorFilter: ColorFilter.mode(
-                selected ? MITIColor.gray100 : MITIColor.gray500,
+                selected ? MITIColor.primary : MITIColor.gray600,
                 BlendMode.srcIn),
           ),
           SizedBox(height: 6.h),
           Text(
             label,
             style: textStyle.copyWith(
-              color: selected ? MITIColor.gray100 : MITIColor.gray500,
+              color: selected ? MITIColor.primary : MITIColor.gray600,
             ),
           )
         ],

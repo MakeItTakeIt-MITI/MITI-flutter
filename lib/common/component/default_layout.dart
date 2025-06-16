@@ -48,12 +48,13 @@ class _DefaultLayoutState extends State<DefaultLayout> {
               return;
             }
             if (page == 0) {
-              context.goNamed(CourtMapScreen.routeName);
             } else if (page == 1) {
-              context.goNamed(GameScreen.routeName);
-            } else if (page == 2) {
               context.goNamed(CourtSearchListScreen.routeName);
-            } else {
+            } else if (page == 2) {
+              context.goNamed(CourtMapScreen.routeName);
+            } else if(page== 3){
+              context.goNamed(GameScreen.routeName);
+            }else if(page == 4){
               context.goNamed(ProfileBody.routeName);
             }
           },

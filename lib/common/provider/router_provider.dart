@@ -46,6 +46,7 @@ import '../../auth/view/find_info/find_info_screen.dart';
 import '../../auth/view/oauth_error_screen.dart';
 import '../../auth/view/signup/signup_screen.dart';
 import '../../auth/view/signup/signup_select_screen.dart';
+import '../../board/view/board_list_screen.dart';
 import '../../chat/view/chat_notification_list_screen.dart';
 import '../../chat/view/chat_notification_screen.dart';
 import '../../court/model/court_model.dart';
@@ -343,6 +344,21 @@ final routerProvider = Provider<GoRouter>((ref) {
                   child: DefaultShellScreen(body: child));
             },
             routes: [
+              GoRoute(
+                path: '/board',
+                redirect: (_, state) => provider.redirectLogic(state),
+                parentNavigatorKey: shellNavKey,
+                name: BoardListScreen.routeName,
+                builder: (context, state) {
+                  return const BoardListScreen();
+                },
+                pageBuilder: (context, state) {
+                  return const NoTransitionPage(child: BoardListScreen());
+                },
+                routes: [
+
+                ],
+              ),
               GoRoute(
                 path: '/home',
                 redirect: (_, state) => provider.redirectLogic(state),
