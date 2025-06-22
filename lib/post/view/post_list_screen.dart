@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -13,14 +14,31 @@ import '../../theme/text_theme.dart';
 import '../../util/util.dart';
 import '../component/post_card.dart';
 import '../component/post_category.dart';
+import '../provider/select_post_category_provider.dart';
 
-class PostListScreen extends StatelessWidget {
+class PostListScreen extends ConsumerStatefulWidget {
   static String get routeName => 'postList';
 
   const PostListScreen({super.key});
 
   @override
+  ConsumerState<PostListScreen> createState() => _PostListScreenState();
+}
+
+class _PostListScreenState extends ConsumerState<PostListScreen> {
+  final globalKeys =
+      List.generate(PostCategoryType.values.length, (idx) => GlobalKey());
+  late final ScrollController _categoryScrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _categoryScrollController = ScrollController();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final selectedCategory = ref.watch(selectedPostCategoryProvider);
     final postList = List.generate(
         20,
         (idx) => PostCard.fromModel(
@@ -77,7 +95,8 @@ class PostListScreen extends StatelessWidget {
         child: NestedScrollView(
           physics: const NeverScrollableScrollPhysics(),
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            const categories = PostCategoryType.values;
+            final categories = PostCategoryType.values.toList();
+            categories.remove(PostCategoryType.all);
             return [
               DefaultAppBar(
                 isSliver: true,
@@ -101,20 +120,65 @@ class PostListScreen extends StatelessWidget {
               SliverPersistentHeader(
                 delegate: SliverAppBarDelegate(
                     child: Container(
-                      color: MITIColor.gray900,
-                      child: ListView.separated(
-                          shrinkWrap: true,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 13.w, vertical: 8.h),
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (_, idx) {
-                            return PostCategoryChip(
-                              category: categories[idx],
-                              onTap: () {},
-                            );
-                          },
-                          separatorBuilder: (_, __) => SizedBox(width: 8.w),
-                          itemCount: categories.length),
+                      decoration: const BoxDecoration(
+                          color: MITIColor.gray900,
+                          border: Border(
+                              bottom: BorderSide(
+                            color: MITIColor.gray800,
+                          ))),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 14.w,
+                          ),
+                          PostCategoryChip(
+                            category: PostCategoryType.all,
+                            onTap: () {
+                              ref
+                                  .read(selectedPostCategoryProvider.notifier)
+                                  .update((e) => PostCategoryType.all);
+                            },
+                            isSelected:
+                                selectedCategory == PostCategoryType.all,
+                            globalKey: globalKeys[0],
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8.w),
+                            child: VerticalDivider(
+                              width: 1.w,
+                              indent: 8.h,
+                              endIndent: 8.h,
+                              color: MITIColor.gray600,
+                            ),
+                          ),
+                          Expanded(
+                            child: ListView.separated(
+                                shrinkWrap: true,
+                                padding: EdgeInsets.only(
+                                    right: 13.w, top: 8.h, bottom: 8.h),
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (_, idx) {
+                                  return PostCategoryChip(
+                                    category: categories[idx],
+                                    onTap: () {
+                                      // todo 중앙 스크롤 수정
+                                      // focusScrollable(idx, globalKeys);
+                                      ref
+                                          .read(selectedPostCategoryProvider
+                                              .notifier)
+                                          .update((e) => categories[idx]);
+                                    },
+                                    isSelected:
+                                        selectedCategory == categories[idx],
+                                    globalKey: globalKeys[idx + 1],
+                                  );
+                                },
+                                separatorBuilder: (_, __) =>
+                                    SizedBox(width: 8.w),
+                                itemCount: categories.length),
+                          ),
+                        ],
+                      ),
                     ),
                     height: 48.h),
                 pinned: true,
@@ -143,32 +207,44 @@ class PostListScreen extends StatelessWidget {
 
 class PostCategoryChip extends StatelessWidget {
   final PostCategoryType category;
+  final bool isSelected;
   final VoidCallback onTap;
+  final GlobalKey globalKey;
 
-  const PostCategoryChip(
-      {super.key, required this.category, required this.onTap});
+  const PostCategoryChip({
+    super.key,
+    required this.category,
+    required this.onTap,
+    required this.isSelected,
+    required this.globalKey,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      key: globalKey,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 14.w),
         height: 32.h,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(100.r),
-          border: Border.all(color: MITIColor.gray600, width: .5),
-        ),
+            borderRadius: BorderRadius.circular(100.r),
+            border: Border.all(
+                color: isSelected ? MITIColor.primary : MITIColor.gray600,
+                width: .5),
+            color: isSelected ? MITIColor.primary : MITIColor.gray900),
         child: Row(
           children: [
             Text(category.displayName,
-                style: MITITextStyle.xxsm.copyWith(color: MITIColor.gray300)),
-            SizedBox(width: 2.w),
-            SvgPicture.asset(
-              AssetUtil.getAssetPath(type: AssetType.icon, name: "search"),
-              height: 12.r,
-              width: 12.r,
-            )
+                style: MITITextStyle.xxsm.copyWith(
+                    color: isSelected ? MITIColor.gray900 : MITIColor.gray300)),
+            if (category != PostCategoryType.all) SizedBox(width: 2.w),
+            if (category != PostCategoryType.all)
+              SvgPicture.asset(
+                AssetUtil.getAssetPath(type: AssetType.icon, name: "search"),
+                height: 12.r,
+                width: 12.r,
+              )
           ],
         ),
       ),

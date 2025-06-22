@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miti/common/model/entity_enum.dart';
+import 'package:miti/theme/color_theme.dart';
 
 import '../../theme/text_theme.dart';
 
@@ -15,11 +16,11 @@ class PostCategory extends StatelessWidget {
       padding: EdgeInsets.all(4.r),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(4.r),
-        color: const Color(0xFF89CFF0),
+        color: MITIColor.gray750.withOpacity(.5),
       ),
       child: Text(
         category.displayName,
-        style: MITITextStyle.xxxsmLight.copyWith(color: Colors.black),
+        style: MITITextStyle.xxxsmLight.copyWith(color: MITIColor.gray500),
       ),
     );
   }

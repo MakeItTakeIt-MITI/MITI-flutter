@@ -53,7 +53,7 @@ class PostCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 14.h),
+        padding: EdgeInsets.symmetric(vertical: 12.h),
         decoration: BoxDecoration(
             border: Border(
                 bottom: BorderSide(
@@ -62,16 +62,26 @@ class PostCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                PostCategory(
+                  category: category,
+                ),
+                Text(
+                  "${DateTime.now().difference(createdAt).inMinutes}분전",
+                  style: MITITextStyle.xxxsmLight
+                      .copyWith(color: MITIColor.gray600),
+                )
+              ],
+            ),
+            SizedBox(height: 4.h),
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      PostCategory(
-                        category: category,
-                      ),
-                      SizedBox(height: 8.h),
                       Text(
                         title,
                         style:
@@ -87,6 +97,26 @@ class PostCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                       ),
+                      SizedBox(height: 8.h),
+                      Row(
+                        children: [
+                          Text(
+                            writer.nickname,
+                            style: MITITextStyle.xxxsm.copyWith(color: MITIColor.gray600),
+                          ),
+                          SizedBox(width: 10.w),
+                          _SubInfo(
+                            title: "댓글",
+                            cnt: numOfComments,
+                          ),
+                          SizedBox(width: 10.w),
+                          _SubInfo(
+                            title: "좋아요",
+                            cnt: likedUsers.length,
+                          ),
+                        ],
+                      )
+
                     ],
                   ),
                 ),
@@ -98,15 +128,15 @@ class PostCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4.r),
                         child: Image.network(
                           images.first,
-                          width: 62.r,
-                          height: 62.r,
+                          width: 50.r,
+                          height: 50.r,
                           fit: BoxFit.fill,
                         ),
                       ),
                       if (images.length > 1)
                         Positioned(
-                            bottom: 3.5.r,
-                            right: 3.5.r,
+                            bottom: 2.r,
+                            right: 2.r,
                             child: Container(
                               constraints: BoxConstraints(
                                 minWidth: 16.r, // 최소 너비
@@ -129,25 +159,6 @@ class PostCard extends StatelessWidget {
                   )
               ],
             ),
-            SizedBox(height: 12.h),
-            Row(
-              children: [
-                Text(
-                  writer.nickname,
-                  style: MITITextStyle.xxxsm.copyWith(color: MITIColor.gray600),
-                ),
-                SizedBox(width: 10.w),
-                _SubInfo(
-                  title: "댓글",
-                  cnt: numOfComments,
-                ),
-                SizedBox(width: 10.w),
-                _SubInfo(
-                  title: "좋아요",
-                  cnt: likedUsers.length,
-                ),
-              ],
-            )
           ],
         ),
       ),
@@ -178,4 +189,3 @@ class _SubInfo extends StatelessWidget {
     );
   }
 }
-

@@ -57,7 +57,9 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
             ? const Border(
                 bottom: BorderSide(color: MITIColor.gray600),
               )
-            : null,
+            : Border(
+                bottom: BorderSide(color: backgroundColor ?? MITIColor.gray800),
+              ),
         centerTitle: true,
 
         leading: context.canPop() && canPop
@@ -94,9 +96,11 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
           ? const Border(
               bottom: BorderSide(color: MITIColor.gray600),
             )
-          : null,
+          : Border(
+              bottom: BorderSide(color: backgroundColor ?? MITIColor.gray800),
+            ),
       title: Text(
-         title ?? '',
+        title ?? '',
         style: MITITextStyle.mdBold.copyWith(
           color: MITIColor.white,
         ),

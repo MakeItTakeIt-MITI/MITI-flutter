@@ -714,6 +714,7 @@ enum AccountStatusType {
 
 
 enum PostCategoryType {
+  all('전체'),
   general('자유주제'),
   court_info('코트 정보'),
   tournament('대회 정보'),
