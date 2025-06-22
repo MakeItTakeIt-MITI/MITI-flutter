@@ -673,14 +673,7 @@ enum AdvertisementStatusType {
 
   final String displayName;
 }
-/*
-  all('전체'),
-  game('경기'),
-  settlement('정산'),
-  review('리뷰'),
-  report('신고'),
-  etc('기타');
- */
+
 enum FaqCategoryType {
   all('전체'),
   game('경기'),
@@ -715,6 +708,32 @@ enum AccountStatusType {
   disabled('비활성화');
 
   const AccountStatusType(this.displayName);
+
+  final String displayName;
+}
+
+
+enum PostCategoryType {
+  general('자유주제'),
+  court_info('코트 정보'),
+  tournament('대회 정보'),
+  tactic('농구 전술'),
+  shoes_revie('농구화 리뷰'),
+  tip('농구 팁'),
+  team_recruitment('팀원 구해요'),
+  game_review('게스트 후기'),
+  foreign_issue('해외농구'),
+  domestic_issue('국내농구'),
+  injury('부상'),
+  gear('농구용품');
+
+  const PostCategoryType(this.displayName);
+
+  static PostCategoryType stringToEnum({required String value}) {
+    return PostCategoryType.values.firstWhere((e) {
+      return e.displayName == value;
+    });
+  }
 
   final String displayName;
 }

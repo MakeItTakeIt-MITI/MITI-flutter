@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:miti/board/view/board_list_screen.dart';
+import 'package:miti/post/view/post_list_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/util/util.dart';
@@ -37,7 +37,7 @@ class _DefaultShellScreenState extends ConsumerState<DefaultShellScreen> {
   }
 
   int getIndex(BuildContext context) {
-    if (GoRouterState.of(context).matchedLocation.startsWith('/board')) {
+    if (GoRouterState.of(context).matchedLocation.startsWith('/post')) {
       return 0;
     } else if (GoRouterState.of(context).matchedLocation.startsWith('/court')) {
       return 1;
@@ -67,9 +67,10 @@ class _DefaultShellScreenState extends ConsumerState<DefaultShellScreen> {
                 if (page == 0) {
                   if (GoRouterState.of(context)
                       .matchedLocation
-                      .startsWith('/board')) {
+                      .startsWith('/post')) {
+                    _scrollTop(scrollController);
                   } else {
-                    context.goNamed(BoardListScreen.routeName);
+                    context.goNamed(PostListScreen.routeName);
                   }
                 } else if (page == 1) {
                   if (GoRouterState.of(context)
@@ -83,6 +84,7 @@ class _DefaultShellScreenState extends ConsumerState<DefaultShellScreen> {
                   if (GoRouterState.of(context)
                       .matchedLocation
                       .startsWith('/home')) {
+                    _scrollTop(scrollController);
                   } else {
                     context.goNamed(CourtMapScreen.routeName);
                   }

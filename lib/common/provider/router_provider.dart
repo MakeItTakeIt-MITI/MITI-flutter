@@ -46,7 +46,6 @@ import '../../auth/view/find_info/find_info_screen.dart';
 import '../../auth/view/oauth_error_screen.dart';
 import '../../auth/view/signup/signup_screen.dart';
 import '../../auth/view/signup/signup_select_screen.dart';
-import '../../board/view/board_list_screen.dart';
 import '../../chat/view/chat_notification_list_screen.dart';
 import '../../chat/view/chat_notification_screen.dart';
 import '../../court/model/court_model.dart';
@@ -60,6 +59,7 @@ import '../../game/view/game_review_list_screen.dart';
 import '../../game/view/game_screen.dart';
 import '../../kakaopay/view/approval_screen.dart';
 import '../../notification/view/notification_setting_screen.dart';
+import '../../post/view/post_list_screen.dart';
 import '../../report/view/report_form_screen.dart';
 import '../../report/view/report_list_screen.dart';
 import '../../review/view/my_review_detail_screen.dart';
@@ -345,15 +345,15 @@ final routerProvider = Provider<GoRouter>((ref) {
             },
             routes: [
               GoRoute(
-                path: '/board',
+                path: '/post',
                 redirect: (_, state) => provider.redirectLogic(state),
                 parentNavigatorKey: shellNavKey,
-                name: BoardListScreen.routeName,
+                name: PostListScreen.routeName,
                 builder: (context, state) {
-                  return const BoardListScreen();
+                  return const PostListScreen();
                 },
                 pageBuilder: (context, state) {
-                  return const NoTransitionPage(child: BoardListScreen());
+                  return const NoTransitionPage(child: PostListScreen());
                 },
                 routes: [
 
