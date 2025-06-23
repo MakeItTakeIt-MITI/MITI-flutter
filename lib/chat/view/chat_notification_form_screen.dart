@@ -18,6 +18,8 @@ import 'package:miti/theme/color_theme.dart';
 
 import '../../common/component/custom_bottom_sheet.dart';
 import '../../common/component/defalut_flashbar.dart';
+import '../../common/component/form/multi_line_text_field.dart';
+import '../../common/component/form/under_line_text_field.dart';
 import '../../court/component/court_list_component.dart';
 import '../../game/component/game_recent_component.dart';
 import '../../notification/model/game_chat_notification_response.dart';
@@ -42,6 +44,7 @@ class _ChatNotificationFormScreenState
     extends ConsumerState<ChatNotificationFormScreen> {
   late final TextEditingController bodyTextController;
   late final TextEditingController titleTextController;
+  List<FocusNode> focusNodes = [FocusNode(), FocusNode()];
 
   bool get isEdit => widget.notificationId != null;
 
@@ -49,6 +52,8 @@ class _ChatNotificationFormScreenState
   late Throttle<int> _updateThrottler;
   int updateThrottleCnt = 0;
   bool isBottomLoading = false;
+  final inputBorder = const UnderlineInputBorder(
+      borderSide: BorderSide(color: MITIColor.gray600, width: .5));
 
   // 추가, 삭제
   late Throttle<int> _throttler;
@@ -149,9 +154,6 @@ class _ChatNotificationFormScreenState
 
   @override
   Widget build(BuildContext context) {
-    const inputBorder = UnderlineInputBorder(
-        borderSide: BorderSide(color: MITIColor.gray600, width: .5));
-
     Widget? bottomButton;
     if (isEdit) {
       bottomButton = Consumer(
@@ -234,31 +236,10 @@ class _ChatNotificationFormScreenState
                         gameId: widget.gameId,
                         notificationId: widget.notificationId)
                     .select((s) => s.title));
-
-                return TextField(
-                  textInputAction: TextInputAction.next,
-                  controller: titleTextController,
-                  decoration: InputDecoration(
-                      hintText: "제목을 입력해주세요",
-                      hintStyle: MITITextStyle.sm.copyWith(
-                        color: MITIColor.gray600,
-                      ),
-                      enabledBorder: inputBorder,
-                      border: inputBorder,
-                      focusedBorder: inputBorder,
-                      contentPadding: EdgeInsets.all(0.r),
-                      counterText: "",
-                      filled: false,
-                      suffixText: "(${title.length}/32)",
-                      suffixStyle: MITITextStyle.sm.copyWith(
-                        color: MITIColor.gray600,
-                      )),
-                  maxLength: 32,
-                  maxLengthEnforcement:
-                      MaxLengthEnforcement.truncateAfterCompositionEnds,
-                  style: MITITextStyle.sm.copyWith(
-                    color: MITIColor.gray100,
-                  ),
+                return UnderLineTextField(
+                  textStyle: MITITextStyle.sm,
+                  title: title,
+                  textEditingController: titleTextController,
                   onChanged: (v) {
                     if (v.length > 32) {
                       return;
@@ -271,6 +252,8 @@ class _ChatNotificationFormScreenState
                             .notifier)
                         .update(title: v);
                   },
+                  hintText: "제목을 입력해주세요",
+                  focusNode: focusNodes[0],
                 );
               },
             ),
@@ -286,7 +269,8 @@ class _ChatNotificationFormScreenState
               },
               child: Expanded(
                 child: Scrollbar(
-                  child: _MultiLineTextField(
+                  child: MultiLineTextField(
+                    textStyle: MITITextStyle.sm,
                     textController: bodyTextController,
                     inputBorder: inputBorder,
                     onChanged: (v) {
@@ -301,6 +285,8 @@ class _ChatNotificationFormScreenState
                               .notifier)
                           .update(body: v);
                     },
+                    hintText: "경기 참가자들에게 공유할 내용을 작성해주세요.",
+                    focusNode: focusNodes[1],
                   ),
                 ),
               ),
@@ -380,45 +366,6 @@ class _ChatNotificationFormScreenState
         form.title.length <= 32 &&
         form.body.isNotEmpty &&
         form.body.length <= 3000;
-  }
-}
-
-class _MultiLineTextField extends StatelessWidget {
-  final TextEditingController textController;
-  final InputBorder inputBorder;
-  final ValueChanged<String> onChanged;
-
-  const _MultiLineTextField(
-      {super.key,
-      required this.textController,
-      required this.inputBorder,
-      required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: textController,
-      maxLines: null,
-      expands: true,
-      maxLength: 3000,
-      textInputAction: TextInputAction.newline,
-      decoration: InputDecoration(
-        counterText: "",
-        hintText: "경기 참가자들에게 공유할 내용을 작성해주세요.",
-        hintStyle: MITITextStyle.sm.copyWith(
-          color: MITIColor.gray600,
-        ),
-        enabledBorder: inputBorder.copyWith(borderSide: BorderSide.none),
-        border: inputBorder.copyWith(borderSide: BorderSide.none),
-        focusedBorder: inputBorder.copyWith(borderSide: BorderSide.none),
-        contentPadding: EdgeInsets.all(0.r),
-        filled: false,
-      ),
-      onChanged: onChanged,
-      style: MITITextStyle.sm.copyWith(
-        color: MITIColor.gray100,
-      ),
-    );
   }
 }
 

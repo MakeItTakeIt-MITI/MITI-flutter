@@ -26,6 +26,8 @@ import 'package:miti/game/view/review_form_screen.dart';
 import 'package:miti/notification/model/push_model.dart';
 import 'package:miti/notification/view/notification_detail_screen.dart';
 import 'package:miti/notification/view/notification_screen.dart';
+import 'package:miti/post/view/post_detail_screen.dart';
+import 'package:miti/post/view/post_form_screen.dart';
 import 'package:miti/support/view/faq_screen.dart';
 import 'package:miti/support/view/guide_screen.dart';
 import 'package:miti/support/view/support_form_screen.dart';
@@ -59,6 +61,7 @@ import '../../game/view/game_review_list_screen.dart';
 import '../../game/view/game_screen.dart';
 import '../../kakaopay/view/approval_screen.dart';
 import '../../notification/view/notification_setting_screen.dart';
+import '../../post/view/post_comment_detail_screen.dart';
 import '../../post/view/post_list_screen.dart';
 import '../../report/view/report_form_screen.dart';
 import '../../report/view/report_list_screen.dart';
@@ -356,7 +359,40 @@ final routerProvider = Provider<GoRouter>((ref) {
                   return const NoTransitionPage(child: PostListScreen());
                 },
                 routes: [
-
+                  GoRoute(
+                    path: 'form',
+                    parentNavigatorKey: rootNavKey,
+                    name: PostFormScreen.routeName,
+                    builder: (context, state) {
+                      return PostFormScreen();
+                    },
+                  ),
+                  GoRoute(
+                      path: ':postId',
+                      parentNavigatorKey: rootNavKey,
+                      name: PostDetailScreen.routeName,
+                      builder: (context, state) {
+                        final int postId =
+                            int.parse(state.pathParameters['postId']!);
+                        return PostDetailScreen(postId: postId);
+                      },
+                      routes: [
+                        GoRoute(
+                          path: ':commentId',
+                          parentNavigatorKey: rootNavKey,
+                          name: PostCommentDetailScreen.routeName,
+                          builder: (context, state) {
+                            final int postId =
+                                int.parse(state.pathParameters['postId']!);
+                            final int commentId =
+                                int.parse(state.pathParameters['commentId']!);
+                            return PostCommentDetailScreen(
+                              postId: postId,
+                              commentId: commentId,
+                            );
+                          },
+                        ),
+                      ]),
                 ],
               ),
               GoRoute(
@@ -456,10 +492,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                                     builder: (context, state) {
                                       final int gameId = int.parse(
                                           state.pathParameters['gameId']!);
-                                      final isHost =
-                                      state.extra! as bool;
+                                      final isHost = state.extra! as bool;
                                       return ChatNotificationListScreen(
-                                        gameId: gameId, isHost: isHost,
+                                        gameId: gameId,
+                                        isHost: isHost,
                                       );
                                     }),
                                 GoRoute(

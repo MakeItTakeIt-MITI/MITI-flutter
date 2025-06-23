@@ -39,7 +39,7 @@ class PostResponse extends BasePostResponse {
     String? title,
     String? content,
     int? numOfComments,
-    DateTime? createdAt,
+    String? createdAt,
     List<String>? images,
     List<int>? likedUsers,
     BaseUserResponse? writer,

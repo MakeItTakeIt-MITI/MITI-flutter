@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/post/model/base_post_response.dart';
+import 'package:miti/post/view/post_detail_screen.dart';
+import 'package:miti/post/view/post_form_screen.dart';
 import 'package:miti/user/model/v2/base_user_response.dart';
 
 import '../../common/component/default_appbar.dart';
@@ -14,6 +16,7 @@ import '../../theme/text_theme.dart';
 import '../../util/util.dart';
 import '../component/post_card.dart';
 import '../component/post_category.dart';
+import '../component/post_category_chip.dart';
 import '../provider/select_post_category_provider.dart';
 
 class PostListScreen extends ConsumerStatefulWidget {
@@ -49,7 +52,7 @@ class _PostListScreenState extends ConsumerState<PostListScreen> {
                   title: "title",
                   content: "content",
                   numOfComments: 10,
-                  createdAt: DateTime.now(),
+                  createdAt: DateTime.now().toString(),
                   images: List<String>.generate(
                       3,
                       (index) =>
@@ -59,13 +62,17 @@ class _PostListScreenState extends ConsumerState<PostListScreen> {
                       nickname: "nickname",
                       profileImageUrl:
                           "https://avatars.githubusercontent.com/u/41150502?s=40&v=4")),
-              onTap: () {},
+              onTap: () {
+                Map<String, String> pathParameters = {'postId': '6'};
+                context.pushNamed(PostDetailScreen.routeName,
+                    pathParameters: pathParameters);
+              },
             ));
 
     return Scaffold(
       backgroundColor: MITIColor.gray900,
       floatingActionButton: GestureDetector(
-        onTap: () => context.pushNamed(""),
+        onTap: () => context.pushNamed(PostFormScreen.routeName),
         child: Container(
           padding:
               EdgeInsets.only(left: 12.w, right: 16.w, top: 10.h, bottom: 10.h),
@@ -140,7 +147,6 @@ class _PostListScreenState extends ConsumerState<PostListScreen> {
                             },
                             isSelected:
                                 selectedCategory == PostCategoryType.all,
-                            globalKey: globalKeys[0],
                           ),
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 8.w),
@@ -170,7 +176,6 @@ class _PostListScreenState extends ConsumerState<PostListScreen> {
                                     },
                                     isSelected:
                                         selectedCategory == categories[idx],
-                                    globalKey: globalKeys[idx + 1],
                                   );
                                 },
                                 separatorBuilder: (_, __) =>
@@ -199,53 +204,6 @@ class _PostListScreenState extends ConsumerState<PostListScreen> {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class PostCategoryChip extends StatelessWidget {
-  final PostCategoryType category;
-  final bool isSelected;
-  final VoidCallback onTap;
-  final GlobalKey globalKey;
-
-  const PostCategoryChip({
-    super.key,
-    required this.category,
-    required this.onTap,
-    required this.isSelected,
-    required this.globalKey,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      key: globalKey,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 14.w),
-        height: 32.h,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100.r),
-            border: Border.all(
-                color: isSelected ? MITIColor.primary : MITIColor.gray600,
-                width: .5),
-            color: isSelected ? MITIColor.primary : MITIColor.gray900),
-        child: Row(
-          children: [
-            Text(category.displayName,
-                style: MITITextStyle.xxsm.copyWith(
-                    color: isSelected ? MITIColor.gray900 : MITIColor.gray300)),
-            if (category != PostCategoryType.all) SizedBox(width: 2.w),
-            if (category != PostCategoryType.all)
-              SvgPicture.asset(
-                AssetUtil.getAssetPath(type: AssetType.icon, name: "search"),
-                height: 12.r,
-                width: 12.r,
-              )
-          ],
         ),
       ),
     );

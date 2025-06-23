@@ -1,0 +1,112 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:miti/post/component/post_writer_info.dart';
+
+import '../../auth/provider/auth_provider.dart';
+import '../../theme/color_theme.dart';
+import '../../theme/text_theme.dart';
+import '../../user/model/v2/base_user_response.dart';
+import '../model/base_reply_comment_response.dart';
+import '../provider/post_reply_comment_provider.dart';
+import '../view/post_detail_screen.dart';
+import 'comment_util_button.dart';
+
+class ReplyCommentComponent extends ConsumerWidget {
+  final int commentId;
+  final int postId;
+  final int replyCommentId;
+  final String content;
+  final String createdAt;
+  final BaseUserResponse writer;
+  final List<String> images;
+  final List<int> likedUsers;
+
+  const ReplyCommentComponent({
+    super.key,
+    required this.commentId,
+    required this.postId,
+    required this.replyCommentId,
+    required this.content,
+    required this.createdAt,
+    required this.writer,
+    required this.images,
+    required this.likedUsers,
+  });
+
+  factory ReplyCommentComponent.fromModel({
+    required BaseReplyCommentResponse model,
+    required int commentId,
+    required int postId,
+  }) {
+    return ReplyCommentComponent(
+      replyCommentId: model.id,
+      content: model.content,
+      createdAt: model.createdAt.toString(),
+      writer: model.writer,
+      images: model.images,
+      likedUsers: model.likedUsers,
+      commentId: commentId,
+      postId: postId,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userId = ref.watch(authProvider)?.id;
+    final isSelected = likedUsers.contains(userId);
+    return Column(
+      children: [
+        PostWriterInfo.fromModel(
+          model: writer,
+          createdAt: createdAt,
+          isAnonymous: false,
+          onTap: () {},
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 40.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                content,
+                style: MITITextStyle.xxsm.copyWith(color: MITIColor.gray100),
+              ),
+              // todo image 추가
+              ListView.separated(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemBuilder: (_, idx) {
+                    return Image.network(images[idx]);
+                  },
+                  separatorBuilder: (_, idx) => SizedBox(height: 7.h),
+                  itemCount: images.length),
+              SizedBox(height: 7.h),
+              CommentUtilButton(
+                icon: 'good',
+                title: '좋아요',
+                cnt: likedUsers.length,
+                isSelected: isSelected,
+                onTap: () async {
+                  if (isSelected) {
+                    ref.read(postReplyCommentUnLikeProvider(
+                        commentId: commentId,
+                        postId: postId,
+                        replyCommentId: replyCommentId)
+                        .future);
+                  } else {
+                    ref.read(postReplyCommentLikeProvider(
+                        commentId: commentId,
+                        postId: postId,
+                        replyCommentId: replyCommentId)
+                        .future);
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}

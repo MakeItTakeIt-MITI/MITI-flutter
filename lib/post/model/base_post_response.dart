@@ -21,7 +21,7 @@ class BasePostResponse extends IModelWithId {
   final int numOfComments;
 
   @JsonKey(name: 'created_at')
-  final DateTime createdAt;
+  final String createdAt;
 
   final List<String> images;
 
@@ -55,7 +55,7 @@ class BasePostResponse extends IModelWithId {
     String? title,
     String? content,
     int? numOfComments,
-    DateTime? createdAt,
+    String? createdAt,
     List<String>? images,
     List<int>? likedUsers,
     BaseUserResponse? writer,

@@ -41,7 +41,7 @@ class PostCard extends StatelessWidget {
         title: model.title,
         content: model.content,
         numOfComments: model.numOfComments,
-        createdAt: model.createdAt,
+        createdAt: DateTime.parse(model.createdAt),
         images: model.images,
         likedUsers: model.likedUsers,
         writer: model.writer,
@@ -102,7 +102,8 @@ class PostCard extends StatelessWidget {
                         children: [
                           Text(
                             writer.nickname,
-                            style: MITITextStyle.xxxsm.copyWith(color: MITIColor.gray600),
+                            style: MITITextStyle.xxxsm
+                                .copyWith(color: MITIColor.gray600),
                           ),
                           SizedBox(width: 10.w),
                           _SubInfo(
@@ -116,7 +117,6 @@ class PostCard extends StatelessWidget {
                           ),
                         ],
                       )
-
                     ],
                   ),
                 ),

@@ -1,23 +1,17 @@
-import 'dart:developer';
 
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:miti/account/error/account_error.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/component/html_component.dart';
 import 'package:miti/common/model/default_model.dart';
-import 'package:miti/common/model/entity_enum.dart';
-import 'package:miti/game/model/game_model.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/report/provider/report_provider.dart';
 import 'package:miti/report/provider/widget/report_form_provider.dart';
 import 'package:miti/theme/color_theme.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../common/component/custom_dialog.dart';
 import '../../common/component/default_layout.dart';
 import '../../common/provider/router_provider.dart';
@@ -26,7 +20,6 @@ import '../../game/model/v2/report/base_report_reason_response.dart';
 import '../../game/view/review_form_screen.dart';
 import '../../theme/text_theme.dart';
 import '../error/report_error.dart';
-import '../model/report_model.dart';
 
 class ReportFormScreen extends ConsumerStatefulWidget {
   final int gameId;
