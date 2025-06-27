@@ -26,8 +26,10 @@ import 'package:miti/game/view/review_form_screen.dart';
 import 'package:miti/notification/model/push_model.dart';
 import 'package:miti/notification/view/notification_detail_screen.dart';
 import 'package:miti/notification/view/notification_screen.dart';
+import 'package:miti/post/view/post_comment_form_screen.dart';
 import 'package:miti/post/view/post_detail_screen.dart';
 import 'package:miti/post/view/post_form_screen.dart';
+import 'package:miti/support/view/advertise_detail_screen.dart';
 import 'package:miti/support/view/faq_screen.dart';
 import 'package:miti/support/view/guide_screen.dart';
 import 'package:miti/support/view/support_form_screen.dart';
@@ -63,6 +65,7 @@ import '../../kakaopay/view/approval_screen.dart';
 import '../../notification/view/notification_setting_screen.dart';
 import '../../post/view/post_comment_detail_screen.dart';
 import '../../post/view/post_list_screen.dart';
+import '../../post/view/post_search_screen.dart';
 import '../../report/view/report_form_screen.dart';
 import '../../report/view/report_list_screen.dart';
 import '../../review/view/my_review_detail_screen.dart';
@@ -339,6 +342,97 @@ final routerProvider = Provider<GoRouter>((ref) {
                 key: state.pageKey,
               );
             }),
+        GoRoute(
+            path: '/report',
+            parentNavigatorKey: rootNavKey,
+            name: ReportListScreen.routeName,
+            builder: (context, state) {
+              // gameId를 queryParameter에서 가져오도록 변경
+              int? gameId;
+              if (state.uri.queryParameters.containsKey('gameId')) {
+                gameId = int.parse(state.uri.queryParameters['gameId']!);
+              }
+
+              int? participationId;
+              if (state.uri.queryParameters.containsKey('participationId')) {
+                participationId =
+                    int.parse(state.uri.queryParameters['participationId']!);
+              }
+
+              // postId와 userId도 queryParameter에서 가져오도록 추가
+              int? postId;
+              if (state.uri.queryParameters.containsKey('postId')) {
+                postId = int.parse(state.uri.queryParameters['postId']!);
+              }
+
+              int? userId;
+              if (state.uri.queryParameters.containsKey('userId')) {
+                userId = int.parse(state.uri.queryParameters['userId']!);
+              }
+
+              final ReportCategoryType reportType =
+                  state.extra as ReportCategoryType;
+              return ReportListScreen(
+                gameId: gameId,
+                reportType: reportType,
+                participationId: participationId,
+                postId: postId,
+                userId: userId,
+              );
+            },
+            routes: [
+              GoRoute(
+                path: ':reportId',
+                parentNavigatorKey: rootNavKey,
+                name: ReportFormScreen.routeName,
+                builder: (context, state) {
+                  final int reportId =
+                      int.parse(state.pathParameters['reportId']!);
+
+                  // 모든 ID 값들을 queryParameter에서 가져오도록 변경
+                  int? gameId;
+                  if (state.uri.queryParameters.containsKey('gameId')) {
+                    gameId = int.parse(state.uri.queryParameters['gameId']!);
+                  }
+
+                  int? participationId;
+                  if (state.uri.queryParameters
+                      .containsKey('participationId')) {
+                    participationId = int.parse(
+                        state.uri.queryParameters['participationId']!);
+                  }
+
+                  int? postId;
+                  if (state.uri.queryParameters.containsKey('postId')) {
+                    postId = int.parse(state.uri.queryParameters['postId']!);
+                  }
+
+                  int? userId;
+                  if (state.uri.queryParameters.containsKey('userId')) {
+                    userId = int.parse(state.uri.queryParameters['userId']!);
+                  }
+                  return ReportFormScreen(
+                    gameId: gameId,
+                    reportId: reportId,
+                    participationId: participationId,
+                    postId: postId,
+                    userId: userId,
+                  );
+                },
+              ),
+            ]),
+        GoRoute(
+          path: '/advertise/:advertisementId',
+          parentNavigatorKey: rootNavKey,
+          name: AdvertiseDetailScreen.routeName,
+          builder: (context, state) {
+            final int advertisementId =
+                int.parse(state.pathParameters['advertisementId']!);
+            return AdvertiseDetailScreen(
+              advertisementId: advertisementId,
+            );
+          },
+        ),
         ShellRoute(
             navigatorKey: shellNavKey,
             builder: (context, state, child) {
@@ -360,11 +454,26 @@ final routerProvider = Provider<GoRouter>((ref) {
                 },
                 routes: [
                   GoRoute(
+                    path: 'search',
+                    parentNavigatorKey: rootNavKey,
+                    name: PostSearchScreen.routeName,
+                    builder: (context, state) {
+                      return const PostSearchScreen();
+                    },
+                  ),
+                  GoRoute(
                     path: 'form',
                     parentNavigatorKey: rootNavKey,
                     name: PostFormScreen.routeName,
                     builder: (context, state) {
-                      return PostFormScreen();
+                      int? postId;
+                      if (state.uri.queryParameters.containsKey("postId")) {
+                        postId =
+                            int.parse(state.uri.queryParameters['postId']!);
+                      }
+                      return PostFormScreen(
+                        postId: postId,
+                      );
                     },
                   ),
                   GoRoute(
@@ -378,20 +487,45 @@ final routerProvider = Provider<GoRouter>((ref) {
                       },
                       routes: [
                         GoRoute(
-                          path: ':commentId',
-                          parentNavigatorKey: rootNavKey,
-                          name: PostCommentDetailScreen.routeName,
-                          builder: (context, state) {
-                            final int postId =
-                                int.parse(state.pathParameters['postId']!);
-                            final int commentId =
-                                int.parse(state.pathParameters['commentId']!);
-                            return PostCommentDetailScreen(
-                              postId: postId,
-                              commentId: commentId,
-                            );
-                          },
-                        ),
+                            path: ':commentId',
+                            parentNavigatorKey: rootNavKey,
+                            name: PostCommentDetailScreen.routeName,
+                            builder: (context, state) {
+                              final int postId =
+                                  int.parse(state.pathParameters['postId']!);
+                              final int commentId =
+                                  int.parse(state.pathParameters['commentId']!);
+                              return PostCommentDetailScreen(
+                                postId: postId,
+                                commentId: commentId,
+                              );
+                            },
+                            routes: [
+                              GoRoute(
+                                path: 'form',
+                                parentNavigatorKey: rootNavKey,
+                                name: PostCommentFormScreen.routeName,
+                                builder: (context, state) {
+                                  final int postId = int.parse(
+                                      state.pathParameters['postId']!);
+                                  final int commentId = int.parse(
+                                      state.pathParameters['commentId']!);
+
+                                  int? replyCommentId;
+
+                                  if (state.uri.queryParameters
+                                      .containsKey("replyCommentId")) {
+                                    replyCommentId = int.parse(state.uri
+                                        .queryParameters['replyCommentId']!);
+                                  }
+                                  return PostCommentFormScreen(
+                                    postId: postId,
+                                    commentId: commentId,
+                                    replyCommentId: replyCommentId,
+                                  );
+                                },
+                              ),
+                            ]),
                       ]),
                 ],
               ),
@@ -573,56 +707,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                               );
                             },
                           ),
-                          GoRoute(
-                              path: 'report',
-                              parentNavigatorKey: rootNavKey,
-                              name: ReportListScreen.routeName,
-                              builder: (context, state) {
-                                final int gameId =
-                                    int.parse(state.pathParameters['gameId']!);
-                                int? participationId = null;
-
-                                if (state.uri.queryParameters
-                                    .containsKey('participationId')) {
-                                  participationId = int.parse(state
-                                      .uri.queryParameters['participationId']!);
-                                }
-
-                                final ReportCategoryType reportType =
-                                    state.extra as ReportCategoryType;
-                                return ReportListScreen(
-                                  gameId: gameId,
-                                  reportType: reportType,
-                                  participationId: participationId,
-                                );
-                              },
-                              routes: [
-                                GoRoute(
-                                  path: ':reportId',
-                                  parentNavigatorKey: rootNavKey,
-                                  name: ReportFormScreen.routeName,
-                                  builder: (context, state) {
-                                    final int gameId = int.parse(
-                                        state.pathParameters['gameId']!);
-                                    final int reportId = int.parse(
-                                        state.pathParameters['reportId']!);
-                                    int? participationId = null;
-                                    if (state.uri.queryParameters
-                                        .containsKey('participationId')) {
-                                      participationId = int.parse(state.uri
-                                          .queryParameters['participationId']!);
-                                    }
-                                    // final type =
-                                    //     state.extra as HostReportCategoryType;
-                                    return ReportFormScreen(
-                                      gameId: gameId,
-                                      reportId: reportId,
-                                      // type: type,
-                                      participationId: participationId,
-                                    );
-                                  },
-                                ),
-                              ]),
                           GoRoute(
                               path: 'players',
                               parentNavigatorKey: rootNavKey,

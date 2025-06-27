@@ -1,6 +1,8 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,23 +12,35 @@ import 'package:image_picker/image_picker.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/post/component/post_category.dart';
+import 'package:miti/post/provider/post_provider.dart';
+import 'package:miti/post/view/post_detail_screen.dart';
 import 'package:miti/post/view/post_list_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/custom_bottom_sheet.dart';
+import '../../common/component/defalut_flashbar.dart';
 import '../../common/component/form/multi_line_text_field.dart';
 import '../../common/component/form/under_line_text_field.dart';
+import '../../common/model/default_model.dart';
+import '../../util/image_picker.dart';
 import '../../util/util.dart';
 import 'package:collection/collection.dart';
 
+import '../component/image_form_component.dart';
 import '../component/post_category_chip.dart';
+import '../model/post_response.dart';
 import '../provider/post_form_provider.dart';
 
 class PostFormScreen extends ConsumerStatefulWidget {
+  final int? postId;
+
   static String get routeName => 'postForm';
 
-  const PostFormScreen({super.key});
+  const PostFormScreen({
+    super.key,
+    this.postId,
+  });
 
   @override
   ConsumerState<PostFormScreen> createState() => _PostFormScreenState();
@@ -36,23 +50,90 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
   late final TextEditingController bodyTextController;
   late final TextEditingController titleTextController;
 
+  bool get isEdit => widget.postId != null;
+
+  String get buttonText => isEdit ? "수정" : "작성";
+
   List<FocusNode> focusNodes = [FocusNode(), FocusNode()];
 
   final inputBorder = const UnderlineInputBorder(
       borderSide: BorderSide(color: MITIColor.gray600, width: .5));
+
+  late Throttle<int> _throttler;
+  int throttleCnt = 0;
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
     titleTextController = TextEditingController();
     bodyTextController = TextEditingController();
+
+    _throttler = Throttle(
+      const Duration(seconds: 1),
+      initialValue: 0,
+      checkEquality: true,
+    );
+    _throttler.values.listen((int s) async {
+      setState(() {
+        isLoading = true;
+      });
+      await submit();
+      throttleCnt++;
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (isEdit) {
+      final form = ref.read(postFormProvider(postId: widget.postId));
+      titleTextController.text = form.title;
+      bodyTextController.text = form.content;
+    }
   }
 
   @override
   void dispose() {
+    _throttler.cancel();
     titleTextController.dispose();
     bodyTextController.dispose();
     super.dispose();
+  }
+
+  Future<void> submit() async {
+    final result = isEdit
+        ? await ref.read(postUpdateProvider(postId: widget.postId!).future)
+        : await ref.read(postCreateProvider.future);
+    if (result is ErrorModel) {
+      FlashUtil.showFlash(context, '요청이 정상적으로 처리되지 않았습니다.',
+          textColor: MITIColor.error);
+    } else {
+      final resultPostId = (result as ResponseModel<PostResponse>).data!.id;
+      Map<String, String> pathParameters = {'postId': resultPostId.toString()};
+      context.goNamed(
+        PostDetailScreen.routeName,
+        pathParameters: pathParameters,
+      );
+
+      String flashText = "";
+      if (isEdit) {
+        // 수정
+        flashText = "게시글이 수정되었습니다.";
+      } else {
+        // 생성
+        flashText = "게시글이 작성되었습니다.";
+      }
+      Future.delayed(const Duration(milliseconds: 200), () {
+        FlashUtil.showFlash(
+          context,
+          flashText,
+        );
+      });
+    }
   }
 
   @override
@@ -69,12 +150,16 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
         actions: [
           Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              final valid = validButton(ref);
+              final valid = validButton(ref, widget.postId) && !isLoading;
 
               return IconButton(
-                onPressed: valid ? () {} : null,
+                onPressed: valid
+                    ? () {
+                        _throttler.setValue(throttleCnt + 1);
+                      }
+                    : null,
                 icon: Text(
-                  "작성",
+                  buttonText,
                   style: MITITextStyle.xxsmLight.copyWith(
                       color: valid ? MITIColor.primary : MITIColor.gray400),
                 ),
@@ -107,7 +192,8 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
                           builder: (BuildContext context, WidgetRef ref,
                               Widget? child) {
                             final category = ref.watch(
-                                postFormProvider.select((s) => s.category));
+                                postFormProvider(postId: widget.postId)
+                                    .select((s) => s.category));
                             focusNodes.forEach((e) => e.unfocus());
 
                             return Wrap(
@@ -118,7 +204,9 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
                                   category: e,
                                   onTap: () {
                                     ref
-                                        .read(postFormProvider.notifier)
+                                        .read(postFormProvider(
+                                                postId: widget.postId)
+                                            .notifier)
                                         .update(category: e);
                                     context.pop();
                                   },
@@ -147,8 +235,9 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
                     Consumer(
                       builder:
                           (BuildContext context, WidgetRef ref, Widget? child) {
-                        final category = ref
-                            .watch(postFormProvider.select((s) => s.category));
+                        final category = ref.watch(
+                            postFormProvider(postId: widget.postId)
+                                .select((s) => s.category));
 
                         return Text(
                           category == PostCategoryType.all
@@ -197,8 +286,9 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
                   child: Consumer(
                     builder:
                         (BuildContext context, WidgetRef ref, Widget? child) {
-                      final title =
-                          ref.watch(postFormProvider.select((s) => s.title));
+                      final title = ref.watch(
+                          postFormProvider(postId: widget.postId)
+                              .select((s) => s.title));
                       return UnderLineTextField(
                         textStyle: MITITextStyle.mdSemiBold150,
                         title: title,
@@ -208,7 +298,10 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
                             return;
                           }
 
-                          ref.read(postFormProvider.notifier).update(title: v);
+                          ref
+                              .read(postFormProvider(postId: widget.postId)
+                                  .notifier)
+                              .update(title: v);
                         },
                         hintText: "제목을 입력해주세요!",
                         focusNode: focusNodes[0],
@@ -221,8 +314,9 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
                   child: Consumer(
                     builder:
                         (BuildContext context, WidgetRef ref, Widget? child) {
-                      final body =
-                          ref.watch(postFormProvider.select((s) => s.content));
+                      final body = ref.watch(
+                          postFormProvider(postId: widget.postId)
+                              .select((s) => s.content));
                       return child!;
                     },
                     child: Scrollbar(
@@ -235,7 +329,8 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
                             return;
                           }
                           ref
-                              .read(postFormProvider.notifier)
+                              .read(postFormProvider(postId: widget.postId)
+                                  .notifier)
                               .update(content: v);
                         },
                         hintText: "농구에 관해 자유롭게 이야기를 나누어보세요!",
@@ -259,8 +354,9 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
                 Consumer(
                   builder:
                       (BuildContext context, WidgetRef ref, Widget? child) {
-                    final images =
-                        ref.watch(postFormProvider.select((s) => s.images));
+                    final images = ref.watch(
+                        postFormProvider(postId: widget.postId)
+                            .select((s) => s.images));
                     if (images.isEmpty) {
                       return Container();
                     }
@@ -273,58 +369,16 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
                           padding: EdgeInsets.only(left: 20.w, right: 20.w),
                           shrinkWrap: true,
                           itemBuilder: (_, idx) {
-                            return SizedBox(
-                              width: 80.r,
-                              height: 80.r,
-                              child: Stack(
-                                children: [
-                                  Positioned(
-                                    left: 0,
-                                    bottom: 0,
-                                    child: SizedBox(
-                                      height: 72.r,
-                                      width: 72.r,
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(8.r),
-                                        child: Image.file(
-                                          File(images[idx]),
-                                          // height: 72.r,
-                                          // width: 72.r,
-                                          fit: BoxFit.fill,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    top: 0.r,
-                                    right: 0.r,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        ref
-                                            .read(postFormProvider.notifier)
-                                            .removeImage(images[idx]);
-                                      },
-                                      child: Container(
-                                        decoration: const BoxDecoration(
-                                          color: MITIColor.gray700,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        padding: EdgeInsets.all(3.r),
-                                        child: SvgPicture.asset(
-                                          AssetUtil.getAssetPath(
-                                              type: AssetType.icon,
-                                              name: 'close'),
-                                          width: 12.r,
-                                          height: 12.r,
-                                          colorFilter: const ColorFilter.mode(
-                                              MITIColor.white, BlendMode.srcIn),
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
+                            images[idx];
+                            return ImageFormComponent(
+                              onDelete: () {
+                                ref
+                                    .read(
+                                        postFormProvider(postId: widget.postId)
+                                            .notifier)
+                                    .removeImage(images[idx]);
+                              },
+                              filePath: images[idx],
                             );
                           },
                           separatorBuilder: (_, idx) => SizedBox(width: 12.w),
@@ -341,27 +395,32 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
                           title: "사진",
                           icon: 'gallery',
                           onTap: () async {
-                            final ImagePicker picker = ImagePicker();
-                            final XFile? image = await picker.pickImage(
-                                source: ImageSource.gallery);
+                            _pickMultipleImages();
 
-                            if (image != null) {
-                              ref
-                                  .read(postFormProvider.notifier)
-                                  .addImage(image.path);
-                            }
+                            // final ImagePicker picker = ImagePicker();
+                            // final XFile? image = await picker.pickImage(
+                            //     source: ImageSource.gallery);
+                            //
+                            // if (image != null) {
+                            //   ref
+                            //       .read(postFormProvider(postId: widget.postId)
+                            //           .notifier)
+                            //       .addImage(image.path);
+                            // }
                           }),
                       Consumer(
                         builder: (BuildContext context, WidgetRef ref,
                             Widget? child) {
                           final isAnonymous = ref.watch(
-                              postFormProvider.select((s) => s.isAnonymous));
+                              postFormProvider(postId: widget.postId)
+                                  .select((s) => s.isAnonymous));
                           return _UtilButton(
                             title: "익명",
                             icon: 'check_anonymous',
                             onTap: () {
                               ref
-                                  .read(postFormProvider.notifier)
+                                  .read(postFormProvider(postId: widget.postId)
+                                      .notifier)
                                   .update(isAnonymous: !isAnonymous);
                             },
                             isSelected: isAnonymous,
@@ -380,13 +439,37 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
     );
   }
 
-  bool validButton(WidgetRef ref) {
-    final form = ref.watch(postFormProvider);
+  bool validButton(WidgetRef ref, int? postId) {
+    final form = ref.watch(postFormProvider(postId: widget.postId));
     return form.title.isNotEmpty &&
         form.title.length <= 32 &&
         form.content.isNotEmpty &&
         form.content.length <= 3000 &&
         form.category != PostCategoryType.all;
+  }
+
+  Future<void> _pickMultipleImages() async {
+    final picker = MultiImagePicker();
+
+    try {
+      final List<XFile>? images = await picker.pickMultipleImages();
+
+      if (images != null) {
+        for (XFile file in images) {
+          ref
+              .read(postFormProvider(postId: widget.postId).notifier)
+              .addImage(file.path);
+        }
+      }
+
+      // setState(() {
+      //   _selectedImages = images;
+      // });
+
+      print('선택된 이미지 개수: ${images?.length}');
+    } catch (e) {
+      print('이미지 선택 실패: $e');
+    }
   }
 }
 

@@ -12,6 +12,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:intl/intl.dart';
 import 'package:collection/collection.dart';
 import '../../common/logger/custom_logger.dart';
+import '../../common/model/cursor_model.dart';
 import '../../common/param/cursor_pagination_param.dart';
 import '../../user/model/v2/base_user_response.dart';
 import '../model/base_game_chat_message_response.dart';
@@ -44,22 +45,22 @@ class ChatPagination extends _$ChatPagination {
         .postChatMessage(gameId: gameId, body: message, cursor: cursor)
         .then<BaseModel>((value) {
       final response = value.data!;
-      final content = value.data!.messages.toList();
+      final content = value.data!.items.toList();
 
       final pState =
           (state as ResponseModel<CursorPaginationModel<ChatModel>>).data!;
-      final isFirstMessage = pState.messages.isEmpty;
-      final lastIdx = pState.messages.length - 1;
+      final isFirstMessage = pState.items.isEmpty;
+      final lastIdx = pState.items.length - 1;
       final currentUserId = ref.read(authProvider)?.id ?? -1; // 현재 사용자 ID 가져오기
 
-      final newChatMessages = value.data!.messages.mapIndexed((idx, e) {
+      final newChatMessages = value.data!.items.mapIndexed((idx, e) {
         final isMine = e.user.id == currentUserId;
 
         // 첫 커서와 현재 맨 앞 커서가 일치하면 맨 앞 페이지
         final lastPage = value.data!.firstCursor == value.data!.earliestCursor;
         // 메세지 커서와 첫 커서가 일치할 경우 맨 처음 메시지
         final isFirstMessage = lastPage &&
-            value.data!.messages[idx].id == value.data!.earliestCursor;
+            value.data!.items[idx].id == value.data!.earliestCursor;
 
         final bool showDate = shouldShowDate(content, idx);
         final bool showTime = shouldShowTime(content, idx);
@@ -78,7 +79,7 @@ class ChatPagination extends _$ChatPagination {
         // [기존 채팅 마지막, 새 채팅들]
         // 채팅이 최소 2개까지 subList 생성
         log("=================================");
-        for (final m in pState.messages) {
+        for (final m in pState.items) {
           log("message = ${m.message} date = ${m.date} time = ${m.time} ");
         }
         log("=================================");
@@ -91,25 +92,25 @@ class ChatPagination extends _$ChatPagination {
           subListStartIdx--;
         }
 
-        pState.messages.insertAll(pState.messages.length, newChatMessages);
+        pState.items.insertAll(pState.items.length, newChatMessages);
 
-        final subList = pState.messages.sublist(subListStartIdx, lastIdx + 2);
+        final subList = pState.items.sublist(subListStartIdx, lastIdx + 2);
 
         final newSubList = subList.mapIndexed((idx, e) {
           return e.copyWith(
-            showDate: pState.messages.shouldShowDateAt(subListStartIdx + idx),
-            showTime: pState.messages.shouldShowTimeAt(subListStartIdx + idx),
-            showUserInfo: pState.messages.shouldShowUserInfoAt(subListStartIdx + idx),
+            showDate: pState.items.shouldShowDateAt(subListStartIdx + idx),
+            showTime: pState.items.shouldShowTimeAt(subListStartIdx + idx),
+            showUserInfo: pState.items.shouldShowUserInfoAt(subListStartIdx + idx),
           );
         }).toList();
 
-        pState.messages.replaceRange(
+        pState.items.replaceRange(
             subListStartIdx, lastIdx + 2, newSubList);
         state = ResponseModel(
             status_code: 200,
             message: "message",
             data: pState.copyWith(
-              messages: pState.messages,
+              items: pState.items,
               firstCursor: pState.firstCursor,
               lastCursor: response.lastCursor,
               earliestCursor: response.earliestCursor,
@@ -121,7 +122,7 @@ class ChatPagination extends _$ChatPagination {
             status_code: 200,
             message: "message",
             data: pState.copyWith(
-              messages: newChatMessages,
+              items: newChatMessages,
               firstCursor: response.firstCursor,
               lastCursor: response.lastCursor,
               earliestCursor: response.earliestCursor,
@@ -170,15 +171,15 @@ class ChatPagination extends _$ChatPagination {
         .getChatMessages(gameId: gameId, cursorParams: cursorParam)
         .then((value) {
       final response = value.data!;
-      final content = value.data!.messages.toList();
-      final newChatMessages = value.data!.messages.mapIndexed((idx, e) {
+      final content = value.data!.items.toList();
+      final newChatMessages = value.data!.items.mapIndexed((idx, e) {
         final isMine = e.user.id == currentUserId;
 
         // 첫 커서와 현재 맨 앞 커서가 일치하면 맨 앞 페이지
         final lastPage = value.data!.firstCursor == value.data!.earliestCursor;
         // 메세지 커서와 첫 커서가 일치할 경우 맨 처음 메시지
         final isFirstMessage = lastPage &&
-            value.data!.messages[idx].id == value.data!.earliestCursor;
+            value.data!.items[idx].id == value.data!.earliestCursor;
 
         final bool showDate = shouldShowDate(content, idx);
         final bool showTime = shouldShowTime(content, idx);
@@ -199,7 +200,7 @@ class ChatPagination extends _$ChatPagination {
         final lastIdx = newChatMessages.length - 1;
 
         newChatMessages.insertAll(
-            newChatMessages.length, pState.data!.messages);
+            newChatMessages.length, pState.data!.items);
 
         int existLastMessageIdx = lastIdx - 1;
         // 새 채팅 마지막 인덱스로 잡고 더 있을 경우 그 앞까지 잡기
@@ -248,7 +249,7 @@ class ChatPagination extends _$ChatPagination {
           message: pState.message,
           data: pState.data!.copyWith(
             firstCursor: newChatMessages[0].id,
-            messages: [
+            items: [
               ...newChatMessages,
             ],
           ),
@@ -261,7 +262,7 @@ class ChatPagination extends _$ChatPagination {
           data: CursorPaginationModel(
             earliestCursor: response.earliestCursor,
             latestCursor: response.latestCursor,
-            messages: newChatMessages,
+            items: newChatMessages,
             firstCursor: response.firstCursor,
             lastCursor: response.lastCursor,
           ),

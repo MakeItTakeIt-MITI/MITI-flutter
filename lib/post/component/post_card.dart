@@ -6,6 +6,7 @@ import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../user/model/v2/base_user_response.dart';
+import '../../util/util.dart';
 import '../model/base_post_response.dart';
 
 class PostCard extends StatelessWidget {
@@ -68,7 +69,7 @@ class PostCard extends StatelessWidget {
                   category: category,
                 ),
                 Text(
-                  "${DateTime.now().difference(createdAt).inMinutes}분전",
+                  DateTimeUtil.getTimeAgo(createdAt),
                   style: MITITextStyle.xxxsmLight
                       .copyWith(color: MITIColor.gray600),
                 )

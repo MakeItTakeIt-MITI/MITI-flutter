@@ -20,6 +20,7 @@ import 'package:miti/util/util.dart';
 
 import '../../auth/provider/auth_provider.dart';
 import '../../common/component/defalut_flashbar.dart';
+import '../../common/model/cursor_model.dart';
 import '../component/chat_bubble_skeleton.dart';
 import '../model/game_chat_room_approved_users_response.dart';
 import '../provider/chat_approve_provider.dart';
@@ -125,7 +126,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
 
                 final model = viewModel
                     as ResponseModel<CursorPaginationModel<ChatModel>>;
-                final chatMessages = model.data!.messages;
+                final chatMessages = model.data!.items;
                 if (chatMessages.isEmpty) {
                   return Expanded(
                       child: Column(

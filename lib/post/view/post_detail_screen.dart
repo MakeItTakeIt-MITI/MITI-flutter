@@ -10,10 +10,12 @@ import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/post/component/post_category.dart';
 import 'package:miti/post/provider/post_comment_provider.dart';
 import 'package:miti/post/provider/post_provider.dart';
+import 'package:miti/post/view/post_form_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../report/view/report_list_screen.dart';
 import '../../user/model/v2/base_user_response.dart';
 import '../../util/util.dart';
 import '../component/comment_card.dart';
@@ -24,6 +26,7 @@ import '../component/reply_comment_component.dart';
 import '../model/base_post_comment_response.dart';
 import '../model/base_reply_comment_response.dart';
 import '../model/post_response.dart';
+import '../provider/post_bottom_sheet_button.dart';
 import '../provider/post_reply_comment_provider.dart';
 
 class PostDetailScreen extends ConsumerStatefulWidget {
@@ -67,70 +70,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              showModalBottomSheet(
-                  backgroundColor: Colors.transparent,
-                  context: context,
-                  builder: (_) {
-                    return Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 16.w, vertical: 18.h),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            height: 48.h,
-                            child: TextButton(
-                              onPressed: () async {
-                                final result = ref.read(
-                                    postDeleteProvider(postId: widget.postId)
-                                        .future);
-
-                                if (result is! ErrorModel) {
-                                  context.pop();
-                                  context.pop();
-                                }
-                              },
-                              style: TextButton.styleFrom(
-                                  backgroundColor: MITIColor.gray800),
-                              child: Text(
-                                "삭제하기",
-                                style: MITITextStyle.md
-                                    .copyWith(color: MITIColor.error),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 15.h,
-                          ),
-                          SizedBox(
-                            height: 48.h,
-                            child: TextButton(
-                              onPressed: () {},
-                              style: TextButton.styleFrom(
-                                  backgroundColor: MITIColor.gray800),
-                              child: Text(
-                                "수정하기",
-                                style: MITITextStyle.md
-                                    .copyWith(color: MITIColor.gray100),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 15.h,
-                          ),
-                          TextButton(
-                              onPressed: () => context.pop(),
-                              style: TextButton.styleFrom(
-                                  backgroundColor: MITIColor.gray800),
-                              child: Text(
-                                "닫기",
-                                style: MITITextStyle.md
-                                    .copyWith(color: MITIColor.gray400),
-                              )),
-                        ],
-                      ),
-                    );
-                  });
+              showPostBottomSheet(context, model);
             },
             icon: SvgPicture.asset(
               AssetUtil.getAssetPath(type: AssetType.icon, name: 'more'),
@@ -239,6 +179,46 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
         ],
       ),
     );
+  }
+
+  void showPostBottomSheet(BuildContext context, PostResponse model) {
+    showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (_) {
+          return PostBottomSheetButton(
+            isWriter: model.isWriter,
+            onDelete: () async {
+              final result =
+                  ref.read(postDeleteProvider(postId: widget.postId).future);
+
+              if (result is! ErrorModel) {
+                context.pop();
+                context.pop();
+              }
+            },
+            onUpdate: () {
+              context.pop();
+              Map<String, String> queryParameters = {
+                'postId': widget.postId.toString()
+              };
+              context.pushNamed(PostFormScreen.routeName,
+                  queryParameters: queryParameters);
+            },
+            onReport: () {
+              // // 대댓글 신고
+              Map<String, String> queryParameters = {
+                'postId': widget.postId.toString(),
+              };
+              context.pop();
+              context.pushNamed(
+                ReportListScreen.routeName,
+                queryParameters: queryParameters,
+                extra: ReportCategoryType.post_report,
+              );
+            },
+          );
+        });
   }
 }
 

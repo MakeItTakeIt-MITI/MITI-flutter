@@ -1,16 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/account/error/account_error.dart';
+import 'package:miti/auth/provider/auth_provider.dart';
+import 'package:miti/post/provider/post_comment_provider.dart';
 
+import '../../common/model/default_model.dart';
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
 import '../model/base_post_comment_response.dart';
+import '../provider/post_bottom_sheet_button.dart';
 import '../view/post_comment_detail_screen.dart';
+import '../view/post_comment_form_screen.dart';
 import 'comment_card.dart';
 
-class CommentComponent extends StatelessWidget {
+class CommentComponent extends ConsumerWidget {
   final int postId;
   final List<BasePostCommentResponse> comments;
 
@@ -18,7 +24,8 @@ class CommentComponent extends StatelessWidget {
       {super.key, required this.comments, required this.postId});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userId = ref.watch(authProvider)?.id;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
       child: Column(
@@ -59,7 +66,41 @@ class CommentComponent extends StatelessWidget {
                     postId: postId,
                     model: comments[idx],
                     onTap: () {
-                      // todo 더보기 클릭 시
+                      showModalBottomSheet(
+                          backgroundColor: Colors.transparent,
+                          context: context,
+                          builder: (_) {
+                            return PostBottomSheetButton(
+                              isWriter: comments[idx].writer.id == userId,
+                              onDelete: () async {
+                                final result = ref.read(
+                                    postCommentDeleteProvider(
+                                            postId: postId,
+                                            commentId: comments[idx].id)
+                                        .future);
+
+                                if (result is! ErrorModel) {
+                                  context.pop();
+                                }
+                              },
+                              onUpdate: () {
+                                context.pop();
+                                // 댓글 수정
+                                Map<String, String> pathParameters = {
+                                  'postId': postId.toString(),
+                                  'commentId': comments[idx].id.toString(),
+                                };
+                                context.pushNamed(
+                                    PostCommentFormScreen.routeName,
+                                    pathParameters: pathParameters,
+                                   );
+                              },
+                              onReport: () {
+                                // 댓글 신고
+                                context.pop();
+                              },
+                            );
+                          });
                     },
                   ),
                 );

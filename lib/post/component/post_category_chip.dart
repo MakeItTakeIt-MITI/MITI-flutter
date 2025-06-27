@@ -8,6 +8,7 @@ import '../../theme/text_theme.dart';
 import '../../util/util.dart';
 
 class PostCategoryChip extends StatelessWidget {
+  final GlobalKey? globalKey;
   final PostCategoryType category;
   final bool isSelected;
   final VoidCallback onTap;
@@ -18,13 +19,14 @@ class PostCategoryChip extends StatelessWidget {
     required this.category,
     required this.onTap,
     required this.isSelected,
-    this.backgroundColor = MITIColor.gray900,
+    this.backgroundColor = MITIColor.gray900,  this.globalKey,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      key: globalKey,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 14.w),
         height: 32.h,

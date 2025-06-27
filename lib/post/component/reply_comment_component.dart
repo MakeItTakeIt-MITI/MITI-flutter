@@ -21,6 +21,7 @@ class ReplyCommentComponent extends ConsumerWidget {
   final BaseUserResponse writer;
   final List<String> images;
   final List<int> likedUsers;
+  final VoidCallback onTap;
 
   const ReplyCommentComponent({
     super.key,
@@ -32,12 +33,14 @@ class ReplyCommentComponent extends ConsumerWidget {
     required this.writer,
     required this.images,
     required this.likedUsers,
+    required this.onTap,
   });
 
   factory ReplyCommentComponent.fromModel({
     required BaseReplyCommentResponse model,
     required int commentId,
     required int postId,
+    required VoidCallback onTap,
   }) {
     return ReplyCommentComponent(
       replyCommentId: model.id,
@@ -48,6 +51,7 @@ class ReplyCommentComponent extends ConsumerWidget {
       likedUsers: model.likedUsers,
       commentId: commentId,
       postId: postId,
+      onTap: onTap,
     );
   }
 
@@ -61,7 +65,7 @@ class ReplyCommentComponent extends ConsumerWidget {
           model: writer,
           createdAt: createdAt,
           isAnonymous: false,
-          onTap: () {},
+          onTap: onTap,
         ),
         Padding(
           padding: EdgeInsets.only(left: 40.w),
@@ -90,15 +94,15 @@ class ReplyCommentComponent extends ConsumerWidget {
                 onTap: () async {
                   if (isSelected) {
                     ref.read(postReplyCommentUnLikeProvider(
-                        commentId: commentId,
-                        postId: postId,
-                        replyCommentId: replyCommentId)
+                            commentId: commentId,
+                            postId: postId,
+                            replyCommentId: replyCommentId)
                         .future);
                   } else {
                     ref.read(postReplyCommentLikeProvider(
-                        commentId: commentId,
-                        postId: postId,
-                        replyCommentId: replyCommentId)
+                            commentId: commentId,
+                            postId: postId,
+                            replyCommentId: replyCommentId)
                         .future);
                   }
                 },

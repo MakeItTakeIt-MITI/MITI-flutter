@@ -39,6 +39,7 @@ import '../court/view/court_detail_screen.dart';
 import '../firebase_options.dart';
 import '../notification/provider/notification_provider.dart';
 import '../notification/view/notification_screen.dart';
+import '../post/repository/search_history_repository.dart';
 import '../util/util.dart';
 
 //
@@ -106,6 +107,8 @@ void main(List<String> args) async {
   await Hive.initFlutter();
   await Hive.openBox<bool>('permission');
   await Hive.openBox<String>('recentUpdateVersion');
+
+  await SearchHistoryRepository().initialize();
 
   // Firebase 초기화
   await Firebase.initializeApp(

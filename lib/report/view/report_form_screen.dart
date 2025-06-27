@@ -1,14 +1,16 @@
-
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miti/common/component/defalut_flashbar.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/component/html_component.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
+import 'package:miti/post/view/post_comment_detail_screen.dart';
+import 'package:miti/post/view/post_detail_screen.dart';
 import 'package:miti/report/provider/report_provider.dart';
 import 'package:miti/report/provider/widget/report_form_provider.dart';
 import 'package:miti/theme/color_theme.dart';
@@ -22,17 +24,21 @@ import '../../theme/text_theme.dart';
 import '../error/report_error.dart';
 
 class ReportFormScreen extends ConsumerStatefulWidget {
-  final int gameId;
   final int reportId;
+  final int? gameId;
   final int? participationId;
+  final int? postId;
+  final int? userId;
 
   static String get routeName => 'reportForm';
 
   const ReportFormScreen({
     super.key,
-    required this.gameId,
     required this.reportId,
+    this.gameId,
     this.participationId,
+    this.postId,
+    this.userId,
   });
 
   @override
@@ -78,7 +84,7 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: MITIColor.gray750,
+        backgroundColor: MITIColor.gray900,
         bottomNavigationBar: BottomButton(
           button: Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
@@ -109,7 +115,7 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
         ),
         appBar: const DefaultAppBar(
           title: '신고하기',
-          backgroundColor: MITIColor.gray750,
+          backgroundColor: MITIColor.gray900,
         ),
         body: Consumer(
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
@@ -170,55 +176,79 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
 
   Future<void> _report(WidgetRef ref, BuildContext context) async {
     final result = await ref.read(createReportProvider(
-            gameId: widget.gameId,
-            reportId: widget.reportId,
-            participationId: widget.participationId)
-        .future);
+      gameId: widget.gameId,
+      reportId: widget.reportId,
+      participationId: widget.participationId,
+      postId: widget.postId,
+      userId: widget.userId,
+    ).future);
     if (context.mounted) {
       if (result is ErrorModel) {
         if (widget.participationId != null) {
           ReportError.fromModel(model: result)
               .responseError(context, ReportApiType.guestReport, ref);
-        } else {
+        } else if (widget.participationId == null && widget.gameId != null) {
           ReportError.fromModel(model: result)
               .responseError(context, ReportApiType.hostReport, ref);
         }
       } else {
-        final model = (ref.read(gameDetailProvider(gameId: widget.gameId))
-                as ResponseModel<GameDetailResponse>)
-            .data!;
-        Map<String, String> pathParameters = {'gameId': model.id.toString()};
-        context.goNamed(GameDetailScreen.routeName,
-            pathParameters: pathParameters);
-        Future.delayed(const Duration(milliseconds: 200), () {
-          String reportType = widget.participationId != null ? '게스트' : '호스트';
+        if (widget.gameId != null) {
+          final model = (ref.read(gameDetailProvider(gameId: widget.gameId!))
+                  as ResponseModel<GameDetailResponse>)
+              .data!;
+          Map<String, String> pathParameters = {'gameId': model.id.toString()};
+          context.goNamed(GameDetailScreen.routeName,
+              pathParameters: pathParameters);
+          Future.delayed(const Duration(milliseconds: 200), () {
+            String reportType = widget.participationId != null ? '게스트' : '호스트';
 
-          showModalBottomSheet(
-              isDismissible: false,
-              context: rootNavKey.currentState!.context!,
-              builder: (_) {
-                return BottomDialog(
-                  title: '$reportType 신고 완료',
-                  content: '경기 $reportType 신고가 완료되었습니다.',
-                  btn: Consumer(
-                    builder:
-                        (BuildContext context, WidgetRef ref, Widget? child) {
-                      return TextButton(
-                        onPressed: () async {
-                          context.pop();
-                        },
-                        style: TextButton.styleFrom(
-                          fixedSize: Size(double.infinity, 48.h),
-                        ),
-                        child: const Text(
-                          "확인",
-                        ),
-                      );
-                    },
-                  ),
-                );
-              });
-        });
+            showModalBottomSheet(
+                isDismissible: false,
+                context: rootNavKey.currentState!.context!,
+                builder: (_) {
+                  return BottomDialog(
+                    title: '$reportType 신고 완료',
+                    content: '경기 $reportType 신고가 완료되었습니다.',
+                    btn: Consumer(
+                      builder:
+                          (BuildContext context, WidgetRef ref, Widget? child) {
+                        return TextButton(
+                          onPressed: () async {
+                            context.pop();
+                          },
+                          style: TextButton.styleFrom(
+                            fixedSize: Size(double.infinity, 48.h),
+                          ),
+                          child: const Text(
+                            "확인",
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                });
+          });
+        } else if (widget.postId != null) {
+          Map<String, String> pathParameters = {
+            'postId': widget.postId.toString()
+          };
+          context.goNamed(PostDetailScreen.routeName,
+              pathParameters: pathParameters);
+          Future.delayed(const Duration(milliseconds: 100), () {
+            FlashUtil.showFlash(context, '신고가 완료되었습니다.');
+          });
+        } else if (widget.userId != null) {
+
+          // todo 제대로 뒤로가기 되는지 확인
+          Navigator.of(context).popUntil((route) {
+            return route.settings.name == PostDetailScreen.routeName ||
+                route.settings.name == PostCommentDetailScreen.routeName;
+          });
+
+          Future.delayed(const Duration(milliseconds: 100), () {
+            FlashUtil.showFlash(context, '신고가 완료되었습니다.');
+          });
+        }
       }
     }
   }

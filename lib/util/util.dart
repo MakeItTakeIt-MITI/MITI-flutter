@@ -62,6 +62,57 @@ class DateTimeUtil {
   // // 현지 시간을 한국시간으로 변환할때 사용
   // static final korTimeZone = getLocation('Asia/Seoul');
 
+  static String getTimeAgo(DateTime dateTime) {
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+
+    if (difference.isNegative) {
+      return "방금 전";
+    }
+
+    final seconds = difference.inSeconds;
+    final minutes = difference.inMinutes;
+    final hours = difference.inHours;
+    final days = difference.inDays;
+
+    if (seconds < 60) {
+      return "방금 전";
+    } else if (minutes < 60) {
+      return "${minutes}분 전";
+    } else if (hours < 24) {
+      return "${hours}시간 전";
+    } else if (days < 30) {
+      return "${days}일 전";
+    } else {
+      // 정확한 월/년 계산
+      int yearDiff = now.year - dateTime.year;
+      int monthDiff = now.month - dateTime.month;
+
+      // 월이 음수인 경우 연도에서 빌려오기
+      if (monthDiff < 0) {
+        yearDiff--;
+        monthDiff += 12;
+      }
+
+      // 일까지 고려한 보정
+      if (now.day < dateTime.day) {
+        monthDiff--;
+        if (monthDiff < 0) {
+          yearDiff--;
+          monthDiff += 12;
+        }
+      }
+
+      if (yearDiff > 0) {
+        return "${yearDiff}년 전";
+      } else if (monthDiff > 0) {
+        return "${monthDiff}개월 전";
+      } else {
+        return "${days}일 전";
+      }
+    }
+  }
+
   static bool isSameDay(DateTime date1, DateTime date2) {
     return date1.year == date2.year &&
         date1.month == date2.month &&

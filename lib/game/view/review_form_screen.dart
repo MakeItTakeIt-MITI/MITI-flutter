@@ -124,17 +124,14 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                               height: 48.h,
                               child: TextButton(
                                 onPressed: () {
-                                  Map<String, String> pathParameters = {
-                                    'gameId': widget.gameId.toString()
-                                  };
                                   context.pop();
                                   Map<String, String> queryParameters = {
+                                    'gameId': widget.gameId.toString(),
                                     'participationId':
                                         widget.participationId.toString()
                                   };
                                   context.pushNamed(
                                     ReportListScreen.routeName,
-                                    pathParameters: pathParameters,
                                     queryParameters: queryParameters,
                                     extra: ReportCategoryType.guest_report,
                                   );

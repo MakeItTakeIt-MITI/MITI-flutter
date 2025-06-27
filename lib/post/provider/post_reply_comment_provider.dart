@@ -12,7 +12,7 @@ part 'post_reply_comment_provider.g.dart';
 Future<BaseModel> postReplyCommentCreate(PostReplyCommentCreateRef ref,
     {required int postId, required int commentId}) async {
   final repository = ref.watch(postRepositoryProvider);
-  final param = ref.watch(postCommentFormProvider);
+  final param = ref.watch(postCommentFormProvider());
 
   return await repository
       .createPostReplyComment(
@@ -42,7 +42,8 @@ Future<BaseModel> postReplyCommentUpdate(PostReplyCommentUpdateRef ref,
     required int commentId,
     required int replyCommentId}) async {
   final repository = ref.watch(postRepositoryProvider);
-  final param = ref.watch(postCommentFormProvider);
+  final param = ref.watch(postCommentFormProvider(
+      postId: postId, commentId: commentId, replyCommentId: replyCommentId));
   return await repository
       .patchPostReplyComment(
           param: param,
@@ -53,7 +54,7 @@ Future<BaseModel> postReplyCommentUpdate(PostReplyCommentUpdateRef ref,
     logger.i(value);
     ref
         .read(postCommentDetailProvider(postId: postId, commentId: commentId)
-        .notifier)
+            .notifier)
         .update(value);
     ref
         .read(postCommentListProvider(postId: postId).notifier)
@@ -78,10 +79,11 @@ Future<BaseModel> postReplyCommentDelete(PostReplyCommentDeleteRef ref,
           postId: postId, commentId: commentId, replyCommentId: replyCommentId)
       .then<BaseModel>((value) {
     logger.i(value);
+    // todo api 호출이 아닌 메모리만 삭제
     ref
         .read(postCommentDetailProvider(postId: postId, commentId: commentId)
-        .notifier)
-        .update(value);
+            .notifier)
+        .get(postId: postId, commentId: commentId);
     ref
         .read(postCommentListProvider(postId: postId).notifier)
         .get(postId: postId);

@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retrofit/http.dart';
 
+import '../../common/model/cursor_model.dart';
 import '../../common/model/default_model.dart';
 import '../../common/param/cursor_pagination_param.dart';
 import '../../common/param/pagination_param.dart';

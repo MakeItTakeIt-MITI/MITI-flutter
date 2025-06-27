@@ -5,7 +5,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/model/default_model.dart';
-import 'package:miti/report/model/report_model.dart';
 import 'package:miti/report/provider/report_provider.dart';
 import 'package:miti/report/view/report_form_screen.dart';
 import 'package:miti/theme/color_theme.dart';
@@ -18,27 +17,31 @@ import '../../util/util.dart';
 import '../error/report_error.dart';
 
 class ReportListScreen extends StatelessWidget {
-  final int gameId;
+  final int? gameId;
   final int? participationId;
+  final int? postId;
+  final int? userId;
   final ReportCategoryType reportType;
 
   static String get routeName => 'reportList';
 
   const ReportListScreen({
     super.key,
-    required this.gameId,
     required this.reportType,
     this.participationId,
+    this.gameId,
+    this.postId,
+    this.userId,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const DefaultAppBar(
-        backgroundColor: MITIColor.gray750,
+        backgroundColor: MITIColor.gray900,
         title: '신고하기',
       ),
-      backgroundColor: MITIColor.gray750,
+      backgroundColor: MITIColor.gray900,
       body: Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
           final result = ref.watch(reportProvider(reportType: reportType));
@@ -74,17 +77,31 @@ class ReportListScreen extends StatelessWidget {
                           model: modelList[idx],
                           onTap: () {
                             Map<String, String> pathParameters = {
-                              'gameId': gameId.toString(),
                               'reportId': modelList[idx].id.toString()
                             };
 
-                            Map<String, String> queryParameters =
-                                participationId != null
-                                    ? {
-                                        'participationId':
-                                            participationId.toString()
-                                      }
-                                    : {};
+                            Map<String, String> queryParameters = {};
+
+                            // gameId를 queryParameter로 추가
+                            if (gameId != null) {
+                              queryParameters['gameId'] = gameId.toString();
+                            }
+
+                            // participationId가 null이 아니면 queryParameter에 추가
+                            if (participationId != null) {
+                              queryParameters['participationId'] =
+                                  participationId.toString();
+                            }
+
+                            // postId가 null이 아니면 queryParameter에 추가
+                            if (postId != null) {
+                              queryParameters['postId'] = postId.toString();
+                            }
+
+                            // userId가 null이 아니면 queryParameter에 추가
+                            if (userId != null) {
+                              queryParameters['userId'] = userId.toString();
+                            }
 
                             context.pushNamed(
                               ReportFormScreen.routeName,

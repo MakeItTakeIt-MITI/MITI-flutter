@@ -47,6 +47,8 @@ class MultiLineTextField extends StatelessWidget {
       style: textStyle.copyWith(
         color: MITIColor.gray100,
       ),
+      textAlign: TextAlign.start,
+      textAlignVertical: TextAlignVertical.top,
     );
   }
 }

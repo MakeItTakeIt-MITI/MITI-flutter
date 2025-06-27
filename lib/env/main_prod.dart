@@ -39,6 +39,7 @@ import '../firebase_options.dart';
 import '../notification/provider/notification_provider.dart';
 import '../notification/provider/widget/unconfirmed_provider.dart';
 import '../notification/view/notification_screen.dart';
+import '../post/repository/search_history_repository.dart';
 
 //
 @pragma('vm:entry-point')
@@ -105,6 +106,9 @@ void main(List<String> args) async {
   await Hive.initFlutter();
   await Hive.openBox<bool>('permission');
   await Hive.openBox<String>('recentUpdateVersion');
+
+  await SearchHistoryRepository().initialize();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

@@ -23,13 +23,13 @@ class AdvertisementResponse extends IModelWithId{
   final String content;
 
   @JsonKey(name: 'data')
-  final Map<String, dynamic> data;  // Assuming this is a JSON object
+  final List<String> data;  // Assuming this is a JSON object
 
   @JsonKey(name: 'created_at')
-  final String? createdAt;
+  final DateTime? createdAt;
 
   @JsonKey(name: 'expire_at')
-  final String expireAt;
+  final DateTime expireAt;
 
   AdvertisementResponse({
     required super.id,
@@ -55,9 +55,9 @@ class AdvertisementResponse extends IModelWithId{
     String? subtitle,
     String? thumbnailImageUrl,
     String? content,
-    Map<String, dynamic>? data,
-    String? createdAt,
-    String? expireAt,
+    List<String>? data,
+    DateTime? createdAt,
+    DateTime? expireAt,
   }) {
     return AdvertisementResponse(
       id: id ?? this.id,

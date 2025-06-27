@@ -9,6 +9,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
+import '../../common/model/model_id.dart';
 import '../repository/report_repository.dart';
 
 part 'report_provider.g.dart';
@@ -60,19 +61,54 @@ class ReportDetail extends _$ReportDetail {
 }
 
 @riverpod
-Future<BaseModel> createReport(CreateReportRef ref,
-    {required int gameId, required int reportId, int? participationId}) async {
+Future<BaseModel> createReport(
+  CreateReportRef ref, {
+  required int reportId,
+  int? gameId,
+  int? participationId,
+  int? postId,
+  int? userId,
+}) async {
   final param = ref.read(reportFormProvider(reportReason: reportId));
   final repository = ref.watch(reportRepositoryProvider);
-  final result = participationId == null
-      ? repository.reportHost(
-          gameId: gameId,
-          param: param,
-        )
-      : repository.reportGuest(
-          gameId: gameId, participationId: participationId, param: param);
 
-  return await result.then<BaseModel>((value) {
+  if (postId != null || userId != null) {
+    late Future<CompletedModel> result;
+    if (postId != null) {
+      result = repository.reportPost(
+        postId: postId,
+        param: param,
+      );
+    } else if (userId != null) {
+      result = repository.reportUser(
+        userId: userId,
+        param: param,
+      );
+    }
+    return await result.then<BaseModel>((value) {
+      logger.i('create report !');
+      return value;
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      return error;
+    });
+  }
+
+  late Future<ResponseModel<IModelWithId>> gameResult;
+
+  if (gameId != null && participationId != null) {
+    gameResult = repository.reportGuest(
+        gameId: gameId, participationId: participationId, param: param);
+  } else {
+    gameResult = repository.reportHost(
+      gameId: gameId!,
+      param: param,
+    );
+  }
+
+  return await gameResult.then<BaseModel>((value) {
     logger.i('create report !');
     return value;
   }).catchError((e) {

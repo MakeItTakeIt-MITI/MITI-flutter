@@ -61,6 +61,22 @@ abstract class ReportRepository {
     @Body() required ReportParam param,
   });
 
+  /// 게시글 신고 API
+  @Headers({'token': 'true'})
+  @POST('/posts/{postId}/reports')
+  Future<CompletedModel> reportPost({
+    @Path() required int postId,
+    @Body() required ReportParam param,
+  });
+
+  /// 사용자 신고 API
+  @Headers({'token': 'true'})
+  @POST('/users/{userId}/reports')
+  Future<CompletedModel> reportUser({
+    @Path() required int userId,
+    @Body() required ReportParam param,
+  });
+
   /// 요청별 동의 항목 조회 API
   // @Headers({'token': 'true'})
   @GET('/agreement-policies/{type}')

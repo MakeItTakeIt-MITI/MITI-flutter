@@ -394,6 +394,10 @@ enum ReportCategoryType {
   host_report('호스트 신고'),
   @JsonValue('guest_report')
   guest_report('게스트 신고'),
+  @JsonValue('guest_report')
+  post_report('게시글 신고'),
+  @JsonValue('guest_report')
+  user_report('유저 신고'),
   @JsonValue('etc')
   etc('기타 신고');
 
@@ -702,7 +706,6 @@ enum UserGuideCategoryType {
   final String displayName;
 }
 
-
 enum AccountStatusType {
   active('활성화'),
   disabled('비활성화');
@@ -712,14 +715,13 @@ enum AccountStatusType {
   final String displayName;
 }
 
-
 enum PostCategoryType {
   all('전체'),
   general('자유주제'),
   court_info('코트 정보'),
   tournament('대회 정보'),
   tactic('농구 전술'),
-  shoes_revie('농구화 리뷰'),
+  shoes_review('농구화 리뷰'),
   tip('농구 팁'),
   team_recruitment('팀원 구해요'),
   game_review('게스트 후기'),
@@ -737,4 +739,13 @@ enum PostCategoryType {
   }
 
   final String displayName;
+}
+
+enum ImageType {
+  @JsonValue('post_image')
+  postImage,
+  @JsonValue('comment_image')
+  commentImage,
+  @JsonValue('reply_comment_image')
+  replyCommentImage;
 }

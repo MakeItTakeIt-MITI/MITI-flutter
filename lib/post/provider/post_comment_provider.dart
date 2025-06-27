@@ -121,7 +121,7 @@ class PostCommentDetail extends _$PostCommentDetail {
     });
   }
 
-  void update(ResponseModel<BasePostCommentResponse> newState){
+  void update(ResponseModel<BasePostCommentResponse> newState) {
     state = newState;
   }
 
@@ -185,7 +185,7 @@ class PostCommentDetail extends _$PostCommentDetail {
 Future<BaseModel> postCommentCreate(PostCommentCreateRef ref,
     {required int postId}) async {
   final repository = ref.watch(postRepositoryProvider);
-  final param = ref.watch(postCommentFormProvider);
+  final param = ref.watch(postCommentFormProvider());
   return await repository
       .createPostComment(param: param, postId: postId)
       .then<BaseModel>((value) {
@@ -206,7 +206,8 @@ Future<BaseModel> postCommentCreate(PostCommentCreateRef ref,
 Future<BaseModel> postCommentUpdate(PostCommentUpdateRef ref,
     {required int postId, required int commentId}) async {
   final repository = ref.watch(postRepositoryProvider);
-  final param = ref.watch(postCommentFormProvider);
+  final param =
+      ref.watch(postCommentFormProvider(postId: postId, commentId: commentId));
   return await repository
       .patchPostComment(param: param, postId: postId, commentId: commentId)
       .then<BaseModel>((value) {
@@ -214,6 +215,10 @@ Future<BaseModel> postCommentUpdate(PostCommentUpdateRef ref,
     ref
         .read(postCommentListProvider(postId: postId).notifier)
         .get(postId: postId);
+    ref
+        .read(postCommentDetailProvider(postId: postId, commentId: commentId)
+            .notifier)
+        .get(postId: postId, commentId: commentId);
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);
@@ -231,7 +236,9 @@ Future<BaseModel> postCommentDelete(PostCommentDeleteRef ref,
       .deletePostComment(postId: postId, commentId: commentId)
       .then<BaseModel>((value) {
     logger.i(value);
-
+    ref
+        .read(postCommentListProvider(postId: postId).notifier)
+        .get(postId: postId);
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);

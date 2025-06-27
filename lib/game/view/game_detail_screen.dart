@@ -249,14 +249,10 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                           SingleChildScrollView(
                             child: Column(
                               children: [
-                                Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 13.r),
-                                  child: CourtMapComponent(
-                                    latLng: NLatLng(
-                                      double.parse(model.court.latitude),
-                                      double.parse(model.court.longitude),
-                                    ),
+                                CourtMapComponent(
+                                  latLng: NLatLng(
+                                    double.parse(model.court.latitude),
+                                    double.parse(model.court.longitude),
                                   ),
                                 ),
                                 SummaryComponent.fromDetailModel(model: model),
@@ -490,13 +486,13 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                         style: TextButton.styleFrom(
                             backgroundColor: MITIColor.error),
                         onPressed: () {
-                          Map<String, String> pathParameters = {
-                            'gameId': model.id.toString()
+                          Map<String, String> queryParameters = {
+                            'gameId': widget.gameId.toString(),
                           };
                           context.pop();
                           context.pushNamed(
                             ReportListScreen.routeName,
-                            pathParameters: pathParameters,
+                            queryParameters: queryParameters,
                             extra: ReportCategoryType.host_report,
                           );
                         },
@@ -898,18 +894,11 @@ class _GuestTile extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (profileImageUrl != null)
-          CircleAvatar(
-            backgroundColor: Colors.transparent,
-            radius: 18.r,
-            backgroundImage: NetworkImage(profileImageUrl, scale: 36.r),
-          )
-        else
-          SvgPicture.asset(
-            AssetUtil.getAssetPath(type: AssetType.icon, name: 'user_thum'),
-            width: 36.r,
-            height: 36.r,
-          ),
+        CircleAvatar(
+          backgroundColor: Colors.transparent,
+          radius: 18.r,
+          backgroundImage: NetworkImage(profileImageUrl, scale: 36.r),
+        ),
         SizedBox(height: 8.h),
         Text(
           "$subName 님",
@@ -970,7 +959,7 @@ class SummaryComponent extends StatelessWidget {
       gameStatus: model.game_status,
       title: model.title,
       gameDate: gameDate,
-      address: model.court.address,
+      address: model.court.address + " ${model.court.name}",
       courtName: model.court.name!,
       fee: NumberUtil.format(model.fee.toString()),
       max_invitation: model.max_invitation,
@@ -1056,17 +1045,17 @@ class SummaryComponent extends StatelessWidget {
               style: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
               textAlign: TextAlign.left,
             ),
-            if (content != null)
-              Padding(
-                padding: EdgeInsets.only(top: 4.h),
-                child: Text(
-                  content,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
-                  textAlign: TextAlign.left,
-                ),
-              ),
+            // if (content != null)
+            //   Padding(
+            //     padding: EdgeInsets.only(top: 4.h),
+            //     child: Text(
+            //       content,
+            //       maxLines: 1,
+            //       overflow: TextOverflow.ellipsis,
+            //       style: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
+            //       textAlign: TextAlign.left,
+            //     ),
+            //   ),
           ],
         ),
       )

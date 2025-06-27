@@ -4,14 +4,19 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retrofit/http.dart';
 
+import '../../common/model/cursor_model.dart';
 import '../../common/model/default_model.dart';
+import '../../common/param/cursor_pagination_param.dart';
 import '../../dio/provider/dio_provider.dart';
 import '../model/base_post_comment_response.dart';
+import '../model/base_post_response.dart';
 import '../model/popular_post_list_response.dart';
 import '../model/popular_search_word_list_response.dart';
+import '../model/post_list_response.dart';
 import '../model/post_response.dart';
 import '../param/post_comment_param.dart';
 import '../param/post_form_param.dart';
+import '../param/post_search_param.dart';
 
 part 'post_repository.g.dart';
 
@@ -28,9 +33,17 @@ abstract class PostRepository {
 
   /// 게시글 작성 API
   @Headers({'token': 'true'})
-  @POST('/posts/{postId}')
+  @POST('/posts')
   Future<ResponseModel<PostResponse>> createPost(
       {@Body() required PostFormParam param});
+
+  /// 게시글 목록 조회 API
+  @Headers({'token': 'true'})
+  @GET('/posts')
+  Future<ResponseModel<CursorPaginationModel<BasePostResponse>>> getPostList({
+    @Queries() PostSearchParam? params,
+    @Queries() required CursorPaginationParam cursorParams,
+  });
 
   /// 게시글 상세 조회 API
   @Headers({'token': 'true'})
@@ -80,7 +93,7 @@ abstract class PostRepository {
   /// 게시글 댓글 수정 API
   @Headers({'token': 'true'})
   @PATCH('/posts/{postId}/comments/{commentId}')
-  Future<ResponseListModel<BasePostCommentResponse>> patchPostComment({
+  Future<ResponseModel<BasePostCommentResponse>> patchPostComment({
     @Path() required int postId,
     @Path() required int commentId,
     @Body() required PostCommentParam param,

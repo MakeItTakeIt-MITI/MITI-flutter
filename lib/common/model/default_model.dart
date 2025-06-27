@@ -124,50 +124,7 @@ class ResponseListModel<T> extends BaseModel {
   }
 }
 
-@JsonSerializable(
-  genericArgumentFactories: true,
-)
-class CursorPaginationModel<T> extends BaseModel {
-  @JsonKey(name: 'latest_cursor')
-  final int? latestCursor;
-  @JsonKey(name: 'earliest_cursor')
-  final int? earliestCursor;
-  @JsonKey(name: 'first_cursor')
-  final int? firstCursor;
-  @JsonKey(name: 'last_cursor')
-  final int? lastCursor;
 
-  final List<T> messages;
-
-  CursorPaginationModel({
-    required this.latestCursor,
-    required this.earliestCursor,
-    required this.messages,
-    required this.firstCursor,
-    required this.lastCursor,
-  });
-
-  CursorPaginationModel<T> copyWith({
-    int? latestCursor,
-    int? earliestCursor,
-    List<T>? messages,
-    int? firstCursor,
-    int? lastCursor,
-  }) {
-    return CursorPaginationModel<T>(
-      latestCursor: latestCursor ?? this.latestCursor,
-      earliestCursor: earliestCursor ?? this.earliestCursor,
-      firstCursor: firstCursor ?? this.firstCursor,
-      lastCursor: lastCursor ?? this.lastCursor,
-      messages: messages ?? this.messages,
-    );
-  }
-
-  factory CursorPaginationModel.fromJson(
-      Map<String, dynamic> json, T Function(Object? json) fromJsonT) {
-    return _$CursorPaginationModelFromJson(json, fromJsonT);
-  }
-}
 
 @JsonSerializable(
   genericArgumentFactories: true,

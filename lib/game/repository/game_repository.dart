@@ -12,6 +12,7 @@ import '../../review/model/v2/guest_review_response.dart';
 import '../model/game_model.dart';
 import '../model/v2/game/game_detail_response.dart';
 import '../model/v2/game/game_participation_payment_detail_response.dart';
+import '../model/v2/game/game_player_list_response.dart';
 import '../model/v2/game/game_response.dart';
 import '../model/v2/game/game_with_court_map_response.dart';
 import '../model/v2/game/game_with_court_response.dart';
@@ -136,7 +137,7 @@ abstract class GameRepository {
   /// 경기 참가자 선수 프로필 목록 조회 API
   @Headers({'token': 'true'})
   @GET('/games/{gameId}/participations')
-  Future<ResponseListModel<ParticipationGuestPlayerResponse>>
+  Future<ResponseModel<GamePlayerListResponse>>
       getParticipationProfile({
     @Path() required int gameId,
   });

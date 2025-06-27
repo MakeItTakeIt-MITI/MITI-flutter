@@ -12,6 +12,7 @@ import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
 import '../../court/view/court_map_screen.dart';
+import '../../user/model/v2/private_user_guest_player_response.dart';
 import '../../user/provider/user_pagination_provider.dart';
 import '../model/v2/participation/participation_guest_player_response.dart';
 
@@ -436,20 +437,22 @@ class GamePlayerProfile extends _$GamePlayerProfile {
     final repository = ref.watch(gameRepositoryProvider);
     repository.getParticipationProfile(gameId: gameId).then<BaseModel>((value) {
       logger.i(value);
+      // 참가순으로 정렬
       if (orderType == null || orderType == PlayerOrderType.participation) {
         final players = (value).data!;
-        players.sort((ParticipationGuestPlayerResponse p1,
-                ParticipationGuestPlayerResponse p2) =>
-            p1.participationStatus.index
-                .compareTo(p2.participationStatus.index));
+
+        players.participants.sort((p1, p2) => p1.id.compareTo(p2.id));
         state = value.copyWith(data: players);
       } else {
         final players = (value).data!;
-        players.sort((ParticipationGuestPlayerResponse p1,
-                ParticipationGuestPlayerResponse p2) =>
-            p2.user.playerProfile.height
-                ?.compareTo(p1.user.playerProfile.height ?? 0) ??
-            1);
+
+        players.participants.sort((p1, p2) {
+          final h1 = p1.user.playerProfile.height;
+          final h2 = p2.user.playerProfile.height;
+
+          // null이면 뒤로, 아니면 내림차순
+          return (h2 ?? -1).compareTo(h1 ?? -1);
+        });
         state = value.copyWith(data: players);
       }
       return state;

@@ -100,17 +100,13 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
             slivers: [
               SliverMainAxisGroup(slivers: [
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.all(13.r),
-                    child: CourtMapComponent(
-                      latLng: NLatLng(
-                        double.parse(model.latitude),
-                        double.parse(model.longitude),
-                      ),
+                  child: CourtMapComponent(
+                    latLng: NLatLng(
+                      double.parse(model.latitude),
+                      double.parse(model.longitude),
                     ),
                   ),
                 ),
-                getDivider(),
                 _CourtInfoComponent(
                   model: model,
                 ),
@@ -153,29 +149,26 @@ class CourtMapComponentState extends State<CourtMapComponent> {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20.r),
-      child: SizedBox(
-        height: 200.h,
-        child: NaverMap(
-          options: NaverMapViewOptions(
-            initialCameraPosition: NCameraPosition(
-              target: widget.latLng,
-              zoom: 12,
-            ),
-            locale: const Locale('ko'),
-            logoClickEnable: false,
+    return SizedBox(
+      height: 200.h,
+      child: NaverMap(
+        options: NaverMapViewOptions(
+          initialCameraPosition: NCameraPosition(
+            target: widget.latLng,
+            zoom: 12,
           ),
-          onMapReady: (controller) async {
-            _naverMapController = controller;
-            final icon = NOverlayImage.fromAssetImage(
-              AssetUtil.getAssetPath(
-                  type: AssetType.icon, name: 'location', extension: 'png'),
-            );
-            await _naverMapController.addOverlay(
-                NMarker(id: '1', position: widget.latLng, icon: icon));
-          },
+          locale: const Locale('ko'),
+          logoClickEnable: false,
         ),
+        onMapReady: (controller) async {
+          _naverMapController = controller;
+          final icon = NOverlayImage.fromAssetImage(
+            AssetUtil.getAssetPath(
+                type: AssetType.icon, name: 'location', extension: 'png'),
+          );
+          await _naverMapController.addOverlay(
+              NMarker(id: '1', position: widget.latLng, icon: icon));
+        },
       ),
     );
   }

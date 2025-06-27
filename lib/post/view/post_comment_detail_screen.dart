@@ -2,15 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:miti/common/component/defalut_flashbar.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/post/component/comment_card.dart';
 import 'package:miti/post/provider/post_comment_provider.dart';
+import 'package:miti/post/view/post_comment_form_screen.dart';
 import 'package:miti/post/view/post_detail_screen.dart';
+import 'package:miti/support/provider/random_advertise_provider.dart';
+import 'package:miti/support/view/advertise_detail_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 
 import '../../auth/provider/auth_provider.dart';
 import '../../common/component/default_appbar.dart';
+import '../../game/model/v2/advertisement/base_advertisement_response.dart';
 import '../../theme/text_theme.dart';
 import '../../util/util.dart';
 import '../component/comment_form.dart';
@@ -18,6 +23,7 @@ import '../component/comment_util_button.dart';
 import '../component/post_writer_info.dart';
 import '../model/base_post_comment_response.dart';
 import '../model/base_reply_comment_response.dart';
+import '../provider/post_bottom_sheet_button.dart';
 import '../provider/post_reply_comment_provider.dart';
 
 class PostCommentDetailScreen extends ConsumerStatefulWidget {
@@ -68,6 +74,7 @@ class _PostCommentDetailScreenState
     }
 
     final model = (result as ResponseModel<BasePostCommentResponse>).data!;
+    final userId = ref.watch(authProvider)?.id;
 
     return Scaffold(
       appBar: DefaultAppBar(
@@ -75,7 +82,42 @@ class _PostCommentDetailScreenState
         backgroundColor: MITIColor.gray900,
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              showModalBottomSheet(
+                  backgroundColor: Colors.transparent,
+                  context: context,
+                  builder: (_) {
+                    return PostBottomSheetButton(
+                      isWriter: model.writer.id == userId,
+                      onDelete: () async {
+                        final result = ref.read(postCommentDeleteProvider(
+                                postId: widget.postId,
+                                commentId: widget.commentId)
+                            .future);
+
+                        if (result is! ErrorModel) {
+                          context.pop();
+                          context.pop();
+                        }
+                      },
+                      onUpdate: () {
+                        context.pop();
+                        // 댓글 수정
+                        Map<String, String> pathParameters = {
+                          'postId': widget.postId.toString(),
+                          'commentId': widget.commentId.toString(),
+                        };
+                        context.pushNamed(
+                          PostCommentFormScreen.routeName,
+                          pathParameters: pathParameters,
+                        );
+                      },
+                      onReport: () {
+                        context.pop();
+                      },
+                    );
+                  });
+            },
             icon: SvgPicture.asset(
               AssetUtil.getAssetPath(type: AssetType.icon, name: 'more'),
               width: 24.r,
@@ -99,19 +141,52 @@ class _PostCommentDetailScreenState
                     commentId: widget.commentId,
                     model: model,
                   ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 11.5.w),
-                    child: Container(
-                      width: double.infinity,
-                      height: 78.h,
-                      color: MITIColor.gray400,
-                      child: Text("광고 섹션"),
-                    ),
+                  Consumer(
+                    builder:
+                        (BuildContext context, WidgetRef ref, Widget? child) {
+                      final result = ref.watch(randomAdvertiseProvider);
+                      if (result is LoadingModel) {
+                        return CircularProgressIndicator();
+                      } else if (result is ErrorModel) {
+                        return CircularProgressIndicator();
+                      }
+                      final model =
+                          (result as ResponseModel<BaseAdvertisementResponse>)
+                              .data!;
+
+                      return Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 11.5.w),
+                        child: GestureDetector(
+                          onTap: (){
+                            Map<String, String> pathParameters = {
+                              'advertisementId': model.id.toString()
+                            };
+                            context.pushNamed(AdvertiseDetailScreen.routeName, pathParameters: pathParameters);
+
+                          },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.r),
+                            child: Container(
+                              width: double.infinity,
+                              height: 78.h,
+                              decoration: BoxDecoration(
+                                color: MITIColor.gray400,
+                                image: DecorationImage(
+                                  image: NetworkImage(model.thumbnailImageUrl),
+                                ),
+                              ),
+                              // child: Text("광고 섹션"),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                   _ReplyCommentComponent(
                     replyComments: model.replyComments,
                     postId: widget.postId,
                     commentId: widget.commentId,
+                    userId: userId,
                   ),
                 ],
               ),
@@ -220,12 +295,14 @@ class _ReplyCommentComponent extends StatelessWidget {
   final int postId;
   final int commentId;
   final List<BaseReplyCommentResponse> replyComments;
+  final int? userId;
 
   const _ReplyCommentComponent(
       {super.key,
       required this.replyComments,
       required this.postId,
-      required this.commentId});
+      required this.commentId,
+      this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -264,6 +341,53 @@ class _ReplyCommentComponent extends StatelessWidget {
                   commentId: commentId,
                   model: replyComments[idx],
                   replyCommentId: replyComments[idx].id,
+                  onTap: () {
+                    showModalBottomSheet(
+                        backgroundColor: Colors.transparent,
+                        context: context,
+                        builder: (_) {
+                          return Consumer(
+                            builder: (BuildContext context, WidgetRef ref,
+                                Widget? child) {
+                              return PostBottomSheetButton(
+                                isWriter:
+                                    replyComments[idx].writer.id == userId,
+                                onDelete: () async {
+                                  final result = await ref.read(
+                                      postReplyCommentDeleteProvider(
+                                              postId: postId,
+                                              commentId: commentId,
+                                              replyCommentId:
+                                                  replyComments[idx].id)
+                                          .future);
+                                  if (result is! ErrorModel) {
+                                    context.pop();
+                                  }
+                                },
+                                onUpdate: () {
+                                  context.pop();
+                                  // 대댓글 수정
+                                  Map<String, String> pathParameters = {
+                                    'postId': postId.toString(),
+                                    'commentId': commentId.toString(),
+                                  };
+                                  Map<String, String> queryParameters = {
+                                    'replyCommentId':
+                                        replyComments[idx].id.toString()
+                                  };
+                                  context.pushNamed(
+                                      PostCommentFormScreen.routeName,
+                                      pathParameters: pathParameters,
+                                      queryParameters: queryParameters);
+                                },
+                                onReport: () {
+                                  context.pop();
+                                },
+                              );
+                            },
+                          );
+                        });
+                  },
                 );
               },
               separatorBuilder: (_, idx) => Divider(

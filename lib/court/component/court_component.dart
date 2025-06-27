@@ -175,41 +175,7 @@ class _CustomMapMakerState extends ConsumerState<CustomMapMaker> {
       ],
     );
 
-    if (widget.model.moreCnt > 1) {
-      marker =
-          widget.selected ? 'selected_more_marker' : 'unselected_more_marker';
-    } else {
-      marker = widget.selected ? 'selected_marker' : 'unselected_marker';
-    }
 
-    return Stack(
-      children: [
-        Positioned(
-          bottom: 0,
-          child: SvgPicture.asset(
-            'assets/images/icon/$marker.svg',
-            height: widget.model.moreCnt > 1 ? 52.r : 45.r,
-            width: widget.model.moreCnt > 1 ? 119.r : 111.r,
-          ),
-        ),
-        Positioned(
-          left: 35.5.r,
-          bottom: 29.r,
-          child: Text(
-            widget.model.time,
-            style: timeTextStyle,
-          ),
-        ),
-        Positioned(
-          left: 35.5.r,
-          bottom: 12.r,
-          child: Text(
-            widget.model.cost,
-            style: costTextStyle,
-          ),
-        )
-      ],
-    );
   }
 }
 

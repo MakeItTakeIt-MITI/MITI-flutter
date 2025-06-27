@@ -1,19 +1,27 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:miti/post/component/post_writer_info.dart';
 import 'package:miti/post/component/reply_comment_component.dart';
 
 import '../../auth/provider/auth_provider.dart';
+import '../../common/model/default_model.dart';
+import '../../common/model/entity_enum.dart';
+import '../../report/view/report_list_screen.dart';
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
 import '../../user/model/v2/base_user_response.dart';
 import '../model/base_post_comment_response.dart';
 import '../model/base_reply_comment_response.dart';
+import '../provider/post_bottom_sheet_button.dart';
 import '../provider/post_comment_provider.dart';
 import '../provider/post_reply_comment_provider.dart';
+import '../view/post_comment_form_screen.dart';
 import '../view/post_detail_screen.dart';
 import 'comment_util_button.dart';
 
@@ -64,7 +72,8 @@ class CommentCard extends ConsumerWidget {
       {required BaseReplyCommentResponse model,
       required int postId,
       required int commentId,
-      required int replyCommentId}) {
+      required int replyCommentId,
+      required VoidCallback onTap}) {
     return CommentCard(
       content: model.content,
       createdAt: model.createdAt.toString(),
@@ -74,6 +83,7 @@ class CommentCard extends ConsumerWidget {
       commentId: commentId,
       postId: postId,
       replyCommentId: replyCommentId,
+      onTap: onTap,
     );
   }
 
@@ -89,7 +99,7 @@ class CommentCard extends ConsumerWidget {
           model: writer,
           createdAt: createdAt,
           isAnonymous: false,
-          onTap: () {},
+          onTap: onTap,
         ),
         Padding(
           padding: EdgeInsets.only(left: 40.w),
@@ -166,6 +176,60 @@ class CommentCard extends ConsumerWidget {
                       model: replyComments![idx],
                       commentId: commentId,
                       postId: postId,
+                      onTap: () {
+                        showModalBottomSheet(
+                            backgroundColor: Colors.transparent,
+                            context: context,
+                            builder: (_) {
+                              return PostBottomSheetButton(
+                                isWriter:
+                                    replyComments![idx].writer.id == userId,
+                                onDelete: () async {
+                                  log("reply onDelete");
+
+                                  final result = ref.read(
+                                      postReplyCommentDeleteProvider(
+                                              postId: postId,
+                                              commentId: commentId,
+                                              replyCommentId:
+                                                  replyComments![idx].id)
+                                          .future);
+
+                                  if (result is! ErrorModel) {
+                                    context.pop();
+                                  }
+                                },
+                                onUpdate: () {
+                                  log("reply navigation");
+                                  context.pop();
+                                  // // 대댓글 수정
+                                  Map<String, String> pathParameters = {
+                                    'postId': postId.toString(),
+                                    'commentId': commentId.toString(),
+                                  };
+                                  Map<String, String> queryParameters = {
+                                    'replyCommentId': replyComments![idx].id.toString()
+                                  };
+                                  context.pushNamed(
+                                      PostCommentFormScreen.routeName,
+                                      pathParameters: pathParameters,
+                                      queryParameters: queryParameters);
+                                },
+                                onReport: () {
+                                  // // 대댓글 신고
+                                  Map<String, String> queryParameters = {
+                                    'userId': replyComments![idx].writer.id.toString(),
+                                  };
+                                  context.pop();
+                                  context.pushNamed(
+                                    ReportListScreen.routeName,
+                                    queryParameters: queryParameters,
+                                    extra: ReportCategoryType.user_report,
+                                  );
+                                },
+                              );
+                            });
+                      },
                     );
                   },
                   separatorBuilder: (_, idx) => SizedBox(

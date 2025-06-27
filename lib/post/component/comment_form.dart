@@ -34,7 +34,7 @@ class _CommentFormState extends ConsumerState<PostCommentForm> {
     widget.textController.addListener(() {
       setState(() {
         ref
-            .read(postCommentFormProvider.notifier)
+            .read(postCommentFormProvider().notifier)
             .update(content: widget.textController.text);
       });
     });
@@ -86,7 +86,7 @@ class _CommentFormState extends ConsumerState<PostCommentForm> {
                   builder:
                       (BuildContext context, WidgetRef ref, Widget? child) {
                     final content = ref.watch(
-                        postCommentFormProvider.select((e) => e.content));
+                        postCommentFormProvider().select((e) => e.content));
                     final enabled = content.isNotEmpty;
                     return TextButton(
                         onPressed: enabled

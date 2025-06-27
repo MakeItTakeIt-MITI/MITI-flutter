@@ -2,6 +2,8 @@ import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:miti/common/model/entity_enum.dart';
 
+import '../../util/model/image_path.dart';
+
 part 'post_form_param.g.dart';
 
 @JsonSerializable()
@@ -12,6 +14,8 @@ class PostFormParam extends Equatable {
   final List<String> images;
   @JsonKey(name: "is_anonymous")
   final bool isAnonymous;
+  @JsonKey(includeToJson: false)
+  final List<ImagePath> localImages;
 
   const PostFormParam({
     required this.title,
@@ -19,6 +23,7 @@ class PostFormParam extends Equatable {
     required this.category,
     required this.images,
     required this.isAnonymous,
+    this.localImages = const [],
   });
 
   PostFormParam copyWith({
@@ -27,6 +32,7 @@ class PostFormParam extends Equatable {
     String? content,
     List<String>? images,
     bool? isAnonymous,
+    List<ImagePath>? localImages,
   }) {
     return PostFormParam(
       category: category ?? this.category,
@@ -34,6 +40,7 @@ class PostFormParam extends Equatable {
       content: content ?? this.content,
       images: images ?? this.images,
       isAnonymous: isAnonymous ?? this.isAnonymous,
+      localImages: localImages ?? this.localImages,
     );
   }
 
@@ -49,6 +56,7 @@ class PostFormParam extends Equatable {
         content,
         images,
         isAnonymous,
+        localImages,
       ];
 
   @override
