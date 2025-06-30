@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:collection/collection.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/post/provider/post_comment_provider.dart';
@@ -38,7 +40,6 @@ class PostCommentForm extends _$PostCommentForm {
       final localImages = (replyComment?.images ?? [])
           .map((e) => ImagePath(imageUrl: e))
           .toList();
-
 
       return PostCommentParam(
           content: replyComment?.content ?? '',
@@ -148,5 +149,9 @@ class PostCommentForm extends _$PostCommentForm {
       images: [],
       localImages: [],
     );
+  }
+
+  int getLimitImageCnt() {
+    return max(10 - state.localImages.length, 0);
   }
 }

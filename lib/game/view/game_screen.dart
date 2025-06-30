@@ -1,8 +1,4 @@
-import 'dart:developer';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -14,8 +10,6 @@ import 'package:miti/user/view/user_participation_screen.dart';
 
 import '../../auth/provider/auth_provider.dart';
 import '../../common/component/custom_drop_down_button.dart';
-import '../../common/component/default_appbar.dart';
-import '../../common/component/dispose_sliver_pagination_list_view.dart';
 import '../../common/component/sliver_delegate.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
@@ -27,8 +21,6 @@ import '../../theme/color_theme.dart';
 import '../../user/param/user_profile_param.dart';
 import '../../user/provider/user_pagination_provider.dart';
 import '../../util/util.dart';
-import '../component/game_list_component.dart';
-import '../model/game_model.dart';
 
 final currentGameTypeProvider =
     StateProvider.autoDispose<UserGameType>((ref) => UserGameType.participation);
@@ -98,6 +90,7 @@ class _GameScreenState extends ConsumerState<GameScreen>
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Icon(
                 Icons.add,

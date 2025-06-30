@@ -100,6 +100,7 @@ class _PostListScreenState extends ConsumerState<PostListScreen> {
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Icon(
                 Icons.add,

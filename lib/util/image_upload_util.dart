@@ -40,11 +40,12 @@ class ImageUploadUtil {
   });
 
   /// 여러 이미지 선택 및 업로드
-  Future<void> pickMultipleImages() async {
+  Future<void> pickMultipleImages({int limit = 10}) async {
+    // todo 동일한 이미지 올릴 시 제거 또는 id 를 추가해서 변경
     final picker = MultiImagePicker();
 
     try {
-      final List<XFile>? images = await picker.pickMultipleImages();
+      final List<XFile>? images = await picker.pickMultipleImages(limit: limit);
 
       if (images != null && images.isNotEmpty) {
         // 이미지 타입별로 개수를 계산

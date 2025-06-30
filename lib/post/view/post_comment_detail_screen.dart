@@ -248,53 +248,67 @@ class _PostCommentDetailScreenState
                 content: commentForm.content,
                 localImages: commentForm.localImages,
                 onContentChanged: (content) {
-                  ref.read(postCommentFormProvider(
-                    postId: widget.postId,
-                    commentId: widget.commentId,
-                  ).notifier).update(content: content);
+                  ref
+                      .read(postCommentFormProvider(
+                        postId: widget.postId,
+                        commentId: widget.commentId,
+                      ).notifier)
+                      .update(content: content);
                 },
                 onImageDelete: (imagePath) {
-                  ref.read(postCommentFormProvider(
-                    postId: widget.postId,
-                    commentId: widget.commentId,
-                  ).notifier).removeLocalImage(imagePath);
+                  ref
+                      .read(postCommentFormProvider(
+                        postId: widget.postId,
+                        commentId: widget.commentId,
+                      ).notifier)
+                      .removeLocalImage(imagePath);
                 },
                 sendMessage: () async {
                   // 이미지 설정 (업로드된 이미지 URL을 images 배열에 복사)
-                  ref.read(postCommentFormProvider(
-                    postId: widget.postId,
-                    commentId: widget.commentId,
-                  ).notifier).setImages();
+                  ref
+                      .read(postCommentFormProvider(
+                        postId: widget.postId,
+                        commentId: widget.commentId,
+                      ).notifier)
+                      .setImages();
 
                   final result = await ref.read(postReplyCommentCreateProvider(
-                      postId: widget.postId, commentId: widget.commentId)
+                          postId: widget.postId, commentId: widget.commentId)
                       .future);
                   if (result is! ErrorModel) {
                     textController.clear();
                     // 대댓글 작성 후 폼 상태 완전 초기화
-                    ref.read(postCommentFormProvider(
-                      postId: widget.postId,
-                      commentId: widget.commentId,
-                    ).notifier).reset();
+                    ref
+                        .read(postCommentFormProvider(
+                          postId: widget.postId,
+                          commentId: widget.commentId,
+                        ).notifier)
+                        .reset();
 
                     FlashUtil.showFlash(context, '대댓글 작성이 완료되었습니다');
                     Future.delayed(
                         const Duration(milliseconds: 200),
-                            () => {
-                          scrollController.animateTo(
-                            scrollController.position.maxScrollExtent,
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          )
-                        });
+                        () => {
+                              scrollController.animateTo(
+                                scrollController.position.maxScrollExtent,
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              )
+                            });
                   } else {
                     PostError.fromModel(model: result).responseError(
                         context, PostApiType.createReplyComment, ref);
                   }
                 },
                 onGallery: () async {
+                  final limit = ref
+                      .read(postCommentFormProvider(
+                        postId: widget.postId,
+                        commentId: widget.commentId,
+                      ).notifier)
+                      .getLimitImageCnt();
                   // 갤러리 기능 구현
-                  await _imageUploadUtil.pickMultipleImages();
+                  await _imageUploadUtil.pickMultipleImages(limit: limit);
                 },
               );
             },
@@ -344,13 +358,13 @@ class CommentInfoComponent extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: model.images
                 .map((e) => Padding(
-                  padding: EdgeInsets.only(bottom: 7.h),
-                  child: Image.network(
+                      padding: EdgeInsets.only(bottom: 7.h),
+                      child: Image.network(
                         e,
                         fit: BoxFit.contain,
                         alignment: Alignment.topLeft,
                       ),
-                ))
+                    ))
                 .toList(),
           ),
           SizedBox(height: 25.h),

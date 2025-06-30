@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/post/provider/post_provider.dart';
@@ -68,6 +70,7 @@ class PostForm extends _$PostForm {
   void removeLocalImage(ImagePath imagePath) {
     List<ImagePath> localImages = state.localImages.toList();
     final image = localImages.singleWhere((e) =>
+
         (e.filePath != null && e.filePath == imagePath.filePath) ||
         (e.imageUrl != null && e.imageUrl == imagePath.imageUrl));
 
@@ -113,5 +116,9 @@ class PostForm extends _$PostForm {
     List<String> images = state.images.toList();
     images.remove(image);
     state = state.copyWith(images: images);
+  }
+
+  int getLimitImageCnt() {
+    return max(10 - state.localImages.length, 0);
   }
 }

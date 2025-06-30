@@ -323,8 +323,12 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                   }
                 },
                 onGallery: () async {
+                  final limit = ref
+                      .read(postCommentFormProvider(postId: widget.postId)
+                          .notifier)
+                      .getLimitImageCnt();
                   // 갤러리 기능 구현
-                  await _imageUploadUtil.pickMultipleImages();
+                  await _imageUploadUtil.pickMultipleImages(limit: limit);
                 },
               );
             },

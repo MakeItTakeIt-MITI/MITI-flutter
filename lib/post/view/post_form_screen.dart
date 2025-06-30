@@ -447,9 +447,11 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
   }
 
   Future<void> _pickMultipleImages() async {
-    await _imageUploadUtil.pickMultipleImages();
+    final limit = ref
+        .read(postFormProvider(postId: widget.postId).notifier)
+        .getLimitImageCnt();
+    await _imageUploadUtil.pickMultipleImages(limit: limit);
   }
-
 }
 
 class _UtilButton extends StatelessWidget {
