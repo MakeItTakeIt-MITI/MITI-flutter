@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -14,9 +11,6 @@ import '../../common/component/custom_text_form_field.dart';
 import '../../common/component/defalut_flashbar.dart';
 import '../../common/error/common_error.dart';
 import '../../common/model/default_model.dart';
-import '../../common/model/entity_enum.dart';
-import '../../common/provider/form_util_provider.dart';
-import '../../common/provider/router_provider.dart';
 import '../../theme/color_theme.dart';
 
 enum UserApiType {

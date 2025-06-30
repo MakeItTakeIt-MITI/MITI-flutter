@@ -4,9 +4,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miti/post/component/post_writer_info.dart';
 
 import '../../auth/provider/auth_provider.dart';
+import '../../common/model/default_model.dart';
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
 import '../../user/model/v2/base_user_response.dart';
+import '../error/post_error.dart';
 import '../model/base_reply_comment_response.dart';
 import '../provider/post_reply_comment_provider.dart';
 import '../view/post_detail_screen.dart';
@@ -93,17 +95,26 @@ class ReplyCommentComponent extends ConsumerWidget {
                 isSelected: isSelected,
                 onTap: () async {
                   if (isSelected) {
-                    ref.read(postReplyCommentUnLikeProvider(
-                            commentId: commentId,
-                            postId: postId,
-                            replyCommentId: replyCommentId)
-                        .future);
+                    final result = await ref.read(
+                        postReplyCommentUnLikeProvider(
+                                commentId: commentId,
+                                postId: postId,
+                                replyCommentId: replyCommentId)
+                            .future);
+                    if (result is ErrorModel) {
+                      PostError.fromModel(model: result)
+                          .responseError(context, PostApiType.unLikeReplyComment, ref);
+                    }
                   } else {
-                    ref.read(postReplyCommentLikeProvider(
+                    final result = await ref.read(postReplyCommentLikeProvider(
                             commentId: commentId,
                             postId: postId,
                             replyCommentId: replyCommentId)
                         .future);
+                    if (result is ErrorModel) {
+                      PostError.fromModel(model: result)
+                          .responseError(context, PostApiType.likeReplyComment, ref);
+                    }
                   }
                 },
               ),

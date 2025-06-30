@@ -8,26 +8,25 @@ import '../../common/model/entity_enum.dart';
 import '../../dio/provider/dio_provider.dart';
 import '../../game/model/v2/advertisement/advertisement_response.dart';
 import '../../game/model/v2/advertisement/base_advertisement_response.dart';
-import '../model/image_upload_url_response.dart';
+import '../model/file_upload_url_response.dart';
+import '../param/file_upload_param.dart';
 
-part 'image_repository.g.dart';
+part 'file_repository.g.dart';
 
-final imageRepositoryProvider = Provider<ImageRepository>((ref) {
+final fileRepositoryProvider = Provider<FileRepository>((ref) {
   final baseUrl =
       dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
-  return ImageRepository(dio, baseUrl: baseUrl);
+  return FileRepository(dio, baseUrl: baseUrl);
 });
 
 @RestApi()
-abstract class ImageRepository {
-  factory ImageRepository(Dio dio, {String baseUrl}) = _ImageRepository;
+abstract class FileRepository {
+  factory FileRepository(Dio dio, {String baseUrl}) = _FileRepository;
 
-  /// 이미지 업로드 url 조회 API
+  /// 파일 업로드 url 조회 API
   @Headers({'token': 'true'})
-  @GET('/image-upload-url')
-  Future<ResponseModel<BaseImageUploadUrlResponse>> getImageUploadUrls({
-    @Field("category") required ImageType category,
-    @Field("count") required int count,
-  });
+  @GET('/file-upload-url')
+  Future<ResponseModel<FileUploadUrlResponse>> getFileUploadUrls(
+      {@Queries() required FileUploadParam param});
 }

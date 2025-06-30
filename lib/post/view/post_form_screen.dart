@@ -1,20 +1,14 @@
-import 'dart:developer';
-import 'dart:io';
-
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:collection/collection.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/model/entity_enum.dart';
-import 'package:miti/post/component/post_category.dart';
 import 'package:miti/post/provider/post_provider.dart';
 import 'package:miti/post/view/post_detail_screen.dart';
-import 'package:miti/post/view/post_list_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
@@ -23,12 +17,11 @@ import '../../common/component/defalut_flashbar.dart';
 import '../../common/component/form/multi_line_text_field.dart';
 import '../../common/component/form/under_line_text_field.dart';
 import '../../common/model/default_model.dart';
-import '../../util/image_picker.dart';
+import '../../util/image_upload_util.dart';
 import '../../util/util.dart';
-import 'package:collection/collection.dart';
-
 import '../component/image_form_component.dart';
 import '../component/post_category_chip.dart';
+import '../error/post_error.dart';
 import '../model/post_response.dart';
 import '../provider/post_form_provider.dart';
 
@@ -55,7 +48,7 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
   String get buttonText => isEdit ? "수정" : "작성";
 
   List<FocusNode> focusNodes = [FocusNode(), FocusNode()];
-
+  late ImageUploadUtil _imageUploadUtil;
   final inputBorder = const UnderlineInputBorder(
       borderSide: BorderSide(color: MITIColor.gray600, width: .5));
 
@@ -89,6 +82,15 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _imageUploadUtil = ImageUploadUtil(
+      ref: ref,
+      context: context,
+      callback: PostFormImageUploadAdapter(
+        ref: ref,
+        postId: widget.postId,
+      ),
+    );
+
     if (isEdit) {
       final form = ref.read(postFormProvider(postId: widget.postId));
       titleTextController.text = form.title;
@@ -105,12 +107,16 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
   }
 
   Future<void> submit() async {
+    ref.read(postFormProvider(postId: widget.postId).notifier).setImages();
+
     final result = isEdit
         ? await ref.read(postUpdateProvider(postId: widget.postId!).future)
         : await ref.read(postCreateProvider.future);
     if (result is ErrorModel) {
-      FlashUtil.showFlash(context, '요청이 정상적으로 처리되지 않았습니다.',
-          textColor: MITIColor.error);
+      late final PostApiType postApiType;
+      postApiType = isEdit ? PostApiType.updatePost : PostApiType.createPost;
+      PostError.fromModel(model: result)
+          .responseError(context, postApiType, ref);
     } else {
       final resultPostId = (result as ResponseModel<PostResponse>).data!.id;
       Map<String, String> pathParameters = {'postId': resultPostId.toString()};
@@ -356,7 +362,7 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
                       (BuildContext context, WidgetRef ref, Widget? child) {
                     final images = ref.watch(
                         postFormProvider(postId: widget.postId)
-                            .select((s) => s.images));
+                            .select((s) => s.localImages));
                     if (images.isEmpty) {
                       return Container();
                     }
@@ -369,16 +375,15 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
                           padding: EdgeInsets.only(left: 20.w, right: 20.w),
                           shrinkWrap: true,
                           itemBuilder: (_, idx) {
-                            images[idx];
                             return ImageFormComponent(
+                              imagePath: images[idx],
                               onDelete: () {
                                 ref
                                     .read(
                                         postFormProvider(postId: widget.postId)
                                             .notifier)
-                                    .removeImage(images[idx]);
+                                    .removeLocalImage(images[idx]);
                               },
-                              filePath: images[idx],
                             );
                           },
                           separatorBuilder: (_, idx) => SizedBox(width: 12.w),
@@ -396,17 +401,6 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
                           icon: 'gallery',
                           onTap: () async {
                             _pickMultipleImages();
-
-                            // final ImagePicker picker = ImagePicker();
-                            // final XFile? image = await picker.pickImage(
-                            //     source: ImageSource.gallery);
-                            //
-                            // if (image != null) {
-                            //   ref
-                            //       .read(postFormProvider(postId: widget.postId)
-                            //           .notifier)
-                            //       .addImage(image.path);
-                            // }
                           }),
                       Consumer(
                         builder: (BuildContext context, WidgetRef ref,
@@ -441,36 +435,21 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
 
   bool validButton(WidgetRef ref, int? postId) {
     final form = ref.watch(postFormProvider(postId: widget.postId));
+
+    // 하나라도 이미지 로딩중이면 안됨
+    final isImageLoading = form.localImages.any((e) => e.isLoading);
     return form.title.isNotEmpty &&
         form.title.length <= 32 &&
         form.content.isNotEmpty &&
         form.content.length <= 3000 &&
-        form.category != PostCategoryType.all;
+        form.category != PostCategoryType.all &&
+        !isImageLoading;
   }
 
   Future<void> _pickMultipleImages() async {
-    final picker = MultiImagePicker();
-
-    try {
-      final List<XFile>? images = await picker.pickMultipleImages();
-
-      if (images != null) {
-        for (XFile file in images) {
-          ref
-              .read(postFormProvider(postId: widget.postId).notifier)
-              .addImage(file.path);
-        }
-      }
-
-      // setState(() {
-      //   _selectedImages = images;
-      // });
-
-      print('선택된 이미지 개수: ${images?.length}');
-    } catch (e) {
-      print('이미지 선택 실패: $e');
-    }
+    await _imageUploadUtil.pickMultipleImages();
   }
+
 }
 
 class _UtilButton extends StatelessWidget {

@@ -1,6 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import '../../../common/model/model_id.dart';
 import '../../../game/model/v2/game/game_response.dart';
 import 'court_response.dart';
 

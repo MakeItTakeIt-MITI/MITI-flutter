@@ -1,18 +1,10 @@
-import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:miti/auth/model/auth_model.dart';
-import 'package:miti/auth/param/phone_verify_param.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
-import 'package:miti/auth/provider/signup_provider.dart';
-import 'package:miti/auth/provider/widget/find_info_provider.dart';
-import 'package:miti/auth/provider/widget/phone_auth_provider.dart';
-import 'package:miti/auth/provider/widget/sign_up_form_provider.dart';
 import 'package:miti/auth/repository/auth_repository.dart';
 import 'package:miti/common/provider/secure_storage_provider.dart';
 import 'package:miti/notification_provider.dart';
-import 'package:miti/user/provider/user_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../common/logger/custom_logger.dart';
@@ -21,7 +13,6 @@ import '../../common/model/entity_enum.dart';
 import '../../game/model/v2/auth/login_response.dart';
 import '../param/auth_param.dart';
 import '../param/login_param.dart';
-import '../param/signup_param.dart';
 
 part 'login_provider.g.dart';
 

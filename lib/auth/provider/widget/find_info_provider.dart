@@ -10,7 +10,6 @@ import '../../../common/logger/custom_logger.dart';
 import '../../../common/model/default_model.dart';
 import '../../../common/model/entity_enum.dart';
 import '../../model/find_info_model.dart';
-import '../../param/auth_param.dart';
 import '../../param/phone_verify_param.dart';
 
 part 'find_info_provider.g.dart';

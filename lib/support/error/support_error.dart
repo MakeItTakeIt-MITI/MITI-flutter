@@ -9,7 +9,6 @@ import 'package:miti/dio/response_code.dart';
 import '../../common/component/custom_dialog.dart';
 import '../../common/error/common_error.dart';
 import '../../common/model/default_model.dart';
-import '../../common/model/entity_enum.dart';
 
 enum SupportApiType {
   create,

@@ -42,13 +42,75 @@ class ErrorModel<T> extends BaseModel {
     logger.e(e);
     switch (e.runtimeType) {
       case DioException:
-        final resp = (e as DioException).response!.data;
-        return ErrorModel(
-          status_code: resp['status_code'],
-          message: resp['message'],
-          data: resp['data'],
-          error_code: resp['error_code'],
-        );
+        final dioException = e as DioException;
+
+        // HTTP 500 에러 특별 처리
+        if (dioException.response?.statusCode == 500) {
+          return ErrorModel(
+            status_code: 500,
+            message: '서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+            data: dioException.response?.data ?? '',
+            error_code: 0, // 기본값 또는 서버에서 제공하는 error_code
+          );
+        }
+
+        // 응답이 있는 경우 (4xx, 5xx 등)
+        if (dioException.response != null) {
+          final resp = dioException.response!.data;
+
+          // 서버 응답이 예상된 형식인지 확인
+          if (resp is Map<String, dynamic> &&
+              resp.containsKey('status_code') &&
+              resp.containsKey('message') &&
+              resp.containsKey('error_code')) {
+            return ErrorModel(
+              status_code: resp['status_code'],
+              message: resp['message'],
+              data: resp['data'],
+              error_code: resp['error_code'],
+            );
+          } else {
+            // 서버 응답이 예상된 형식이 아닌 경우
+            return ErrorModel(
+              status_code: dioException.response!.statusCode ?? 500,
+              message: '서버 응답 형식이 올바르지 않습니다.',
+              data: resp,
+              error_code: 0,
+            );
+          }
+        }
+
+        // 네트워크 에러 등 응답이 없는 경우
+        else {
+          String message;
+          switch (dioException.type) {
+            case DioExceptionType.connectionTimeout:
+              message = '연결 시간이 초과되었습니다.';
+              break;
+            case DioExceptionType.sendTimeout:
+              message = '요청 전송 시간이 초과되었습니다.';
+              break;
+            case DioExceptionType.receiveTimeout:
+              message = '응답 수신 시간이 초과되었습니다.';
+              break;
+            case DioExceptionType.connectionError:
+              message = '네트워크 연결에 실패했습니다.';
+              break;
+            case DioExceptionType.cancel:
+              message = '요청이 취소되었습니다.';
+              break;
+            default:
+              message = '네트워크 오류가 발생했습니다.';
+          }
+
+          return ErrorModel(
+            status_code: 0, // 네트워크 에러는 status_code가 없음
+            message: message,
+            data: dioException.message,
+            error_code: 0,
+          );
+        }
+
       default:
         return ErrorModel(
           status_code: 500,

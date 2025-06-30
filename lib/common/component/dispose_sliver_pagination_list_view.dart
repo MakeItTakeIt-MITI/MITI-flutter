@@ -8,8 +8,6 @@ import 'package:miti/common/component/pagination_list_view.dart';
 import 'package:miti/common/error/view/error_screen.dart';
 import 'package:miti/theme/text_theme.dart';
 
-import '../../user/param/user_profile_param.dart';
-import '../../user/repository/user_repository.dart';
 import '../model/default_model.dart';
 import '../model/model_id.dart';
 import '../param/pagination_param.dart';

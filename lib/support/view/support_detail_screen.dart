@@ -10,11 +10,9 @@ import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/default_appbar.dart';
-import '../../common/component/default_layout.dart';
 import '../../game/model/v2/support/base_user_question_answer_response.dart';
 import '../../game/model/v2/support/user_question_response.dart';
 import '../component/skeleton/support_detail_skeleton.dart';
-import '../model/support_model.dart';
 
 class SupportDetailScreen extends StatefulWidget {
   static String get routeName => 'supportDetail';

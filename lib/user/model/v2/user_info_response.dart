@@ -1,11 +1,10 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:miti/user/model/v2/user_rating_response.dart';
+
 import '../../../common/model/entity_enum.dart';
-import '../../../common/model/model_id.dart';
 import '../../../review/model/v2/base_guest_rating_response.dart';
 import '../../../review/model/v2/base_host_rating_response.dart';
 import 'base_player_profile_response.dart';
-import 'base_user_response.dart';
 
 part 'user_info_response.g.dart';
 

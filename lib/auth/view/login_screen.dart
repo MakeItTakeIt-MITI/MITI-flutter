@@ -23,17 +23,14 @@ import 'package:miti/util/util.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../common/component/custom_dialog.dart';
 import '../../common/component/custom_text_form_field.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/model/default_model.dart';
 import '../../common/provider/widget/form_provider.dart';
-import '../../default_screen.dart';
 import '../../dio/response_code.dart';
 import '../../court/view/court_map_screen.dart';
 import '../../theme/color_theme.dart';
 import '../param/auth_param.dart';
-import '../provider/widget/sign_up_form_provider.dart';
 
 class LoginScreen extends StatelessWidget {
   static String get routeName => 'login';

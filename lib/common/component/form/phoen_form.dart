@@ -10,10 +10,8 @@ import 'package:miti/auth/provider/widget/sign_up_form_provider.dart';
 import 'package:miti/common/provider/widget/form_provider.dart';
 
 import '../../../auth/error/auth_error.dart';
-import '../../../auth/model/code_model.dart';
 import '../../../auth/provider/widget/find_info_provider.dart';
 import '../../../auth/provider/widget/phone_auth_provider.dart';
-import '../../../auth/view/find_info/find_info_screen.dart';
 import '../../../dio/response_code.dart';
 import '../../../theme/color_theme.dart';
 import '../../../theme/text_theme.dart';

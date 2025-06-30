@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/chat/view/ui/game_notice_component.dart';
 
-import '../../../theme/color_theme.dart';
-import '../../../theme/text_theme.dart';
 import '../../../util/util.dart';
 import 'chat_member_component.dart';
 

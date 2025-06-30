@@ -8,6 +8,8 @@ import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/post/provider/post_comment_provider.dart';
 
 import '../../common/model/default_model.dart';
+import '../../common/model/entity_enum.dart';
+import '../../report/view/report_list_screen.dart';
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
 import '../model/base_post_comment_response.dart';
@@ -73,7 +75,7 @@ class CommentComponent extends ConsumerWidget {
                             return PostBottomSheetButton(
                               isWriter: comments[idx].writer.id == userId,
                               onDelete: () async {
-                                final result = ref.read(
+                                final result =await ref.read(
                                     postCommentDeleteProvider(
                                             postId: postId,
                                             commentId: comments[idx].id)
@@ -97,7 +99,15 @@ class CommentComponent extends ConsumerWidget {
                               },
                               onReport: () {
                                 // 댓글 신고
+                                Map<String, String> queryParameters = {
+                                  'userId': comments[idx].writer.id.toString(),
+                                };
                                 context.pop();
+                                context.pushNamed(
+                                  ReportListScreen.routeName,
+                                  queryParameters: queryParameters,
+                                  extra: ReportCategoryType.user_report,
+                                );
                               },
                             );
                           });

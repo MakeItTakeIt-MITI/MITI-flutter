@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:math' hide log;
 
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,7 +11,6 @@ import '../../common/model/cursor_model.dart';
 import '../../common/model/default_model.dart';
 import '../../common/param/cursor_pagination_param.dart';
 import '../model/base_post_response.dart';
-import '../model/post_list_response.dart';
 
 part 'post_list_provider.g.dart';
 
@@ -22,17 +20,18 @@ class PostPagination extends _$PostPagination {
       initialValue: const PostSearchParam(), checkEquality: false);
 
   @override
-  BaseModel build({bool isSearch = false}) {
+  BaseModel build(bool isSearch,
+      {PostSearchParam? param, required CursorPaginationParam cursorParam}) {
     // paginate(
     //   paginationParams: pageParams,
     //   param: param,
     //   path: path,
     // );
-    log("init post pagination");
-    _initializeData();
+    log("init post pagination isSearch = ${isSearch} param= $param cursorParam = $cursorParam");
+    _initializeData(param, cursorParam);
     searchDebounce.values.listen((PostSearchParam state) {
       getPostPagination(
-        cursorParam: const CursorPaginationParam(),
+        cursorParam: cursorParam,
         param: state,
         forceRefetch: true,
       );
@@ -41,12 +40,11 @@ class PostPagination extends _$PostPagination {
   }
 
   // 초기화 메서드 분리
-  void _initializeData() {
+  void _initializeData(
+      PostSearchParam? param, CursorPaginationParam cursorParam) {
     // 다음 프레임에서 실행되도록 지연
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getPostPagination(
-        cursorParam: const CursorPaginationParam(),
-      );
+      getPostPagination(cursorParam: cursorParam, param: param);
     });
   }
 
@@ -128,7 +126,6 @@ class PostPagination extends _$PostPagination {
       );
 
       if (param != null && param.search != null) {
-
         ref.read(searchHistoryProvider.notifier).addSearch(param.search!);
       }
 

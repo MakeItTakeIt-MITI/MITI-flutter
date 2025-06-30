@@ -6,14 +6,12 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/auth/view/login_screen.dart';
 
-import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/provider/secure_storage_provider.dart';
 import '../../court/view/court_map_screen.dart';
 import '../../game/model/v2/auth/base_token_response.dart';
 import '../model/auth_model.dart';
-import '../param/signup_param.dart';
 import '../repository/auth_repository.dart';
 
 final tokenProvider = ChangeNotifierProvider<TokenProvider>((ref) {

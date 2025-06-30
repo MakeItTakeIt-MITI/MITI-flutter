@@ -1,6 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
 import '../../game/model/game_model.dart';
 

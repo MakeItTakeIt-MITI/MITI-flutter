@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miti/chat/model/base_game_chat_message_response.dart';
 import 'package:miti/chat/model/chat_ui_model.dart';
 import 'package:miti/chat/provider/chat_provider.dart';
 import 'package:miti/chat/view/ui/chat_date_component.dart';
@@ -16,7 +15,6 @@ import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
-import 'package:miti/util/util.dart';
 
 import '../../auth/provider/auth_provider.dart';
 import '../../common/component/defalut_flashbar.dart';

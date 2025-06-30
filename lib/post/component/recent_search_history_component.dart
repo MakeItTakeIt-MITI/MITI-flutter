@@ -30,6 +30,8 @@ class RecentSearchHistoryComponent extends ConsumerWidget {
               style: MITITextStyle.mdBold.copyWith(color: Colors.white),
             ),
             InkWell(
+              highlightColor: Colors.transparent,
+              splashFactory: NoSplash.splashFactory,
               onTap: () {
                 ref.read(searchHistoryProvider.notifier).clearAll();
               },

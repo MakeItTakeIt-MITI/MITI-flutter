@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:miti/chat/provider/chat_notice_provider.dart';
 import 'package:miti/chat/view/ui/game_notice_component.dart';
 import 'package:miti/common/model/default_model.dart';
-import 'package:miti/notification_provider.dart';
 
 import '../../common/component/default_appbar.dart';
 import '../../notification/model/base_game_chat_notification_response.dart';

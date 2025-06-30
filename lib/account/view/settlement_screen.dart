@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:miti/account/model/account_model.dart';
 import 'package:miti/account/provider/account_pagination_provider.dart';
 import 'package:miti/account/view/settlement_detail_screen.dart';
 import 'package:miti/auth/provider/auth_provider.dart';

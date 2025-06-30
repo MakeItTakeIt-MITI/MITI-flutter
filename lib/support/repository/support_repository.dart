@@ -1,5 +1,4 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:miti/support/model/support_model.dart';
 import 'package:retrofit/http.dart';
 import 'package:dio/dio.dart' hide Headers;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,14 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
 import '../../common/repository/base_pagination_repository.dart';
-import '../../dio/dio_interceptor.dart';
 import '../../dio/provider/dio_provider.dart';
 import '../../game/model/v2/support/base_user_question_response.dart';
 import '../../game/model/v2/support/frequently_asked_question_response.dart';
 import '../../game/model/v2/support/service_guide_response.dart';
 import '../../game/model/v2/support/user_question_response.dart';
-import '../../user/model/user_model.dart';
-import '../../user/param/user_profile_param.dart';
 import '../param/support_param.dart';
 
 part 'support_repository.g.dart';

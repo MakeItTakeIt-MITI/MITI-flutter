@@ -1,5 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
+
 part 'image_path.g.dart';
+
 @JsonSerializable()
 class ImagePath {
   final String? filePath;
@@ -7,8 +9,8 @@ class ImagePath {
   final bool isLoading;
 
   const ImagePath({
-    required this.filePath,
-    required this.imageUrl,
+     this.filePath,
+    this.imageUrl,
     this.isLoading = false,
   });
 
@@ -25,6 +27,7 @@ class ImagePath {
   }
 
   Map<String, dynamic> toJson() => _$ImagePathToJson(this);
+
   factory ImagePath.fromJson(Map<String, dynamic> json) =>
       _$ImagePathFromJson(json);
 }

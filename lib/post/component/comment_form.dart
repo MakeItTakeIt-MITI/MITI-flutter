@@ -16,12 +16,15 @@ class PostCommentForm extends ConsumerStatefulWidget {
   final FocusNode focusNode;
   final TextEditingController textController;
   final VoidCallback sendMessage;
+  final VoidCallback onGallery;
 
-  const PostCommentForm(
-      {super.key,
-      required this.focusNode,
-      required this.textController,
-      required this.sendMessage});
+  const PostCommentForm({
+    super.key,
+    required this.focusNode,
+    required this.textController,
+    required this.sendMessage,
+    required this.onGallery,
+  });
 
   @override
   ConsumerState<PostCommentForm> createState() => _CommentFormState();
@@ -56,6 +59,7 @@ class _CommentFormState extends ConsumerState<PostCommentForm> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               GestureDetector(
+                onTap: widget.onGallery,
                 child: Container(
                   padding: EdgeInsets.symmetric(vertical: 6.h),
                   child: SvgPicture.asset(
@@ -67,7 +71,6 @@ class _CommentFormState extends ConsumerState<PostCommentForm> {
                         MITIColor.gray600, BlendMode.srcIn),
                   ),
                 ),
-                onTap: () {},
               ),
               SizedBox(width: 10.w),
               Expanded(

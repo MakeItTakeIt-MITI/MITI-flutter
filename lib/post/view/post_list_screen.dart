@@ -11,11 +11,9 @@ import 'package:miti/post/provider/post_search_provider.dart';
 import 'package:miti/post/view/post_detail_screen.dart';
 import 'package:miti/post/view/post_form_screen.dart';
 import 'package:miti/post/view/post_search_screen.dart';
-import 'package:miti/user/model/v2/base_user_response.dart';
 
 import '../../common/component/default_appbar.dart';
 import '../../common/component/sliver_delegate.dart';
-import '../../common/error/view/error_screen.dart';
 import '../../common/model/cursor_model.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
@@ -26,9 +24,9 @@ import '../../theme/text_theme.dart';
 import '../../util/util.dart';
 import '../component/popular_post_component.dart';
 import '../component/post_card.dart';
-import '../component/post_category.dart';
 import '../component/post_category_chip.dart';
-import '../provider/select_post_category_provider.dart';
+import '../error/post_error.dart';
+
 
 class PostListScreen extends ConsumerStatefulWidget {
   static String get routeName => 'postList';
@@ -59,10 +57,14 @@ class _PostListScreenState extends ConsumerState<PostListScreen> {
 
   Future<void> refresh() async {
     final form = ref.read(postSearchProvider(false));
-    ref.read(postPaginationProvider().notifier).getPostPagination(
-        cursorParam: const CursorPaginationParam(),
-        param: form,
-        forceRefetch: true);
+    ref
+        .read(postPaginationProvider(false,
+                cursorParam: const CursorPaginationParam())
+            .notifier)
+        .getPostPagination(
+            cursorParam: const CursorPaginationParam(),
+            param: form,
+            forceRefetch: true);
   }
 
   @override
@@ -76,7 +78,9 @@ class _PostListScreenState extends ConsumerState<PostListScreen> {
   Widget build(BuildContext context) {
     ref.listen(postSearchProvider(false), (prev, after) {
       ref
-          .read(postPaginationProvider().notifier)
+          .read(postPaginationProvider(false,
+                  cursorParam: const CursorPaginationParam())
+              .notifier)
           .getPostPagination(param: after, forceRefetch: true);
     });
 
@@ -222,13 +226,14 @@ class _PostListScreenState extends ConsumerState<PostListScreen> {
               controller: scrollController,
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               slivers: [
-                SliverToBoxAdapter(
+                const SliverToBoxAdapter(
                   child: PopularPostComponent(),
                 ),
                 Consumer(
                   builder:
                       (BuildContext context, WidgetRef ref, Widget? child) {
-                    final state = ref.watch(postPaginationProvider());
+                    final state = ref.watch(postPaginationProvider(false,
+                        cursorParam: const CursorPaginationParam()));
 
                     // 완전 처음 로딩일때
                     if (state is LoadingModel) {
@@ -240,9 +245,9 @@ class _PostListScreenState extends ConsumerState<PostListScreen> {
                     }
 
                     if (state is ErrorModel) {
-                      WidgetsBinding.instance.addPostFrameCallback((s) {
-                        context.pushReplacementNamed(ErrorScreen.routeName);
-                      });
+                      PostError.fromModel(model: state)
+                          .responseError(context, PostApiType.getPostList, ref);
+
                       return SliverToBoxAdapter(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -346,7 +351,11 @@ class _PostListScreenState extends ConsumerState<PostListScreen> {
         scrollController.position.maxScrollExtent - 300) {
       final form = ref.read(postSearchProvider(false));
 
-      ref.read(postPaginationProvider().notifier).getPostPagination(
+      ref
+          .read(postPaginationProvider(false,
+                  cursorParam: const CursorPaginationParam())
+              .notifier)
+          .getPostPagination(
             cursorParam: const CursorPaginationParam(),
             fetchMore: true,
             param: form,

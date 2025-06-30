@@ -17,7 +17,6 @@ import '../../common/param/pagination_param.dart';
 import '../../game/model/v2/game/base_game_response.dart';
 import '../../game/view/review_form_screen.dart';
 import '../../theme/color_theme.dart';
-import '../../user/model/review_model.dart';
 import '../../user/model/v2/base_user_response.dart';
 import '../../user/param/user_profile_param.dart';
 import '../../user/provider/user_pagination_provider.dart';

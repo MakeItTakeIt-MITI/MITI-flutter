@@ -3,8 +3,6 @@ import 'package:miti/chat/param/chat_notice_param.dart';
 import 'package:miti/chat/provider/chat_form_provider.dart';
 import 'package:miti/chat/repository/chat_repository.dart';
 import 'package:miti/common/param/pagination_param.dart';
-import 'package:miti/notification/provider/notification_provider.dart';
-import 'package:miti/notification/repository/notification_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../common/logger/custom_logger.dart';

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -10,14 +8,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:miti/auth/provider/widget/sign_up_form_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-import '../../auth/view/signup/signup_screen.dart';
-import '../../game/view/game_create_screen.dart';
 import '../../theme/text_theme.dart';
-import '../../util/util.dart';
 import '../provider/router_provider.dart';
 import '../provider/widget/datetime_provider.dart';
 import 'custom_calendar.dart';

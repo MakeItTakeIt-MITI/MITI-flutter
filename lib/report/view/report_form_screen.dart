@@ -190,6 +190,12 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
         } else if (widget.participationId == null && widget.gameId != null) {
           ReportError.fromModel(model: result)
               .responseError(context, ReportApiType.hostReport, ref);
+        }else if(widget.postId != null){
+          ReportError.fromModel(model: result)
+              .responseError(context, ReportApiType.postReport, ref);
+        }else if(widget.userId != null){
+          ReportError.fromModel(model: result)
+              .responseError(context, ReportApiType.userReport, ref);
         }
       } else {
         if (widget.gameId != null) {

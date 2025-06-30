@@ -7,8 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:miti/common/model/model_id.dart';
-import 'package:miti/court/model/court_model.dart';
-import 'package:miti/game/model/game_model.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../court/model/v2/court_operations_response.dart';

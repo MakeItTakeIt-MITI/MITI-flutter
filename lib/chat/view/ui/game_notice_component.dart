@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -6,9 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:miti/account/error/account_error.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
-import 'package:miti/auth/view/find_info/find_email_screen.dart';
 import 'package:miti/chat/component/chat_notice_skeleton.dart';
 import 'package:miti/chat/provider/chat_notice_provider.dart';
 import 'package:miti/chat/view/chat_notification_list_screen.dart';

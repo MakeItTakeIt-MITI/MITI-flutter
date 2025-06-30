@@ -8,18 +8,14 @@ import 'package:retrofit/http.dart';
 
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
-import '../../dio/dio_interceptor.dart';
 import '../../dio/provider/dio_provider.dart';
 import '../../game/model/v2/auth/base_token_response.dart';
 import '../../game/model/v2/auth/password_update_request_response.dart';
 import '../../game/model/v2/auth/phone_authentication_request_response.dart';
 import '../../user/model/user_model.dart';
-import '../model/auth_model.dart';
-import '../model/code_model.dart';
 import '../model/find_info_model.dart';
 import '../model/signup_model.dart';
 import '../param/auth_param.dart';
-import '../param/login_param.dart';
 import '../param/signup_param.dart';
 
 part 'auth_repository.g.dart';

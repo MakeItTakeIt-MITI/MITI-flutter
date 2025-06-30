@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/notification/param/push_setting_param.dart';
@@ -9,12 +7,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
-import '../../common/param/pagination_param.dart';
 import '../../common/provider/secure_storage_provider.dart';
 import '../../game/model/v2/notification/push_notification_setting_response.dart';
-import '../model/push_model.dart';
 import '../model/unread_push_model.dart';
-import 'notification_pagination_provider.dart';
 
 part 'notification_provider.g.dart';
 

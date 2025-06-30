@@ -1,20 +1,13 @@
 import 'dart:developer';
-import 'dart:math' hide log;
-
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:miti/account/view/bank_transfer_form_screen.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/chat/repository/chat_repository.dart';
 import 'package:miti/common/model/default_model.dart';
-import 'package:miti/common/param/pagination_param.dart';
 import 'package:miti/util/util.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:intl/intl.dart';
 import 'package:collection/collection.dart';
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/cursor_model.dart';
 import '../../common/param/cursor_pagination_param.dart';
-import '../../user/model/v2/base_user_response.dart';
 import '../model/base_game_chat_message_response.dart';
 import '../model/chat_ui_model.dart';
 

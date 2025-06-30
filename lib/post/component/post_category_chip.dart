@@ -19,7 +19,8 @@ class PostCategoryChip extends StatelessWidget {
     required this.category,
     required this.onTap,
     required this.isSelected,
-    this.backgroundColor = MITIColor.gray900,  this.globalKey,
+    this.backgroundColor = MITIColor.gray900,
+    this.globalKey,
   });
 
   @override
@@ -44,8 +45,11 @@ class PostCategoryChip extends StatelessWidget {
                     color: isSelected ? MITIColor.gray900 : MITIColor.gray300)),
             if (category != PostCategoryType.all) SizedBox(width: 2.w),
             if (category != PostCategoryType.all)
-              SvgPicture.asset(
-                AssetUtil.getAssetPath(type: AssetType.icon, name: "search"),
+            Image.asset(
+                AssetUtil.getAssetPath(
+                    type: AssetType.icon,
+                    name: category.imageName,
+                    extension: 'png'),
                 height: 12.r,
                 width: 12.r,
               )

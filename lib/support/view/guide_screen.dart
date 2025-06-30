@@ -1,10 +1,8 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miti/common/component/custom_time_picker.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/component/html_component.dart';
 import 'package:miti/common/model/default_model.dart';
@@ -17,8 +15,6 @@ import 'package:collection/collection.dart';
 import 'package:miti/util/util.dart';
 import '../../game/model/v2/support/service_guide_response.dart';
 import '../component/skeleton/guide_skeleton.dart';
-import '../model/support_model.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class GuideScreen extends ConsumerStatefulWidget {
   static String get routeName => 'guide';

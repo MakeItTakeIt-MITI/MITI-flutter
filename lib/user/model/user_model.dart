@@ -1,9 +1,6 @@
-import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:miti/common/model/model_id.dart';
 
-import '../../account/model/account_model.dart';
-import '../../auth/model/auth_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/param/pagination_param.dart';
 import '../../game/model/game_model.dart';

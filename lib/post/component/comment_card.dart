@@ -16,6 +16,7 @@ import '../../report/view/report_list_screen.dart';
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
 import '../../user/model/v2/base_user_response.dart';
+import '../error/post_error.dart';
 import '../model/base_post_comment_response.dart';
 import '../model/base_reply_comment_response.dart';
 import '../provider/post_bottom_sheet_button.dart';
@@ -130,29 +131,48 @@ class CommentCard extends ConsumerWidget {
                     onTap: () async {
                       if (isSelected) {
                         if (isComment) {
-                          ref.read(postCommentUnLikeProvider(
-                                  commentId: commentId, postId: postId)
-                              .future);
+                          final result = await ref.read(
+                              postCommentUnLikeProvider(
+                                      commentId: commentId, postId: postId)
+                                  .future);
+                          if (result is ErrorModel) {
+                            PostError.fromModel(model: result).responseError(
+                                context, PostApiType.unLikeComment, ref);
+                          }
                         } else {
-                          ref.read(postReplyCommentUnLikeProvider(
-                                  commentId: commentId,
-                                  postId: postId,
-                                  replyCommentId: replyCommentId!,
-                                  fromDetail: true)
-                              .future);
+                          final result = await ref.read(
+                              postReplyCommentUnLikeProvider(
+                                      commentId: commentId,
+                                      postId: postId,
+                                      replyCommentId: replyCommentId!,
+                                      fromDetail: true)
+                                  .future);
+                          if (result is ErrorModel) {
+                            PostError.fromModel(model: result).responseError(
+                                context, PostApiType.unLikeReplyComment, ref);
+                          }
                         }
                       } else {
                         if (isComment) {
-                          ref.read(postCommentLikeProvider(
+                          final result = await ref.read(postCommentLikeProvider(
                                   commentId: commentId, postId: postId)
                               .future);
+                          if (result is ErrorModel) {
+                            PostError.fromModel(model: result)
+                                .responseError(context, PostApiType.likeComment, ref);
+                          }
                         } else {
-                          ref.read(postReplyCommentLikeProvider(
-                                  commentId: commentId,
-                                  postId: postId,
-                                  replyCommentId: replyCommentId!,
-                                  fromDetail: true)
-                              .future);
+                          final result = await ref.read(
+                              postReplyCommentLikeProvider(
+                                      commentId: commentId,
+                                      postId: postId,
+                                      replyCommentId: replyCommentId!,
+                                      fromDetail: true)
+                                  .future);
+                          if (result is ErrorModel) {
+                            PostError.fromModel(model: result)
+                                .responseError(context, PostApiType.likeReplyComment, ref);
+                          }
                         }
                       }
                     },
@@ -187,7 +207,7 @@ class CommentCard extends ConsumerWidget {
                                 onDelete: () async {
                                   log("reply onDelete");
 
-                                  final result = ref.read(
+                                  final result = await ref.read(
                                       postReplyCommentDeleteProvider(
                                               postId: postId,
                                               commentId: commentId,
@@ -208,7 +228,8 @@ class CommentCard extends ConsumerWidget {
                                     'commentId': commentId.toString(),
                                   };
                                   Map<String, String> queryParameters = {
-                                    'replyCommentId': replyComments![idx].id.toString()
+                                    'replyCommentId':
+                                        replyComments![idx].id.toString()
                                   };
                                   context.pushNamed(
                                       PostCommentFormScreen.routeName,
@@ -218,7 +239,10 @@ class CommentCard extends ConsumerWidget {
                                 onReport: () {
                                   // // 대댓글 신고
                                   Map<String, String> queryParameters = {
-                                    'userId': replyComments![idx].writer.id.toString(),
+                                    'userId': replyComments![idx]
+                                        .writer
+                                        .id
+                                        .toString(),
                                   };
                                   context.pop();
                                   context.pushNamed(

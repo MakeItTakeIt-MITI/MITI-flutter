@@ -5,8 +5,6 @@ import '../../common/param/pagination_param.dart';
 import '../../common/provider/pagination_provider.dart';
 import '../../game/model/v2/account/base_bank_transfer_response.dart';
 import '../../game/model/v2/settlement/game_settlement_response.dart';
-import '../model/account_model.dart';
-import '../model/transfer_model.dart';
 import '../param/account_param.dart';
 import '../repository/account_repository.dart';
 

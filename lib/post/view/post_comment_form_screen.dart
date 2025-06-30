@@ -12,6 +12,7 @@ import '../../common/model/default_model.dart';
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
 import '../../util/util.dart';
+import '../error/post_error.dart';
 import '../model/base_post_comment_response.dart';
 import '../provider/post_comment_form_provider.dart';
 import '../provider/post_comment_provider.dart';
@@ -96,8 +97,12 @@ class _PostCommentFormScreenState extends ConsumerState<PostCommentFormScreen> {
             commentId: widget.commentId,
           ).future);
     if (result is ErrorModel) {
-      FlashUtil.showFlash(context, '요청이 정상적으로 처리되지 않았습니다.',
-          textColor: MITIColor.error);
+      late final PostApiType postApiType;
+      postApiType =
+          isReply ? PostApiType.updateReplyComment : PostApiType.updateComment;
+
+      PostError.fromModel(model: result)
+          .responseError(context, postApiType, ref);
     } else {
       context.pop();
       String flashText = "";

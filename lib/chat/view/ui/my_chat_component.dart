@@ -4,9 +4,7 @@ import 'package:miti/chat/model/chat_ui_model.dart';
 import 'package:miti/chat/view/ui/other_chat_component.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
-import 'package:miti/util/util.dart';
 
-import '../../model/base_game_chat_message_response.dart';
 
 class MyChatBubble extends StatelessWidget {
   final String time;

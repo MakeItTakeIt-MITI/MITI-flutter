@@ -9,7 +9,6 @@ import '../../common/model/entity_enum.dart';
 import '../../game/model/v2/account/base_bank_transfer_response.dart';
 import '../../theme/text_theme.dart';
 import '../../util/util.dart';
-import '../model/transfer_model.dart';
 
 
 class BankTransferCard extends ConsumerWidget {

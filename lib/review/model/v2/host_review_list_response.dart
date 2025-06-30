@@ -1,11 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import '../../../common/model/model_id.dart';
-import '../../../user/model/v2/user_guest_rating_response.dart';
 import '../../../user/model/v2/user_host_rating_response.dart';
-import 'base_guest_rating_response.dart';
-import 'base_guest_review_response.dart';
-import 'base_host_rating_response.dart';
 import 'base_host_review_response.dart';
 
 part 'host_review_list_response.g.dart';

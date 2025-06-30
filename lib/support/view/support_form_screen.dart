@@ -1,26 +1,19 @@
-import 'dart:developer';
-
 import 'package:debounce_throttle/debounce_throttle.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/support/error/support_error.dart';
 import 'package:miti/support/provider/support_provider.dart';
 import 'package:miti/support/provider/widget/support_form_provider.dart';
-import 'package:miti/support/view/support_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/defalut_flashbar.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
-import '../../common/provider/router_provider.dart';
 import '../../game/view/review_form_screen.dart';
 
 class SupportFormScreen extends ConsumerStatefulWidget {

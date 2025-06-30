@@ -1,24 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:miti/account/view/bank_transfer_form_screen.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/dispose_sliver_pagination_list_view.dart';
-import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
-import '../../game/view/review_form_screen.dart';
 import '../../theme/color_theme.dart';
-import '../../user/model/review_model.dart';
 import '../../user/param/user_profile_param.dart';
 import '../../user/provider/user_pagination_provider.dart';
 import '../../user/provider/user_provider.dart';
-import '../../util/util.dart';
 import '../component/skeleton/written_review_list_skeleton.dart';
 import '../model/v2/base_written_review_response.dart';
 import 'my_review_detail_screen.dart';

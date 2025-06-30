@@ -5,20 +5,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../theme/color_theme.dart';
+import '../../util/model/image_path.dart';
 import '../../util/util.dart';
 
 class ImageFormComponent extends StatelessWidget {
-  final String? filePath;
-  final String? imageUrl;
-  final bool isLoading;
+  final ImagePath imagePath;
   final VoidCallback onDelete;
 
   const ImageFormComponent({
     super.key,
+    required this.imagePath,
     required this.onDelete,
-    this.filePath,
-    this.imageUrl,
-    this.isLoading = false,
   });
 
   @override
@@ -36,23 +33,23 @@ class ImageFormComponent extends StatelessWidget {
               width: 72.r,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8.r),
-                child: filePath != null
+                child: imagePath.filePath != null
                     ? Image.file(
-                        File(filePath!),
+                        File(imagePath.filePath!),
                         // height: 72.r,
                         // width: 72.r,
                         fit: BoxFit.fill,
                       )
-                    : imageUrl != null
+                    : imagePath.imageUrl != null
                         ? Image.network(
-                            imageUrl!,
+                            imagePath.imageUrl!,
                             fit: BoxFit.fill,
                           )
                         : Container(),
               ),
             ),
           ),
-          if (isLoading)
+          if (imagePath.isLoading)
             Positioned(
               left: 0,
               bottom: 0,

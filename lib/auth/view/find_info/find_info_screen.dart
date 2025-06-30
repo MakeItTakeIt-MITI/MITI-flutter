@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +18,6 @@ import '../../../common/component/form/phoen_form.dart';
 import '../../../common/model/entity_enum.dart';
 
 import '../../model/find_info_model.dart';
-import '../../provider/login_provider.dart' hide PhoneAuthType;
 
 class FindInfoScreen extends ConsumerStatefulWidget {
   static String get routeName => 'findInfo';

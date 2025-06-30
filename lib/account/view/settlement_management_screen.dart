@@ -22,8 +22,6 @@ import '../../game/model/v2/account/base_bank_transfer_response.dart';
 import '../../game/model/v2/settlement/game_settlement_response.dart';
 import '../component/skeleton/bank_transfer_skeleton.dart';
 import '../component/skeleton/settlement_skeleton.dart';
-import '../model/account_model.dart';
-import '../model/transfer_model.dart';
 import '../provider/account_pagination_provider.dart';
 import '../component/bank_transfer_card.dart';
 

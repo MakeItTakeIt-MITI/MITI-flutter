@@ -1,9 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
@@ -21,7 +18,7 @@ import '../../common/param/pagination_param.dart';
 import '../../game/model/v2/support/base_user_question_response.dart';
 import '../component/qna_label.dart';
 import '../component/skeleton/support_skeleton.dart';
-import '../model/support_model.dart';
+
 
 class SupportScreen extends StatefulWidget {
   static String get routeName => 'support';

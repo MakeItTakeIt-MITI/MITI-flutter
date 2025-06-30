@@ -394,9 +394,9 @@ enum ReportCategoryType {
   host_report('호스트 신고'),
   @JsonValue('guest_report')
   guest_report('게스트 신고'),
-  @JsonValue('guest_report')
+  @JsonValue('post_report')
   post_report('게시글 신고'),
-  @JsonValue('guest_report')
+  @JsonValue('user_report')
   user_report('유저 신고'),
   @JsonValue('etc')
   etc('기타 신고');
@@ -716,21 +716,21 @@ enum AccountStatusType {
 }
 
 enum PostCategoryType {
-  all('전체'),
-  general('자유주제'),
-  court_info('코트 정보'),
-  tournament('대회 정보'),
-  tactic('농구 전술'),
-  shoes_review('농구화 리뷰'),
-  tip('농구 팁'),
-  team_recruitment('팀원 구해요'),
-  game_review('게스트 후기'),
-  foreign_issue('해외농구'),
-  domestic_issue('국내농구'),
-  injury('부상'),
-  gear('농구용품');
+  all('전체', ''),
+  general('자유주제', 'free_topick'),
+  court_info('코트 정보', 'court_info'),
+  tournament('대회 정보', 'contest_info'),
+  tactic('농구 전술', 'tactics'),
+  shoes_review('농구화 리뷰', 'shoes'),
+  tip('농구 팁', 'tip'),
+  team_recruitment('팀원 구해요', 'team_member'),
+  game_review('게스트 후기', 'guest_review'),
+  foreign_issue('해외농구', 'global'),
+  domestic_issue('국내농구', 'domestic'),
+  injury('부상', 'injury'),
+  gear('농구용품', 'supply');
 
-  const PostCategoryType(this.displayName);
+  const PostCategoryType(this.displayName, this.imageName);
 
   static PostCategoryType stringToEnum({required String value}) {
     return PostCategoryType.values.firstWhere((e) {
@@ -739,13 +739,18 @@ enum PostCategoryType {
   }
 
   final String displayName;
+  final String imageName;
 }
 
-enum ImageType {
-  @JsonValue('post_image')
-  postImage,
-  @JsonValue('comment_image')
-  commentImage,
-  @JsonValue('reply_comment_image')
-  replyCommentImage;
+enum FileCategoryType {
+  user_profile_image,
+  post_image,
+  comment_image,
+  reply_comment_image;
+}
+
+enum FileType {
+  png,
+  jpeg,
+  webp;
 }

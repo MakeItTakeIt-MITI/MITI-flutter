@@ -1,6 +1,5 @@
 import 'package:miti/chat/provider/chat_notice_provider.dart';
 import 'package:miti/common/model/default_model.dart';
-import 'package:miti/notification_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../notification/model/game_chat_notification_response.dart';

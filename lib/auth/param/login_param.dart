@@ -1,7 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:miti/auth/provider/widget/sign_up_form_provider.dart';
 
-import '../provider/login_provider.dart';
 import 'auth_param.dart';
 
 part 'login_param.g.dart';

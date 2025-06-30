@@ -14,6 +14,7 @@ import 'package:miti/theme/text_theme.dart';
 
 import '../../common/model/default_model.dart';
 import '../../util/util.dart';
+import '../error/post_error.dart';
 import '../model/popular_post_list_response.dart';
 
 class PopularPostComponent extends ConsumerStatefulWidget {
@@ -49,7 +50,10 @@ class _PopularPostComponentState extends ConsumerState<PopularPostComponent> {
             borderRadius: BorderRadius.circular(8.r)),
       );
     } else if (result is ErrorModel) {
-      return Text("Error");
+      PostError.fromModel(model: result)
+          .responseError(context, PostApiType.getPopularList, ref);
+
+      return const Text("Error");
     }
     final model = (result as ResponseListModel<PopularPostListResponse>).data!;
 
@@ -120,36 +124,3 @@ class _PopularPostComponentState extends ConsumerState<PopularPostComponent> {
     );
   }
 }
-//
-// class _PopularPost extends StatelessWidget {
-//   final List<PopularPostListResponse> model;
-//
-//   const _PopularPost({super.key, required this.model});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return CarouselSlider(
-//       items: [],
-//       options: CarouselOptions(
-//           enlargeCenterPage: true,
-//           viewportFraction: 1,
-//           height: 220.h,
-//           initialPage: 0,
-//           enlargeStrategy: CenterPageEnlargeStrategy.height,
-//           enableInfiniteScroll: false,
-//           animateToClosest: false,
-//           onPageChanged: (idx, _) {
-//             setState(() {
-//               currentIdx = idx;
-//               log('currentIdx = $currentIdx');
-//             });
-//           }),
-//       child: Text(
-//         "style",
-//         style: MITITextStyle.xxsm.copyWith(color: MITIColor.gray100),
-//         overflow: TextOverflow.ellipsis,
-//         maxLines: 1,
-//       ),
-//     );
-//   }
-// }

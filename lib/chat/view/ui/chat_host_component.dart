@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../common/model/entity_enum.dart';
-import '../../../game/model/v2/participation/participation_guest_player_response.dart';
 import '../../../theme/color_theme.dart';
 import '../../../theme/text_theme.dart';
 import '../../../user/model/v2/base_player_profile_response.dart';

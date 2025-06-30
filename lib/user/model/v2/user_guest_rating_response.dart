@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:miti/common/model/model_id.dart';
 
 import '../../../review/model/v2/base_guest_rating_response.dart';
 import 'base_user_response.dart';

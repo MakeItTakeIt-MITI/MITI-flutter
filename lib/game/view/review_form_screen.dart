@@ -433,22 +433,18 @@ class _RatingForm extends StatelessWidget {
                     full: SvgPicture.asset(
                       AssetUtil.getAssetPath(
                           type: AssetType.icon, name: 'fill_star2'),
-
-                      // 'assets/images/icon/fill_star2.svg',
                       height: 40.r,
                       width: 40.r,
                     ),
                     half: SvgPicture.asset(
                       AssetUtil.getAssetPath(
                           type: AssetType.icon, name: 'fill_star2'),
-                      // 'assets/images/icon/fill_star2.svg',
                       height: 40.r,
                       width: 40.r,
                     ),
                     empty: SvgPicture.asset(
                       AssetUtil.getAssetPath(
                           type: AssetType.icon, name: 'unfill_star2'),
-                      // 'assets/images/icon/unfill_star2.svg',
                       height: 40.r,
                       width: 40.r,
                     ),

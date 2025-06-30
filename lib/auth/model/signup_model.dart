@@ -1,10 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:miti/auth/model/auth_model.dart';
-
 import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
-import 'code_model.dart';
-
 part 'signup_model.g.dart';
 
 @JsonSerializable()

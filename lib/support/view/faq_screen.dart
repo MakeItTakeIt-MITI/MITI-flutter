@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -9,13 +8,11 @@ import 'package:miti/common/component/custom_text_form_field.dart';
 import 'package:miti/common/component/html_component.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/model/entity_enum.dart';
-import 'package:miti/support/model/support_model.dart';
 import 'package:miti/support/provider/support_provider.dart';
 import 'package:miti/support/provider/widget/support_form_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/util/util.dart';
 import 'package:expandable/expandable.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../common/component/default_appbar.dart';
 import '../../game/model/v2/support/frequently_asked_question_response.dart';
 import '../../theme/text_theme.dart';

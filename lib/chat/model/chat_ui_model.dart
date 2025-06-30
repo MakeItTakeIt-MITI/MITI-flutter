@@ -1,7 +1,4 @@
-import 'dart:developer';
-import 'dart:math' hide log;
 
-import 'package:miti/common/model/default_model.dart';
 import 'package:miti/util/util.dart';
 
 import '../../user/model/v2/base_user_response.dart';

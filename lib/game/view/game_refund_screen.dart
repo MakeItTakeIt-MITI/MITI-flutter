@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -10,7 +8,6 @@ import 'package:miti/chat/provider/chat_approve_provider.dart';
 import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/model/entity_enum.dart';
-import 'package:miti/court/component/court_list_component.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/theme/color_theme.dart';
@@ -19,12 +16,9 @@ import 'package:miti/theme/text_theme.dart';
 import '../../common/component/defalut_flashbar.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
-import '../../common/provider/router_provider.dart';
 import '../error/game_error.dart';
-import '../model/game_payment_model.dart';
 import '../model/v2/payment/participation_refund_info_response.dart';
 import '../model/v2/payment/payment_refund_amount.dart';
-import 'game_create_screen.dart';
 import 'game_payment_screen.dart';
 
 class GameRefundScreen extends StatefulWidget {

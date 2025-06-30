@@ -15,12 +15,15 @@ import 'package:miti/theme/color_theme.dart';
 
 import '../../auth/provider/auth_provider.dart';
 import '../../common/component/default_appbar.dart';
+import '../../common/model/entity_enum.dart';
 import '../../game/model/v2/advertisement/base_advertisement_response.dart';
+import '../../report/view/report_list_screen.dart';
 import '../../theme/text_theme.dart';
 import '../../util/util.dart';
 import '../component/comment_form.dart';
 import '../component/comment_util_button.dart';
 import '../component/post_writer_info.dart';
+import '../error/post_error.dart';
 import '../model/base_post_comment_response.dart';
 import '../model/base_reply_comment_response.dart';
 import '../provider/post_bottom_sheet_button.dart';
@@ -68,9 +71,11 @@ class _PostCommentDetailScreenState
     final result = ref.watch(postCommentDetailProvider(
         postId: widget.postId, commentId: widget.commentId));
     if (result is LoadingModel) {
-      return CircularProgressIndicator();
+      return const Center(child: CircularProgressIndicator());
     } else if (result is ErrorModel) {
-      return CircularProgressIndicator();
+      PostError.fromModel(model: result)
+          .responseError(context, PostApiType.getCommentDetail, ref);
+      return const Center(child: CircularProgressIndicator());
     }
 
     final model = (result as ResponseModel<BasePostCommentResponse>).data!;
@@ -90,14 +95,20 @@ class _PostCommentDetailScreenState
                     return PostBottomSheetButton(
                       isWriter: model.writer.id == userId,
                       onDelete: () async {
-                        final result = ref.read(postCommentDeleteProvider(
+                        final result = await ref.read(postCommentDeleteProvider(
                                 postId: widget.postId,
                                 commentId: widget.commentId)
                             .future);
 
                         if (result is! ErrorModel) {
-                          context.pop();
-                          context.pop();
+                          Map<String, String> pathParameters = {
+                            'postId': widget.postId.toString()
+                          };
+                          context.pushNamed(PostDetailScreen.routeName,
+                              pathParameters: pathParameters);
+                        } else {
+                          PostError.fromModel(model: result).responseError(
+                              context, PostApiType.deleteComment, ref);
                         }
                       },
                       onUpdate: () {
@@ -113,7 +124,15 @@ class _PostCommentDetailScreenState
                         );
                       },
                       onReport: () {
+                        Map<String, String> queryParameters = {
+                          'userId': model.writer.id.toString(),
+                        };
                         context.pop();
+                        context.pushNamed(
+                          ReportListScreen.routeName,
+                          queryParameters: queryParameters,
+                          extra: ReportCategoryType.user_report,
+                        );
                       },
                     );
                   });
@@ -133,6 +152,7 @@ class _PostCommentDetailScreenState
         children: [
           Expanded(
             child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               controller: scrollController,
               child: Column(
                 children: [
@@ -146,9 +166,12 @@ class _PostCommentDetailScreenState
                         (BuildContext context, WidgetRef ref, Widget? child) {
                       final result = ref.watch(randomAdvertiseProvider);
                       if (result is LoadingModel) {
-                        return CircularProgressIndicator();
+                        return const Center(child: CircularProgressIndicator());
                       } else if (result is ErrorModel) {
-                        return CircularProgressIndicator();
+                        // todo advertise error
+                        // PostError.fromModel(model: result).responseError(
+                        //     context, PostApiType.deleteComment, ref);
+                        return const Center(child: CircularProgressIndicator());
                       }
                       final model =
                           (result as ResponseModel<BaseAdvertisementResponse>)
@@ -157,12 +180,12 @@ class _PostCommentDetailScreenState
                       return Padding(
                         padding: EdgeInsets.symmetric(horizontal: 11.5.w),
                         child: GestureDetector(
-                          onTap: (){
+                          onTap: () {
                             Map<String, String> pathParameters = {
                               'advertisementId': model.id.toString()
                             };
-                            context.pushNamed(AdvertiseDetailScreen.routeName, pathParameters: pathParameters);
-
+                            context.pushNamed(AdvertiseDetailScreen.routeName,
+                                pathParameters: pathParameters);
                           },
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8.r),
@@ -210,9 +233,13 @@ class _PostCommentDetailScreenState
                             curve: Curves.easeInOut,
                           )
                         });
+              } else {
+                PostError.fromModel(model: result).responseError(
+                    context, PostApiType.createReplyComment, ref);
               }
             },
             focusNode: focusNode,
+            onGallery: () {},
           )
         ],
       ),
@@ -271,17 +298,25 @@ class CommentInfoComponent extends ConsumerWidget {
             isSelected: isSelected,
             onTap: () async {
               if (isSelected) {
-                ref.read(postCommentUnLikeProvider(
+                final result = await ref.read(postCommentUnLikeProvider(
                         commentId: commentId,
                         postId: postId,
                         fromCommentDetail: true)
                     .future);
+                if (result is ErrorModel) {
+                  PostError.fromModel(model: result)
+                      .responseError(context, PostApiType.unLikeComment, ref);
+                }
               } else {
-                ref.read(postCommentLikeProvider(
+                final result = await ref.read(postCommentLikeProvider(
                         commentId: commentId,
                         postId: postId,
                         fromCommentDetail: true)
                     .future);
+                if (result is ErrorModel) {
+                  PostError.fromModel(model: result)
+                      .responseError(context, PostApiType.likeComment, ref);
+                }
               }
             },
           ),
@@ -362,6 +397,12 @@ class _ReplyCommentComponent extends StatelessWidget {
                                           .future);
                                   if (result is! ErrorModel) {
                                     context.pop();
+                                  } else {
+                                    PostError.fromModel(model: result)
+                                        .responseError(
+                                            context,
+                                            PostApiType.deleteReplyComment,
+                                            ref);
                                   }
                                 },
                                 onUpdate: () {
@@ -381,7 +422,16 @@ class _ReplyCommentComponent extends StatelessWidget {
                                       queryParameters: queryParameters);
                                 },
                                 onReport: () {
+                                  Map<String, String> queryParameters = {
+                                    'userId':
+                                        replyComments[idx].writer.id.toString(),
+                                  };
                                   context.pop();
+                                  context.pushNamed(
+                                    ReportListScreen.routeName,
+                                    queryParameters: queryParameters,
+                                    extra: ReportCategoryType.user_report,
+                                  );
                                 },
                               );
                             },
