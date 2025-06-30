@@ -1,9 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:miti/account/error/account_error.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/post/provider/post_comment_provider.dart';
 
@@ -12,6 +10,7 @@ import '../../common/model/entity_enum.dart';
 import '../../report/view/report_list_screen.dart';
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
+import '../error/post_error.dart';
 import '../model/base_post_comment_response.dart';
 import '../provider/post_bottom_sheet_button.dart';
 import '../view/post_comment_detail_screen.dart';
@@ -75,7 +74,7 @@ class CommentComponent extends ConsumerWidget {
                             return PostBottomSheetButton(
                               isWriter: comments[idx].writer.id == userId,
                               onDelete: () async {
-                                final result =await ref.read(
+                                final result = await ref.read(
                                     postCommentDeleteProvider(
                                             postId: postId,
                                             commentId: comments[idx].id)
@@ -83,6 +82,10 @@ class CommentComponent extends ConsumerWidget {
 
                                 if (result is! ErrorModel) {
                                   context.pop();
+                                } else {
+                                  PostError.fromModel(model: result)
+                                      .responseError(context,
+                                          PostApiType.deleteComment, ref);
                                 }
                               },
                               onUpdate: () {
@@ -93,9 +96,9 @@ class CommentComponent extends ConsumerWidget {
                                   'commentId': comments[idx].id.toString(),
                                 };
                                 context.pushNamed(
-                                    PostCommentFormScreen.routeName,
-                                    pathParameters: pathParameters,
-                                   );
+                                  PostCommentFormScreen.routeName,
+                                  pathParameters: pathParameters,
+                                );
                               },
                               onReport: () {
                                 // 댓글 신고

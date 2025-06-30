@@ -17,16 +17,16 @@ class PostForm extends _$PostForm {
       final result = ref.read(postDetailProvider(postId: postId));
       if (result is ResponseModel<PostResponse>) {
         final model = (result).data!;
-        final localImages = model.images.map((e)=> ImagePath(imageUrl: e)).toList();
+        final localImages =
+            model.images.map((e) => ImagePath(imageUrl: e)).toList();
 
         return PostFormParam(
-          title: model.title,
-          content: model.content,
-          category: model.category,
-          images: [],
-          isAnonymous: model.isAnonymous,
-          localImages: localImages
-        );
+            title: model.title,
+            content: model.content,
+            category: model.category,
+            images: [],
+            isAnonymous: model.isAnonymous,
+            localImages: localImages);
       }
     }
 
@@ -68,12 +68,13 @@ class PostForm extends _$PostForm {
   void removeLocalImage(ImagePath imagePath) {
     List<ImagePath> localImages = state.localImages.toList();
     final image = localImages.singleWhere((e) =>
-        e.filePath == imagePath.filePath || e.imageUrl == imagePath.imageUrl);
+        (e.filePath != null && e.filePath == imagePath.filePath) ||
+        (e.imageUrl != null && e.imageUrl == imagePath.imageUrl));
 
     localImages.remove(image);
 
     List<String> images = state.images.toList();
-    images.removeWhere((i) => i == image.imageUrl);
+    images.removeWhere((i) => image.imageUrl != null && i == image.imageUrl);
     state = state.copyWith(localImages: localImages, images: images);
   }
 
@@ -83,9 +84,8 @@ class PostForm extends _$PostForm {
 
     // 기존 이미지를 찾아서 새로운 이미지로 교체
     final index = localImages.indexWhere((img) =>
-    img.filePath == oldImagePath.filePath &&
-        img.imageUrl == oldImagePath.imageUrl
-    );
+        img.filePath == oldImagePath.filePath &&
+        img.imageUrl == oldImagePath.imageUrl);
 
     if (index != -1) {
       localImages[index] = newImagePath;

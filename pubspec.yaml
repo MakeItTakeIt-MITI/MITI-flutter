@@ -177,7 +177,6 @@ flutter:
     - assets/images/v2/icon/
     - assets/images/v2/logo/
     - assets/images/v2/logo/bank/
-    - assets/images/v2/gif/
     - .env.prod
     - .env.dev
   #   - images/a_dot_ham.jpeg

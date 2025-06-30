@@ -9,7 +9,7 @@ class ImagePath {
   final bool isLoading;
 
   const ImagePath({
-     this.filePath,
+    this.filePath,
     this.imageUrl,
     this.isLoading = false,
   });
@@ -30,4 +30,9 @@ class ImagePath {
 
   factory ImagePath.fromJson(Map<String, dynamic> json) =>
       _$ImagePathFromJson(json);
+
+  @override
+  String toString() {
+    return "filePath = ${filePath}, imageUrl = ${imageUrl}, isLoading = ${isLoading}";
+  }
 }

@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:miti/common/component/defalut_flashbar.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/post/component/comment_card.dart';
+import 'package:miti/post/component/comment_form.dart';
 import 'package:miti/post/provider/post_comment_provider.dart';
 import 'package:miti/post/view/post_comment_form_screen.dart';
 import 'package:miti/post/view/post_detail_screen.dart';
@@ -14,19 +14,21 @@ import 'package:miti/support/view/advertise_detail_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 
 import '../../auth/provider/auth_provider.dart';
+import '../../common/component/defalut_flashbar.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/model/entity_enum.dart';
 import '../../game/model/v2/advertisement/base_advertisement_response.dart';
 import '../../report/view/report_list_screen.dart';
 import '../../theme/text_theme.dart';
+import '../../util/image_upload_util.dart';
 import '../../util/util.dart';
-import '../component/comment_form.dart';
 import '../component/comment_util_button.dart';
 import '../component/post_writer_info.dart';
 import '../error/post_error.dart';
 import '../model/base_post_comment_response.dart';
 import '../model/base_reply_comment_response.dart';
 import '../provider/post_bottom_sheet_button.dart';
+import '../provider/post_comment_form_provider.dart';
 import '../provider/post_reply_comment_provider.dart';
 
 class PostCommentDetailScreen extends ConsumerStatefulWidget {
@@ -50,6 +52,7 @@ class _PostCommentDetailScreenState
   late final TextEditingController textController;
   late final FocusNode focusNode;
   late final ScrollController scrollController;
+  late ImageUploadUtil _imageUploadUtil;
 
   @override
   void initState() {
@@ -58,6 +61,22 @@ class _PostCommentDetailScreenState
     focusNode = FocusNode();
     scrollController = ScrollController();
     scrollController.addListener(() {});
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    _imageUploadUtil = ImageUploadUtil(
+      ref: ref,
+      context: context,
+      callback: PostCommentFormImageUploadAdapter(
+        ref: ref,
+        postId: widget.postId,
+        commentId: widget.commentId,
+        // replyCommentId는 null (새 대댓글 작성이므로)
+      ),
+    );
   }
 
   @override
@@ -214,33 +233,72 @@ class _PostCommentDetailScreenState
                 ],
               ),
             ),
-          ),
-          PostCommentForm(
-            textController: textController,
-            sendMessage: () async {
-              final result = await ref.read(postReplyCommentCreateProvider(
+          ), // todo 폼 수정
+          Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              final commentForm = ref.watch(postCommentFormProvider(
+                postId: widget.postId,
+                commentId: widget.commentId,
+                // replyCommentId는 null (새 대댓글 작성)
+              ));
+
+              return PostCommentFormComponent(
+                focusNode: focusNode,
+                textController: textController,
+                content: commentForm.content,
+                localImages: commentForm.localImages,
+                onContentChanged: (content) {
+                  ref.read(postCommentFormProvider(
+                    postId: widget.postId,
+                    commentId: widget.commentId,
+                  ).notifier).update(content: content);
+                },
+                onImageDelete: (imagePath) {
+                  ref.read(postCommentFormProvider(
+                    postId: widget.postId,
+                    commentId: widget.commentId,
+                  ).notifier).removeLocalImage(imagePath);
+                },
+                sendMessage: () async {
+                  // 이미지 설정 (업로드된 이미지 URL을 images 배열에 복사)
+                  ref.read(postCommentFormProvider(
+                    postId: widget.postId,
+                    commentId: widget.commentId,
+                  ).notifier).setImages();
+
+                  final result = await ref.read(postReplyCommentCreateProvider(
                       postId: widget.postId, commentId: widget.commentId)
-                  .future);
-              if (result is! ErrorModel) {
-                textController.clear();
-                FlashUtil.showFlash(context, '대댓글 작성이 완료되었습니다');
-                Future.delayed(
-                    const Duration(milliseconds: 200),
-                    () => {
+                      .future);
+                  if (result is! ErrorModel) {
+                    textController.clear();
+                    // 대댓글 작성 후 폼 상태 완전 초기화
+                    ref.read(postCommentFormProvider(
+                      postId: widget.postId,
+                      commentId: widget.commentId,
+                    ).notifier).reset();
+
+                    FlashUtil.showFlash(context, '대댓글 작성이 완료되었습니다');
+                    Future.delayed(
+                        const Duration(milliseconds: 200),
+                            () => {
                           scrollController.animateTo(
                             scrollController.position.maxScrollExtent,
                             duration: const Duration(milliseconds: 300),
                             curve: Curves.easeInOut,
                           )
                         });
-              } else {
-                PostError.fromModel(model: result).responseError(
-                    context, PostApiType.createReplyComment, ref);
-              }
+                  } else {
+                    PostError.fromModel(model: result).responseError(
+                        context, PostApiType.createReplyComment, ref);
+                  }
+                },
+                onGallery: () async {
+                  // 갤러리 기능 구현
+                  await _imageUploadUtil.pickMultipleImages();
+                },
+              );
             },
-            focusNode: focusNode,
-            onGallery: () {},
-          )
+          ),
         ],
       ),
     );
@@ -267,7 +325,7 @@ class CommentInfoComponent extends ConsumerWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 15.h),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           PostWriterInfo.fromModel(
             model: model.writer,
@@ -281,15 +339,20 @@ class CommentInfoComponent extends ConsumerWidget {
               color: MITIColor.gray100,
             ),
           ),
-          ListView.separated(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              padding: EdgeInsets.only(top: 10.h),
-              itemBuilder: (_, idx) {
-                return Image.network(model.images[idx]);
-              },
-              separatorBuilder: (_, idx) => SizedBox(height: 7.h),
-              itemCount: model.images.length),
+          SizedBox(height: 10.h),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: model.images
+                .map((e) => Padding(
+                  padding: EdgeInsets.only(bottom: 7.h),
+                  child: Image.network(
+                        e,
+                        fit: BoxFit.contain,
+                        alignment: Alignment.topLeft,
+                      ),
+                ))
+                .toList(),
+          ),
           SizedBox(height: 25.h),
           CommentUtilButton(
             icon: 'good',

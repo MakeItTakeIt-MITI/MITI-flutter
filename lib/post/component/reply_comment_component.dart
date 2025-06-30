@@ -11,7 +11,6 @@ import '../../user/model/v2/base_user_response.dart';
 import '../error/post_error.dart';
 import '../model/base_reply_comment_response.dart';
 import '../provider/post_reply_comment_provider.dart';
-import '../view/post_detail_screen.dart';
 import 'comment_util_button.dart';
 
 class ReplyCommentComponent extends ConsumerWidget {
@@ -78,15 +77,19 @@ class ReplyCommentComponent extends ConsumerWidget {
                 content,
                 style: MITITextStyle.xxsm.copyWith(color: MITIColor.gray100),
               ),
-              // todo image 추가
-              ListView.separated(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemBuilder: (_, idx) {
-                    return Image.network(images[idx]);
-                  },
-                  separatorBuilder: (_, idx) => SizedBox(height: 7.h),
-                  itemCount: images.length),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: images
+                    .map((e) => Padding(
+                  padding: EdgeInsets.only(bottom: 7.h),
+                  child: Image.network(
+                    e,
+                    fit: BoxFit.contain,
+                    alignment: Alignment.topLeft,
+                  ),
+                ))
+                    .toList(),
+              ),
               SizedBox(height: 7.h),
               CommentUtilButton(
                 icon: 'good',

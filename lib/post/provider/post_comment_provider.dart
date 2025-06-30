@@ -185,7 +185,7 @@ class PostCommentDetail extends _$PostCommentDetail {
 Future<BaseModel> postCommentCreate(PostCommentCreateRef ref,
     {required int postId}) async {
   final repository = ref.watch(postRepositoryProvider);
-  final param = ref.watch(postCommentFormProvider());
+  final param = ref.watch(postCommentFormProvider(postId: postId));
   return await repository
       .createPostComment(param: param, postId: postId)
       .then<BaseModel>((value) {
@@ -206,8 +206,11 @@ Future<BaseModel> postCommentCreate(PostCommentCreateRef ref,
 Future<BaseModel> postCommentUpdate(PostCommentUpdateRef ref,
     {required int postId, required int commentId}) async {
   final repository = ref.watch(postRepositoryProvider);
-  final param =
-      ref.watch(postCommentFormProvider(postId: postId, commentId: commentId));
+  final param = ref.watch(postCommentFormProvider(
+    isEdit: true,
+    postId: postId,
+    commentId: commentId,
+  ));
   return await repository
       .patchPostComment(param: param, postId: postId, commentId: commentId)
       .then<BaseModel>((value) {

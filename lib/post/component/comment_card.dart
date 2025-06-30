@@ -1,7 +1,5 @@
 import 'dart:developer';
-import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -23,7 +21,6 @@ import '../provider/post_bottom_sheet_button.dart';
 import '../provider/post_comment_provider.dart';
 import '../provider/post_reply_comment_provider.dart';
 import '../view/post_comment_form_screen.dart';
-import '../view/post_detail_screen.dart';
 import 'comment_util_button.dart';
 
 class CommentCard extends ConsumerWidget {
@@ -105,21 +102,26 @@ class CommentCard extends ConsumerWidget {
         Padding(
           padding: EdgeInsets.only(left: 40.w),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 content,
                 style: MITITextStyle.xxsm.copyWith(color: MITIColor.gray100),
               ),
-              // todo image 추가
-              ListView.separated(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemBuilder: (_, idx) {
-                    return Image.network(images[idx]);
-                  },
-                  separatorBuilder: (_, idx) => SizedBox(height: 7.h),
-                  itemCount: images.length),
+              SizedBox(height: 7.h),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: images
+                    .map((e) => Padding(
+                  padding: EdgeInsets.only(bottom: 7.h),
+                  child: Image.network(
+                    e,
+                    fit: BoxFit.contain,
+                    alignment: Alignment.topLeft,
+                  ),
+                ))
+                    .toList(),
+              ),
               SizedBox(height: 7.h),
               Row(
                 children: [
@@ -158,8 +160,8 @@ class CommentCard extends ConsumerWidget {
                                   commentId: commentId, postId: postId)
                               .future);
                           if (result is ErrorModel) {
-                            PostError.fromModel(model: result)
-                                .responseError(context, PostApiType.likeComment, ref);
+                            PostError.fromModel(model: result).responseError(
+                                context, PostApiType.likeComment, ref);
                           }
                         } else {
                           final result = await ref.read(
@@ -170,8 +172,8 @@ class CommentCard extends ConsumerWidget {
                                       fromDetail: true)
                                   .future);
                           if (result is ErrorModel) {
-                            PostError.fromModel(model: result)
-                                .responseError(context, PostApiType.likeReplyComment, ref);
+                            PostError.fromModel(model: result).responseError(
+                                context, PostApiType.likeReplyComment, ref);
                           }
                         }
                       }
@@ -205,8 +207,6 @@ class CommentCard extends ConsumerWidget {
                                 isWriter:
                                     replyComments![idx].writer.id == userId,
                                 onDelete: () async {
-                                  log("reply onDelete");
-
                                   final result = await ref.read(
                                       postReplyCommentDeleteProvider(
                                               postId: postId,
@@ -217,6 +217,9 @@ class CommentCard extends ConsumerWidget {
 
                                   if (result is! ErrorModel) {
                                     context.pop();
+                                  }else{
+                                    PostError.fromModel(model: result)
+                                        .responseError(context, PostApiType.deleteReplyComment, ref);
                                   }
                                 },
                                 onUpdate: () {

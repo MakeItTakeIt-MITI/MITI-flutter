@@ -11,9 +11,10 @@ import '../../common/component/form/multi_line_text_field.dart';
 import '../../common/model/default_model.dart';
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
+import '../../util/image_upload_util.dart'; // 새로 만든 유틸리티 import
 import '../../util/util.dart';
+import '../component/image_form_component.dart';
 import '../error/post_error.dart';
-import '../model/base_post_comment_response.dart';
 import '../provider/post_comment_form_provider.dart';
 import '../provider/post_comment_provider.dart';
 import '../provider/post_reply_comment_provider.dart';
@@ -46,6 +47,9 @@ class _PostCommentFormScreenState extends ConsumerState<PostCommentFormScreen> {
   int throttleCnt = 0;
   bool isLoading = false;
 
+  // 이미지 업로드 유틸리티를 위한 지연 초기화 변수
+  late ImageUploadUtil _imageUploadUtil;
+
   @override
   void initState() {
     super.initState();
@@ -71,10 +75,26 @@ class _PostCommentFormScreenState extends ConsumerState<PostCommentFormScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final form = ref.read(postCommentFormProvider(
+
+    // ImageUploadUtil 초기화 (수정용)
+    _imageUploadUtil = ImageUploadUtil(
+      ref: ref,
+      context: context,
+      callback: PostCommentFormImageUploadAdapter(
+        isEdit: true,
+        ref: ref,
         postId: widget.postId,
         commentId: widget.commentId,
-        replyCommentId: widget.replyCommentId));
+        replyCommentId: widget.replyCommentId,
+      ),
+    );
+
+    final form = ref.read(postCommentFormProvider(
+      isEdit: true,
+      postId: widget.postId,
+      commentId: widget.commentId,
+      replyCommentId: widget.replyCommentId,
+    ));
     contentTextController.text = form.content;
   }
 
@@ -82,24 +102,33 @@ class _PostCommentFormScreenState extends ConsumerState<PostCommentFormScreen> {
   void dispose() {
     _throttler.cancel();
     contentTextController.dispose();
+    focusNode.dispose();
     super.dispose();
   }
 
   Future<void> submit() async {
+    // 이미지 설정 (업로드된 이미지 URL을 images 배열에 복사)
+    ref.read(postCommentFormProvider(
+      isEdit: true,
+      postId: widget.postId,
+      commentId: widget.commentId,
+      replyCommentId: widget.replyCommentId,
+    ).notifier).setImages();
+
     final result = isReply
         ? await ref.read(postReplyCommentUpdateProvider(
-                postId: widget.postId,
-                commentId: widget.commentId,
-                replyCommentId: widget.replyCommentId!)
-            .future)
+        postId: widget.postId,
+        commentId: widget.commentId,
+        replyCommentId: widget.replyCommentId!)
+        .future)
         : await ref.read(postCommentUpdateProvider(
-            postId: widget.postId,
-            commentId: widget.commentId,
-          ).future);
+      postId: widget.postId,
+      commentId: widget.commentId,
+    ).future);
     if (result is ErrorModel) {
       late final PostApiType postApiType;
       postApiType =
-          isReply ? PostApiType.updateReplyComment : PostApiType.updateComment;
+      isReply ? PostApiType.updateReplyComment : PostApiType.updateComment;
 
       PostError.fromModel(model: result)
           .responseError(context, postApiType, ref);
@@ -122,15 +151,23 @@ class _PostCommentFormScreenState extends ConsumerState<PostCommentFormScreen> {
 
   bool validButton() {
     final form = ref.watch(postCommentFormProvider(
+        isEdit: true,
         postId: widget.postId,
         commentId: widget.commentId,
         replyCommentId: widget.replyCommentId));
-    return form.content.isNotEmpty && form.content.length <= 1000;
+
+    // 이미지가 로딩 중인지 확인
+    final isImageLoading = form.localImages.any((e) => e.isLoading);
+
+    return form.content.isNotEmpty &&
+        form.content.length <= 1000 &&
+        !isImageLoading;
   }
 
   @override
   Widget build(BuildContext context) {
     final form = ref.watch(postCommentFormProvider(
+        isEdit: true,
         postId: widget.postId,
         commentId: widget.commentId,
         replyCommentId: widget.replyCommentId));
@@ -148,8 +185,8 @@ class _PostCommentFormScreenState extends ConsumerState<PostCommentFormScreen> {
               return IconButton(
                 onPressed: valid
                     ? () {
-                        _throttler.setValue(throttleCnt + 1);
-                      }
+                  _throttler.setValue(throttleCnt + 1);
+                }
                     : null,
                 icon: Text(
                   '수정',
@@ -181,10 +218,11 @@ class _PostCommentFormScreenState extends ConsumerState<PostCommentFormScreen> {
 
                         ref
                             .read(postCommentFormProvider(
-                                    postId: widget.postId,
-                                    commentId: widget.commentId,
-                                    replyCommentId: widget.replyCommentId)
-                                .notifier)
+                            isEdit: true,
+                            postId: widget.postId,
+                            commentId: widget.commentId,
+                            replyCommentId: widget.replyCommentId)
+                            .notifier)
                             .update(content: value);
                       },
                       hintText: '',
@@ -192,11 +230,35 @@ class _PostCommentFormScreenState extends ConsumerState<PostCommentFormScreen> {
                     ),
                   ),
                   SizedBox(height: 30.h),
-                  Container(
-                    color: Colors.red,
-                    width: double.infinity,
-                    height: 100.h,
-                  )
+                  // 선택된 이미지들을 보여주는 부분
+                  if (form.localImages.isNotEmpty)
+                    Container(
+                      height: 80.h,
+                      width: double.infinity,
+                      margin: EdgeInsets.only(bottom: 12.h),
+                      alignment: Alignment.bottomLeft,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        shrinkWrap: true,
+                        itemBuilder: (_, idx) {
+                          return ImageFormComponent(
+                            imagePath: form.localImages[idx],
+                            onDelete: () {
+                              ref
+                                  .read(postCommentFormProvider(
+                                  isEdit: true,
+                                  postId: widget.postId,
+                                  commentId: widget.commentId,
+                                  replyCommentId: widget.replyCommentId)
+                                  .notifier)
+                                  .removeLocalImage(form.localImages[idx]);
+                            },
+                          );
+                        },
+                        separatorBuilder: (_, idx) => SizedBox(width: 12.w),
+                        itemCount: form.localImages.length,
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -207,31 +269,56 @@ class _PostCommentFormScreenState extends ConsumerState<PostCommentFormScreen> {
             decoration: const BoxDecoration(
                 border: Border(
                     top: BorderSide(
-              color: MITIColor.gray750,
-            ))),
-            child: Consumer(
-              builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                const hintText = "댓글을 입력해주세요";
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    GestureDetector(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(vertical: 6.h),
-                        child: SvgPicture.asset(
-                          AssetUtil.getAssetPath(
-                              type: AssetType.icon, name: 'gallery'),
-                          width: 20.r,
-                          height: 20.r,
-                          colorFilter: const ColorFilter.mode(
-                              MITIColor.gray600, BlendMode.srcIn),
-                        ),
-                      ),
-                      onTap: () {},
+                      color: MITIColor.gray750,
+                    ))),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                GestureDetector(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 6.h),
+                    child: SvgPicture.asset(
+                      AssetUtil.getAssetPath(
+                          type: AssetType.icon, name: 'gallery'),
+                      width: 20.r,
+                      height: 20.r,
+                      colorFilter: const ColorFilter.mode(
+                          MITIColor.gray600, BlendMode.srcIn),
                     ),
-                  ],
-                );
-              },
+                  ),
+                  onTap: () async {
+                    // 갤러리 기능 구현
+                    await _imageUploadUtil.pickMultipleImages();
+                  },
+                ),
+                Spacer(),
+                // 이미지 개수 및 상태 표시 (선택사항)
+                Consumer(
+                  builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                    final localImages = form.localImages;
+                    final loadingCount = localImages.where((e) => e.isLoading).length;
+
+                    if (localImages.isNotEmpty) {
+                      return Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                        decoration: BoxDecoration(
+                          color: MITIColor.gray700,
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        child: Text(
+                          loadingCount > 0
+                              ? '업로드 중... ${localImages.length - loadingCount}/${localImages.length}'
+                              : '이미지 ${localImages.length}개',
+                          style: MITITextStyle.xxsm.copyWith(
+                            color: loadingCount > 0 ? MITIColor.primary : MITIColor.gray300,
+                          ),
+                        ),
+                      );
+                    }
+                    return Container();
+                  },
+                ),
+              ],
             ),
           ),
         ],

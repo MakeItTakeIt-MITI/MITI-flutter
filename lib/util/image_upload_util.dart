@@ -63,33 +63,72 @@ class ImageUploadUtil {
         if (result is ResponseModel) {
           final model = (result as ResponseModel<FileUploadUrlResponse>).data!;
 
-          // 타입별로 URL 리스트를 합쳐서 순서대로 처리
-          List<UploadUrlResponse> allUrls = [];
-          allUrls.addAll(model.png);
-          allUrls.addAll(model.jpeg);
-          allUrls.addAll(model.webp);
-
-          // 각 이미지를 개별적으로 처리
-          for (int i = 0; i < images.length && i < allUrls.length; i++) {
-            final url = allUrls[i];
-            final imagePath = ImagePath(
-              filePath: images[i].path,
-              imageUrl: url.fileUrl,
-              isLoading: true,
-            );
-
-            // 먼저 로딩 상태로 UI에 추가
-            callback.addLocalImage(imagePath);
-
-            // 개별 이미지 업로드 처리 (비동기)
-            _uploadSingleImage(images[i], url, imagePath);
-          }
+          // 타입별로 이미지 분류 및 URL 매칭
+          _processImagesByType(images, model);
         }
       }
 
       print('선택된 이미지 개수: ${images?.length}');
     } catch (e) {
       print('이미지 선택 실패: $e');
+    }
+  }
+
+  /// 타입별로 이미지를 분류하고 각각 맞는 URL로 업로드
+  void _processImagesByType(List<XFile> images, FileUploadUrlResponse model) {
+    // 타입별로 이미지 분류
+    Map<String, List<XFile>> imagesByType = {
+      'png': [],
+      'jpeg': [],
+      'webp': [],
+    };
+
+    for (XFile image in images) {
+      String extension = getFileExtensionFromName(image).toLowerCase();
+
+      switch (extension) {
+        case '.png':
+          imagesByType['png']!.add(image);
+          break;
+        case '.jpg':
+        case '.jpeg':
+          imagesByType['jpeg']!.add(image);
+          break;
+        case '.webp':
+          imagesByType['webp']!.add(image);
+          break;
+        default:
+        // 기본적으로 jpeg로 처리
+          imagesByType['jpeg']!.add(image);
+          break;
+      }
+    }
+
+    // 각 타입별로 해당하는 URL과 매칭하여 업로드
+    _uploadImagesByType('png', imagesByType['png']!, model.png);
+    _uploadImagesByType('jpeg', imagesByType['jpeg']!, model.jpeg);
+    _uploadImagesByType('webp', imagesByType['webp']!, model.webp);
+  }
+
+  /// 특정 타입의 이미지들을 해당 타입의 URL들로 업로드
+  void _uploadImagesByType(String type, List<XFile> images, List<UploadUrlResponse> urls) {
+    log("Uploading $type images: ${images.length} files with ${urls.length} URLs");
+
+    for (int i = 0; i < images.length && i < urls.length; i++) {
+      final image = images[i];
+      final url = urls[i];
+
+      final imagePath = ImagePath(
+        filePath: image.path,
+        imageUrl: url.fileUrl,
+        isLoading: true,
+      );
+
+      // 먼저 로딩 상태로 UI에 추가
+      callback.addLocalImage(imagePath);
+
+      // 개별 이미지 업로드 처리 (비동기)
+      _uploadSingleImage(image, url, imagePath);
     }
   }
 
@@ -101,14 +140,14 @@ class ImageUploadUtil {
       String extension = getFileExtensionFromName(image).toLowerCase();
 
       switch (extension) {
-        case 'png':
+        case '.png':
           counts['png'] = (counts['png'] ?? 0) + 1;
           break;
-        case 'jpg':
-        case 'jpeg':
+        case '.jpg':
+        case '.jpeg':
           counts['jpeg'] = (counts['jpeg'] ?? 0) + 1;
           break;
-        case 'webp':
+        case '.webp':
           counts['webp'] = (counts['webp'] ?? 0) + 1;
           break;
         default:
@@ -207,12 +246,14 @@ class PostFormImageUploadAdapter implements ImageUploadCallback {
 /// PostCommentFormProvider용 콜백 어댑터
 class PostCommentFormImageUploadAdapter implements ImageUploadCallback {
   final WidgetRef ref;
+  final bool isEdit;
   final int? postId;
   final int? commentId;
   final int? replyCommentId;
 
   PostCommentFormImageUploadAdapter({
     required this.ref,
+    this.isEdit = false,
     this.postId,
     this.commentId,
     this.replyCommentId,
@@ -222,6 +263,7 @@ class PostCommentFormImageUploadAdapter implements ImageUploadCallback {
   void addLocalImage(ImagePath imagePath) {
     ref
         .read(postCommentFormProvider(
+      isEdit: isEdit,
       postId: postId,
       commentId: commentId,
       replyCommentId: replyCommentId,
@@ -233,6 +275,7 @@ class PostCommentFormImageUploadAdapter implements ImageUploadCallback {
   void removeLocalImage(ImagePath imagePath) {
     ref
         .read(postCommentFormProvider(
+      isEdit: isEdit,
       postId: postId,
       commentId: commentId,
       replyCommentId: replyCommentId,
@@ -244,6 +287,7 @@ class PostCommentFormImageUploadAdapter implements ImageUploadCallback {
   void updateLocalImageLoading(ImagePath oldImagePath, ImagePath newImagePath) {
     ref
         .read(postCommentFormProvider(
+      isEdit: isEdit,
       postId: postId,
       commentId: commentId,
       replyCommentId: replyCommentId,

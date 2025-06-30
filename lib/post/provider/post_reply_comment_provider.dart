@@ -12,7 +12,8 @@ part 'post_reply_comment_provider.g.dart';
 Future<BaseModel> postReplyCommentCreate(PostReplyCommentCreateRef ref,
     {required int postId, required int commentId}) async {
   final repository = ref.watch(postRepositoryProvider);
-  final param = ref.watch(postCommentFormProvider());
+  final param =
+      ref.watch(postCommentFormProvider(postId: postId, commentId: commentId));
 
   return await repository
       .createPostReplyComment(
@@ -43,7 +44,10 @@ Future<BaseModel> postReplyCommentUpdate(PostReplyCommentUpdateRef ref,
     required int replyCommentId}) async {
   final repository = ref.watch(postRepositoryProvider);
   final param = ref.watch(postCommentFormProvider(
-      postId: postId, commentId: commentId, replyCommentId: replyCommentId));
+      isEdit: true,
+      postId: postId,
+      commentId: commentId,
+      replyCommentId: replyCommentId));
   return await repository
       .patchPostReplyComment(
           param: param,

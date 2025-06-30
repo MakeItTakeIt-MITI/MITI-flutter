@@ -13,14 +13,19 @@ part 'post_comment_form_provider.g.dart';
 class PostCommentForm extends _$PostCommentForm {
   @override
   PostCommentParam build({
+    bool isEdit = false,
     int? postId,
     int? commentId,
     int? replyCommentId,
   }) {
-    if (replyCommentId != null && postId != null && commentId != null) {
+    // 대댓글 수정인 경우
+    if (replyCommentId != null &&
+        postId != null &&
+        commentId != null &&
+        isEdit) {
       final result = ref.read(postCommentListProvider(postId: postId));
       final model =
-      (result as ResponseListModel<BasePostCommentResponse>).data!;
+          (result as ResponseListModel<BasePostCommentResponse>).data!;
       final comment = model.firstWhereOrNull((c) => c.id == commentId);
       if (comment == null) {
         return const PostCommentParam(content: '', images: []);
@@ -34,20 +39,21 @@ class PostCommentForm extends _$PostCommentForm {
           .map((e) => ImagePath(imageUrl: e))
           .toList();
 
+
       return PostCommentParam(
           content: replyComment?.content ?? '',
           images: replyComment?.images ?? [],
           localImages: localImages);
-    } else if (postId != null && commentId != null) {
+    } else if (postId != null && commentId != null && isEdit) {
+      // 댓글 수정인 경우
       final result = ref.read(postCommentListProvider(postId: postId));
       final model =
-      (result as ResponseListModel<BasePostCommentResponse>).data!;
+          (result as ResponseListModel<BasePostCommentResponse>).data!;
       final comment = model.firstWhereOrNull((c) => c.id == commentId);
 
       // 기존 이미지들을 localImages로 변환
-      final localImages = (comment?.images ?? [])
-          .map((e) => ImagePath(imageUrl: e))
-          .toList();
+      final localImages =
+          (comment?.images ?? []).map((e) => ImagePath(imageUrl: e)).toList();
 
       return PostCommentParam(
           content: comment?.content ?? '',
@@ -86,7 +92,7 @@ class PostCommentForm extends _$PostCommentForm {
   // PostFormProvider와 동일한 로컬 이미지 관리 메서드들 추가
   void setImages() {
     final images =
-    state.localImages.map((e) => e.imageUrl).whereType<String>().toList();
+        state.localImages.map((e) => e.imageUrl).whereType<String>().toList();
     state = state.copyWith(images: images);
   }
 
@@ -101,12 +107,13 @@ class PostCommentForm extends _$PostCommentForm {
   void removeLocalImage(ImagePath imagePath) {
     List<ImagePath> localImages = state.localImages.toList();
     final image = localImages.singleWhere((e) =>
-    e.filePath == imagePath.filePath || e.imageUrl == imagePath.imageUrl);
+        (e.filePath != null && e.filePath == imagePath.filePath) ||
+        (e.imageUrl != null && e.imageUrl == imagePath.imageUrl));
 
     localImages.remove(image);
 
     List<String> images = state.images.toList();
-    images.removeWhere((i) => i == image.imageUrl);
+    images.removeWhere((i) => image.imageUrl != null && i == image.imageUrl);
     state = state.copyWith(localImages: localImages, images: images);
   }
 
@@ -116,9 +123,8 @@ class PostCommentForm extends _$PostCommentForm {
 
     // 기존 이미지를 찾아서 새로운 이미지로 교체
     final index = localImages.indexWhere((img) =>
-    img.filePath == oldImagePath.filePath &&
-        img.imageUrl == oldImagePath.imageUrl
-    );
+        img.filePath == oldImagePath.filePath &&
+        img.imageUrl == oldImagePath.imageUrl);
 
     if (index != -1) {
       localImages[index] = newImagePath;
@@ -134,5 +140,13 @@ class PostCommentForm extends _$PostCommentForm {
         state = state.copyWith(localImages: localImages);
       }
     }
+  }
+
+  void reset() {
+    state = const PostCommentParam(
+      content: '',
+      images: [],
+      localImages: [],
+    );
   }
 }

@@ -29,6 +29,7 @@ import '../error/post_error.dart';
 import '../model/base_post_comment_response.dart';
 import '../model/post_response.dart';
 import '../provider/post_bottom_sheet_button.dart';
+import '../provider/post_comment_form_provider.dart';
 
 class PostDetailScreen extends ConsumerStatefulWidget {
   static String get routeName => 'postDetail';
@@ -46,6 +47,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
   late final FocusNode contentFocusNode;
   late final ScrollController scrollController;
   late ImageUploadUtil _imageUploadUtil;
+
   @override
   void initState() {
     super.initState();
@@ -210,16 +212,16 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                       if (isSelected) {
                         final result = await ref.read(
                             postUnLikeProvider(postId: widget.postId).future);
-                        if(result is ErrorModel){
-                          PostError.fromModel(model: result)
-                              .responseError(context, PostApiType.unLikePost, ref);
+                        if (result is ErrorModel) {
+                          PostError.fromModel(model: result).responseError(
+                              context, PostApiType.unLikePost, ref);
                         }
                       } else {
                         final result = await ref.read(
                             postLikeProvider(postId: widget.postId).future);
-                        if(result is ErrorModel){
-                          PostError.fromModel(model: result)
-                              .responseError(context, PostApiType.likePost, ref);
+                        if (result is ErrorModel) {
+                          PostError.fromModel(model: result).responseError(
+                              context, PostApiType.likePost, ref);
                         }
                       }
                     },
@@ -232,6 +234,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                     },
                     isSelected: isSelected,
                   ),
+
                   /// 댓글 영역
                   Consumer(
                     builder:
@@ -259,33 +262,73 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
               ),
             ),
           ),
-          PostCommentForm(
-            textController: textController,
-            sendMessage: () async {
-              final result = await ref.read(
-                  postCommentCreateProvider(postId: widget.postId).future);
-              if (result is! ErrorModel) {
-                textController.clear();
-                FlashUtil.showFlash(context, '댓글 작성이 완료되었습니다');
-                Future.delayed(
-                    const Duration(milliseconds: 200),
-                    () => {
-                          scrollController.animateTo(
-                            scrollController.position.maxScrollExtent,
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          )
-                        });
-              } else {
-                PostError.fromModel(model: result)
-                    .responseError(context, PostApiType.createComment, ref);
-              }
+          Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              final commentForm =
+                  ref.watch(postCommentFormProvider(postId: widget.postId));
+
+              return PostCommentFormComponent(
+                // 필수 파라미터들
+                focusNode: focusNode,
+                textController: textController,
+
+                // 데이터 파라미터들
+                content: commentForm.content,
+                localImages: commentForm.localImages,
+
+                // 콜백 파라미터들
+                onContentChanged: (content) {
+                  log("text = $content");
+                  ref
+                      .read(postCommentFormProvider(postId: widget.postId)
+                          .notifier)
+                      .update(content: content);
+                },
+                onImageDelete: (imagePath) {
+                  ref
+                      .read(postCommentFormProvider(postId: widget.postId)
+                          .notifier)
+                      .removeLocalImage(imagePath);
+                },
+                sendMessage: () async {
+                  // 이미지 설정 (업로드된 이미지 URL을 images 배열에 복사)
+                  ref
+                      .read(postCommentFormProvider(postId: widget.postId)
+                          .notifier)
+                      .setImages();
+
+                  final result = await ref.read(
+                      postCommentCreateProvider(postId: widget.postId).future);
+                  if (result is! ErrorModel) {
+                    textController.clear();
+                    // 댓글 작성 후 폼 상태 완전 초기화
+                    ref
+                        .read(postCommentFormProvider(postId: widget.postId)
+                            .notifier)
+                        .reset();
+
+                    FlashUtil.showFlash(context, '댓글 작성이 완료되었습니다');
+                    Future.delayed(
+                        const Duration(milliseconds: 200),
+                        () => {
+                              scrollController.animateTo(
+                                scrollController.position.maxScrollExtent,
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              )
+                            });
+                  } else {
+                    PostError.fromModel(model: result)
+                        .responseError(context, PostApiType.createComment, ref);
+                  }
+                },
+                onGallery: () async {
+                  // 갤러리 기능 구현
+                  await _imageUploadUtil.pickMultipleImages();
+                },
+              );
             },
-            focusNode: focusNode,
-            onGallery: () {
-              // todo 갤러리 열어서 이미지 선택
-            },
-          )
+          ),
         ],
       ),
     );
