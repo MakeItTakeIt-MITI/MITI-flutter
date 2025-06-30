@@ -1032,16 +1032,11 @@ class SummaryComponent extends StatelessWidget {
         child: GestureDetector(
           onTap: () async {
             if (content == null) return;
-            // 좌표가 있으면 정확한 경로 검색, 없으면 주소 검색
-            if (latitude != null && longitude != null) {
-              await NaverMapUtil.searchRouteWithCoordinates(
-                destination: address,
-                latitude: double.parse(latitude!),
-                longitude: double.parse(longitude!),
-              );
-            } else {
-              await NaverMapUtil.searchRoute(address);
-            }
+            await NaverMapUtil.searchRoute(
+              destinationAddress: address,
+              destinationLat: double.parse(latitude!),
+              destinationLng: double.parse(longitude!),
+            );
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
