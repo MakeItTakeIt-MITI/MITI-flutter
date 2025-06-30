@@ -121,144 +121,151 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
       body: Column(
         children: [
           Expanded(
-            child: SingleChildScrollView(
-              controller: scrollController,
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              child: Column(
-                children: [
-                  /// 게시글 영역
-                  SelectableRegion(
-                    focusNode: contentFocusNode,
-                    selectionControls: materialTextSelectionControls,
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                          top: 15.h, bottom: 30.h, left: 14.w, right: 14.w),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          PostCategory(category: model.category),
-                          SizedBox(height: 10.h),
-                          PostWriterInfo.fromModel(
-                            model: model.writer,
-                            createdAt: model.createdAt,
-                            isAnonymous: model.isAnonymous,
-                          ),
-                          SizedBox(height: 25.h),
-                          Text(
-                            model.title,
-                            style: MITITextStyle.mdSemiBold150
-                                .copyWith(color: MITIColor.gray50),
-                          ),
-                          SizedBox(height: 10.h),
-                          Text(
-                            model.content,
-                            style: MITITextStyle.sm150
-                                .copyWith(color: MITIColor.gray50),
-                          ),
-                          SizedBox(height: 5.h),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: model.images
-                                .map((e) => Padding(
-                                      padding: EdgeInsets.only(bottom: 5.h),
-                                      child: Image.network(
-                                        e,
-                                        fit: BoxFit.contain,
-                                        alignment: Alignment.topLeft,
-                                        // 너비에 맞추고 높이는 비율에 따라 자동 조정
-                                        loadingBuilder:
-                                            (context, child, loadingProgress) {
-                                          if (loadingProgress == null)
-                                            return child;
-                                          return Container(
-                                            height: 200.h,
-                                            color: MITIColor.gray700,
-                                            child: Center(
-                                              child: CircularProgressIndicator(
-                                                value: loadingProgress
-                                                            .expectedTotalBytes !=
-                                                        null
-                                                    ? loadingProgress
-                                                            .cumulativeBytesLoaded /
-                                                        loadingProgress
-                                                            .expectedTotalBytes!
-                                                    : null,
+            child: RefreshIndicator(
+              onRefresh: refresh,
+              child: SingleChildScrollView(
+                controller: scrollController,
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                child: Column(
+                  children: [
+                    /// 게시글 영역
+                    SelectableRegion(
+                      focusNode: contentFocusNode,
+                      selectionControls: materialTextSelectionControls,
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                            top: 15.h, bottom: 30.h, left: 14.w, right: 14.w),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            PostCategory(category: model.category),
+                            SizedBox(height: 10.h),
+                            PostWriterInfo.fromModel(
+                              model: model.writer,
+                              createdAt: model.createdAt,
+                              isAnonymous: model.isAnonymous,
+                            ),
+                            SizedBox(height: 25.h),
+                            Text(
+                              model.title,
+                              style: MITITextStyle.mdSemiBold150
+                                  .copyWith(color: MITIColor.gray50),
+                            ),
+                            SizedBox(height: 10.h),
+                            Text(
+                              model.content,
+                              style: MITITextStyle.sm150
+                                  .copyWith(color: MITIColor.gray50),
+                            ),
+                            SizedBox(height: 5.h),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: model.images
+                                  .map((e) => Padding(
+                                        padding: EdgeInsets.only(bottom: 5.h),
+                                        child: Image.network(
+                                          e,
+                                          fit: BoxFit.contain,
+                                          alignment: Alignment.topLeft,
+                                          // 너비에 맞추고 높이는 비율에 따라 자동 조정
+                                          loadingBuilder: (context, child,
+                                              loadingProgress) {
+                                            if (loadingProgress == null)
+                                              return child;
+                                            return Container(
+                                              height: 200.h,
+                                              color: MITIColor.gray700,
+                                              child: Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  value: loadingProgress
+                                                              .expectedTotalBytes !=
+                                                          null
+                                                      ? loadingProgress
+                                                              .cumulativeBytesLoaded /
+                                                          loadingProgress
+                                                              .expectedTotalBytes!
+                                                      : null,
+                                                ),
                                               ),
-                                            ),
-                                          );
-                                        },
-                                        errorBuilder:
-                                            (context, error, stackTrace) {
-                                          return Container(
-                                            height: 200.h,
-                                            color: MITIColor.gray700,
-                                            child: const Icon(
-                                              Icons.error,
-                                              color: MITIColor.error,
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ))
-                                .toList(),
-                          )
-                        ],
+                                            );
+                                          },
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                            return Container(
+                                              height: 200.h,
+                                              color: MITIColor.gray700,
+                                              child: const Icon(
+                                                Icons.error,
+                                                color: MITIColor.error,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ))
+                                  .toList(),
+                            )
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  PostUtilComponent(
-                    likedUsers: model.likedUsers,
-                    onLikeTap: () async {
-                      if (isSelected) {
-                        final result = await ref.read(
-                            postUnLikeProvider(postId: widget.postId).future);
-                        if (result is ErrorModel) {
-                          PostError.fromModel(model: result).responseError(
-                              context, PostApiType.unLikePost, ref);
+                    PostUtilComponent(
+                      likedUsers: model.likedUsers,
+                      onLikeTap: () async {
+                        if (isSelected) {
+                          final result = await ref.read(
+                              postUnLikeProvider(postId: widget.postId).future);
+                          if (result is ErrorModel) {
+                            PostError.fromModel(model: result).responseError(
+                                context, PostApiType.unLikePost, ref);
+                          }
+                        } else {
+                          final result = await ref.read(
+                              postLikeProvider(postId: widget.postId).future);
+                          if (result is ErrorModel) {
+                            PostError.fromModel(model: result).responseError(
+                                context, PostApiType.likePost, ref);
+                          }
                         }
-                      } else {
-                        final result = await ref.read(
-                            postLikeProvider(postId: widget.postId).future);
-                        if (result is ErrorModel) {
+                      },
+                      onShareTap: () async {
+                        final result = await Share.shareUri(Uri(
+                          scheme: 'https',
+                          host: "www.makeittakeit.kr",
+                          path: 'post/${widget.postId}',
+                        ));
+                      },
+                      isSelected: isSelected,
+                    ),
+
+                    /// 댓글 영역
+                    Consumer(
+                      builder:
+                          (BuildContext context, WidgetRef ref, Widget? child) {
+                        final result = ref.watch(
+                            postCommentListProvider(postId: widget.postId));
+                        if (result is LoadingModel) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (result is ErrorModel) {
                           PostError.fromModel(model: result).responseError(
-                              context, PostApiType.likePost, ref);
+                              context, PostApiType.getCommentList, ref);
+                          return const Center(
+                              child: CircularProgressIndicator());
                         }
-                      }
-                    },
-                    onShareTap: () async {
-                      final result = await Share.shareUri(Uri(
-                        scheme: 'https',
-                        host: "www.makeittakeit.kr",
-                        path: 'post/${widget.postId}',
-                      ));
-                    },
-                    isSelected: isSelected,
-                  ),
 
-                  /// 댓글 영역
-                  Consumer(
-                    builder:
-                        (BuildContext context, WidgetRef ref, Widget? child) {
-                      final result = ref.watch(
-                          postCommentListProvider(postId: widget.postId));
-                      if (result is LoadingModel) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (result is ErrorModel) {
-                        PostError.fromModel(model: result).responseError(
-                            context, PostApiType.getCommentList, ref);
-                        return const Center(child: CircularProgressIndicator());
-                      }
-
-                      final model =
-                          (result as ResponseListModel<BasePostCommentResponse>)
-                              .data!;
-                      return CommentComponent(
-                        comments: model,
-                        postId: widget.postId,
-                      );
-                    },
-                  ),
-                ],
+                        final model = (result
+                                as ResponseListModel<BasePostCommentResponse>)
+                            .data!;
+                        return CommentComponent(
+                          comments: model,
+                          postId: widget.postId,
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -336,6 +343,12 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> refresh() async {
+    ref
+        .read(postDetailProvider(postId: widget.postId).notifier)
+        .get(postId: widget.postId);
   }
 
   void showPostBottomSheet(BuildContext context, PostResponse model) {

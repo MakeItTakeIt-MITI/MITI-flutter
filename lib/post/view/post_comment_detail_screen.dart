@@ -170,67 +170,74 @@ class _PostCommentDetailScreenState
       body: Column(
         children: [
           Expanded(
-            child: SingleChildScrollView(
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              controller: scrollController,
-              child: Column(
-                children: [
-                  CommentInfoComponent(
-                    postId: widget.postId,
-                    commentId: widget.commentId,
-                    model: model,
-                  ),
-                  Consumer(
-                    builder:
-                        (BuildContext context, WidgetRef ref, Widget? child) {
-                      final result = ref.watch(randomAdvertiseProvider);
-                      if (result is LoadingModel) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (result is ErrorModel) {
-                        // todo advertise error
-                        // PostError.fromModel(model: result).responseError(
-                        //     context, PostApiType.deleteComment, ref);
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      final model =
-                          (result as ResponseModel<BaseAdvertisementResponse>)
-                              .data!;
+            child: RefreshIndicator(
+              onRefresh: refresh,
+              child: SingleChildScrollView(
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                controller: scrollController,
+                child: Column(
+                  children: [
+                    CommentInfoComponent(
+                      postId: widget.postId,
+                      commentId: widget.commentId,
+                      model: model,
+                    ),
+                    Consumer(
+                      builder:
+                          (BuildContext context, WidgetRef ref, Widget? child) {
+                        final result = ref.watch(randomAdvertiseProvider);
+                        if (result is LoadingModel) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (result is ErrorModel) {
+                          // todo advertise error
+                          // PostError.fromModel(model: result).responseError(
+                          //     context, PostApiType.deleteComment, ref);
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        final model =
+                            (result as ResponseModel<BaseAdvertisementResponse>)
+                                .data!;
 
-                      return Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 11.5.w),
-                        child: GestureDetector(
-                          onTap: () {
-                            Map<String, String> pathParameters = {
-                              'advertisementId': model.id.toString()
-                            };
-                            context.pushNamed(AdvertiseDetailScreen.routeName,
-                                pathParameters: pathParameters);
-                          },
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8.r),
-                            child: Container(
-                              width: double.infinity,
-                              height: 78.h,
-                              decoration: BoxDecoration(
-                                color: MITIColor.gray400,
-                                image: DecorationImage(
-                                  image: NetworkImage(model.thumbnailImageUrl),
+                        return Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 11.5.w),
+                          child: GestureDetector(
+                            onTap: () {
+                              Map<String, String> pathParameters = {
+                                'advertisementId': model.id.toString()
+                              };
+                              context.pushNamed(AdvertiseDetailScreen.routeName,
+                                  pathParameters: pathParameters);
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8.r),
+                              child: Container(
+                                width: double.infinity,
+                                height: 78.h,
+                                decoration: BoxDecoration(
+                                  color: MITIColor.gray400,
+                                  image: DecorationImage(
+                                    image:
+                                        NetworkImage(model.thumbnailImageUrl),
+                                  ),
                                 ),
+                                // child: Text("광고 섹션"),
                               ),
-                              // child: Text("광고 섹션"),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                  _ReplyCommentComponent(
-                    replyComments: model.replyComments,
-                    postId: widget.postId,
-                    commentId: widget.commentId,
-                    userId: userId,
-                  ),
-                ],
+                        );
+                      },
+                    ),
+                    _ReplyCommentComponent(
+                      replyComments: model.replyComments,
+                      postId: widget.postId,
+                      commentId: widget.commentId,
+                      userId: userId,
+                    ),
+                  ],
+                ),
               ),
             ),
           ), // todo 폼 수정
@@ -316,6 +323,14 @@ class _PostCommentDetailScreenState
         ],
       ),
     );
+  }
+
+  Future<void> refresh() async {
+    ref
+        .read(postCommentDetailProvider(
+                postId: widget.postId, commentId: widget.commentId)
+            .notifier)
+        .get(postId: widget.postId, commentId: widget.commentId);
   }
 }
 

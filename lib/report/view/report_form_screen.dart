@@ -14,6 +14,7 @@ import 'package:miti/post/view/post_detail_screen.dart';
 import 'package:miti/report/provider/report_provider.dart';
 import 'package:miti/report/provider/widget/report_form_provider.dart';
 import 'package:miti/theme/color_theme.dart';
+
 import '../../common/component/custom_dialog.dart';
 import '../../common/component/default_layout.dart';
 import '../../common/provider/router_provider.dart';
@@ -133,6 +134,8 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: 21.w),
               child: CustomScrollView(
+                keyboardDismissBehavior:
+                ScrollViewKeyboardDismissBehavior.onDrag,
                 slivers: [
                   SliverToBoxAdapter(child: SizedBox(height: 32.h)),
                   SliverToBoxAdapter(
