@@ -1,20 +1,14 @@
 import 'dart:developer';
 
+import 'package:collection/collection.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
-import 'package:flash/flash.dart';
-import 'package:flash/flash_helper.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
-import 'package:marquee/marquee.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/chat/provider/chat_approve_provider.dart';
 import 'package:miti/common/component/custom_dialog.dart';
@@ -24,33 +18,24 @@ import 'package:miti/common/component/default_layout.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/game/component/game_state_label.dart';
 import 'package:miti/game/error/game_error.dart';
-import 'package:miti/game/model/game_model.dart';
-import 'package:miti/game/model/game_payment_model.dart';
 import 'package:miti/game/model/widget/user_reivew_short_info_model.dart';
 import 'package:miti/game/provider/game_provider.dart' hide Rating;
-import 'package:collection/collection.dart';
-import 'package:miti/game/view/game_review_list_screen.dart';
 import 'package:miti/game/view/game_refund_screen.dart';
+import 'package:miti/game/view/game_review_list_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
-import 'package:share_plus/share_plus.dart';
-import '../../account/model/account_model.dart';
+
 import '../../chat/model/game_chat_room_approved_users_response.dart';
 import '../../chat/view/chat_room_screen.dart';
 import '../../common/component/share_fab_component.dart';
-import '../../common/error/view/error_screen.dart';
 import '../../common/model/entity_enum.dart';
 import '../../court/view/court_detail_screen.dart';
-import '../../court/view/court_map_screen.dart';
-import '../../default_screen.dart';
 import '../../report/view/report_list_screen.dart';
 import '../../review/model/v2/base_guest_rating_response.dart';
 import '../../user/model/v2/user_host_rating_response.dart';
-import '../../user/view/profile_menu_screen.dart';
-import '../../user/model/review_model.dart';
+import '../../util/naver_map_util.dart';
 import '../../util/util.dart';
 import '../component/skeleton/game_detail_skeleton.dart';
-import '../model/game_refund_model.dart';
 import '../model/v2/game/game_detail_response.dart';
 import '../model/v2/game/game_participation_payment_detail_response.dart';
 import '../model/v2/game/game_with_court_response.dart';
@@ -924,21 +909,26 @@ class SummaryComponent extends StatelessWidget {
   final int num_of_participations;
   final int? gameId;
   final bool isUpdateForm;
+  final String? latitude;
+  final String? longitude;
 
-  const SummaryComponent(
-      {super.key,
-      this.gameStatus,
-      required this.title,
-      required this.gameDate,
-      required this.address,
-      this.courtName,
-      this.fee,
-      required this.max_invitation,
-      required this.num_of_participations,
-      this.bankStatus,
-      required this.duration,
-      this.gameId,
-      this.isUpdateForm = false});
+  const SummaryComponent({
+    super.key,
+    this.gameStatus,
+    required this.title,
+    required this.gameDate,
+    required this.address,
+    this.courtName,
+    this.fee,
+    required this.max_invitation,
+    required this.num_of_participations,
+    this.bankStatus,
+    required this.duration,
+    this.gameId,
+    this.isUpdateForm = false,
+    this.latitude,
+    this.longitude,
+  });
 
   factory SummaryComponent.fromDetailModel(
       {required GameDetailResponse model, bool isUpdateForm = false}) {
@@ -959,13 +949,15 @@ class SummaryComponent extends StatelessWidget {
       gameStatus: model.game_status,
       title: model.title,
       gameDate: gameDate,
-      address: model.court.address + " ${model.court.name}",
+      address: model.court.address,
       courtName: model.court.name!,
       fee: NumberUtil.format(model.fee.toString()),
       max_invitation: model.max_invitation,
       num_of_participations: model.num_of_participations,
       duration: end.difference(start).inMinutes.toString(),
       isUpdateForm: isUpdateForm,
+      latitude: model.court.latitude,
+      longitude: model.court.longitude,
     );
   }
 
@@ -1027,7 +1019,9 @@ class SummaryComponent extends StatelessWidget {
       SvgPicture.asset(
         width: 16.r,
         height: 16.r,
-        colorFilter: const ColorFilter.mode(MITIColor.gray100, BlendMode.srcIn),
+        colorFilter: ColorFilter.mode(
+            content != null ? MITIColor.primary : MITIColor.gray100,
+            BlendMode.srcIn),
         AssetUtil.getAssetPath(
           type: AssetType.icon,
           name: svgPath,
@@ -1035,28 +1029,46 @@ class SummaryComponent extends StatelessWidget {
       ),
       SizedBox(width: 8.w),
       Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
-              textAlign: TextAlign.left,
-            ),
-            // if (content != null)
-            //   Padding(
-            //     padding: EdgeInsets.only(top: 4.h),
-            //     child: Text(
-            //       content,
-            //       maxLines: 1,
-            //       overflow: TextOverflow.ellipsis,
-            //       style: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
-            //       textAlign: TextAlign.left,
-            //     ),
-            //   ),
-          ],
+        child: GestureDetector(
+          onTap: () async {
+            if (content == null) return;
+            // 좌표가 있으면 정확한 경로 검색, 없으면 주소 검색
+            if (latitude != null && longitude != null) {
+              await NaverMapUtil.searchRouteWithCoordinates(
+                destination: address,
+                latitude: double.parse(latitude!),
+                longitude: double.parse(longitude!),
+              );
+            } else {
+              await NaverMapUtil.searchRoute(address);
+            }
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: MITITextStyle.sm.copyWith(
+                    color: content != null
+                        ? MITIColor.primary
+                        : MITIColor.gray100),
+                textAlign: TextAlign.left,
+              ),
+              if (content != null)
+                Padding(
+                  padding: EdgeInsets.only(top: 4.h),
+                  child: Text(
+                    content,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: MITITextStyle.sm.copyWith(color: MITIColor.primary),
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+            ],
+          ),
         ),
       )
     ]);

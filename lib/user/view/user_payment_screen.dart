@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:miti/account/error/account_error.dart';
-import 'package:miti/user/model/my_payment_model.dart';
 import 'package:miti/user/view/user_payment_detail_screen.dart';
 import 'package:miti/util/util.dart';
 
@@ -218,7 +216,6 @@ class PaymentCard extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(width: 50.w),
           Text(
             totalAmount == 0
                 ? '무료'
