@@ -240,7 +240,7 @@ class _PostCommentDetailScreenState
                 ),
               ),
             ),
-          ), // todo 폼 수정
+          ),
           Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
               final commentForm = ref.watch(postCommentFormProvider(

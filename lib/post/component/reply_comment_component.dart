@@ -77,6 +77,7 @@ class ReplyCommentComponent extends ConsumerWidget {
                 content,
                 style: MITITextStyle.xxsm.copyWith(color: MITIColor.gray100),
               ),
+              SizedBox(height: 7.h),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: images

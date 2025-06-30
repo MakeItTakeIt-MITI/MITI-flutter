@@ -233,7 +233,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                         final result = await Share.shareUri(Uri(
                           scheme: 'https',
                           host: "www.makeittakeit.kr",
-                          path: 'post/${widget.postId}',
+                          path: '/post/${widget.postId}',
                         ));
                       },
                       isSelected: isSelected,
