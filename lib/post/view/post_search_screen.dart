@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,11 +8,9 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/post/provider/popular_search_provider.dart';
 import 'package:miti/post/view/post_detail_screen.dart';
-import 'package:collection/collection.dart';
-import '../../chat/view/chat_room_screen.dart';
+
 import '../../common/component/default_appbar.dart';
 import '../../common/component/sliver_delegate.dart';
-import '../../common/error/view/error_screen.dart';
 import '../../common/model/cursor_model.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
@@ -115,18 +113,19 @@ class _PostSearchScreenState extends ConsumerState<PostSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ref.listen(postSearchProvider(true), (prev, after) {
-    //
-    //   log("force Search ${after}");
-    //   // ref
-    //   //     .read(postPaginationProvider(true).notifier)
-    //   //     .updateDebounce(param: after);
-    // });
+    ref.listen(postSearchProvider(true), (prev, after) {
+      ref
+          .read(postPaginationProvider(true,
+                  cursorParam: const CursorPaginationParam())
+              .notifier)
+          .updateDebounce(param: after);
+    });
 
     final searchForm = ref.watch(postSearchProvider(true));
     final categories = PostCategoryType.values.toList();
     categories.remove(PostCategoryType.all);
     bool isSearching = searchForm.search == null || showTextField;
+
     return Scaffold(
       backgroundColor: MITIColor.gray900,
       body: SafeArea(
@@ -350,6 +349,9 @@ class _PostSearchScreenState extends ConsumerState<PostSearchScreen> {
 
   Widget _getBody(bool isSearching, List<PostCategoryType> categories,
       PostSearchParam searchForm) {
+    final state = ref.watch(postPaginationProvider(true,
+        cursorParam: const CursorPaginationParam()));
+
     if (isSearching) {
       return CustomScrollView(
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -379,8 +381,8 @@ class _PostSearchScreenState extends ConsumerState<PostSearchScreen> {
                     if (result is LoadingModel) {
                       return Container();
                     } else if (result is ErrorModel) {
-                      PostError.fromModel(model: result)
-                          .responseError(context, PostApiType.getPopularSearchList, ref);
+                      PostError.fromModel(model: result).responseError(
+                          context, PostApiType.getPopularSearchList, ref);
 
                       return const Text("error");
                     }
@@ -454,8 +456,6 @@ class _PostSearchScreenState extends ConsumerState<PostSearchScreen> {
             Consumer(
               builder: (BuildContext context, WidgetRef ref, Widget? child) {
                 log("post Search Build!");
-                final state = ref.watch(postPaginationProvider(true,
-                    cursorParam: const CursorPaginationParam()));
 
                 // 완전 처음 로딩일때
                 if (state is LoadingModel) {
