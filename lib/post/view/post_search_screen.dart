@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -359,20 +358,6 @@ class _PostSearchScreenState extends ConsumerState<PostSearchScreen> {
           SliverPadding(
             padding: EdgeInsets.all(12.r),
             sliver: SliverMainAxisGroup(slivers: [
-              SliverToBoxAdapter(
-                child: SearchChipComponent(
-                  title: "카테고리",
-                  contents: categories
-                      .mapIndexed((idx, e) => Text(
-                            e.displayName,
-                            style: MITITextStyle.xxsm
-                                .copyWith(color: MITIColor.gray300),
-                          ))
-                      .toList(),
-                  onSelect: (int index) {},
-                ),
-              ),
-              SliverToBoxAdapter(child: SizedBox(height: 20.h)),
               SliverToBoxAdapter(
                 child: Consumer(
                   builder:

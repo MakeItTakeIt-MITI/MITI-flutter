@@ -4,9 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:miti/account/error/account_error.dart';
 import 'package:miti/post/provider/popular_post_provider.dart';
 import 'package:miti/post/view/post_detail_screen.dart';
 import 'package:miti/theme/color_theme.dart';
@@ -104,7 +102,7 @@ class _PopularPostComponentState extends ConsumerState<PopularPostComponent> {
                       initialPage: 0,
                       enlargeStrategy: CenterPageEnlargeStrategy.scale,
                       autoPlay: true,
-                      autoPlayInterval: const Duration(seconds: 2),
+                      autoPlayInterval: const Duration(seconds: 5),
                       scrollDirection: Axis.vertical,
                       pageSnapping: false,
                       onPageChanged: (idx, _) {

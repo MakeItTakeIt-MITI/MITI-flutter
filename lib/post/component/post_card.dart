@@ -102,7 +102,7 @@ class PostCard extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            writer.nickname,
+                            isAnonymous ? '익명' : writer.nickname,
                             style: MITITextStyle.xxxsm
                                 .copyWith(color: MITIColor.gray600),
                           ),

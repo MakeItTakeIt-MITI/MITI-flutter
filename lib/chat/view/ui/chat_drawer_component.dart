@@ -25,10 +25,13 @@ class ChatDrawerComponent extends StatelessWidget {
               gameId: gameId,
             ),
             SizedBox(height: 10.h),
-            ChatMemberComponent(
-              gameId: gameId,
+            Expanded(
+              child: SingleChildScrollView(
+                child: ChatMemberComponent(
+                  gameId: gameId,
+                ),
+              ),
             ),
-            const Spacer(),
             Align(
               alignment: Alignment.centerRight,
               child: IconButton(

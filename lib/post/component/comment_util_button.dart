@@ -24,10 +24,9 @@ class CommentUtilButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent, // 핵심!
       onTap: onTap,
-      highlightColor: Colors.transparent,
-      splashFactory: NoSplash.splashFactory,
       child: Row(
         children: [
           SvgPicture.asset(
