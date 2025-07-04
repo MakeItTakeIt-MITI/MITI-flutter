@@ -37,7 +37,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.miti.miti"
-    compileSdkVersion 34
+    compileSdkVersion 35
     ndkVersion flutter.ndkVersion
 
     flavorDimensions "environment"
@@ -83,9 +83,9 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 24
-        targetSdkVersion 34 //flutter.targetSdkVersion
-        versionCode 27
-        versionName "1.2.2"
+        targetSdkVersion 35 //flutter.targetSdkVersion
+        versionCode 28
+        versionName "1.2.3"
         multiDexEnabled true
         manifestPlaceholders += [KAKAO_NATIVE_APP_KEY: KAKAO_NATIVE_APP_KEY]
     }
