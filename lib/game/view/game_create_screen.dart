@@ -1,22 +1,17 @@
 import 'dart:developer';
-import 'package:debounce_throttle/debounce_throttle.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_quill/flutter_quill.dart';
-import 'package:flutter_quill/translations.dart';
-import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
-import 'package:kpostal/kpostal.dart';
-import 'package:marquee/marquee.dart';
 import 'dart:math' hide log;
 
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' hide TextDirection;
+import 'package:kpostal/kpostal.dart';
+import 'package:marquee/marquee.dart';
 import 'package:miti/auth/view/signup/signup_screen.dart';
 import 'package:miti/common/component/custom_bottom_sheet.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
@@ -34,8 +29,6 @@ import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/custom_time_picker.dart';
-import '../../common/param/pagination_param.dart';
-import '../../common/provider/router_provider.dart';
 import '../../common/provider/widget/form_provider.dart';
 import '../../common/view/operation_term_screen.dart';
 import '../../court/component/court_list_component.dart';
@@ -45,165 +38,161 @@ import '../../court/param/court_pagination_param.dart';
 import '../../court/provider/court_pagination_provider.dart';
 import '../../util/util.dart';
 import '../component/game_recent_component.dart';
-import '../model/game_model.dart';
-import '../model/game_recent_host_model.dart';
-import '../model/v2/game/base_game_with_court_response.dart';
 import '../model/v2/game/game_detail_response.dart';
-import '../model/v2/game/game_response.dart';
 import '../model/v2/game/game_with_court_response.dart';
 import '../param/game_param.dart';
 import 'game_create_complete_screen.dart';
 
-class GameQuillComponent extends StatefulWidget {
-  const GameQuillComponent({super.key});
-
-  @override
-  State<GameQuillComponent> createState() => _GameQuillComponentState();
-}
-
-class _GameQuillComponentState extends State<GameQuillComponent> {
-  QuillController controller = QuillController.basic();
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final dialogTheme = QuillDialogTheme(
-      labelTextStyle: TextStyle(color: Colors.white),
-      dialogBackgroundColor: MITIColor.white,
-      shape: RoundedRectangleBorder(),
-      isWrappable: true,
-    );
-    return FlutterQuillLocalizationsWidget(
-      child: Column(
-        children: [
-          Container(
-            color: Colors.white,
-            width: double.infinity,
-            child: Wrap(
-              children: [
-                QuillToolbarHistoryButton(
-                  isUndo: true,
-                  controller: controller,
-                ),
-                QuillToolbarHistoryButton(
-                  isUndo: false,
-                  controller: controller,
-                ),
-                QuillToolbarToggleStyleButton(
-                  options: const QuillToolbarToggleStyleButtonOptions(),
-                  controller: controller,
-                  attribute: Attribute.bold,
-                ),
-                QuillToolbarToggleStyleButton(
-                  options: const QuillToolbarToggleStyleButtonOptions(),
-                  controller: controller,
-                  attribute: Attribute.italic,
-                ),
-                QuillToolbarToggleStyleButton(
-                  controller: controller,
-                  attribute: Attribute.underline,
-                ),
-                QuillToolbarClearFormatButton(
-                  controller: controller,
-                ),
-                const VerticalDivider(),
-                QuillToolbarImageButton(
-                  controller: controller,
-                  options: QuillToolbarImageButtonOptions(
-                      afterButtonPressed: () {
-                        log("image Click");
-                      },
-                      imageButtonConfigurations:
-                          QuillToolbarImageConfigurations(),
-                      dialogTheme: dialogTheme),
-                ),
-                QuillToolbarCameraButton(
-                  controller: controller,
-                ),
-                QuillToolbarVideoButton(
-                  controller: controller,
-                ),
-                const VerticalDivider(),
-                QuillToolbarColorButton(
-                  controller: controller,
-                  isBackground: false,
-                ),
-                QuillToolbarColorButton(
-                  controller: controller,
-                  isBackground: true,
-                ),
-                const VerticalDivider(),
-                QuillToolbarSelectHeaderStyleDropdownButton(
-                  controller: controller,
-                ),
-                const VerticalDivider(),
-                QuillToolbarSelectLineHeightStyleDropdownButton(
-                  controller: controller,
-                ),
-                const VerticalDivider(),
-                QuillToolbarToggleCheckListButton(
-                  controller: controller,
-                ),
-                QuillToolbarToggleStyleButton(
-                  controller: controller,
-                  attribute: Attribute.ol,
-                ),
-                QuillToolbarToggleStyleButton(
-                  controller: controller,
-                  attribute: Attribute.ul,
-                ),
-                QuillToolbarToggleStyleButton(
-                  controller: controller,
-                  attribute: Attribute.inlineCode,
-                ),
-                QuillToolbarToggleStyleButton(
-                  controller: controller,
-                  attribute: Attribute.blockQuote,
-                ),
-                QuillToolbarIndentButton(
-                  controller: controller,
-                  isIncrease: true,
-                ),
-                QuillToolbarIndentButton(
-                  controller: controller,
-                  isIncrease: false,
-                ),
-                const VerticalDivider(),
-                QuillToolbarLinkStyleButton(controller: controller),
-                QuillToolbar.simple(
-                  controller: controller,
-                  configurations: QuillSimpleToolbarConfigurations(
-                    dialogTheme: dialogTheme,
-                    embedButtons: FlutterQuillEmbeds.toolbarButtons(
-                        imageButtonOptions: QuillToolbarImageButtonOptions(
-                            dialogTheme: dialogTheme, tooltip: "imageTooltip")),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            height: 200.h,
-            color: MITIColor.gray100,
-            child: QuillEditor.basic(
-              controller: controller,
-              configurations: QuillEditorConfigurations(
-                embedBuilders: kIsWeb
-                    ? FlutterQuillEmbeds.editorWebBuilders()
-                    : FlutterQuillEmbeds.editorBuilders(),
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-}
+// class GameQuillComponent extends StatefulWidget {
+//   const GameQuillComponent({super.key});
+//
+//   @override
+//   State<GameQuillComponent> createState() => _GameQuillComponentState();
+// }
+//
+// class _GameQuillComponentState extends State<GameQuillComponent> {
+//   QuillController controller = QuillController.basic();
+//
+//   @override
+//   void dispose() {
+//     controller.dispose();
+//     super.dispose();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final dialogTheme = QuillDialogTheme(
+//       labelTextStyle: TextStyle(color: Colors.white),
+//       dialogBackgroundColor: MITIColor.white,
+//       shape: RoundedRectangleBorder(),
+//       isWrappable: true,
+//     );
+//     return FlutterQuillLocalizationsWidget(
+//       child: Column(
+//         children: [
+//           Container(
+//             color: Colors.white,
+//             width: double.infinity,
+//             child: Wrap(
+//               children: [
+//                 QuillToolbarHistoryButton(
+//                   isUndo: true,
+//                   controller: controller,
+//                 ),
+//                 QuillToolbarHistoryButton(
+//                   isUndo: false,
+//                   controller: controller,
+//                 ),
+//                 QuillToolbarToggleStyleButton(
+//                   options: const QuillToolbarToggleStyleButtonOptions(),
+//                   controller: controller,
+//                   attribute: Attribute.bold,
+//                 ),
+//                 QuillToolbarToggleStyleButton(
+//                   options: const QuillToolbarToggleStyleButtonOptions(),
+//                   controller: controller,
+//                   attribute: Attribute.italic,
+//                 ),
+//                 QuillToolbarToggleStyleButton(
+//                   controller: controller,
+//                   attribute: Attribute.underline,
+//                 ),
+//                 QuillToolbarClearFormatButton(
+//                   controller: controller,
+//                 ),
+//                 const VerticalDivider(),
+//                 QuillToolbarImageButton(
+//                   controller: controller,
+//                   options: QuillToolbarImageButtonOptions(
+//                       afterButtonPressed: () {
+//                         log("image Click");
+//                       },
+//                       imageButtonConfigurations:
+//                           QuillToolbarImageConfigurations(),
+//                       dialogTheme: dialogTheme),
+//                 ),
+//                 QuillToolbarCameraButton(
+//                   controller: controller,
+//                 ),
+//                 QuillToolbarVideoButton(
+//                   controller: controller,
+//                 ),
+//                 const VerticalDivider(),
+//                 QuillToolbarColorButton(
+//                   controller: controller,
+//                   isBackground: false,
+//                 ),
+//                 QuillToolbarColorButton(
+//                   controller: controller,
+//                   isBackground: true,
+//                 ),
+//                 const VerticalDivider(),
+//                 QuillToolbarSelectHeaderStyleDropdownButton(
+//                   controller: controller,
+//                 ),
+//                 const VerticalDivider(),
+//                 QuillToolbarSelectLineHeightStyleDropdownButton(
+//                   controller: controller,
+//                 ),
+//                 const VerticalDivider(),
+//                 QuillToolbarToggleCheckListButton(
+//                   controller: controller,
+//                 ),
+//                 QuillToolbarToggleStyleButton(
+//                   controller: controller,
+//                   attribute: Attribute.ol,
+//                 ),
+//                 QuillToolbarToggleStyleButton(
+//                   controller: controller,
+//                   attribute: Attribute.ul,
+//                 ),
+//                 QuillToolbarToggleStyleButton(
+//                   controller: controller,
+//                   attribute: Attribute.inlineCode,
+//                 ),
+//                 QuillToolbarToggleStyleButton(
+//                   controller: controller,
+//                   attribute: Attribute.blockQuote,
+//                 ),
+//                 QuillToolbarIndentButton(
+//                   controller: controller,
+//                   isIncrease: true,
+//                 ),
+//                 QuillToolbarIndentButton(
+//                   controller: controller,
+//                   isIncrease: false,
+//                 ),
+//                 const VerticalDivider(),
+//                 QuillToolbarLinkStyleButton(controller: controller),
+//                 QuillToolbar.simple(
+//                   controller: controller,
+//                   configurations: QuillSimpleToolbarConfigurations(
+//                     dialogTheme: dialogTheme,
+//                     embedButtons: FlutterQuillEmbeds.toolbarButtons(
+//                         imageButtonOptions: QuillToolbarImageButtonOptions(
+//                             dialogTheme: dialogTheme, tooltip: "imageTooltip")),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//           Container(
+//             height: 200.h,
+//             color: MITIColor.gray100,
+//             child: QuillEditor.basic(
+//               controller: controller,
+//               configurations: QuillEditorConfigurations(
+//                 embedBuilders: kIsWeb
+//                     ? FlutterQuillEmbeds.editorWebBuilders()
+//                     : FlutterQuillEmbeds.editorBuilders(),
+//               ),
+//             ),
+//           )
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class GameCreateScreen extends ConsumerStatefulWidget {
   final CourtOperationsResponse? court;

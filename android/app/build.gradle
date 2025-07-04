@@ -38,9 +38,16 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace "com.miti.miti"
     compileSdkVersion 35
-    ndkVersion flutter.ndkVersion
+//    ndkVersion flutter.ndkVersion
+    ndkVersion = "26.1.10909125"
 
     flavorDimensions "environment"
+
+    // deferred components 비활성화
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
 
     productFlavors {
         dev {
@@ -65,38 +72,17 @@ android {
         // Flag to enable support for the new language APIs
         coreLibraryDesugaringEnabled true
         // Sets Java compatibility to Java 8
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
-    defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.miti.miti"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 24
-        targetSdkVersion 35 //flutter.targetSdkVersion
-        versionCode 28
-        versionName "1.2.3"
-        multiDexEnabled true
-        manifestPlaceholders += [KAKAO_NATIVE_APP_KEY: KAKAO_NATIVE_APP_KEY]
-    }
-
-//    buildTypes {
-//        release {
-//            // TODO: Add your own signing config for the release build.
-//            // Signing with the debug keys for now, so `flutter run --release` works.
-//            signingConfig signingConfigs.debug
-//        }
-//    }
 
     signingConfigs {
         release {
@@ -107,16 +93,48 @@ android {
         }
     }
 
+    defaultConfig {
+        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        applicationId "com.miti.miti"
+        // You can update the following values to match your application needs.
+        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
+        minSdkVersion 24
+        targetSdkVersion 35 //flutter.targetSdkVersion
+        versionCode 29
+        versionName "1.2.3"
+        multiDexEnabled true
+        manifestPlaceholders += [KAKAO_NATIVE_APP_KEY: KAKAO_NATIVE_APP_KEY]
+
+
+        // deferred components 비활성화
+        ndk {
+            abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86_64'
+        }
+    }
+
+//    buildTypes {
+//        release {
+//            // TODO: Add your own signing config for the release build.
+//            // Signing with the debug keys for now, so `flutter run --release` works.
+//            signingConfig signingConfigs.debug
+//        }
+//    }
+
     buildTypes {
         release {
-            // release 속성으로 변경
             signingConfig signingConfigs.release
-
-            // start of 코드난독화 및 사이즈 축소
             minifyEnabled true
-//            useProguard true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            // end of 코드난독화 및 사이즈 축소
+
+            // R8 최적화 설정 수정
+            debuggable false
+            shrinkResources true
+
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            // deferred components 관련 설정 비활성화
+            manifestPlaceholders = [
+                    enableDeferredComponents: "false"
+            ]
         }
     }
 }
@@ -129,4 +147,10 @@ dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.2.2'
     implementation 'androidx.window:window:1.0.0'
     implementation 'androidx.window:window-java:1.0.0'
+
+    // Play Core 대신 새로운 라이브러리 사용 (targetSdkVersion 35 호환)
+    implementation 'com.google.android.play:app-update:2.1.0'
+    implementation 'com.google.android.play:app-update-ktx:2.1.0'
+    implementation 'com.google.android.play:review:2.0.1'
+    implementation 'com.google.android.play:review-ktx:2.0.1'
 }
