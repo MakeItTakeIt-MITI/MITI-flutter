@@ -115,10 +115,13 @@ class SearchHistory extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 12.w),
-                  Text(
-                    history,
-                    style:
-                        MITITextStyle.sm150.copyWith(color: MITIColor.gray400),
+                  Flexible(
+                    child: Text(
+                      history,
+                      style:
+                          MITITextStyle.sm150.copyWith(color: MITIColor.gray400),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               ),

@@ -307,12 +307,10 @@ class _PostSearchScreenState extends ConsumerState<PostSearchScreen> {
                               padding: EdgeInsets.symmetric(horizontal: 14.w),
                               child: Row(
                                 children: [
-                                  Flexible(
-                                    child: Text(
-                                      "“",
-                                      style: MITITextStyle.lgBold
-                                          .copyWith(color: Colors.white),
-                                    ),
+                                  Text(
+                                    "“",
+                                    style: MITITextStyle.lgBold
+                                        .copyWith(color: Colors.white),
                                   ),
                                   Flexible(
                                     child: Text(
@@ -322,12 +320,10 @@ class _PostSearchScreenState extends ConsumerState<PostSearchScreen> {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
-                                  Flexible(
-                                    child: Text(
-                                      "“ 검색결과",
-                                      style: MITITextStyle.lgBold
-                                          .copyWith(color: Colors.white),
-                                    ),
+                                  Text(
+                                    "“ 검색결과",
+                                    style: MITITextStyle.lgBold
+                                        .copyWith(color: Colors.white),
                                   ),
                                 ],
                               ),
