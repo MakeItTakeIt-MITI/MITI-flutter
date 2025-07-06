@@ -768,14 +768,19 @@ class ParticipationComponent extends StatelessWidget {
   final int gameId;
   final int max_invitation;
   final int num_of_confirmed_participations;
+  final int? user_participation_id;
   final List<BaseParticipationResponse> participations;
+  final bool isHost;
 
-  const ParticipationComponent(
-      {super.key,
-      required this.participations,
-      required this.max_invitation,
-      required this.num_of_confirmed_participations,
-      required this.gameId});
+  const ParticipationComponent({
+    super.key,
+    required this.participations,
+    required this.max_invitation,
+    required this.num_of_confirmed_participations,
+    required this.gameId,
+    required this.user_participation_id,
+    required this.isHost,
+  });
 
   factory ParticipationComponent.fromModel(
       {required GameDetailResponse model}) {
@@ -784,26 +789,32 @@ class ParticipationComponent extends StatelessWidget {
       max_invitation: model.max_invitation,
       num_of_confirmed_participations: model.num_of_participations,
       gameId: model.id,
+      user_participation_id: model.user_participation_id,
+      isHost: model.is_host,
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final isParticipation = user_participation_id != null || isHost;
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           GestureDetector(
-            onTap: () {
-              Map<String, String> pathParameters = {
-                'gameId': gameId.toString()
-              };
-              context.pushNamed(
-                GameParticipationScreen.routeName,
-                pathParameters: pathParameters,
-              );
-            },
+            onTap: isParticipation
+                ? () {
+                    Map<String, String> pathParameters = {
+                      'gameId': gameId.toString()
+                    };
+                    context.pushNamed(
+                      GameParticipationScreen.routeName,
+                      pathParameters: pathParameters,
+                    );
+                  }
+                : null,
             child: Container(
               color: MITIColor.gray800,
               child: Row(
@@ -815,14 +826,17 @@ class ParticipationComponent extends StatelessWidget {
                         MITITextStyle.mdBold.copyWith(color: MITIColor.gray100),
                     textAlign: TextAlign.left,
                   ),
-                  SvgPicture.asset(
-                    AssetUtil.getAssetPath(
-                      type: AssetType.icon,
-                      name: 'chevron_right',
-                    ),
-                    colorFilter: const ColorFilter.mode(
-                      MITIColor.gray400,
-                      BlendMode.srcIn,
+                  Visibility(
+                    visible: isParticipation,
+                    child: SvgPicture.asset(
+                      AssetUtil.getAssetPath(
+                        type: AssetType.icon,
+                        name: 'chevron_right',
+                      ),
+                      colorFilter: const ColorFilter.mode(
+                        MITIColor.gray400,
+                        BlendMode.srcIn,
+                      ),
                     ),
                   ),
                 ],
