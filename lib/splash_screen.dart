@@ -75,6 +75,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           pathParameters: pathParameters,
           extra: NoticeScreenType.notification,
         );
+        break;
       case PushNotificationTopicType.game_status_changed:
       case PushNotificationTopicType.new_participation:
       case PushNotificationTopicType.game_fee_changed:

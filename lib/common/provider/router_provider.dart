@@ -1048,7 +1048,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                         name: NoticeDetailScreen.routeName,
                         builder: (context, state) {
                           final int id = int.parse(state.pathParameters['id']!);
-                          final type = state.extra as NoticeScreenType;
+                          final type = state.extra as NoticeScreenType? ?? NoticeScreenType.notification;
                           return NoticeDetailScreen(
                             id: id,
                             type: type,

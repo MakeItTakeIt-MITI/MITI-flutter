@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,21 +12,15 @@ import 'package:miti/game/model/v2/notification/notification_response.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/notification/param/notification_param.dart';
 import 'package:miti/notification/provider/notification_pagination_provider.dart';
-import 'package:miti/notification/provider/widget/unconfirmed_provider.dart';
-import 'package:miti/notification/repository/notification_repository.dart';
 import 'package:miti/notification/skeleton/notice_skeleton.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
-import '../../common/component/custom_dialog.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
-import '../../common/provider/router_provider.dart';
 import '../../game/model/v2/notification/base_notification_response.dart';
 import '../../game/model/v2/notification/base_push_notification_response.dart';
-import '../../game/view/game_create_screen.dart';
-import '../model/notice_model.dart';
 import '../model/push_model.dart';
 import '../model/unread_push_model.dart';
 import '../provider/notification_provider.dart';

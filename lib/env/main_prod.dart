@@ -30,7 +30,6 @@ import '../common/service/deep_link_service.dart';
 import '../court/view/court_detail_screen.dart';
 import '../firebase_options.dart';
 import '../notification/provider/notification_provider.dart';
-import '../notification/view/notification_screen.dart';
 
 // Firebase background handler
 @pragma('vm:entry-point')
@@ -69,7 +68,7 @@ void _foregroundRouting(NotificationResponse details) async {
 @pragma('vm:entry-point')
 void _backgroundRouting(NotificationResponse details) {
   log('_backgroundRouting = $details');
-  rootNavKey.currentContext!.goNamed(NotificationScreen.routeName);
+  // rootNavKey.currentContext!.goNamed(NotificationScreen.routeName);
 }
 
 void main(List<String> args) async {
@@ -316,6 +315,7 @@ class _MyAppState extends ConsumerState<MyApp> {
           pathParameters: pathParameters,
           extra: NoticeScreenType.notification,
         );
+        break;
       case PushNotificationTopicType.game_status_changed:
       case PushNotificationTopicType.new_participation:
       case PushNotificationTopicType.game_fee_changed:
