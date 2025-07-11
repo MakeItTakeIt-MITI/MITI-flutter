@@ -1,8 +1,4 @@
-import 'dart:developer';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -11,6 +7,7 @@ import 'package:miti/post/view/post_list_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/util/util.dart';
+
 import 'court/view/court_map_screen.dart';
 import 'court/view/court_search_screen.dart';
 import 'game/view/game_screen.dart';
@@ -138,48 +135,58 @@ class CustomBottomNavigationBar extends StatelessWidget {
       ),
       constraints: BoxConstraints.tight(Size(double.infinity, 86.h)),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           // SizedBox(height: 40.w),
-          CustomBottomItem(
-            onTap: () {
-              onTap(0);
-            },
-            label: '게시판',
-            selected: index == 0,
-            iconName: index == 0 ? 'board' : 'board',
+          Expanded(
+            child: CustomBottomItem(
+              onTap: () {
+                onTap(0);
+              },
+              label: '게시판',
+              selected: index == 0,
+              iconName: index == 0 ? 'board' : 'board',
+            ),
           ),
-          CustomBottomItem(
-            onTap: () {
-              onTap(1);
-            },
-            label: '경기장',
-            selected: index == 1,
-            iconName: index == 1 ? 'court' : 'court',
+          Expanded(
+            child: CustomBottomItem(
+              onTap: () {
+                onTap(1);
+              },
+              label: '경기장',
+              selected: index == 1,
+              iconName: index == 1 ? 'court' : 'court',
+            ),
           ),
-          CustomBottomItem(
-            onTap: () {
-              onTap(2);
-            },
-            label: '홈',
-            selected: index == 2,
-            iconName: index == 2 ? 'home' : 'home',
+          Expanded(
+            child: CustomBottomItem(
+              onTap: () {
+                onTap(2);
+              },
+              label: '홈',
+              selected: index == 2,
+              iconName: index == 2 ? 'home' : 'home',
+            ),
           ),
-          CustomBottomItem(
-            onTap: () {
-              onTap(3);
-            },
-            label: '내 경기',
-            selected: index == 3,
-            iconName: index == 3 ? 'game' : 'game',
+          Expanded(
+            child: CustomBottomItem(
+              onTap: () {
+                onTap(3);
+              },
+              label: '내 경기',
+              selected: index == 3,
+              iconName: index == 3 ? 'game' : 'game',
+            ),
           ),
-          CustomBottomItem(
-            onTap: () {
-              onTap(4);
-            },
-            label: '마이페이지',
-            selected: index == 4,
-            iconName: index == 4 ? 'mypage' : 'mypage',
+          Expanded(
+            child: CustomBottomItem(
+              onTap: () {
+                onTap(4);
+              },
+              label: '마이페이지',
+              selected: index == 4,
+              iconName: index == 4 ? 'mypage' : 'mypage',
+            ),
           ),
           // SizedBox(height: 40.w),
         ],
