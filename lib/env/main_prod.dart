@@ -6,23 +6,14 @@ import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:app_links/app_links.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hive_flutter/adapters.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
-import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/common/provider/secure_storage_provider.dart';
-import 'package:miti/env/environment.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/notification/model/push_model.dart';
 import 'package:miti/notification/view/notification_detail_screen.dart';
@@ -30,18 +21,18 @@ import 'package:miti/notification_provider.dart';
 import 'package:miti/splash_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
-import 'package:miti/util/util.dart';
+
 import '../common/model/entity_enum.dart';
 import '../common/provider/provider_observer.dart';
 import '../common/provider/router_provider.dart';
+import '../common/service/app_initialization_service.dart';
+import '../common/service/deep_link_service.dart';
 import '../court/view/court_detail_screen.dart';
 import '../firebase_options.dart';
 import '../notification/provider/notification_provider.dart';
-import '../notification/provider/widget/unconfirmed_provider.dart';
 import '../notification/view/notification_screen.dart';
-import '../post/repository/search_history_repository.dart';
 
-//
+// Firebase background handler
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(
@@ -51,16 +42,13 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   log("Handling a background category: ${message.category}");
 }
 
+// Local notification handlers
+@pragma('vm:entry-point')
 void _foregroundRouting(NotificationResponse details) async {
-  /// foreground 상태일 때 만 fcm 알림 내용 받기 가능
-  /// terminated, background 상태일 때는 null
   log('_foregroundRouting = $details');
   log("details.payload = ${details.payload}");
   if (details.payload != null && details.payload!.isNotEmpty) {
-    // & 기준으로 문자열을 분할
     List<String> parts = details.payload!.split('&');
-
-    // Map에 키-값 쌍 추가
     Map<String, String> resultMap = {};
 
     for (String part in parts) {
@@ -70,8 +58,7 @@ void _foregroundRouting(NotificationResponse details) async {
       }
     }
 
-    final topicEnum =
-        PushNotificationTopicType.stringToEnum(value: resultMap['topic']!);
+    final topicEnum = PushNotificationTopicType.stringToEnum(value: resultMap['topic']!);
     final model = PushDataModel(
         pushId: resultMap['pushId']!,
         topic: topicEnum,
@@ -79,45 +66,18 @@ void _foregroundRouting(NotificationResponse details) async {
   }
 }
 
+@pragma('vm:entry-point')
 void _backgroundRouting(NotificationResponse details) {
   log('_backgroundRouting = $details');
   rootNavKey.currentContext!.goNamed(NotificationScreen.routeName);
 }
 
 void main(List<String> args) async {
-  EnvUtil.instance.initialize(environment: BuildEnvironment.production);
-
-  print("Loading environment: .env.prod");
-  log("Loading environment: .env.prod");
-  await dotenv.load(fileName: ".env.prod");
-
-  HttpOverrides.global = MyHttpOverrides();
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-      overlays: SystemUiOverlay.values);
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  await initializeDateFormatting('ko');
-  await NaverMapSdk.instance.initialize(clientId: Environment.naverMapClientId);
-  KakaoSdk.init(
-    nativeAppKey: Environment.kakaoNativeAppKey,
-    javaScriptAppKey: Environment.kakaoJavaScriptAppKey,
-  );
-  await Hive.initFlutter();
-  await Hive.openBox<bool>('permission');
-  await Hive.openBox<String>('recentUpdateVersion');
-
-  await SearchHistoryRepository().initialize();
-
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await AppInitializationService.initialize();
 
   runApp(
     ProviderScope(
-      observers: [
-        CustomProviderObserver(),
-      ],
+      observers: [CustomProviderObserver()],
       child: const MyApp(),
     ),
   );
@@ -131,36 +91,37 @@ class MyApp extends ConsumerStatefulWidget {
 }
 
 class _MyAppState extends ConsumerState<MyApp> {
+  late final DeepLinkService _deepLinkService;
   late AppLinks _appLinks;
   StreamSubscription<Uri>? _linkSubscription;
 
   @override
   void initState() {
     super.initState();
+    _initializeServices();
     _notificationSetting();
     getFcmToken(ref);
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {});
     initDeepLinks();
   }
 
+  void _initializeServices() {
+    _deepLinkService = DeepLinkService();
+    _deepLinkService.initialize();
+  }
+
+  // 기존 FCM 토큰 가져오기 로직
   Future<void> getFcmToken(WidgetRef ref) async {
     String? token;
     FirebaseMessaging messaging = FirebaseMessaging.instance;
     log('FCM Token 가져오기');
 
-    // 플랫폼 별 토큰 가져오기
     if (Platform.isIOS) {
       String? apnsToken = await messaging.getAPNSToken();
       print("apnToken : $apnsToken");
       if (apnsToken != null) {
         token = await messaging.getToken();
       } else {
-        await Future<void>.delayed(
-          const Duration(
-            seconds: 3,
-          ),
-        );
+        await Future<void>.delayed(const Duration(seconds: 3));
         apnsToken = await messaging.getAPNSToken();
         if (apnsToken != null) {
           token = await messaging.getToken();
@@ -176,23 +137,24 @@ class _MyAppState extends ConsumerState<MyApp> {
     log('FCM Token: $token');
   }
 
+  // 기존 알림 설정 로직
   void _notificationSetting() async {
     _localNotificationSetting();
     _fcmSetting();
   }
 
+  // 기존 딥링크 초기화 로직
   Future<void> initDeepLinks() async {
     _appLinks = AppLinks();
 
-    // Handle links
     _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
       debugPrint('uri.path: ${uri.path}');
       debugPrint('uri.fragment: ${uri.fragment}');
       debugPrint('uri.query: ${uri.query}');
       debugPrint('uri.queryParameters: ${uri.queryParameters}');
+
       if (uri.queryParameters['url'] != null) {
-        final paths =
-            Uri.parse(uri.queryParameters['url']!).path.substring(1).split('/');
+        final paths = Uri.parse(uri.queryParameters['url']!).path.substring(1).split('/');
         debugPrint('paths: ${paths}');
 
         if (paths[0] == 'games') {
@@ -214,24 +176,16 @@ class _MyAppState extends ConsumerState<MyApp> {
     });
   }
 
-  @override
-  void dispose() {
-    _linkSubscription?.cancel();
-    super.dispose();
-  }
-
+  // 기존 FCM 설정 로직
   void _fcmSetting() async {
-    await FirebaseMessaging.instance
-        .setForegroundNotificationPresentationOptions(
+    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
       sound: true,
     );
 
-    /// 백그라운드 메시지 푸쉬 올 때
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-    /// 백그라운드에서 메시지 푸쉬를 열 때
     FirebaseMessaging.onMessageOpenedApp.listen((event) async {
       log('onMessageOpenedApp');
       if (mounted) {
@@ -239,15 +193,11 @@ class _MyAppState extends ConsumerState<MyApp> {
         final pushId = event.data['push_notification_id'];
         String topic = event.data['topic'];
         final topicEnum = PushNotificationTopicType.stringToEnum(value: topic);
-        final model =
-            PushDataModel(pushId: pushId, topic: topicEnum, gameId: gameId);
-        rootNavKey.currentContext!
-            .goNamed(SplashScreen.routeName, extra: model);
-        // _handleMessage(gameId, pushId, topicEnum);
+        final model = PushDataModel(pushId: pushId, topic: topicEnum, gameId: gameId);
+        rootNavKey.currentContext!.goNamed(SplashScreen.routeName, extra: model);
       }
     });
 
-    // 앱이 처음 시작될 때 초기 메시지 처리 (앱이 백그라운드에서 실행되었을 때)
     FirebaseMessaging.instance.getInitialMessage().then((message) async {
       if (message != null && message.data.isNotEmpty) {
         await ref.read(authProvider.notifier).autoLogin();
@@ -256,25 +206,20 @@ class _MyAppState extends ConsumerState<MyApp> {
         String topic = message.data['topic'];
         log('message.data = ${message.data}');
         final topicEnum = PushNotificationTopicType.stringToEnum(value: topic);
-        final model =
-            PushDataModel(pushId: pushId, topic: topicEnum, gameId: gameId);
-        rootNavKey.currentContext!
-            .goNamed(SplashScreen.routeName, extra: model);
-        // _handleMessage(gameId, pushId, topicEnum);
+        final model = PushDataModel(pushId: pushId, topic: topicEnum, gameId: gameId);
+        rootNavKey.currentContext!.goNamed(SplashScreen.routeName, extra: model);
       }
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       RemoteNotification? notification = message.notification;
 
-      /// fcm이 오면 local notification으로 푸쉬 알람 보여주기
       if (notification != null) {
         String? gameId = message.data['game_id'];
         String? pushId = message.data['push_notification_id'];
         String? topic = message.data['topic'];
 
-        final flutterLocalNotificationsPlugin =
-            ref.read(notificationProvider.notifier).getNotification;
+        final flutterLocalNotificationsPlugin = ref.read(notificationProvider.notifier).getNotification;
         if (Platform.isAndroid) {
           await flutterLocalNotificationsPlugin?.show(
               notification.hashCode,
@@ -297,8 +242,7 @@ class _MyAppState extends ConsumerState<MyApp> {
         }
 
         final secureProvider = ref.read(secureStorageProvider);
-        final String? storagePushCnt =
-            await secureProvider.read(key: 'pushCnt');
+        final String? storagePushCnt = await secureProvider.read(key: 'pushCnt');
 
         int pushCnt = int.parse(storagePushCnt ?? '-1') + 1;
         AppBadgePlus.updateBadge(pushCnt);
@@ -306,29 +250,22 @@ class _MyAppState extends ConsumerState<MyApp> {
         secureProvider.write(key: 'pushCnt', value: pushCnt.toString());
         log('notification.title = ${notification.title}');
         log('notification.body = ${notification.body}');
-        // log("수신자 측 메시지 수신");
       }
     });
   }
 
+  // 기존 로컬 알림 설정 로직
   void _localNotificationSetting() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       final notification = await _initLocalNotification();
-      ref
-          .read(notificationProvider.notifier)
-          .setNotificationPlugin(notification);
+      ref.read(notificationProvider.notifier).setNotificationPlugin(notification);
     });
   }
 
   Future<FlutterLocalNotificationsPlugin> _initLocalNotification() async {
-    final FlutterLocalNotificationsPlugin localNotification =
-        FlutterLocalNotificationsPlugin();
+    final FlutterLocalNotificationsPlugin localNotification = FlutterLocalNotificationsPlugin();
 
-    /// Android 세팅
-    const AndroidInitializationSettings initSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_notification');
-
-    /// IOS 세팅
+    const AndroidInitializationSettings initSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_notification');
     const initSettingsIOS = DarwinInitializationSettings(
       requestSoundPermission: false,
       requestBadgePermission: false,
@@ -346,10 +283,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       onDidReceiveNotificationResponse: (details) {
         _foregroundRouting(details);
         if (details.payload != null && details.payload!.isNotEmpty) {
-          // & 기준으로 문자열을 분할
           List<String> parts = details.payload!.split('&');
-
-          // Map에 키-값 쌍 추가
           Map<String, String> resultMap = {};
 
           for (String part in parts) {
@@ -359,8 +293,7 @@ class _MyAppState extends ConsumerState<MyApp> {
             }
           }
 
-          final topicEnum = PushNotificationTopicType.stringToEnum(
-              value: resultMap['topic']!);
+          final topicEnum = PushNotificationTopicType.stringToEnum(value: resultMap['topic']!);
           final model = PushDataModel(
               pushId: resultMap['pushId']!,
               topic: topicEnum,
@@ -373,6 +306,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     return localNotification;
   }
 
+  // 기존 메시지 처리 로직
   void _handleMessage(PushDataModel model) {
     switch (model.topic) {
       case PushNotificationTopicType.general:
@@ -385,12 +319,8 @@ class _MyAppState extends ConsumerState<MyApp> {
       case PushNotificationTopicType.game_status_changed:
       case PushNotificationTopicType.new_participation:
       case PushNotificationTopicType.game_fee_changed:
-        ref
-            .read(pushProvider(pushId: int.parse(model.pushId)).notifier)
-            .get(pushId: int.parse(model.pushId));
-        Map<String, String> pathParameters = {
-          'gameId': model.gameId.toString()
-        };
+        ref.read(pushProvider(pushId: int.parse(model.pushId)).notifier).get(pushId: int.parse(model.pushId));
+        Map<String, String> pathParameters = {'gameId': model.gameId.toString()};
         rootNavKey.currentContext!.goNamed(
           GameDetailScreen.routeName,
           pathParameters: pathParameters,
@@ -404,6 +334,13 @@ class _MyAppState extends ConsumerState<MyApp> {
           extra: NoticeScreenType.push,
         );
     }
+  }
+
+  @override
+  void dispose() {
+    _deepLinkService.dispose();
+    _linkSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -421,74 +358,64 @@ class _MyAppState extends ConsumerState<MyApp> {
             GlobalMaterialLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const <Locale>[
-            Locale('ko', ''),
-          ],
+          supportedLocales: const <Locale>[Locale('ko', '')],
           title: 'MITI',
           builder: (context, child) {
             return MediaQuery(
-                data: MediaQuery.of(context)
-                    .copyWith(textScaler: const TextScaler.linear(1.0)),
-                child: child!);
+              data: MediaQuery.of(context)
+                  .copyWith(textScaler: const TextScaler.linear(1.0)),
+              child: child!,
+            );
           },
-          theme: ThemeData(
-              // splashFactory: InkSplash(
-              //   controller: controller,
-              //   referenceBox: referenceBox,
-              //   textDirection: TextDirection.ltr,
-              //   color: const Color(0xFF404040),
-              //   radius: 8.r
-              // ),
-              colorScheme: const ColorScheme(
-                brightness: Brightness.dark,
-                primary: MITIColor.primary,
-                onPrimary: MITIColor.primary,
-                secondary: Colors.white,
-                onSecondary: Colors.white,
-                error: MITIColor.error,
-                onError: MITIColor.error,
-                surface: MITIColor.gray800,
-                onSurface: MITIColor.gray100,
-              ),
-              pageTransitionsTheme: const PageTransitionsTheme(builders: {
-                TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-                TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-              }),
-              // colorScheme: ColorScheme(background: Colors.white, brightness: null, primary: null, onPrimary: null, secondary: null, onSecondary: null, error: null, onError: null, onBackground: null, surface: null, onSurface: null,),
-              fontFamily: 'Pretendard',
-              inputDecorationTheme: InputDecorationTheme(
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                // constraints: BoxConstraints.loose(Size(double.infinity, 58.h)),
-                hintStyle: MITITextStyle.md.copyWith(color: MITIColor.gray500),
-                fillColor: MITIColor.gray700,
-                filled: true,
-              ),
-              textButtonTheme: TextButtonThemeData(
-                style: ButtonStyle(
-                    textStyle: WidgetStateProperty.all(
-                      MITITextStyle.mdBold.copyWith(
-                        color: MITIColor.gray800,
-                      ),
-                    ),
-                    foregroundColor: WidgetStateProperty.all(MITIColor.gray800),
-                    backgroundColor: WidgetStateProperty.all(MITIColor.primary),
-                    shape: WidgetStateProperty.all(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          8.r,
-                        ),
-                      ),
-                    ),
-                    minimumSize:
-                        WidgetStateProperty.all(Size(double.infinity, 48.h)),
-                    maximumSize:
-                        WidgetStateProperty.all(Size(double.infinity, 48.h))),
-              )),
+          theme: _buildTheme(),
           routerConfig: router,
         );
       },
-      // child: const HomeScreen(), // LoginScreen(),
+    );
+  }
+
+  ThemeData _buildTheme() {
+    return ThemeData(
+      colorScheme: const ColorScheme(
+        brightness: Brightness.dark,
+        primary: MITIColor.primary,
+        onPrimary: MITIColor.primary,
+        secondary: Colors.white,
+        onSecondary: Colors.white,
+        error: MITIColor.error,
+        onError: MITIColor.error,
+        surface: MITIColor.gray800,
+        onSurface: MITIColor.gray100,
+      ),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
+      fontFamily: 'Pretendard',
+      inputDecorationTheme: InputDecorationTheme(
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        hintStyle: MITITextStyle.md.copyWith(color: MITIColor.gray500),
+        fillColor: MITIColor.gray700,
+        filled: true,
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: ButtonStyle(
+          textStyle: WidgetStateProperty.all(
+            MITITextStyle.mdBold.copyWith(color: MITIColor.gray800),
+          ),
+          foregroundColor: WidgetStateProperty.all(MITIColor.gray800),
+          backgroundColor: WidgetStateProperty.all(MITIColor.primary),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+          ),
+          minimumSize: WidgetStateProperty.all(Size(double.infinity, 48.h)),
+          maximumSize: WidgetStateProperty.all(Size(double.infinity, 48.h)),
+        ),
+      ),
     );
   }
 

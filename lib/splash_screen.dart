@@ -1,12 +1,10 @@
 import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
-
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/notification_provider.dart';
 import 'package:miti/theme/color_theme.dart';
@@ -19,10 +17,12 @@ import 'notification/view/notification_detail_screen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   static String get routeName => 'splash';
+  final String? redirectUri;
   final PushDataModel? pushModel;
 
   const SplashScreen({
     super.key,
+    this.redirectUri,
     this.pushModel,
   });
 
@@ -47,7 +47,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           await Future.delayed(const Duration(seconds: 3));
         }
         if (mounted) {
-          if (widget.pushModel != null) {
+          if (widget.redirectUri != null) {
+            log("deepLink routing!!!");
+            _handleDeepLink(widget.redirectUri!);
+          } else if (widget.pushModel != null) {
             log("push routing!!!");
             ref.read(authProvider.notifier).autoLogin();
             _handleMessage(widget.pushModel!);
@@ -57,6 +60,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         }
       });
     });
+  }
+
+  void _handleDeepLink(String deepLink) {
+    context.go(deepLink);
   }
 
   void _handleMessage(PushDataModel model) {

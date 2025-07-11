@@ -245,23 +245,36 @@ class ShareFabComponent extends StatelessWidget {
                         ),
                       ),
                       Button(
-                        title: '앱으로보기',
+                        title: '앱으로 보기',  // 기존: '앱으로보기'
                         link: Link(
-                          webUrl: Uri.parse(
-                              'https://www.makeittakeit.kr/${type.name}/$id'),
-                          mobileWebUrl: Uri.parse(
-                              'https://www.makeittakeit.kr/${type.name}/$id'),
-                          // iosExecutionParams: {'gameId': '30000'}, // iOS 앱으로 전달할 파라미터
-                          // androidExecutionParams: {'gameId': '30000'}, // Android 앱으로 전달할 파라미터
+                          // 🆕 Custom Scheme 추가
+                          // androidExecutionParams: {
+                          //   'scheme': 'miti://${type.name}/$id',  // Custom Scheme 사용
+                          // },
+                          // iosExecutionParams: {
+                          //   'scheme': 'miti://${type.name}/$id',  // Custom Scheme 사용
+                          // },
+
                           iosExecutionParams: {
                             'url':
-                                'https://www.makeittakeit.kr/${type.name}/$id'
+                            'https://www.makeittakeit.kr/${type.name}/$id'
                           },
                           // iOS 용 실행 URL
                           androidExecutionParams: {
                             'url':
-                                'https://www.makeittakeit.kr/${type.name}/$id'
+                            'https://www.makeittakeit.kr/${type.name}/$id'
                           }, // Android 용 실행 URL
+                          // 폴백용 웹 링크 (앱이 없을 때)
+                          webUrl: Uri(
+                            scheme: 'https',
+                            host: "www.makeittakeit.kr",
+                            path: '${type.name}/$id',
+                          ),
+                          mobileWebUrl: Uri(
+                            scheme: 'https',
+                            host: "www.makeittakeit.kr",
+                            path: '${type.name}/$id',
+                          ),
                         ),
                       ),
                     ],

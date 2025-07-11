@@ -1,8 +1,6 @@
 import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/account/view/settlement_management_screen.dart';
@@ -11,15 +9,14 @@ import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/chat/view/chat_notification_form_screen.dart';
 import 'package:miti/chat/view/chat_room_screen.dart';
 import 'package:miti/common/error/view/pay_error_screen.dart';
-import 'package:miti/common/model/remote_config_model.dart';
 import 'package:miti/court/view/court_detail_screen.dart';
 import 'package:miti/court/view/court_game_list_screen.dart';
 import 'package:miti/etc/view/tc_policy_screen.dart';
 import 'package:miti/game/model/widget/user_reivew_short_info_model.dart';
-import 'package:miti/game/view/game_refund_screen.dart';
 import 'package:miti/game/view/game_create_screen.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/game/view/game_payment_screen.dart';
+import 'package:miti/game/view/game_refund_screen.dart';
 import 'package:miti/game/view/game_search_screen.dart';
 import 'package:miti/game/view/game_update_screen.dart';
 import 'package:miti/game/view/review_form_screen.dart';
@@ -34,14 +31,13 @@ import 'package:miti/support/view/faq_screen.dart';
 import 'package:miti/support/view/guide_screen.dart';
 import 'package:miti/support/view/support_form_screen.dart';
 import 'package:miti/user/view/image_crop_screen.dart';
+import 'package:miti/user/view/review_detail_screen.dart';
 import 'package:miti/user/view/user_delete_screen.dart';
 import 'package:miti/user/view/user_payment_screen.dart';
 import 'package:miti/user/view/user_player_profile_screen.dart';
 import 'package:miti/user/view/user_profile_form_screen.dart';
-import 'package:miti/user/view/review_detail_screen.dart';
 
 import '../../account/view/bank_transfer_form_screen.dart';
-import '../../account/component/bank_transfer_card.dart';
 import '../../account/view/settlement_detail_screen.dart';
 import '../../account/view/settlement_screen.dart';
 import '../../auth/provider/auth_provider.dart';
@@ -52,13 +48,12 @@ import '../../auth/view/signup/signup_screen.dart';
 import '../../auth/view/signup/signup_select_screen.dart';
 import '../../chat/view/chat_notification_list_screen.dart';
 import '../../chat/view/chat_notification_screen.dart';
-import '../../court/model/court_model.dart';
 import '../../court/model/v2/court_operations_response.dart';
-import '../../court/view/court_search_screen.dart';
-import '../../game/view/game_participation_screen.dart';
-import '../../game/view/game_create_complete_screen.dart';
-import '../../default_screen.dart';
 import '../../court/view/court_map_screen.dart';
+import '../../court/view/court_search_screen.dart';
+import '../../default_screen.dart';
+import '../../game/view/game_create_complete_screen.dart';
+import '../../game/view/game_participation_screen.dart';
 import '../../game/view/game_review_list_screen.dart';
 import '../../game/view/game_screen.dart';
 import '../../kakaopay/view/approval_screen.dart';
@@ -72,15 +67,15 @@ import '../../review/view/my_review_detail_screen.dart';
 import '../../review/view/receive_review_list_screen.dart';
 import '../../review/view/review_list_screen.dart';
 import '../../review/view/written_review_list_screen.dart';
-import '../../user/view/profile_update_screen.dart';
-import '../../user/view/profile_menu_screen.dart';
 import '../../splash_screen.dart';
 import '../../support/view/support_detail_screen.dart';
 import '../../support/view/support_screen.dart';
 import '../../user/provider/user_provider.dart';
+import '../../user/view/profile_menu_screen.dart';
+import '../../user/view/profile_screen.dart';
+import '../../user/view/profile_update_screen.dart';
 import '../../user/view/user_participation_screen.dart';
 import '../../user/view/user_payment_detail_screen.dart';
-import '../../user/view/profile_screen.dart';
 import '../../user/view/user_review_screen.dart';
 import '../../util/update/version_check_wrapper.dart';
 import '../error/view/error_screen.dart';
@@ -99,14 +94,16 @@ class DialogPage<T> extends Page<T> {
   const DialogPage({required this.child, super.key});
 
   @override
-  Route<T> createRoute(BuildContext context) => DialogRoute<T>(
+  Route<T> createRoute(BuildContext context) =>
+      DialogRoute<T>(
         context: context,
         settings: this,
         barrierDismissible: false,
-        builder: (context) => Material(
-          color: Colors.transparent,
-          child: child,
-        ),
+        builder: (context) =>
+            Material(
+              color: Colors.transparent,
+              child: child,
+            ),
       );
 }
 
@@ -126,12 +123,18 @@ final routerProvider = Provider<GoRouter>((ref) {
           parentNavigatorKey: rootNavKey,
           name: SplashScreen.routeName,
           builder: (context, state) {
+            String? redirectUri;
+            if (state.uri.queryParameters.containsKey('redirectUri')) {
+              redirectUri = state.uri.queryParameters['redirectUri']!;
+            }
+
             PushDataModel? model;
             if (state.extra != null) {
               model = state.extra as PushDataModel;
             }
             return SplashScreen(
               pushModel: model,
+              redirectUri: redirectUri,
             );
           },
         ),
@@ -140,7 +143,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             parentNavigatorKey: rootNavKey,
             name: LoginScreen.routeName,
             builder: (_, state) =>
-                const VersionCheckWrapper(child: LoginScreen()),
+            const VersionCheckWrapper(child: LoginScreen()),
             routes: [
               GoRoute(
                 path: 'signUpComplete',
@@ -155,13 +158,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                 parentNavigatorKey: rootNavKey,
                 name: OauthErrorScreen.routeName,
                 builder: (_, state) =>
-                    const VersionCheckWrapper(child: OauthErrorScreen()),
+                const VersionCheckWrapper(child: OauthErrorScreen()),
               ),
               GoRoute(
                 path: 'completeResetPassword',
                 parentNavigatorKey: rootNavKey,
                 name: CompleteRestPasswordScreen.routeName,
-                builder: (_, state) => const VersionCheckWrapper(
+                builder: (_, state) =>
+                const VersionCheckWrapper(
                     child: CompleteRestPasswordScreen()),
               ),
               GoRoute(
@@ -192,10 +196,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                       name: OtherAccountScreen.routeName,
                       builder: (_, state) {
                         final SignupMethodType authType =
-                            state.extra as SignupMethodType;
+                        state.extra as SignupMethodType;
                         final PhoneAuthenticationPurposeType phoneType =
-                            PhoneAuthenticationPurposeType.stringToEnum(
-                                value: state.uri.queryParameters['phoneType']!);
+                        PhoneAuthenticationPurposeType.stringToEnum(
+                            value: state.uri.queryParameters['phoneType']!);
                         return VersionCheckWrapper(
                           child: OtherAccountScreen(
                             authType: authType,
@@ -219,10 +223,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                       name: ResetPasswordScreen.routeName,
                       builder: (_, state) {
                         final String password_update_token =
-                            state.uri.queryParameters['password_update_token']!;
+                        state.uri.queryParameters['password_update_token']!;
 
                         final int userId =
-                            int.parse(state.uri.queryParameters['userId']!);
+                        int.parse(state.uri.queryParameters['userId']!);
                         return VersionCheckWrapper(
                           child: ResetPasswordScreen(
                             password_update_token: password_update_token,
@@ -237,7 +241,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                   parentNavigatorKey: rootNavKey,
                   name: SignUpSelectScreen.routeName,
                   builder: (_, state) =>
-                      const VersionCheckWrapper(child: SignUpSelectScreen()),
+                  const VersionCheckWrapper(child: SignUpSelectScreen()),
                   routes: [
                     GoRoute(
                         path: 'signUp',
@@ -311,8 +315,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                         // },
                         builder: (_, state) {
                           SignupMethodType extra =
-                              // SignupMethodType.kakao;
-                              state.extra as SignupMethodType;
+                          // SignupMethodType.kakao;
+                          state.extra as SignupMethodType;
 
                           return VersionCheckWrapper(
                             child: SignUpScreen(
@@ -371,7 +375,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               }
 
               final ReportCategoryType reportType =
-                  state.extra as ReportCategoryType;
+              state.extra as ReportCategoryType;
               return ReportListScreen(
                 gameId: gameId,
                 reportType: reportType,
@@ -387,7 +391,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                 name: ReportFormScreen.routeName,
                 builder: (context, state) {
                   final int reportId =
-                      int.parse(state.pathParameters['reportId']!);
+                  int.parse(state.pathParameters['reportId']!);
 
                   // 모든 ID 값들을 queryParameter에서 가져오도록 변경
                   int? gameId;
@@ -427,7 +431,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           name: AdvertiseDetailScreen.routeName,
           builder: (context, state) {
             final int advertisementId =
-                int.parse(state.pathParameters['advertisementId']!);
+            int.parse(state.pathParameters['advertisementId']!);
             return AdvertiseDetailScreen(
               advertisementId: advertisementId,
             );
@@ -482,7 +486,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                       name: PostDetailScreen.routeName,
                       builder: (context, state) {
                         final int postId =
-                            int.parse(state.pathParameters['postId']!);
+                        int.parse(state.pathParameters['postId']!);
                         return PostDetailScreen(postId: postId);
                       },
                       routes: [
@@ -492,9 +496,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                             name: PostCommentDetailScreen.routeName,
                             builder: (context, state) {
                               final int postId =
-                                  int.parse(state.pathParameters['postId']!);
+                              int.parse(state.pathParameters['postId']!);
                               final int commentId =
-                                  int.parse(state.pathParameters['commentId']!);
+                              int.parse(state.pathParameters['commentId']!);
                               return PostCommentDetailScreen(
                                 postId: postId,
                                 commentId: commentId,
@@ -589,7 +593,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                         builder: (context, state) {
                           if (state.extra != null) {
                             final extra =
-                                state.extra as CourtOperationsResponse;
+                            state.extra as CourtOperationsResponse;
                             return GameCreateScreen(court: extra);
                           }
                           return const GameCreateScreen();
@@ -601,7 +605,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                         name: GameDetailScreen.routeName,
                         builder: (context, state) {
                           final int gameId =
-                              int.parse(state.pathParameters['gameId']!);
+                          int.parse(state.pathParameters['gameId']!);
                           return GameDetailScreen(
                             gameId: gameId,
                           );
@@ -613,7 +617,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                               name: ChatRoomScreen.routeName,
                               builder: (context, state) {
                                 final int gameId =
-                                    int.parse(state.pathParameters['gameId']!);
+                                int.parse(state.pathParameters['gameId']!);
                                 return ChatRoomScreen(
                                   gameId: gameId,
                                 );
@@ -646,7 +650,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                                           .containsKey("notificationId")) {
                                         notificationId = int.parse(
                                             state.uri.queryParameters[
-                                                'notificationId']!);
+                                            'notificationId']!);
                                       }
 
                                       return ChatNotificationFormScreen(
@@ -675,7 +679,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                               name: GameParticipationScreen.routeName,
                               builder: (context, state) {
                                 final int gameId =
-                                    int.parse(state.pathParameters['gameId']!);
+                                int.parse(state.pathParameters['gameId']!);
                                 return GameParticipationScreen(
                                   gameId: gameId,
                                 );
@@ -687,7 +691,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                             builder: (context, state) {
                               final extra = state.extra as GameCompleteType;
                               final int gameId =
-                                  int.parse(state.pathParameters['gameId']!);
+                              int.parse(state.pathParameters['gameId']!);
                               return GameCompleteScreen(
                                 gameId: gameId,
                                 type: extra,
@@ -700,7 +704,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                             name: GameUpdateScreen.routeName,
                             builder: (context, state) {
                               final int gameId =
-                                  int.parse(state.pathParameters['gameId']!);
+                              int.parse(state.pathParameters['gameId']!);
 
                               return GameUpdateScreen(
                                 gameId: gameId,
@@ -713,7 +717,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                               name: GameReviewListScreen.routeName,
                               builder: (context, state) {
                                 final int gameId =
-                                    int.parse(state.pathParameters['gameId']!);
+                                int.parse(state.pathParameters['gameId']!);
                                 return GameReviewListScreen(
                                   gameId: gameId,
                                 );
@@ -747,7 +751,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                               name: GamePaymentScreen.routeName,
                               builder: (context, state) {
                                 final int gameId =
-                                    int.parse(state.pathParameters['gameId']!);
+                                int.parse(state.pathParameters['gameId']!);
                                 return GamePaymentScreen(
                                   gameId: gameId,
                                 );
@@ -759,7 +763,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                                     name: PayErrorScreen.routeName,
                                     builder: (context, state) {
                                       final canParticipation =
-                                          state.extra! as bool;
+                                      state.extra! as bool;
                                       final int gameId = int.parse(
                                           state.pathParameters['gameId']!);
                                       return PayErrorScreen(
@@ -775,7 +779,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                             name: ReviewScreen.routeName,
                             builder: (context, state) {
                               final int gameId =
-                                  int.parse(state.pathParameters['gameId']!);
+                              int.parse(state.pathParameters['gameId']!);
                               int? participationId;
                               if (state.uri.queryParameters
                                   .containsKey('participationId')) {
@@ -783,7 +787,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                                     .uri.queryParameters['participationId']!);
                               }
                               final model =
-                                  state.extra as UserReviewShortInfoModel;
+                              state.extra as UserReviewShortInfoModel;
 
                               return ReviewScreen(
                                 gameId: gameId,
@@ -799,10 +803,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                             name: ReviewDetailScreen.routeName,
                             builder: (_, state) {
                               final int reviewId =
-                                  int.parse(state.pathParameters['reviewId']!);
+                              int.parse(state.pathParameters['reviewId']!);
                               int? participationId;
                               final int gameId =
-                                  int.parse(state.pathParameters['gameId']!);
+                              int.parse(state.pathParameters['gameId']!);
                               if (state.uri.queryParameters
                                   .containsKey('participationId')) {
                                 participationId = int.parse(state
@@ -824,7 +828,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                             name: GameRefundScreen.routeName,
                             builder: (context, state) {
                               final int gameId =
-                                  int.parse(state.pathParameters['gameId']!);
+                              int.parse(state.pathParameters['gameId']!);
                               final int participationId = int.parse(
                                   state.pathParameters['participationId']!);
 
@@ -855,7 +859,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                         name: CourtDetailScreen.routeName,
                         builder: (context, state) {
                           final int courtId =
-                              int.parse(state.pathParameters['courtId']!);
+                          int.parse(state.pathParameters['courtId']!);
 
                           return CourtDetailScreen(
                             courtId: courtId,
@@ -868,7 +872,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                             name: CourtGameListScreen.routeName,
                             builder: (context, state) {
                               final int courtId =
-                                  int.parse(state.pathParameters['courtId']!);
+                              int.parse(state.pathParameters['courtId']!);
 
                               return CourtGameListScreen(
                                 courtId: courtId,
@@ -927,7 +931,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                           name: SupportDetailScreen.routeName,
                           builder: (context, state) {
                             final int questionId =
-                                int.parse(state.pathParameters['questionId']!);
+                            int.parse(state.pathParameters['questionId']!);
                             return SupportDetailScreen(
                               questionId: questionId,
                             );
@@ -940,7 +944,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                       name: SettlementListScreen.routeName,
                       builder: (context, state) {
                         final int bottomIdx =
-                            int.parse(state.uri.queryParameters['bottomIdx']!);
+                        int.parse(state.uri.queryParameters['bottomIdx']!);
                         return SettlementListScreen(
                           bottomIdx: bottomIdx,
                         );
@@ -968,7 +972,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                       final extra = UserReviewType.stringToEnum(
                           value: state.extra! as String);
                       final int bottomIdx =
-                          int.parse(state.uri.queryParameters['bottomIdx']!);
+                      int.parse(state.uri.queryParameters['bottomIdx']!);
                       return UserWrittenReviewScreen(
                         type: extra,
                         bottomIdx: bottomIdx,
@@ -1000,7 +1004,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                             final profileImageUpdateUrl = state
                                 .uri.queryParameters['profileImageUpdateUrl']!;
                             final pickedFilePath =
-                                state.uri.queryParameters['pickedFilePath']!;
+                            state.uri.queryParameters['pickedFilePath']!;
                             return ImageCropScreen(
                               pickedFilePath: pickedFilePath,
                               profileImageUpdateUrl: profileImageUpdateUrl,
@@ -1132,7 +1136,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                     name: MyReviewDetailScreen.routeName,
                     builder: (context, state) {
                       final int reviewId =
-                          int.parse(state.pathParameters['reviewId']!);
+                      int.parse(state.pathParameters['reviewId']!);
                       final userReviewType = UserReviewType.stringToEnum(
                           value: state.uri.queryParameters['userReviewType']!);
                       final reviewType = ReviewType.stringToEnum(

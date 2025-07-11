@@ -31,6 +31,14 @@
 
 	<key>CFBundleURLTypes</key>
 	<array>
+	    <dict>
+            <key>CFBundleURLName</key>
+            <string>miti</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>miti</string>
+            </array>
+        </dict>
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
@@ -41,6 +49,26 @@
 				<string>kakao$(KAKAO_NATIVE_APP_KEY)</string>
 			</array>
 		</dict>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLName</key>
+            <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>kakao$(KAKAO_NATIVE_APP_KEY)://oauth</string>
+            </array>
+        </dict>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLName</key>
+            <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>kakao$(KAKAO_NATIVE_APP_KEY)://kakaolink</string>
+            </array>
+        </dict>
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
@@ -66,8 +94,12 @@
 	<string>public.app-category.sports</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
-		<string>kakaokompassauth</string>
-		<string>kakaolink</string>
+        <!-- 카카오톡으로 로그인 -->
+        <string>kakaokompassauth</string>
+        <!-- 카카오톡 공유 -->
+        <string>kakaolink</string>
+        <!-- 카카오톡 채널 -->
+        <string>kakaoplus</string>
 		<string>supertoss</string>
 		<string>kb-acp</string>
 		<string>liivbank</string>

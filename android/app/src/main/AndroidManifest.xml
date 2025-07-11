@@ -89,8 +89,16 @@
             android:windowSoftInputMode="adjustResize">
             <!--            디바이스 잠금시 알림 보여주기-->
 
+            <!-- Deep Link 설정 -->
+            <!-- 1. Custom Scheme 설정 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="miti" />
+            </intent-filter>
 
-            <!-- Deep linking -->
+            <!-- 2. App Link 설정 -->
             <meta-data
                 android:name="flutter_deeplinking_enabled"
                 android:value="true" />
@@ -98,15 +106,12 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-<!--                <data-->
-<!--                    android:host="example.com"-->
-<!--                    android:pathPrefix="path-prefix"-->
-<!--                    android:scheme="https" />-->
                 <data
                     android:host="www.makeittakeit.kr"
                     android:scheme="http" />
                 <data android:scheme="https" />
             </intent-filter>
+
 
 
             <intent-filter>
@@ -174,12 +179,13 @@
 <!--                <data android:path="callback" />-->
 <!--            </intent-filter>-->
 <!--        </activity>-->
-
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
+
+        <!-- 카카오 로그인 커스텀 URL 스킴 설정 -->
         <activity
             android:name="com.kakao.sdk.flutter.AuthCodeCustomTabsActivity"
             android:exported="true">
@@ -195,6 +201,7 @@
                     android:scheme="kakao${KAKAO_NATIVE_APP_KEY}" />
             </intent-filter>
         </activity>
+
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
