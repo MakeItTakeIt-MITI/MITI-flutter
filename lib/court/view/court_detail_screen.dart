@@ -10,6 +10,7 @@ import 'package:miti/court/provider/court_provider.dart';
 import 'package:miti/game/view/game_create_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:miti/util/naver_map_util.dart';
 
 import '../../common/component/default_appbar.dart';
 import '../../common/component/share_fab_component.dart';
@@ -193,10 +194,20 @@ class _CourtInfoComponent extends ConsumerWidget {
               style: MITITextStyle.lgBold.copyWith(color: MITIColor.gray100),
             ),
             SizedBox(height: 8.h),
-            Text(
-              "${model.address} ${model.addressDetail ?? ''}",
-              style: MITITextStyle.sm.copyWith(
-                color: MITIColor.gray400,
+            GestureDetector(
+              onTap: () async {
+                await NaverMapUtil.searchRoute(
+                  destinationAddress:
+                      "${model.address} ${model.addressDetail ?? ''}",
+                  destinationLat: double.parse(model.latitude),
+                  destinationLng: double.parse(model.longitude),
+                );
+              },
+              child: Text(
+                "${model.address} ${model.addressDetail ?? ''}",
+                style: MITITextStyle.sm.copyWith(
+                  color: MITIColor.primary,
+                ),
               ),
             ),
             SizedBox(height: 20.h),
