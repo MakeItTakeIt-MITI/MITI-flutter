@@ -100,12 +100,17 @@ class _MyAppState extends ConsumerState<MyApp> {
     _initializeServices();
     _notificationSetting();
     getFcmToken(ref);
-    initDeepLinks();
+    // initDeepLinks();
   }
 
   void _initializeServices() {
     _deepLinkService = DeepLinkService();
     _deepLinkService.initialize();
+
+    // 카카오 SDK 초기화가 완료된 후 딥링크 서비스 시작
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _deepLinkService.initialize();
+    });
   }
 
   // 기존 FCM 토큰 가져오기 로직

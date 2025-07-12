@@ -49,26 +49,7 @@
 				<string>kakao$(KAKAO_NATIVE_APP_KEY)</string>
 			</array>
 		</dict>
-        <dict>
-            <key>CFBundleTypeRole</key>
-            <string>Editor</string>
-            <key>CFBundleURLName</key>
-            <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>kakao$(KAKAO_NATIVE_APP_KEY)://oauth</string>
-            </array>
-        </dict>
-        <dict>
-            <key>CFBundleTypeRole</key>
-            <string>Editor</string>
-            <key>CFBundleURLName</key>
-            <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>kakao$(KAKAO_NATIVE_APP_KEY)://kakaolink</string>
-            </array>
-        </dict>
+
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
@@ -143,7 +124,6 @@
 		<string>hanaskcardmobileportal</string>
 		<string>kb-bankpay</string>
 		<string>kakaopay</string>
-		<string>kakaotalk</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
