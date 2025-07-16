@@ -214,7 +214,7 @@ class ShareFabComponent extends StatelessWidget {
                       title: title,
                       description: desc,
                       imageUrl: Uri.parse(
-                          'https://www.makeittakeit.kr/images/miti_thumbnail.png'),
+                          'https://image.makeittakeit.kr/assets/miti_thumbnail.png'),
                       link: Link(
                         webUrl: Uri(
                           scheme: 'https',
@@ -245,7 +245,7 @@ class ShareFabComponent extends StatelessWidget {
                         ),
                       ),
                       Button(
-                        title: '앱으로 보기',  // 기존: '앱으로보기'
+                        title: '앱으로 보기', // 기존: '앱으로보기'
                         link: Link(
                           // 🆕 Custom Scheme 추가
                           // androidExecutionParams: {
@@ -257,12 +257,12 @@ class ShareFabComponent extends StatelessWidget {
 
                           iosExecutionParams: {
                             'url':
-                            'https://www.makeittakeit.kr/${type.name}/$id'
+                                'https://www.makeittakeit.kr/${type.name}/$id'
                           },
                           // iOS 용 실행 URL
                           androidExecutionParams: {
                             'url':
-                            'https://www.makeittakeit.kr/${type.name}/$id'
+                                'https://www.makeittakeit.kr/${type.name}/$id'
                           }, // Android 용 실행 URL
                           // 폴백용 웹 링크 (앱이 없을 때)
                           webUrl: Uri(
