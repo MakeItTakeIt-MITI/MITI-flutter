@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,6 +25,7 @@ import 'package:miti/game/view/game_refund_screen.dart';
 import 'package:miti/game/view/game_review_list_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../chat/model/game_chat_room_approved_users_response.dart';
 import '../../chat/view/chat_room_screen.dart';
@@ -598,6 +600,12 @@ class InfoComponent extends StatelessWidget {
 
   const InfoComponent({super.key, required this.info});
 
+  Future<void> _onOpen(LinkableElement link) async {
+    if (!await launchUrl(Uri.parse(link.url))) {
+      throw Exception('Could not launch ${link.url}');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -612,10 +620,15 @@ class InfoComponent extends StatelessWidget {
             ),
           ),
           SizedBox(height: 20.h),
-          Text(
-            info,
+          Linkify(
+            onOpen: _onOpen,
+            text: info,
             style: MITITextStyle.sm150.copyWith(color: MITIColor.gray100),
-          )
+            options: const LinkifyOptions(
+              humanize: false,
+              removeWww: false,
+            ),
+          ),
         ],
       ),
     );

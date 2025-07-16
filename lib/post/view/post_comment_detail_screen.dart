@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -12,6 +13,7 @@ import 'package:miti/post/view/post_detail_screen.dart';
 import 'package:miti/support/provider/random_advertise_provider.dart';
 import 'package:miti/support/view/advertise_detail_screen.dart';
 import 'package:miti/theme/color_theme.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../auth/provider/auth_provider.dart';
 import '../../common/component/defalut_flashbar.dart';
@@ -346,6 +348,12 @@ class CommentInfoComponent extends ConsumerWidget {
     required this.model,
   });
 
+  Future<void> _onOpen(LinkableElement link) async {
+    if (!await launchUrl(Uri.parse(link.url))) {
+      throw Exception('Could not launch ${link.url}');
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userId = ref.watch(authProvider)?.id;
@@ -362,10 +370,15 @@ class CommentInfoComponent extends ConsumerWidget {
             isAnonymous: false,
           ),
           SizedBox(height: 25.h),
-          Text(
-            model.content,
+          Linkify(
+            onOpen: _onOpen,
+            text: model.content,
             style: MITITextStyle.xxsm.copyWith(
               color: MITIColor.gray100,
+            ),
+            options: const LinkifyOptions(
+              humanize: false,
+              removeWww: false,
             ),
           ),
           SizedBox(height: 10.h),

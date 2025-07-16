@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,6 +19,7 @@ import 'package:miti/post/view/post_list_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../common/component/defalut_flashbar.dart';
 import '../../report/view/report_list_screen.dart';
@@ -79,6 +82,12 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
     contentFocusNode.dispose();
     scrollController.dispose();
     super.dispose();
+  }
+
+  Future<void> _onOpen(LinkableElement link) async {
+    if (!await launchUrl(Uri.parse(link.url))) {
+      throw Exception('Could not launch ${link.url}');
+    }
   }
 
   @override
@@ -147,16 +156,26 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                               isAnonymous: model.isAnonymous,
                             ),
                             SizedBox(height: 25.h),
-                            Text(
-                              model.title,
+                            Linkify(
+                              onOpen: _onOpen,
+                              text: model.title,
                               style: MITITextStyle.mdSemiBold150
                                   .copyWith(color: MITIColor.gray50),
+                              options: const LinkifyOptions(
+                                humanize: false,
+                                removeWww: false,
+                              ),
                             ),
                             SizedBox(height: 10.h),
-                            Text(
-                              model.content,
+                            Linkify(
+                              onOpen: _onOpen,
+                              text: model.content,
                               style: MITITextStyle.sm150
                                   .copyWith(color: MITIColor.gray50),
+                              options: const LinkifyOptions(
+                                humanize: false,
+                                removeWww: false,
+                              ),
                             ),
                             SizedBox(height: 5.h),
                             Column(

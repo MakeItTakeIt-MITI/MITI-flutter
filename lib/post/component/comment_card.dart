@@ -1,11 +1,13 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/post/component/post_writer_info.dart';
 import 'package:miti/post/component/reply_comment_component.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../auth/provider/auth_provider.dart';
 import '../../common/model/default_model.dart';
@@ -23,7 +25,7 @@ import '../provider/post_reply_comment_provider.dart';
 import '../view/post_comment_form_screen.dart';
 import 'comment_util_button.dart';
 
-class CommentCard extends ConsumerWidget {
+class CommentCard extends ConsumerStatefulWidget {
   final int commentId;
   final int postId;
   final int? replyCommentId;
@@ -86,32 +88,49 @@ class CommentCard extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CommentCard> createState() => _CommentCardState();
+}
+
+class _CommentCardState extends ConsumerState<CommentCard> {
+
+  Future<void> _onOpen(LinkableElement link) async {
+    if (!await launchUrl(Uri.parse(link.url))) {
+      throw Exception('Could not launch ${link.url}');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final userId = ref.watch(authProvider)?.id;
-    final isSelected = likedUsers.contains(userId);
-    final isComment = replyCommentId == null;
+    final isSelected = widget.likedUsers.contains(userId);
+    final isComment = widget.replyCommentId == null;
 
     return Column(
       children: [
         PostWriterInfo.fromModel(
-          model: writer,
-          createdAt: createdAt,
+          model: widget.writer,
+          createdAt: widget.createdAt,
           isAnonymous: false,
-          onTap: onTap,
+          onTap: widget.onTap,
         ),
         Padding(
           padding: EdgeInsets.only(left: 40.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                content,
+              Linkify(
+                onOpen: _onOpen,
+                text: widget.content,
                 style: MITITextStyle.xxsm.copyWith(color: MITIColor.gray100),
+                options: const LinkifyOptions(
+                  humanize: false,
+                  removeWww: false,
+                ),
               ),
               SizedBox(height: 7.h),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: images
+                children: widget.images
                     .map((e) => Padding(
                   padding: EdgeInsets.only(bottom: 7.h),
                   child: Image.network(
@@ -128,14 +147,14 @@ class CommentCard extends ConsumerWidget {
                   CommentUtilButton(
                     icon: 'good',
                     title: '좋아요',
-                    cnt: likedUsers.length,
+                    cnt: widget.likedUsers.length,
                     isSelected: isSelected,
                     onTap: () async {
                       if (isSelected) {
                         if (isComment) {
                           final result = await ref.read(
                               postCommentUnLikeProvider(
-                                      commentId: commentId, postId: postId)
+                                      commentId: widget.commentId, postId: widget.postId)
                                   .future);
                           if (result is ErrorModel) {
                             PostError.fromModel(model: result).responseError(
@@ -144,9 +163,9 @@ class CommentCard extends ConsumerWidget {
                         } else {
                           final result = await ref.read(
                               postReplyCommentUnLikeProvider(
-                                      commentId: commentId,
-                                      postId: postId,
-                                      replyCommentId: replyCommentId!,
+                                      commentId: widget.commentId,
+                                      postId: widget.postId,
+                                      replyCommentId: widget.replyCommentId!,
                                       fromDetail: true)
                                   .future);
                           if (result is ErrorModel) {
@@ -157,7 +176,7 @@ class CommentCard extends ConsumerWidget {
                       } else {
                         if (isComment) {
                           final result = await ref.read(postCommentLikeProvider(
-                                  commentId: commentId, postId: postId)
+                                  commentId: widget.commentId, postId: widget.postId)
                               .future);
                           if (result is ErrorModel) {
                             PostError.fromModel(model: result).responseError(
@@ -166,9 +185,9 @@ class CommentCard extends ConsumerWidget {
                         } else {
                           final result = await ref.read(
                               postReplyCommentLikeProvider(
-                                      commentId: commentId,
-                                      postId: postId,
-                                      replyCommentId: replyCommentId!,
+                                      commentId: widget.commentId,
+                                      postId: widget.postId,
+                                      replyCommentId: widget.replyCommentId!,
                                       fromDetail: true)
                                   .future);
                           if (result is ErrorModel) {
@@ -180,24 +199,24 @@ class CommentCard extends ConsumerWidget {
                     },
                   ),
                   SizedBox(width: 15.w),
-                  if (replyComments != null)
+                  if (widget.replyComments != null)
                     CommentUtilButton(
                       icon: 'comments',
                       title: '대댓글',
-                      cnt: replyComments!.length,
+                      cnt: widget.replyComments!.length,
                     ),
                 ],
               ),
-              if (replyComments != null)
+              if (widget.replyComments != null)
                 ListView.separated(
                   shrinkWrap: true,
                   padding: EdgeInsets.symmetric(vertical: 10.h),
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (_, idx) {
                     return ReplyCommentComponent.fromModel(
-                      model: replyComments![idx],
-                      commentId: commentId,
-                      postId: postId,
+                      model: widget.replyComments![idx],
+                      commentId: widget.commentId,
+                      postId: widget.postId,
                       onTap: () {
                         showModalBottomSheet(
                             backgroundColor: Colors.transparent,
@@ -205,14 +224,14 @@ class CommentCard extends ConsumerWidget {
                             builder: (_) {
                               return PostBottomSheetButton(
                                 isWriter:
-                                    replyComments![idx].writer.id == userId,
+                                    widget.replyComments![idx].writer.id == userId,
                                 onDelete: () async {
                                   final result = await ref.read(
                                       postReplyCommentDeleteProvider(
-                                              postId: postId,
-                                              commentId: commentId,
+                                              postId: widget.postId,
+                                              commentId: widget.commentId,
                                               replyCommentId:
-                                                  replyComments![idx].id)
+                                                  widget.replyComments![idx].id)
                                           .future);
 
                                   if (result is! ErrorModel) {
@@ -227,12 +246,12 @@ class CommentCard extends ConsumerWidget {
                                   context.pop();
                                   // // 대댓글 수정
                                   Map<String, String> pathParameters = {
-                                    'postId': postId.toString(),
-                                    'commentId': commentId.toString(),
+                                    'postId': widget.postId.toString(),
+                                    'commentId': widget.commentId.toString(),
                                   };
                                   Map<String, String> queryParameters = {
                                     'replyCommentId':
-                                        replyComments![idx].id.toString()
+                                        widget.replyComments![idx].id.toString()
                                   };
                                   context.pushNamed(
                                       PostCommentFormScreen.routeName,
@@ -242,7 +261,7 @@ class CommentCard extends ConsumerWidget {
                                 onReport: () {
                                   // // 대댓글 신고
                                   Map<String, String> queryParameters = {
-                                    'userId': replyComments![idx]
+                                    'userId': widget.replyComments![idx]
                                         .writer
                                         .id
                                         .toString(),
@@ -262,7 +281,7 @@ class CommentCard extends ConsumerWidget {
                   separatorBuilder: (_, idx) => SizedBox(
                     height: 8.h,
                   ),
-                  itemCount: replyComments!.length,
+                  itemCount: widget.replyComments!.length,
                 ),
             ],
           ),
