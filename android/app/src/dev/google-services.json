@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1043962606141",
+    "project_id": "miti-dev",
+    "storage_bucket": "miti-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1043962606141:android:f5ed033ddf73f371e17054",
+        "android_client_info": {
+          "package_name": "com.miti.miti"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsQfvPjF7aIvsqxSRP2s8LGZDpqpVVaNI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

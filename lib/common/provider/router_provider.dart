@@ -81,6 +81,7 @@ import '../../util/update/version_check_wrapper.dart';
 import '../error/view/error_screen.dart';
 import '../model/entity_enum.dart';
 import '../view/not_found_screen.dart';
+import 'firebase_analytics_provider.dart';
 
 final GlobalKey<NavigatorState> rootNavKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> shellNavKey = GlobalKey<NavigatorState>();
@@ -109,6 +110,8 @@ class DialogPage<T> extends Page<T> {
 
 final routerProvider = Provider<GoRouter>((ref) {
   final provider = ref.read(tokenProvider);
+  final analyticsObserver = ref.read(analyticsObserverProvider);
+
   return GoRouter(
       initialLocation: '/',
       debugLogDiagnostics: true,
@@ -117,6 +120,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       errorBuilder: (BuildContext context, GoRouterState state) {
         return const NotFoundScreen();
       },
+      observers: [analyticsObserver],
       routes: <RouteBase>[
         GoRoute(
           path: '/',

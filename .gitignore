@@ -56,8 +56,11 @@ key.properties
 **.*.jks
 
 # firebase setting
-lib/firebase_options.dart
+lib/firebase_options_dev.dart
+lib/firebase_options_prod.dart
 firebase.json
-android/app/google-services.json
-ios/Runner/GoogleService-Info.plist
+android/app/src/prod/google-services.json
+ios/Runner/Firebase/Dev/GoogleService-Info-Dev.plist
 ios/config.xcconfig
+
+devtools_options.yaml

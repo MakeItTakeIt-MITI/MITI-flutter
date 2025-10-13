@@ -24,6 +24,12 @@
 		F25DAC112D227DFD00881E7E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		F25DAC122D227DFD00881E7E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		F25DAC132D227DFD00881E7E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B8A1E76D4164F6737F853E44 /* GoogleService-Info.plist */; };
+		F2719AA22E8BF9A800CB3320 /* Debug-dev.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F2719AA12E8BF9A800CB3320 /* Debug-dev.xcconfig */; };
+		F2719AA32E8BF9A800CB3320 /* Debug-dev.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F2719AA12E8BF9A800CB3320 /* Debug-dev.xcconfig */; };
+		F2719AA52E8BF9CF00CB3320 /* Release-dev.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F2719AA42E8BF9CF00CB3320 /* Release-dev.xcconfig */; };
+		F2719AA62E8BF9CF00CB3320 /* Release-dev.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F2719AA42E8BF9CF00CB3320 /* Release-dev.xcconfig */; };
+		F2719AA82E8BFCC800CB3320 /* Release-dev.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F2719AA72E8BFCC800CB3320 /* Release-dev.xcconfig */; };
+		F2719AA92E8BFCC800CB3320 /* Release-dev.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F2719AA72E8BFCC800CB3320 /* Release-dev.xcconfig */; };
 		F29190DD2CEF920B003F3BF5 /* config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F29190DC2CEF920B003F3BF5 /* config.xcconfig */; };
 /* End PBXBuildFile section */
 
@@ -67,10 +73,12 @@
 		331C807B294A618700263BE5 /* RunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTests.swift; sourceTree = "<group>"; };
 		331C8081294A63A400263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
+		444A95F7ABD7DDFFF1819F8D /* Pods-Runner.debug-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug-dev.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug-dev.xcconfig"; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		78BD51BC71EC4300A1ADA8B9 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
+		907D6220FC5A463107392521 /* Pods-Runner.release-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release-dev.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release-dev.xcconfig"; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
 		97C146EE1CF9000F007C117D /* Runner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Runner.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -85,6 +93,9 @@
 		F25DAC032D22792800881E7E /* Runner copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Runner copy-Info.plist"; path = "/Users/jeonghyun/Documents/MITI-flutter/ios/Runner copy-Info.plist"; sourceTree = "<absolute>"; };
 		F25DAC1C2D227DFD00881E7E /* DEV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DEV.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F25DAC1D2D227DFD00881E7E /* Runner copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Runner copy-Info.plist"; path = "/Users/jeonghyun/Documents/MITI-flutter/ios/Runner copy-Info.plist"; sourceTree = "<absolute>"; };
+		F2719AA12E8BF9A800CB3320 /* Debug-dev.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Debug-dev.xcconfig"; sourceTree = "<group>"; };
+		F2719AA42E8BF9CF00CB3320 /* Release-dev.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Release-dev.xcconfig"; sourceTree = "<group>"; };
+		F2719AA72E8BFCC800CB3320 /* Release-dev.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Release-dev.xcconfig"; sourceTree = "<group>"; };
 		F29190DC2CEF920B003F3BF5 /* config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = config.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -128,6 +139,8 @@
 				78BD51BC71EC4300A1ADA8B9 /* Pods-Runner.debug.xcconfig */,
 				AB91E0C30FCC7D1B4CD9EE47 /* Pods-Runner.release.xcconfig */,
 				A176975AA27CFFBDE60E4A9C /* Pods-Runner.profile.xcconfig */,
+				444A95F7ABD7DDFFF1819F8D /* Pods-Runner.debug-dev.xcconfig */,
+				907D6220FC5A463107392521 /* Pods-Runner.release-dev.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -164,6 +177,9 @@
 				F25DAC032D22792800881E7E /* Runner copy-Info.plist */,
 				F25DAC1D2D227DFD00881E7E /* Runner copy-Info.plist */,
 				51410353DD1DE68DAF32730E /* Frameworks */,
+				F2719AA12E8BF9A800CB3320 /* Debug-dev.xcconfig */,
+				F2719AA42E8BF9CF00CB3320 /* Release-dev.xcconfig */,
+				F2719AA72E8BFCC800CB3320 /* Release-dev.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -220,6 +236,7 @@
 			buildPhases = (
 				00DAD0E96371580EC3273ED0 /* [CP] Check Pods Manifest.lock */,
 				9740EEB61CF901F6004384FC /* Run Script */,
+				F2719A9F2E8BEF2800CB3320 /* Copy GoogleService-Info.plist */,
 				97C146EA1CF9000F007C117D /* Sources */,
 				97C146EB1CF9000F007C117D /* Frameworks */,
 				97C146EC1CF9000F007C117D /* Resources */,
@@ -309,12 +326,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F2719AA92E8BFCC800CB3320 /* Release-dev.xcconfig in Resources */,
+				F2719AA62E8BF9CF00CB3320 /* Release-dev.xcconfig in Resources */,
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				F29190DD2CEF920B003F3BF5 /* config.xcconfig in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 				2FA5D66745ABAD10BA9B4676 /* GoogleService-Info.plist in Resources */,
+				F2719AA32E8BF9A800CB3320 /* Debug-dev.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -322,12 +342,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F2719AA82E8BFCC800CB3320 /* Release-dev.xcconfig in Resources */,
+				F2719AA52E8BF9CF00CB3320 /* Release-dev.xcconfig in Resources */,
 				F25DAC0E2D227DFD00881E7E /* LaunchScreen.storyboard in Resources */,
 				F25DAC0F2D227DFD00881E7E /* AppFrameworkInfo.plist in Resources */,
 				F25DAC102D227DFD00881E7E /* config.xcconfig in Resources */,
 				F25DAC112D227DFD00881E7E /* Assets.xcassets in Resources */,
 				F25DAC122D227DFD00881E7E /* Main.storyboard in Resources */,
 				F25DAC132D227DFD00881E7E /* GoogleService-Info.plist in Resources */,
+				F2719AA22E8BF9A800CB3320 /* Debug-dev.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -402,7 +425,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build";
+			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n";
 		};
 		DC27D72BA6BEC7BD13B9E7F7 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -434,7 +457,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build";
+			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n";
 		};
 		F25DAC152D227DFD00881E7E /* Thin Binary */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -451,6 +474,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin";
+		};
+		F2719A9F2E8BEF2800CB3320 /* Copy GoogleService-Info.plist */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy GoogleService-Info.plist";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Firebase GoogleService-Info.plist 복사 스크립트\n# Configuration에 따라 올바른 plist 파일을 복사합니다\n\n# 환경 결정 (Configuration 이름에서 dev 또는 prod 추출)\n# Debug-dev, Release-dev → dev\n# Debug-prod, Release-prod → prod\n# Debug, Release → prod (기본값)\n\nENVIRONMENT=\"\"\n\nif [[ \"${CONFIGURATION}\" == *\"dev\"* ]]; then\n    ENVIRONMENT=\"Dev\"\nelse\n    ENVIRONMENT=\"Prod\"\nfi\n\n# 소스 경로와 대상 경로 설정\nSOURCE_PATH=\"${SRCROOT}/Runner/Firebase/${ENVIRONMENT}/GoogleService-Info.plist\"\nDESTINATION_PATH=\"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\"\n\n# 파일이 존재하는지 확인\nif [ ! -f \"$SOURCE_PATH\" ]; then\n    echo \"error: GoogleService-Info.plist not found at ${SOURCE_PATH}\"\n    exit 1\nfi\n\n# plist 파일 복사\necho \"Copying ${ENVIRONMENT} GoogleService-Info.plist from ${SOURCE_PATH}\"\ncp \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"\n\n# 성공 메시지\necho \"✅ Successfully copied ${ENVIRONMENT} GoogleService-Info.plist\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -607,7 +648,7 @@
 			};
 			name = Profile;
 		};
-		331C8088294A63A400263BE5 /* Debug */ = {
+		331C8088294A63A400263BE5 /* Debug-dev */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -626,9 +667,9 @@
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
 			};
-			name = Debug;
+			name = "Debug-dev";
 		};
-		331C8089294A63A400263BE5 /* Release */ = {
+		331C8089294A63A400263BE5 /* Release-dev */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -645,7 +686,7 @@
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
 			};
-			name = Release;
+			name = "Release-dev";
 		};
 		331C808A294A63A400263BE5 /* Profile */ = {
 			isa = XCBuildConfiguration;
@@ -666,7 +707,7 @@
 			};
 			name = Profile;
 		};
-		97C147031CF9000F007C117D /* Debug */ = {
+		97C147031CF9000F007C117D /* Debug-dev */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -725,9 +766,9 @@
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
-			name = Debug;
+			name = "Debug-dev";
 		};
-		97C147041CF9000F007C117D /* Release */ = {
+		97C147041CF9000F007C117D /* Release-dev */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F29190DC2CEF920B003F3BF5 /* config.xcconfig */;
 			buildSettings = {
@@ -785,11 +826,11 @@
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = "Release-dev";
 		};
-		97C147061CF9000F007C117D /* Debug */ = {
+		97C147061CF9000F007C117D /* Debug-dev */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
+			baseConfigurationReference = F2719AA12E8BF9A800CB3320 /* Debug-dev.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
@@ -827,11 +868,11 @@
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
-			name = Debug;
+			name = "Debug-dev";
 		};
-		97C147071CF9000F007C117D /* Release */ = {
+		97C147071CF9000F007C117D /* Release-dev */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
+			baseConfigurationReference = F2719AA72E8BFCC800CB3320 /* Release-dev.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
@@ -867,9 +908,9 @@
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
-			name = Release;
+			name = "Release-dev";
 		};
-		F25DAC192D227DFD00881E7E /* Debug */ = {
+		F25DAC192D227DFD00881E7E /* Debug-dev */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
 			buildSettings = {
@@ -909,9 +950,9 @@
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
-			name = Debug;
+			name = "Debug-dev";
 		};
-		F25DAC1A2D227DFD00881E7E /* Release */ = {
+		F25DAC1A2D227DFD00881E7E /* Release-dev */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
@@ -949,7 +990,7 @@
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
-			name = Release;
+			name = "Release-dev";
 		};
 		F25DAC1B2D227DFD00881E7E /* Profile */ = {
 			isa = XCBuildConfiguration;
@@ -997,42 +1038,42 @@
 		331C8087294A63A400263BE5 /* Build configuration list for PBXNativeTarget "RunnerTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				331C8088294A63A400263BE5 /* Debug */,
-				331C8089294A63A400263BE5 /* Release */,
+				331C8088294A63A400263BE5 /* Debug-dev */,
+				331C8089294A63A400263BE5 /* Release-dev */,
 				331C808A294A63A400263BE5 /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = "Release-dev";
 		};
 		97C146E91CF9000F007C117D /* Build configuration list for PBXProject "Runner" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				97C147031CF9000F007C117D /* Debug */,
-				97C147041CF9000F007C117D /* Release */,
+				97C147031CF9000F007C117D /* Debug-dev */,
+				97C147041CF9000F007C117D /* Release-dev */,
 				249021D3217E4FDB00AE95B9 /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = "Release-dev";
 		};
 		97C147051CF9000F007C117D /* Build configuration list for PBXNativeTarget "Runner" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				97C147061CF9000F007C117D /* Debug */,
-				97C147071CF9000F007C117D /* Release */,
+				97C147061CF9000F007C117D /* Debug-dev */,
+				97C147071CF9000F007C117D /* Release-dev */,
 				249021D4217E4FDB00AE95B9 /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = "Release-dev";
 		};
 		F25DAC182D227DFD00881E7E /* Build configuration list for PBXNativeTarget "DEV" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F25DAC192D227DFD00881E7E /* Debug */,
-				F25DAC1A2D227DFD00881E7E /* Release */,
+				F25DAC192D227DFD00881E7E /* Debug-dev */,
+				F25DAC1A2D227DFD00881E7E /* Release-dev */,
 				F25DAC1B2D227DFD00881E7E /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = "Release-dev";
 		};
 /* End XCConfigurationList section */
 	};

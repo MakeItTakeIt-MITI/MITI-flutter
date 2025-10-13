@@ -13,25 +13,20 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:miti/env/environment.dart';
 import 'package:miti/util/util.dart';
 
-import '../../firebase_options.dart';
+import '../../firebase_options_dev.dart' as dev;
+import '../../firebase_options_prod.dart' as prod;
 import '../../post/repository/search_history_repository.dart';
 
 class AppInitializationService {
-  /// Production 환경 초기화
-  static Future<void> initialize() async {
-    await _setupEnvironment(BuildEnvironment.production, ".env.prod");
+  /// 환경 초기화
+  static Future<void> initialize(String env) async {
+    await _setupEnvironment(BuildEnvironment.production, env);
     await _setupFlutter();
-    await _setupExternalServices();
+    await _setupExternalServices(env);
   }
 
-  /// Development 환경 초기화
-  static Future<void> initializeDev() async {
-    await _setupEnvironment(BuildEnvironment.development, ".env.dev");
-    await _setupFlutter();
-    await _setupExternalServices();
-  }
-
-  static Future<void> _setupEnvironment(BuildEnvironment env, String envFile) async {
+  static Future<void> _setupEnvironment(
+      BuildEnvironment env, String envFile) async {
     EnvUtil.instance.initialize(environment: env);
 
     print("Loading environment: $envFile");
@@ -53,7 +48,7 @@ class AppInitializationService {
     await initializeDateFormatting('ko');
   }
 
-  static Future<void> _setupExternalServices() async {
+  static Future<void> _setupExternalServices(String env) async {
     // Naver Map 초기화
     await NaverMapSdk.instance.initialize(
       clientId: Environment.naverMapClientId,
@@ -73,9 +68,13 @@ class AppInitializationService {
     // Search History 초기화
     await SearchHistoryRepository().initialize();
 
+    final isDev = env == ".env.dev";
+
     // Firebase 초기화
     await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
+      options: isDev
+          ? dev.DefaultFirebaseOptions.currentPlatform
+          : prod.DefaultFirebaseOptions.currentPlatform,
     );
   }
 }

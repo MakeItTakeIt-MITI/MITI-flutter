@@ -28,7 +28,7 @@ import '../common/provider/router_provider.dart';
 import '../common/service/app_initialization_service.dart';
 import '../common/service/deep_link_service.dart';
 import '../court/view/court_detail_screen.dart';
-import '../firebase_options.dart';
+import '../firebase_options_prod.dart';
 import '../notification/provider/notification_provider.dart';
 
 // Firebase background handler
@@ -72,7 +72,7 @@ void _backgroundRouting(NotificationResponse details) {
 }
 
 void main(List<String> args) async {
-  await AppInitializationService.initialize();
+  await AppInitializationService.initialize(".env.prod");
 
   runApp(
     ProviderScope(
