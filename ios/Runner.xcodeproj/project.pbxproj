@@ -16,19 +16,8 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
-		F25DAC082D227DFD00881E7E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
-		F25DAC092D227DFD00881E7E /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
-		F25DAC0E2D227DFD00881E7E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
-		F25DAC0F2D227DFD00881E7E /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
-		F25DAC102D227DFD00881E7E /* config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F29190DC2CEF920B003F3BF5 /* config.xcconfig */; };
-		F25DAC112D227DFD00881E7E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
-		F25DAC122D227DFD00881E7E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
-		F25DAC132D227DFD00881E7E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B8A1E76D4164F6737F853E44 /* GoogleService-Info.plist */; };
-		F2719AA22E8BF9A800CB3320 /* Debug-dev.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F2719AA12E8BF9A800CB3320 /* Debug-dev.xcconfig */; };
 		F2719AA32E8BF9A800CB3320 /* Debug-dev.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F2719AA12E8BF9A800CB3320 /* Debug-dev.xcconfig */; };
-		F2719AA52E8BF9CF00CB3320 /* Release-dev.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F2719AA42E8BF9CF00CB3320 /* Release-dev.xcconfig */; };
 		F2719AA62E8BF9CF00CB3320 /* Release-dev.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F2719AA42E8BF9CF00CB3320 /* Release-dev.xcconfig */; };
-		F2719AA82E8BFCC800CB3320 /* Release-dev.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F2719AA72E8BFCC800CB3320 /* Release-dev.xcconfig */; };
 		F2719AA92E8BFCC800CB3320 /* Release-dev.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F2719AA72E8BFCC800CB3320 /* Release-dev.xcconfig */; };
 		F29190DD2CEF920B003F3BF5 /* config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F29190DC2CEF920B003F3BF5 /* config.xcconfig */; };
 /* End PBXBuildFile section */
@@ -45,16 +34,6 @@
 
 /* Begin PBXCopyFilesBuildPhase section */
 		9705A1C41CF9048500538489 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F25DAC142D227DFD00881E7E /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
@@ -91,7 +70,6 @@
 		B8A1E76D4164F6737F853E44 /* GoogleService-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Runner/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F25029E02C22E2B8006E24BB /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		F25DAC032D22792800881E7E /* Runner copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Runner copy-Info.plist"; path = "/Users/jeonghyun/Documents/MITI-flutter/ios/Runner copy-Info.plist"; sourceTree = "<absolute>"; };
-		F25DAC1C2D227DFD00881E7E /* DEV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DEV.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F25DAC1D2D227DFD00881E7E /* Runner copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Runner copy-Info.plist"; path = "/Users/jeonghyun/Documents/MITI-flutter/ios/Runner copy-Info.plist"; sourceTree = "<absolute>"; };
 		F2719AA12E8BF9A800CB3320 /* Debug-dev.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Debug-dev.xcconfig"; sourceTree = "<group>"; };
 		F2719AA42E8BF9CF00CB3320 /* Release-dev.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Release-dev.xcconfig"; sourceTree = "<group>"; };
@@ -112,13 +90,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				060E5CE1608F725CAD110283 /* Pods_Runner.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F25DAC0A2D227DFD00881E7E /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -188,7 +159,6 @@
 			children = (
 				97C146EE1CF9000F007C117D /* Runner.app */,
 				331C8081294A63A400263BE5 /* RunnerTests.xctest */,
-				F25DAC1C2D227DFD00881E7E /* DEV.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -236,9 +206,9 @@
 			buildPhases = (
 				00DAD0E96371580EC3273ED0 /* [CP] Check Pods Manifest.lock */,
 				9740EEB61CF901F6004384FC /* Run Script */,
-				F2719A9F2E8BEF2800CB3320 /* Copy GoogleService-Info.plist */,
 				97C146EA1CF9000F007C117D /* Sources */,
 				97C146EB1CF9000F007C117D /* Frameworks */,
+				F2A361BB2E9D6C0E00C68149 /* Copy GoogleService v2 */,
 				97C146EC1CF9000F007C117D /* Resources */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
@@ -252,26 +222,6 @@
 			name = Runner;
 			productName = Runner;
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
-			productType = "com.apple.product-type.application";
-		};
-		F25DAC042D227DFD00881E7E /* DEV */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = F25DAC182D227DFD00881E7E /* Build configuration list for PBXNativeTarget "DEV" */;
-			buildPhases = (
-				F25DAC062D227DFD00881E7E /* Run Script */,
-				F25DAC072D227DFD00881E7E /* Sources */,
-				F25DAC0A2D227DFD00881E7E /* Frameworks */,
-				F25DAC0D2D227DFD00881E7E /* Resources */,
-				F25DAC142D227DFD00881E7E /* Embed Frameworks */,
-				F25DAC152D227DFD00881E7E /* Thin Binary */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = DEV;
-			productName = Runner;
-			productReference = F25DAC1C2D227DFD00881E7E /* DEV.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -309,7 +259,6 @@
 			targets = (
 				97C146ED1CF9000F007C117D /* Runner */,
 				331C8080294A63A400263BE5 /* RunnerTests */,
-				F25DAC042D227DFD00881E7E /* DEV */,
 			);
 		};
 /* End PBXProject section */
@@ -335,22 +284,6 @@
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 				2FA5D66745ABAD10BA9B4676 /* GoogleService-Info.plist in Resources */,
 				F2719AA32E8BF9A800CB3320 /* Debug-dev.xcconfig in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F25DAC0D2D227DFD00881E7E /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F2719AA82E8BFCC800CB3320 /* Release-dev.xcconfig in Resources */,
-				F2719AA52E8BF9CF00CB3320 /* Release-dev.xcconfig in Resources */,
-				F25DAC0E2D227DFD00881E7E /* LaunchScreen.storyboard in Resources */,
-				F25DAC0F2D227DFD00881E7E /* AppFrameworkInfo.plist in Resources */,
-				F25DAC102D227DFD00881E7E /* config.xcconfig in Resources */,
-				F25DAC112D227DFD00881E7E /* Assets.xcassets in Resources */,
-				F25DAC122D227DFD00881E7E /* Main.storyboard in Resources */,
-				F25DAC132D227DFD00881E7E /* GoogleService-Info.plist in Resources */,
-				F2719AA22E8BF9A800CB3320 /* Debug-dev.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -444,38 +377,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		F25DAC062D227DFD00881E7E /* Run Script */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Run Script";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n";
-		};
-		F25DAC152D227DFD00881E7E /* Thin Binary */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}",
-			);
-			name = "Thin Binary";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin";
-		};
-		F2719A9F2E8BEF2800CB3320 /* Copy GoogleService-Info.plist */ = {
+		F2A361BB2E9D6C0E00C68149 /* Copy GoogleService v2 */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -484,14 +386,14 @@
 			);
 			inputPaths = (
 			);
-			name = "Copy GoogleService-Info.plist";
+			name = "Copy GoogleService v2";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Firebase GoogleService-Info.plist 복사 스크립트\n# Configuration에 따라 올바른 plist 파일을 복사합니다\n\n# 환경 결정 (Configuration 이름에서 dev 또는 prod 추출)\n# Debug-dev, Release-dev → dev\n# Debug-prod, Release-prod → prod\n# Debug, Release → prod (기본값)\n\nENVIRONMENT=\"\"\n\nif [[ \"${CONFIGURATION}\" == *\"dev\"* ]]; then\n    ENVIRONMENT=\"Dev\"\nelse\n    ENVIRONMENT=\"Prod\"\nfi\n\n# 소스 경로와 대상 경로 설정\nSOURCE_PATH=\"${SRCROOT}/Runner/Firebase/${ENVIRONMENT}/GoogleService-Info.plist\"\nDESTINATION_PATH=\"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\"\n\n# 파일이 존재하는지 확인\nif [ ! -f \"$SOURCE_PATH\" ]; then\n    echo \"error: GoogleService-Info.plist not found at ${SOURCE_PATH}\"\n    exit 1\nfi\n\n# plist 파일 복사\necho \"Copying ${ENVIRONMENT} GoogleService-Info.plist from ${SOURCE_PATH}\"\ncp \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"\n\n# 성공 메시지\necho \"✅ Successfully copied ${ENVIRONMENT} GoogleService-Info.plist\"\n";
+			shellScript = "#!/bin/sh\n\n# GoogleService-Info.plist 환경별 교체 스크립트\n\nGOOGLE_SERVICE_INFO_PLIST=\"${PROJECT_DIR}/Runner/GoogleService-Info.plist\"\n\nif [ \"${CONFIGURATION}\" == \"Debug\" ]; then\n  echo \"🔧 개발 환경: GoogleService-Info-Dev.plist 사용\"\n  cp -f \"${PROJECT_DIR}/GoogleService-Info-Dev.plist\" \"${GOOGLE_SERVICE_INFO_PLIST}\"\n  \nelif [ \"${CONFIGURATION}\" == \"Release\" ] || [ \"${CONFIGURATION}\" == \"Profile\" ]; then\n  echo \"🚀 운영 환경: GoogleService-Info-Prod.plist 사용\"\n  cp -f \"${PROJECT_DIR}/GoogleService-Info-Prod.plist\" \"${GOOGLE_SERVICE_INFO_PLIST}\"\n  \nelse\n  echo \"❌ 알 수 없는 Configuration: ${CONFIGURATION}\"\n  exit 1\nfi\n\necho \"✅ GoogleService-Info.plist 교체 완료!\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -510,15 +412,6 @@
 			files = (
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F25DAC072D227DFD00881E7E /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F25DAC082D227DFD00881E7E /* AppDelegate.swift in Sources */,
-				F25DAC092D227DFD00881E7E /* GeneratedPluginRegistrant.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -910,128 +803,6 @@
 			};
 			name = "Release-dev";
 		};
-		F25DAC192D227DFD00881E7E /* Debug-dev */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = YES;
-				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 3YB77XQ2UM;
-				ENABLE_BITCODE = NO;
-				FLUTTER_TARGET = lib/env/main_dev.dart;
-				INFOPLIST_FILE = RunnerDev.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MITI;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
-				INFOPLIST_PREPROCESSOR_DEFINITIONS = .xcconfig;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.makeittakeit.miti;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = miti_ios_app_development;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
-				VERSIONING_SYSTEM = "apple-generic";
-			};
-			name = "Debug-dev";
-		};
-		F25DAC1A2D227DFD00881E7E /* Release-dev */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 3YB77XQ2UM;
-				ENABLE_BITCODE = NO;
-				FLUTTER_TARGET = lib/env/main_dev.dart;
-				INFOPLIST_FILE = RunnerDev.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MITI;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
-				INFOPLIST_PREPROCESSOR_DEFINITIONS = .xcconfig;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.makeittakeit.miti;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = miti_ios_app_development;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
-				VERSIONING_SYSTEM = "apple-generic";
-			};
-			name = "Release-dev";
-		};
-		F25DAC1B2D227DFD00881E7E /* Profile */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 3YB77XQ2UM;
-				ENABLE_BITCODE = NO;
-				FLUTTER_TARGET = lib/env/main_dev.dart;
-				INFOPLIST_FILE = RunnerDev.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MITI;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
-				INFOPLIST_PREPROCESSOR_DEFINITIONS = .xcconfig;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.makeittakeit.miti;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = miti_ios_app_development;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
-				VERSIONING_SYSTEM = "apple-generic";
-			};
-			name = Profile;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1061,16 +832,6 @@
 				97C147061CF9000F007C117D /* Debug-dev */,
 				97C147071CF9000F007C117D /* Release-dev */,
 				249021D4217E4FDB00AE95B9 /* Profile */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = "Release-dev";
-		};
-		F25DAC182D227DFD00881E7E /* Build configuration list for PBXNativeTarget "DEV" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				F25DAC192D227DFD00881E7E /* Debug-dev */,
-				F25DAC1A2D227DFD00881E7E /* Release-dev */,
-				F25DAC1B2D227DFD00881E7E /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "Release-dev";

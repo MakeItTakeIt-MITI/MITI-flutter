@@ -61,6 +61,10 @@ lib/firebase_options_prod.dart
 firebase.json
 android/app/src/prod/google-services.json
 ios/Runner/Firebase/Dev/GoogleService-Info-Dev.plist
+ios/Runner/GoogleService-Info.plist
 ios/config.xcconfig
+
+ios/GoogleService-Info-Dev.plist
+ios/GoogleService-Info-Prod.plist
 
 devtools_options.yaml
