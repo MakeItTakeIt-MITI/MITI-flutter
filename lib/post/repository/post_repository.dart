@@ -5,7 +5,7 @@ import 'package:retrofit/http.dart';
 
 import '../../common/model/cursor_model.dart';
 import '../../common/model/default_model.dart';
-import '../../common/param/cursor_pagination_param.dart';
+import '../../common/param/pagination_param.dart';
 import '../../dio/provider/dio_provider.dart';
 import '../model/base_post_comment_response.dart';
 import '../model/base_post_response.dart';

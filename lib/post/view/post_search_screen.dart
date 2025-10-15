@@ -13,7 +13,7 @@ import '../../common/component/sliver_delegate.dart';
 import '../../common/model/cursor_model.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
-import '../../common/param/cursor_pagination_param.dart';
+import '../../common/param/pagination_param.dart';
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
 import '../../util/util.dart';
