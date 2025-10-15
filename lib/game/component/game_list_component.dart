@@ -9,31 +9,26 @@ import 'package:miti/theme/text_theme.dart';
 import 'package:miti/util/util.dart';
 
 import '../../common/model/entity_enum.dart';
-import '../model/v2/game/base_game_court_by_date_response.dart';
 import '../model/v2/game/base_game_response.dart';
 import 'game_state_label.dart';
 
 class GameCardByDate extends StatelessWidget {
-  final String dateTime;
-  final List<BaseGameResponse> models;
+  final List<BaseGameResponse> model;
 
   const GameCardByDate({
     super.key,
-    required this.dateTime,
-    required this.models,
+    required this.model,
   });
 
-  factory GameCardByDate.fromModel(
-      {required BaseGameCourtByDateResponse model}) {
+  factory GameCardByDate.fromModel({required List<BaseGameResponse> model}) {
     return GameCardByDate(
-      dateTime: model.startDate,
-      models: model.game,
+      model: model,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final date = DateTime.parse(dateTime);
+    final date = DateTime.parse(model.first.startDate);
     final formatDate = DateFormat('yyyy년 MM월 dd일 EEE', "ko").format(date);
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 16.h),
@@ -55,13 +50,13 @@ class GameCardByDate extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (_, idx) {
               return GameCard.fromModel(
-                model: models[idx],
+                model: model[idx],
               );
             },
             separatorBuilder: (_, idx) {
               return SizedBox(height: 12.h);
             },
-            itemCount: models.length,
+            itemCount: model.length,
           ),
         ],
       ),

@@ -11,15 +11,12 @@ import 'package:miti/user/view/user_participation_screen.dart';
 import '../../auth/provider/auth_provider.dart';
 import '../../common/component/custom_drop_down_button.dart';
 import '../../common/component/sliver_delegate.dart';
-import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
-import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
-import '../../common/provider/cursor_pagination_provider.dart';
-import '../../common/repository/base_pagination_repository.dart';
 import '../../theme/color_theme.dart';
 import '../../user/param/user_profile_param.dart';
-import '../../user/provider/user_pagination_provider.dart';
+import '../../user/provider/user_host_pagination_provider.dart';
+import '../../user/provider/user_participation_pagination_provider.dart';
 import '../../util/util.dart';
 
 final currentGameTypeProvider = StateProvider.autoDispose<UserGameType>(
@@ -349,20 +346,30 @@ class _GameFilterComponentState extends ConsumerState<_GameFilterComponent> {
         .read(dropDownValueProvider(DropButtonType.game).notifier)
         .update((state) => value);
     final gameStatus = getStatus(value!);
-    final provider = widget.type == UserGameType.host
-        ? userHostingPProvider(PaginationStateParam(path: id))
-        : userParticipationPProvider(PaginationStateParam(path: id))
-            as AutoDisposeStateNotifierProvider<
-                CursorPaginationProvider<Base, DefaultParam,
-                    IBaseCursorPaginationRepository<Base, DefaultParam>>,
-                BaseModel>;
-    ref.read(provider.notifier).paginate(
-          path: id,
-          forceRefetch: true,
-          param: UserGameParam(
-            game_status: gameStatus,
-          ),
-          cursorPaginationParams: const CursorPaginationParam(),
-        );
+    if (widget.type == UserGameType.host) {
+      ref
+          .read(userHostingPaginationProvider(
+          cursorParam: const CursorPaginationParam())
+          .notifier)
+          .paginate(
+        forceRefetch: true,
+        param: UserGameParam(
+          game_status: gameStatus,
+        ),
+        cursorPaginationParams: const CursorPaginationParam(),
+      );
+    } else {
+      ref
+          .read(userParticipationPaginationProvider(
+          cursorParam: const CursorPaginationParam())
+          .notifier)
+          .paginate(
+        forceRefetch: true,
+        param: UserGameParam(
+          game_status: gameStatus,
+        ),
+        cursorPaginationParams: const CursorPaginationParam(),
+      );
+    }
   }
 }

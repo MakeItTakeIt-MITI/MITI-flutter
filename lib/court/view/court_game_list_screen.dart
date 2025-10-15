@@ -1,34 +1,45 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:miti/common/component/default_appbar.dart';
+import 'package:miti/court/provider/court_game_pagination_provider.dart';
 
-import '../../common/component/dispose_sliver_cursor_pagination_list_view.dart';
-import '../../common/model/model_id.dart';
+import '../../common/error/view/error_screen.dart';
+import '../../common/model/cursor_model.dart';
+import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
 import '../../game/component/game_list_component.dart';
-import '../../game/component/skeleton/game_list_skeleton.dart';
-import '../../game/model/v2/game/base_game_court_by_date_response.dart';
+import '../../game/model/v2/game/base_game_response.dart';
 import '../param/court_pagination_param.dart';
-import '../provider/court_pagination_provider.dart';
+import 'court_map_screen.dart';
 
-class CourtGameListScreen extends StatefulWidget {
+class CourtGameListScreen extends ConsumerStatefulWidget {
   static String get routeName => 'courtGameList';
   final int courtId;
 
   const CourtGameListScreen({super.key, required this.courtId});
 
   @override
-  State<CourtGameListScreen> createState() => _CourtGameListScreenState();
+  ConsumerState<CourtGameListScreen> createState() =>
+      _CourtGameListScreenState();
 }
 
-class _CourtGameListScreenState extends State<CourtGameListScreen> {
+class _CourtGameListScreenState extends ConsumerState<CourtGameListScreen> {
   late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
+    _scrollController = ScrollController()..addListener(_scrollListener);;
+    // todo 지우기 여부 확인
+    WidgetsBinding.instance.addPostFrameCallback((s) {
+      ref
+          .read(scrollControllerProvider.notifier)
+          .update((s) => _scrollController);
+    });
   }
 
   @override
@@ -56,19 +67,60 @@ class _CourtGameListScreenState extends State<CourtGameListScreen> {
               SliverPadding(
                 sliver: Consumer(builder:
                     (BuildContext context, WidgetRef ref, Widget? child) {
-                  return DisposeSliverCursorPaginationListView(
-                    provider: courtGamePageProvider(PaginationStateParam(
-                        param: CourtPaginationParam(search: ''),
-                        path: widget.courtId)),
-                    itemBuilder:
-                        (BuildContext context, int index, Base pModel) {
-                      final model = pModel as BaseGameCourtByDateResponse;
-                      return GameCardByDate.fromModel(model: model);
+                  final state = ref.watch(courtGamePaginationProvider(
+                      param: CourtPaginationParam(search: ''),
+                      cursorParam: const CursorPaginationParam()));
+
+                  // 완전 처음 로딩일때
+                  if (state is LoadingModel) {
+                    return const SliverToBoxAdapter(
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ); // todo 스켈레톤 일반화
+                  }
+
+                  if (state is ErrorModel) {
+                    WidgetsBinding.instance.addPostFrameCallback((s) {
+                      context.pushReplacementNamed(ErrorScreen.routeName);
+                    });
+                    return Container();
+                  }
+
+                  final cp = state
+                  as ResponseModel<CursorPaginationModel<List<BaseGameResponse>>>;
+                  log('state.data!.page_content = ${state.data!.items.length}');
+                  if (state.data!.items.isEmpty) {
+                    return Container();
+                  }
+
+                  return SliverList.builder(
+                    itemBuilder: (_, index) {
+                      if (index == (cp.data!.items.length)) {
+                        if (cp is! ResponseModel<
+                            CursorPaginationModelFetchingMore>) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {});
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 8.0,
+                          ),
+                          child: Center(
+                            child: cp is ResponseModel<
+                                CursorPaginationModelFetchingMore>
+                                ? const CircularProgressIndicator()
+                                : Container(),
+                          ),
+                        );
+                      }
+
+                      final pItem = cp.data!.items[index];
+                      return GameCardByDate.fromModel(
+                        model: pItem,
+                      );
                     },
-                    param: CourtPaginationParam(search: ''),
-                    skeleton: const GameListSkeleton(),
-                    controller: _scrollController,
-                    emptyWidget: Container(),
+                    itemCount: cp.data!.items.length + 1,
                   );
                 }),
                 padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
@@ -76,5 +128,24 @@ class _CourtGameListScreenState extends State<CourtGameListScreen> {
             ],
           )),
     );
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels >
+        _scrollController.position.maxScrollExtent - 300) {
+      final state = ref.watch(courtGamePaginationProvider(
+          param: CourtPaginationParam(search: ''),
+          cursorParam: const CursorPaginationParam()));
+      ref
+          .read(courtGamePaginationProvider(
+          param: CourtPaginationParam(search: ''),
+          cursorParam: const CursorPaginationParam()).notifier)
+          .paginate(
+        cursorPaginationParams: const CursorPaginationParam(),
+        fetchMore: true,
+        param: CourtPaginationParam(search: ''),
+      );
+      // 스크롤이 끝에 도달했을 때 새로운 항목 로드
+    }
   }
 }

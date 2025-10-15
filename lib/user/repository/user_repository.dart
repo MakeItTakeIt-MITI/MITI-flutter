@@ -1,23 +1,17 @@
 import 'package:dio/dio.dart' hide Headers;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:json_annotation/json_annotation.dart';
-import 'package:miti/user/model/my_payment_model.dart';
-import 'package:miti/user/model/review_model.dart';
 import 'package:miti/user/model/user_model.dart';
 import 'package:miti/user/param/user_profile_param.dart';
 import 'package:retrofit/http.dart';
 
-import '../../auth/param/signup_param.dart';
 import '../../common/model/cursor_model.dart';
 import '../../common/model/default_model.dart';
-import '../../common/model/entity_enum.dart';
 import '../../common/param/pagination_param.dart';
 import '../../common/repository/base_pagination_repository.dart';
-import '../../dio/dio_interceptor.dart';
 import '../../dio/provider/dio_provider.dart';
-import '../../game/model/game_model.dart';
 import '../../game/model/v2/game/base_game_court_by_date_response.dart';
+import '../../game/model/v2/game/base_game_response.dart';
 import '../../game/model/v2/payment/base_payment_result_response.dart';
 import '../../game/model/v2/payment/payment_result_response.dart';
 import '../../review/model/v2/base_received_review_response.dart';
@@ -123,7 +117,7 @@ final userParticipationPRepositoryProvider =
 
 @RestApi()
 abstract class UserParticipationPRepository extends IBaseCursorPaginationRepository<
-    BaseGameCourtByDateResponse, UserGameParam> {
+    BaseGameResponse, UserGameParam> {
   factory UserParticipationPRepository(Dio dio, {String baseUrl}) =
       _UserParticipationPRepository;
 
@@ -131,7 +125,7 @@ abstract class UserParticipationPRepository extends IBaseCursorPaginationReposit
   @override
   @Headers({'token': 'true'})
   @GET('/users/{userId}/participated-games')
-  Future<ResponseModel<CursorPaginationModel<BaseGameCourtByDateResponse>>> paginate({
+  Future<ResponseModel<CursorPaginationModel<BaseGameResponse>>> paginate({
     @Queries() required CursorPaginationParam cursorPaginationParams,
     @Queries() UserGameParam? param,
     @Path('userId') int? path,
@@ -197,7 +191,7 @@ final userHostingPRepositoryProvider = Provider<UserHostingPRepository>((ref) {
 
 @RestApi()
 abstract class UserHostingPRepository extends IBaseCursorPaginationRepository<
-    BaseGameCourtByDateResponse, UserGameParam> {
+    BaseGameResponse, UserGameParam> {
   factory UserHostingPRepository(Dio dio, {String baseUrl}) =
       _UserHostingPRepository;
 
@@ -205,7 +199,7 @@ abstract class UserHostingPRepository extends IBaseCursorPaginationRepository<
   @override
   @Headers({'token': 'true'})
   @GET('/users/{userId}/hosted-games')
-  Future<ResponseModel<CursorPaginationModel<BaseGameCourtByDateResponse>>> paginate({
+  Future<ResponseModel<CursorPaginationModel<BaseGameResponse>>> paginate({
     @Queries() required CursorPaginationParam cursorPaginationParams,
     @Queries() UserGameParam? param,
     @Path('userId') int? path,

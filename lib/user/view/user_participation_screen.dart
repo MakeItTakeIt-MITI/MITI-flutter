@@ -1,23 +1,23 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:miti/common/component/custom_drop_down_button.dart';
 import 'package:miti/common/param/pagination_param.dart';
 import 'package:miti/theme/color_theme.dart';
-import 'package:miti/user/provider/user_pagination_provider.dart';
+import 'package:miti/user/provider/user_host_pagination_provider.dart';
+import 'package:miti/user/provider/user_participation_pagination_provider.dart';
 import 'package:miti/user/provider/user_provider.dart';
 
-import '../../auth/provider/auth_provider.dart';
-import '../../common/component/dispose_sliver_cursor_pagination_list_view.dart';
+import '../../common/error/view/error_screen.dart';
+import '../../common/model/cursor_model.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
-import '../../common/model/model_id.dart';
-import '../../common/provider/cursor_pagination_provider.dart';
-import '../../common/repository/base_pagination_repository.dart';
 import '../../court/view/court_map_screen.dart';
 import '../../game/component/game_list_component.dart';
-import '../../game/component/skeleton/game_list_skeleton.dart';
-import '../../game/model/v2/game/base_game_court_by_date_response.dart';
+import '../../game/model/v2/game/base_game_response.dart';
 import '../../theme/text_theme.dart';
 import '../param/user_profile_param.dart';
 
@@ -36,13 +36,12 @@ class UserParticipationScreen extends ConsumerStatefulWidget {
 }
 
 class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
-
   late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
+    _scrollController = ScrollController()..addListener(_scrollListener);
     WidgetsBinding.instance.addPostFrameCallback((s) {
       ref
           .read(scrollControllerProvider.notifier)
@@ -72,30 +71,39 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
   }
 
   Future<void> refresh() async {
-    final id = ref.read(authProvider)!.id!;
     final gameStatus =
         getStatus(ref.read(dropDownValueProvider(DropButtonType.game)));
-    final provider = widget.type == UserGameType.host
-        ? userHostingPProvider(PaginationStateParam(path: id))
-        : userParticipationPProvider(PaginationStateParam(path: id))
-            as AutoDisposeStateNotifierProvider<
-                CursorPaginationProvider<Base, DefaultParam,
-                    IBaseCursorPaginationRepository<Base, DefaultParam>>,
-                BaseModel>;
-    ref.read(provider.notifier).paginate(
-          path: id,
-          forceRefetch: true,
-          param: UserGameParam(
-            game_status: gameStatus,
-          ),
-          cursorPaginationParams: const CursorPaginationParam(),
-        );
+    if (widget.type == UserGameType.host) {
+      ref
+          .read(userHostingPaginationProvider(
+                  param: UserGameParam(game_status: gameStatus),
+                  cursorParam: const CursorPaginationParam())
+              .notifier)
+          .paginate(
+            forceRefetch: true,
+            param: UserGameParam(
+              game_status: gameStatus,
+            ),
+            cursorPaginationParams: const CursorPaginationParam(),
+          );
+    } else {
+      ref
+          .read(userParticipationPaginationProvider(
+                  param: UserGameParam(game_status: gameStatus),
+                  cursorParam: const CursorPaginationParam())
+              .notifier)
+          .paginate(
+            forceRefetch: true,
+            param: UserGameParam(
+              game_status: gameStatus,
+            ),
+            cursorPaginationParams: const CursorPaginationParam(),
+          );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final id = ref.watch(authProvider)!.id!;
-
     return RefreshIndicator(
       onRefresh: refresh,
       child: CustomScrollView(
@@ -105,30 +113,66 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
               final gameStatus = getStatus(
                   ref.watch(dropDownValueProvider(DropButtonType.game)));
-              final provider = widget.type == UserGameType.host
-                  ? userHostingPProvider(PaginationStateParam(path: id))
-                      as AutoDisposeStateNotifierProvider<
-                          CursorPaginationProvider<Base, DefaultParam,
-                              IBaseCursorPaginationRepository<Base, DefaultParam>>,
-                          BaseModel>
-                  : userParticipationPProvider(PaginationStateParam(path: id));
+
+              final state = widget.type == UserGameType.host
+                  ? ref.watch(userHostingPaginationProvider(
+                      param: UserGameParam(game_status: gameStatus),
+                      cursorParam: const CursorPaginationParam()))
+                  : ref.watch(userParticipationPaginationProvider(
+                      param: UserGameParam(game_status: gameStatus),
+                      cursorParam: const CursorPaginationParam()));
+
+              // 완전 처음 로딩일때
+              if (state is LoadingModel) {
+                return const SliverToBoxAdapter(
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ); // todo 스켈레톤 일반화
+              }
+
+              if (state is ErrorModel) {
+                WidgetsBinding.instance.addPostFrameCallback((s) {
+                  context.pushReplacementNamed(ErrorScreen.routeName);
+                });
+              }
+
+              final cp = state as ResponseModel<
+                  CursorPaginationModel<List<BaseGameResponse>>>;
+              log('state.data!.page_content = ${state.data!.items.length}');
+              if (state.data!.items.isEmpty) {
+                return getEmptyWidget(widget.type);
+              }
+
               return SliverPadding(
                 padding: EdgeInsets.only(right: 21.w, left: 21.w, bottom: 20.h),
-                sliver: DisposeSliverCursorPaginationListView(
-                  provider: provider,
-                  itemBuilder: (BuildContext context, int index, Base pModel) {
-                    final model = pModel as BaseGameCourtByDateResponse;
+                sliver: SliverList.builder(
+                  itemBuilder: (_, index) {
+                    if (index == (cp.data!.items.length)) {
+                      if (cp is! ResponseModel<
+                          CursorPaginationModelFetchingMore>) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {});
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 8.0,
+                        ),
+                        child: Center(
+                          child: cp is ResponseModel<
+                                  CursorPaginationModelFetchingMore>
+                              ? const CircularProgressIndicator()
+                              : Container(),
+                        ),
+                      );
+                    }
+
+                    final pItem = cp.data!.items[index];
                     return GameCardByDate.fromModel(
-                      model: model,
+                      model: pItem,
                     );
                   },
-                  skeleton: const GameListSkeleton(),
-                  param: UserGameParam(
-                    game_status: gameStatus,
-                  ),
-                  controller: _scrollController,
-                  emptyWidget: getEmptyWidget(widget.type),
-                  separateSize: 0,
+                  itemCount: cp.data!.items.length + 1,
                 ),
               );
             },
@@ -145,24 +189,61 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
     final desc = type == UserGameType.host
         ? '원하는 경기를 생성하고 게스트를 모집해보세요!'
         : '새로운 경기를 찾아보거나 직접 경기를 생성해보세요!';
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          title,
-          style: MITITextStyle.pageMainTextStyle
-              .copyWith(color: MITIColor.gray100),
-          textAlign: TextAlign.center,
-        ),
-        SizedBox(height: 20.h),
-        Text(
-          desc,
-          style:
-              MITITextStyle.pageSubTextStyle.copyWith(color: MITIColor.gray100),
-        )
-      ],
+    return SliverFillRemaining(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            title,
+            style: MITITextStyle.pageMainTextStyle
+                .copyWith(color: MITIColor.gray100),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 20.h),
+          Text(
+            desc,
+            style:
+                MITITextStyle.pageSubTextStyle.copyWith(color: MITIColor.gray100),
+          )
+        ],
+      ),
     );
   }
 
-
+  void _scrollListener() {
+    if (_scrollController.position.pixels >
+        _scrollController.position.maxScrollExtent - 300) {
+      final gameStatus =
+          getStatus(ref.read(dropDownValueProvider(DropButtonType.game)));
+      if (widget.type == UserGameType.host) {
+        log("더 불러오기!!");
+        ref
+            .read(userHostingPaginationProvider(
+                    param: UserGameParam(game_status: gameStatus),
+                    cursorParam: const CursorPaginationParam())
+                .notifier)
+            .paginate(
+              fetchMore: true,
+              param: UserGameParam(
+                game_status: gameStatus,
+              ),
+              cursorPaginationParams: const CursorPaginationParam(),
+            );
+      } else {
+        ref
+            .read(userParticipationPaginationProvider(
+                    param: UserGameParam(game_status: gameStatus),
+                    cursorParam: const CursorPaginationParam())
+                .notifier)
+            .paginate(
+              fetchMore: true,
+              param: UserGameParam(
+                game_status: gameStatus,
+              ),
+              cursorPaginationParams: const CursorPaginationParam(),
+            );
+      }
+      //   // 스크롤이 끝에 도달했을 때 새로운 항목 로드
+    }
+  }
 }

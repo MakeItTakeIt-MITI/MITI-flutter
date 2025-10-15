@@ -82,7 +82,7 @@ class _PaginationListViewState<T extends Base>
     if (state is LoadingModel) {
       return SliverToBoxAdapter(
         child: widget.skeleton,
-      ); // todo 스켈레톤 일반화
+      );
     }
     // 에러
     if (state is ErrorModel) {

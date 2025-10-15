@@ -4,6 +4,7 @@ import 'package:miti/game/param/game_param.dart';
 import 'package:miti/game/provider/widget/game_filter_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:miti/game/repository/game_repository.dart';
+import 'package:miti/user/provider/user_host_pagination_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../auth/provider/auth_provider.dart';
@@ -11,7 +12,6 @@ import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
 import '../../court/view/court_map_screen.dart';
-import '../../user/provider/user_pagination_provider.dart';
 
 part 'game_provider.g.dart';
 
@@ -76,11 +76,11 @@ Future<BaseModel> gameCreate(GameCreateRef ref) async {
 
   return await repository.createGame(param: param).then<BaseModel>((value) {
     logger.i(value);
-    final userId = ref.read(authProvider)!.id!;
     ref
-        .read(userHostingPProvider(PaginationStateParam(path: userId)).notifier)
+        .read(userHostingPaginationProvider(
+                cursorParam: const CursorPaginationParam())
+            .notifier)
         .paginate(
-          path: userId,
           forceRefetch: true,
           cursorPaginationParams: const CursorPaginationParam(),
         );
@@ -344,14 +344,13 @@ Future<BaseModel> cancelRecruitGame(CancelRecruitGameRef ref,
       .cancelRecruitGame(gameId: gameId)
       .then<BaseModel>((value) {
     logger.i(value);
-    final userId = ref.read(authProvider)?.id!;
-
     ref
-        .read(userHostingPProvider(PaginationStateParam(path: userId)).notifier)
+        .read(userHostingPaginationProvider(
+                cursorParam: const CursorPaginationParam())
+            .notifier)
         .paginate(
-          path: userId,
           forceRefetch: true,
-          cursorPaginationParams : const CursorPaginationParam(),
+          cursorPaginationParams: const CursorPaginationParam(),
         );
     return value;
   }).catchError((e) {
@@ -444,8 +443,8 @@ class GamePlayerProfile extends _$GamePlayerProfile {
         final players = (value).data!;
 
         players.participants.sort((p1, p2) {
-          final h1 = p1.user.playerProfile.height;
-          final h2 = p2.user.playerProfile.height;
+          final h1 = p1.user.playerProfile?.height;
+          final h2 = p2.user.playerProfile?.height;
 
           // null이면 뒤로, 아니면 내림차순
           return (h2 ?? -1).compareTo(h1 ?? -1);
@@ -453,10 +452,11 @@ class GamePlayerProfile extends _$GamePlayerProfile {
         state = value.copyWith(data: players);
       }
       return state;
-    }).catchError((e) {
+    }).catchError((e, stacktrace) {
       final error = ErrorModel.respToError(e);
       logger.e(
           'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      logger.e("stacktrace  = ${stacktrace}");
       state = error;
       return error;
     });

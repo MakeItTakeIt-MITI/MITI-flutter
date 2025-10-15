@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/model/default_model.dart';
-import 'package:miti/game/model/game_player_model.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
@@ -18,12 +17,9 @@ import '../../common/model/entity_enum.dart';
 import '../../review/model/v2/base_guest_rating_response.dart';
 import '../../user/model/v2/base_player_profile_response.dart';
 import '../../user/model/v2/private_participation_guest_player_response.dart';
-import '../../user/model/v2/private_user_guest_player_response.dart';
-import '../../user/model/v2/user_guest_player_response.dart';
 import '../../util/component/widget_util.dart';
 import '../../util/util.dart';
 import '../model/v2/game/game_player_list_response.dart';
-import '../model/v2/participation/participation_guest_player_response.dart';
 
 class GameParticipationScreen extends StatelessWidget {
   static String get routeName => 'participation';
@@ -117,7 +113,7 @@ class _ParticipationPlayerCard extends StatelessWidget {
   final String name;
   final String nickname; // 닉네임
   final String profileImageUrl; // 프로필 이미지 URL
-  final BasePlayerProfileResponse playerProfile;
+  final BasePlayerProfileResponse? playerProfile;
   final BaseGuestRatingResponse guestRating;
   final bool isParticipants;
 
@@ -151,12 +147,12 @@ class _ParticipationPlayerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<String> details = [
-      if (playerProfile.gender?.displayName != null)
-        playerProfile.gender!.displayName,
-      if (playerProfile.height != null) "${playerProfile.height} cm",
-      if (playerProfile.weight != null) "${playerProfile.weight} kg",
-      if (playerProfile.position?.displayName != null)
-        playerProfile.position!.displayName,
+      if (playerProfile?.gender?.displayName != null)
+        playerProfile!.gender!.displayName,
+      if (playerProfile?.height != null) "${playerProfile!.height} cm",
+      if (playerProfile?.weight != null) "${playerProfile!.weight} kg",
+      if (playerProfile?.position?.displayName != null)
+        playerProfile!.position!.displayName,
     ];
 
     // todo 디자인 수정

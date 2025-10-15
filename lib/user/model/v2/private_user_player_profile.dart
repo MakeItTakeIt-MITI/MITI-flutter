@@ -8,7 +8,7 @@ part 'private_user_player_profile.g.dart';
 @JsonSerializable()
 class PrivateUserPlayerProfile extends PrivateBaseUserResponse {
   @JsonKey(name: 'player_profile')
-  final BasePlayerProfileResponse playerProfile;
+  final BasePlayerProfileResponse? playerProfile;
 
   PrivateUserPlayerProfile({
     super.id,
