@@ -69,13 +69,22 @@ class AppInitializationService {
     await SearchHistoryRepository().initialize();
 
     final isDev = env == ".env.dev";
+    try {
+      // Firebase 초기화
+      await Firebase.initializeApp(
+        options: isDev
+            ? dev.DefaultFirebaseOptions.currentPlatform
+            : prod.DefaultFirebaseOptions.currentPlatform,
+      );
+    } catch (e) {
+      if (e.toString().contains('duplicate-app')) {
+        // 이미 초기화된 앱 사용
+        print('Firebase already initialized');
+      } else {
+        rethrow;
+      }
+    }
 
-    // Firebase 초기화
-    await Firebase.initializeApp(
-      options: isDev
-          ? dev.DefaultFirebaseOptions.currentPlatform
-          : prod.DefaultFirebaseOptions.currentPlatform,
-    );
   }
 }
 
