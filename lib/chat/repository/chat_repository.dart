@@ -5,7 +5,8 @@ import 'package:retrofit/http.dart';
 
 import '../../common/model/cursor_model.dart';
 import '../../common/model/default_model.dart';
-import '../../common/param/cursor_pagination_param.dart';
+// todo 수정필요
+// import '../../common/param/pagination_param.dart' hide CursorPaginationParam;
 import '../../common/param/pagination_param.dart';
 import '../../dio/provider/dio_provider.dart';
 import '../../notification/model/base_game_chat_notification_response.dart';
@@ -112,6 +113,6 @@ abstract class ChatRepository {
   Future<ResponseModel<PaginationModel<GameChatNotificationResponse>>>
       getUserChatNotifications({
     @Path('userId') required int userId,
-    @Queries() required PaginationParam paginationParam,
+    @Queries() required CursorPaginationParam paginationParam,
   });
 }

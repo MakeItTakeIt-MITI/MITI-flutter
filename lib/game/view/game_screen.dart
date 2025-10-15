@@ -15,15 +15,15 @@ import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
-import '../../common/provider/pagination_provider.dart';
+import '../../common/provider/cursor_pagination_provider.dart';
 import '../../common/repository/base_pagination_repository.dart';
 import '../../theme/color_theme.dart';
 import '../../user/param/user_profile_param.dart';
 import '../../user/provider/user_pagination_provider.dart';
 import '../../util/util.dart';
 
-final currentGameTypeProvider =
-    StateProvider.autoDispose<UserGameType>((ref) => UserGameType.participation);
+final currentGameTypeProvider = StateProvider.autoDispose<UserGameType>(
+    (ref) => UserGameType.participation);
 
 class GameScreen extends ConsumerStatefulWidget {
   static String get routeName => 'game';
@@ -353,8 +353,8 @@ class _GameFilterComponentState extends ConsumerState<_GameFilterComponent> {
         ? userHostingPProvider(PaginationStateParam(path: id))
         : userParticipationPProvider(PaginationStateParam(path: id))
             as AutoDisposeStateNotifierProvider<
-                PaginationProvider<Base, DefaultParam,
-                    IBasePaginationRepository<Base, DefaultParam>>,
+                CursorPaginationProvider<Base, DefaultParam,
+                    IBaseCursorPaginationRepository<Base, DefaultParam>>,
                 BaseModel>;
     ref.read(provider.notifier).paginate(
           path: id,
@@ -362,7 +362,7 @@ class _GameFilterComponentState extends ConsumerState<_GameFilterComponent> {
           param: UserGameParam(
             game_status: gameStatus,
           ),
-          paginationParams: const PaginationParam(page: 1),
+          cursorPaginationParams: const CursorPaginationParam(),
         );
   }
 }

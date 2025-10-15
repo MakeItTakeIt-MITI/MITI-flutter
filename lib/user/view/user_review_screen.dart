@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
@@ -12,16 +10,14 @@ import 'package:miti/user/provider/user_provider.dart';
 
 import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
-import '../../common/component/dispose_sliver_pagination_list_view.dart';
+import '../../common/component/dispose_sliver_cursor_pagination_list_view.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
-import '../../common/provider/pagination_provider.dart';
+import '../../common/provider/cursor_pagination_provider.dart';
 import '../../common/repository/base_pagination_repository.dart';
 import '../../review/model/v2/base_received_review_response.dart';
 import '../../review/model/v2/base_written_review_response.dart';
-import '../component/review_card.dart';
-import '../model/review_model.dart';
 import '../param/user_profile_param.dart';
 
 class UserWrittenReviewScreen extends ConsumerStatefulWidget {
@@ -76,8 +72,8 @@ class _UserWrittenReviewScreenState
         ? userWrittenReviewsPProvider(PaginationStateParam(path: id))
         : userReceiveReviewsPProvider(PaginationStateParam(path: id))
             as AutoDisposeStateNotifierProvider<
-                PaginationProvider<Base, DefaultParam,
-                    IBasePaginationRepository<Base, DefaultParam>>,
+                CursorPaginationProvider<Base, DefaultParam,
+                    IBaseCursorPaginationRepository<Base, DefaultParam>>,
                 BaseModel>;
     ref.read(provider.notifier).paginate(
           path: id,
@@ -85,7 +81,7 @@ class _UserWrittenReviewScreenState
           param: UserReviewParam(
             review_type: reviewType,
           ),
-          paginationParams: const PaginationParam(page: 1),
+          cursorPaginationParams: const CursorPaginationParam(),
         );
   }
 
@@ -142,17 +138,20 @@ class _UserWrittenReviewScreenState
                         .watch(dropDownValueProvider(DropButtonType.review)));
                     final provider = widget.type == UserReviewType.written
                         ? userWrittenReviewsPProvider(
-                            PaginationStateParam(
-                                path: id)) as AutoDisposeStateNotifierProvider<
-                            PaginationProvider<Base, DefaultParam,
-                                IBasePaginationRepository<Base, DefaultParam>>,
-                            BaseModel>
+                                PaginationStateParam(path: id))
+                            as AutoDisposeStateNotifierProvider<
+                                CursorPaginationProvider<
+                                    Base,
+                                    DefaultParam,
+                                    IBaseCursorPaginationRepository<Base,
+                                        DefaultParam>>,
+                                BaseModel>
                         : userReceiveReviewsPProvider(
                             PaginationStateParam(path: id));
                     return SliverPadding(
                       padding: EdgeInsets.only(
                           right: 12.w, left: 12.w, bottom: 12.h),
-                      sliver: DisposeSliverPaginationListView(
+                      sliver: DisposeSliverCursorPaginationListView(
                         provider: provider,
                         itemBuilder:
                             (BuildContext context, int index, Base pModel) {
@@ -196,8 +195,8 @@ class _UserWrittenReviewScreenState
         ? userWrittenReviewsPProvider(PaginationStateParam(path: id))
         : userReceiveReviewsPProvider(PaginationStateParam(path: id))
             as AutoDisposeStateNotifierProvider<
-                PaginationProvider<Base, DefaultParam,
-                    IBasePaginationRepository<Base, DefaultParam>>,
+                CursorPaginationProvider<Base, DefaultParam,
+                    IBaseCursorPaginationRepository<Base, DefaultParam>>,
                 BaseModel>;
     ref.read(provider.notifier).paginate(
           path: id,
@@ -205,7 +204,7 @@ class _UserWrittenReviewScreenState
           param: UserReviewParam(
             review_type: reviewType,
           ),
-          paginationParams: const PaginationParam(page: 1),
+          cursorPaginationParams: const CursorPaginationParam(),
         );
   }
 

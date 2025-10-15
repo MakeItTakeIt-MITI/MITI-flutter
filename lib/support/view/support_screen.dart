@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
-import 'package:miti/common/component/dispose_sliver_pagination_list_view.dart';
 import 'package:miti/support/provider/support_provider.dart';
 import 'package:miti/support/view/support_detail_screen.dart';
 import 'package:miti/support/view/support_form_screen.dart';
@@ -13,6 +12,7 @@ import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
+import '../../common/component/dispose_sliver_cursor_pagination_list_view.dart';
 import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
 import '../../game/model/v2/support/base_user_question_response.dart';
@@ -98,7 +98,7 @@ class _SupportScreenState extends State<SupportScreen> {
                     builder:
                         (BuildContext context, WidgetRef ref, Widget? child) {
                       final userId = ref.watch(authProvider)!.id!;
-                      return DisposeSliverPaginationListView(
+                      return DisposeSliverCursorPaginationListView(
                         provider: supportPageProvider(
                             PaginationStateParam(path: userId)),
                         itemBuilder:

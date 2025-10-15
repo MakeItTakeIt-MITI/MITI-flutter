@@ -22,25 +22,29 @@ class PaginationStateParam<T extends DefaultParam> extends Equatable {
 }
 
 @JsonSerializable()
-class PaginationParam extends Equatable {
-  final int page;
+class CursorPaginationParam extends Equatable {
+  final int? cursor;
+  final int? limit;
 
-  const PaginationParam({
-    required this.page,
+  const CursorPaginationParam({
+     this.cursor,
+     this.limit,
   });
 
-  PaginationParam copyWith({
-    int? page,
+  CursorPaginationParam copyWith({
+    int? cursor,
+    int? limit,
   }) {
-    return PaginationParam(
-      page: page ?? this.page,
+    return CursorPaginationParam(
+      cursor: cursor ?? this.cursor,
+      limit: limit ?? this.limit,
     );
   }
 
-  Map<String, dynamic> toJson() => _$PaginationParamToJson(this);
+  Map<String, dynamic> toJson() => _$CursorPaginationParamToJson(this);
 
   @override
-  List<Object?> get props => [page];
+  List<Object?> get props => [cursor, limit];
 
   @override
   bool? get stringify => true;

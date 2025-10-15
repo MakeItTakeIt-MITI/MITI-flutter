@@ -1,8 +1,9 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:retrofit/http.dart';
 import 'package:dio/dio.dart' hide Headers;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:retrofit/http.dart';
 
+import '../../common/model/cursor_model.dart';
 import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
 import '../../common/repository/base_pagination_repository.dart';
@@ -24,15 +25,15 @@ final supportPRepositoryProvider = Provider<SupportPRepository>((ref) {
 
 @RestApi()
 abstract class SupportPRepository
-    extends IBasePaginationRepository<BaseUserQuestionResponse, SupportParam> {
+    extends IBaseCursorPaginationRepository<BaseUserQuestionResponse, SupportParam> {
   factory SupportPRepository(Dio dio, {String baseUrl}) = _SupportPRepository;
 
   /// 나의 문의 내역 조회 API
   @override
   @Headers({'token': 'true'})
   @GET('/users/{userId}/qna')
-  Future<ResponseModel<PaginationModel<BaseUserQuestionResponse>>> paginate({
-    @Queries() required PaginationParam paginationParams,
+  Future<ResponseModel<CursorPaginationModel<BaseUserQuestionResponse>>> paginate({
+    @Queries() required CursorPaginationParam cursorPaginationParams,
     @Queries() SupportParam? param,
     @Path('userId') int? path,
   });
@@ -64,22 +65,3 @@ abstract class SupportPRepository
   Future<ResponseListModel<ServiceGuideResponse>> getGuide(
       {@Query('category') String? category});
 }
-//
-// final faqRepositoryProvider = Provider<FAQRepository>((ref) {
-//   final dio = ref.watch(dioProvider);
-//   return FAQRepository(dio);
-// });
-//
-// @RestApi(baseUrl: serverURL)
-// abstract class FAQRepository
-//     extends IBasePaginationRepository<FAQModel, SupportParam> {
-//   factory FAQRepository(Dio dio) = _FAQRepository;
-//
-//   @override
-//   @GET('/support/faq')
-//   Future<ResponseModel<PaginationModel<FAQModel>>> paginate({
-//     @Queries() required PaginationParam paginationParams,
-//     @Queries() SupportParam? param,
-//     @Path('userId') int? path,
-//   });
-// }

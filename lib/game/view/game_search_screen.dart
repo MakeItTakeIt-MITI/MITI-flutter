@@ -1,11 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:miti/account/error/account_error.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/component/default_layout.dart';
 import 'package:miti/game/component/game_state_label.dart';
@@ -13,7 +11,7 @@ import 'package:miti/game/view/game_create_screen.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/custom_drop_down_button.dart';
-import '../../common/component/dispose_sliver_pagination_list_view.dart';
+import '../../common/component/dispose_sliver_cursor_pagination_list_view.dart';
 import '../../common/component/sliver_delegate.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
@@ -57,7 +55,7 @@ class _GameSearchScreenState extends ConsumerState<GameSearchScreen> {
   Future<void> refresh() async {
     final form = ref.read(gameSearchProvider);
     ref.read(gamePageProvider(PaginationStateParam()).notifier).paginate(
-        paginationParams: const PaginationParam(page: 1),
+        cursorPaginationParams: const CursorPaginationParam(),
         param: form,
         forceRefetch: true);
   }
@@ -135,7 +133,7 @@ class _GameSearchScreenState extends ConsumerState<GameSearchScreen> {
                                   Widget? child) {
                                 final form = ref.watch(gameSearchProvider);
 
-                                return DisposeSliverPaginationListView(
+                                return DisposeSliverCursorPaginationListView(
                                   provider:
                                       gamePageProvider(PaginationStateParam()),
                                   itemBuilder: (BuildContext context, int index,
@@ -185,7 +183,7 @@ class _GameSearchScreenState extends ConsumerState<GameSearchScreen> {
         .read(dropDownValueProvider(DropButtonType.district).notifier)
         .update((state) => region);
     ref.read(gamePageProvider(PaginationStateParam()).notifier).paginate(
-        paginationParams: const PaginationParam(page: 1),
+        cursorPaginationParams: const CursorPaginationParam(),
         forceRefetch: true,
         param: form);
   }

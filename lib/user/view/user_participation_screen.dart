@@ -1,31 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:miti/common/component/custom_drop_down_button.dart';
-import 'package:miti/common/component/default_layout.dart';
-import 'package:miti/common/component/dispose_sliver_pagination_list_view.dart';
 import 'package:miti/common/param/pagination_param.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/user/provider/user_pagination_provider.dart';
 import 'package:miti/user/provider/user_provider.dart';
 
 import '../../auth/provider/auth_provider.dart';
-import '../../common/component/default_appbar.dart';
+import '../../common/component/dispose_sliver_cursor_pagination_list_view.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
-import '../../common/provider/pagination_provider.dart';
+import '../../common/provider/cursor_pagination_provider.dart';
 import '../../common/repository/base_pagination_repository.dart';
 import '../../court/view/court_map_screen.dart';
 import '../../game/component/game_list_component.dart';
 import '../../game/component/skeleton/game_list_skeleton.dart';
-import '../../game/model/game_model.dart';
 import '../../game/model/v2/game/base_game_court_by_date_response.dart';
 import '../../theme/text_theme.dart';
-import '../../util/util.dart';
 import '../param/user_profile_param.dart';
 
 class UserParticipationScreen extends ConsumerStatefulWidget {
@@ -86,8 +79,8 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
         ? userHostingPProvider(PaginationStateParam(path: id))
         : userParticipationPProvider(PaginationStateParam(path: id))
             as AutoDisposeStateNotifierProvider<
-                PaginationProvider<Base, DefaultParam,
-                    IBasePaginationRepository<Base, DefaultParam>>,
+                CursorPaginationProvider<Base, DefaultParam,
+                    IBaseCursorPaginationRepository<Base, DefaultParam>>,
                 BaseModel>;
     ref.read(provider.notifier).paginate(
           path: id,
@@ -95,7 +88,7 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
           param: UserGameParam(
             game_status: gameStatus,
           ),
-          paginationParams: const PaginationParam(page: 1),
+          cursorPaginationParams: const CursorPaginationParam(),
         );
   }
 
@@ -115,13 +108,13 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
               final provider = widget.type == UserGameType.host
                   ? userHostingPProvider(PaginationStateParam(path: id))
                       as AutoDisposeStateNotifierProvider<
-                          PaginationProvider<Base, DefaultParam,
-                              IBasePaginationRepository<Base, DefaultParam>>,
+                          CursorPaginationProvider<Base, DefaultParam,
+                              IBaseCursorPaginationRepository<Base, DefaultParam>>,
                           BaseModel>
                   : userParticipationPProvider(PaginationStateParam(path: id));
               return SliverPadding(
                 padding: EdgeInsets.only(right: 21.w, left: 21.w, bottom: 20.h),
-                sliver: DisposeSliverPaginationListView(
+                sliver: DisposeSliverCursorPaginationListView(
                   provider: provider,
                   itemBuilder: (BuildContext context, int index, Base pModel) {
                     final model = pModel as BaseGameCourtByDateResponse;

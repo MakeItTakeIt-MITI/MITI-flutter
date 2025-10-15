@@ -1,4 +1,3 @@
-
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +8,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
-import '../../common/provider/pagination_provider.dart';
+import '../../common/provider/cursor_pagination_provider.dart';
 import '../../game/model/v2/support/base_user_question_response.dart';
 import '../param/support_param.dart';
 import '../repository/support_repository.dart';
@@ -24,19 +23,17 @@ final supportPageProvider = StateNotifierProvider.family.autoDispose<
   final repository = ref.watch(supportPRepositoryProvider);
   return SupportPageStateNotifier(
     repository: repository,
-    pageParams: const PaginationParam(
-      page: 1,
-    ),
+    cursorPageParams: const CursorPaginationParam(),
     param: param.param,
     path: param.path,
   );
 });
 
-class SupportPageStateNotifier
-    extends PaginationProvider<BaseUserQuestionResponse, SupportParam, SupportPRepository> {
+class SupportPageStateNotifier extends CursorPaginationProvider<
+    BaseUserQuestionResponse, SupportParam, SupportPRepository> {
   SupportPageStateNotifier({
     required super.repository,
-    required super.pageParams,
+    required super.cursorPageParams,
     super.param,
     super.path,
   });
@@ -54,7 +51,7 @@ Future<BaseModel> supportCreate(SupportCreateRef ref) async {
     ref
         .read(supportPageProvider(PaginationStateParam(path: userId)).notifier)
         .paginate(
-            paginationParams: const PaginationParam(page: 1),
+            cursorPaginationParams: const CursorPaginationParam(),
             path: userId,
             forceRefetch: true);
     return value;

@@ -1,10 +1,11 @@
+import 'package:dio/dio.dart' hide Headers;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miti/dio/provider/dio_provider.dart';
 import 'package:miti/notification/model/notice_model.dart';
 import 'package:retrofit/http.dart';
-import 'package:dio/dio.dart' hide Headers;
 
+import '../../common/model/cursor_model.dart';
 import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
 import '../../common/repository/base_pagination_repository.dart';
@@ -30,15 +31,15 @@ final noticePRepositoryProvider = Provider<NoticePRepository>((ref) {
 });
 
 @RestApi()
-abstract class NoticePRepository extends IBasePaginationRepository<
+abstract class NoticePRepository extends IBaseCursorPaginationRepository<
     BaseNotificationResponse, NotificationParam> {
   factory NoticePRepository(Dio dio, {String baseUrl}) = _NoticePRepository;
 
   /// 공지사항 목록 조회 API
   @override
   @GET('/notifications')
-  Future<ResponseModel<PaginationModel<BaseNotificationResponse>>> paginate({
-    @Queries() required PaginationParam paginationParams,
+  Future<ResponseModel<CursorPaginationModel<BaseNotificationResponse>>> paginate({
+    @Queries() required CursorPaginationParam cursorPaginationParams,
     @Queries() NotificationParam? param,
     @Path('userId') int? path,
   });
@@ -58,7 +59,7 @@ final pushPRepositoryProvider = Provider<PushPRepository>((ref) {
 });
 
 @RestApi()
-abstract class PushPRepository extends IBasePaginationRepository<
+abstract class PushPRepository extends IBaseCursorPaginationRepository<
     BasePushNotificationResponse, NotificationParam> {
   factory PushPRepository(Dio dio, {String baseUrl}) = _PushPRepository;
 
@@ -66,9 +67,9 @@ abstract class PushPRepository extends IBasePaginationRepository<
   @override
   @Headers({'token': 'true'})
   @GET('/users/{userId}/push-notifications')
-  Future<ResponseModel<PaginationModel<BasePushNotificationResponse>>>
+  Future<ResponseModel<CursorPaginationModel<BasePushNotificationResponse>>>
       paginate({
-    @Queries() required PaginationParam paginationParams,
+    @Queries() required CursorPaginationParam cursorPaginationParams,
     @Queries() NotificationParam? param,
     @Path('userId') int? path,
   });
@@ -114,7 +115,7 @@ abstract class PushPRepository extends IBasePaginationRepository<
   /// 푸시 알림 전체 읽음 처리 API
   @Headers({'token': 'true'})
   @PUT('/users/{userId}/push-notifications')
-  Future<ResponseModel<PaginationModel<BasePushNotificationResponse>>>
+  Future<ResponseModel<CursorPaginationModel<BasePushNotificationResponse>>>
       allReadPush({
     @Path() required int userId,
   });

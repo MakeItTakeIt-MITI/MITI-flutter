@@ -14,7 +14,7 @@ import 'package:miti/theme/text_theme.dart';
 import 'package:miti/util/util.dart';
 
 import '../../auth/provider/auth_provider.dart';
-import '../../common/component/dispose_sliver_pagination_list_view.dart';
+import '../../common/component/dispose_sliver_cursor_pagination_list_view.dart';
 import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
 import '../../game/model/v2/account/base_account_response.dart';
@@ -143,7 +143,7 @@ class _SettlementHistoryComponentState
         Consumer(
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
             final userId = ref.watch(authProvider)!.id!;
-            return DisposeSliverPaginationListView(
+            return DisposeSliverCursorPaginationListView(
                 provider:
                     settlementPageProvider(PaginationStateParam(path: userId)),
                 itemBuilder: (BuildContext context, int index, Base pModel) {
@@ -209,7 +209,7 @@ class _TransferHistoryComponentState extends State<_TransferHistoryComponent> {
         Consumer(
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
             final userId = ref.watch(authProvider)!.id!;
-            return DisposeSliverPaginationListView(
+            return DisposeSliverCursorPaginationListView(
                 provider: bankTransferPageProvider(
                     PaginationStateParam(path: userId)),
                 itemBuilder: (BuildContext context, int index, Base pModel) {

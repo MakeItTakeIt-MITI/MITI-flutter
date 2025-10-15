@@ -6,9 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
-import 'package:miti/common/component/custom_time_picker.dart';
 import 'package:miti/common/model/default_model.dart';
-import 'package:miti/game/model/game_player_model.dart';
 import 'package:miti/game/model/widget/user_reivew_short_info_model.dart';
 import 'package:miti/game/provider/game_provider.dart' hide Rating;
 import 'package:miti/game/view/review_form_screen.dart';
@@ -24,11 +22,7 @@ import '../../review/model/v2/base_guest_rating_response.dart';
 import '../../review/model/v2/game_reviewee_list_response.dart';
 import '../../review/model/v2/user_written_reviews.dart';
 import '../../user/model/v2/user_host_rating_response.dart';
-import '../../user/view/review_detail_screen.dart';
 import '../component/skeleton/game_participation_review_skeleton.dart';
-import '../model/game_model.dart';
-import 'package:collection/collection.dart';
-
 import '../model/v2/participation/participation_guest_rating_response.dart';
 
 class GameReviewListScreen extends StatefulWidget {
@@ -318,12 +312,6 @@ class _PlayerComponent extends StatelessWidget {
                       );
                     } else {
                       /// 리뷰 내역 보기
-                      Map<String, String> queryParameters = {};
-                      if (participationId != null) {
-                        queryParameters = {
-                          'participationId': participationId.toString()
-                        };
-                      }
                       Map<String, String> pathParameters = {
                         'gameId': gameId.toString(),
                       };
@@ -333,16 +321,6 @@ class _PlayerComponent extends StatelessWidget {
                         queryParameters: queryParameters,
                         pathParameters: pathParameters,
                       );
-                      // Map<String, String> pathParameters = {
-                      //   'reviewId': valid.id.toString(),
-                      //   'gameId': gameId.toString(),
-                      // };
-                      //
-                      // context.pushNamed(
-                      //   ReviewDetailScreen.routeName,
-                      //   pathParameters: pathParameters,
-                      //   queryParameters: queryParameters,
-                      // );
                     }
                   },
                   style: TextButton.styleFrom(

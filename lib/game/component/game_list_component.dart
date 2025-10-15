@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -11,8 +9,6 @@ import 'package:miti/theme/text_theme.dart';
 import 'package:miti/util/util.dart';
 
 import '../../common/model/entity_enum.dart';
-import '../../court/model/court_model.dart';
-import '../model/game_model.dart';
 import '../model/v2/game/base_game_court_by_date_response.dart';
 import '../model/v2/game/base_game_response.dart';
 import 'game_state_label.dart';
@@ -31,7 +27,7 @@ class GameCardByDate extends StatelessWidget {
       {required BaseGameCourtByDateResponse model}) {
     return GameCardByDate(
       dateTime: model.startDate,
-      models: model.games,
+      models: model.game,
     );
   }
 

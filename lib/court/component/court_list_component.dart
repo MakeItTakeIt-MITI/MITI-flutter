@@ -1,31 +1,18 @@
 import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/court/component/court_card.dart';
-import 'package:miti/court/component/skeleton/court_list_skeleton.dart';
-import 'package:miti/court/view/court_map_screen.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
-import '../../common/component/bottom_page_count.dart';
-import '../../common/component/dispose_sliver_pagination_list_view.dart';
-import '../../common/component/page_index_button.dart';
 import '../../common/model/default_model.dart';
-import '../../common/model/model_id.dart';
-import '../../common/param/pagination_param.dart';
-import '../../game/component/skeleton/game_list_skeleton.dart';
 import '../../game/param/game_param.dart';
 import '../model/court_model.dart';
 import '../model/v2/court_map_response.dart';
-import '../param/court_pagination_param.dart';
-import '../provider/court_pagination_provider.dart';
-import '../provider/court_provider.dart';
-import '../provider/widget/court_search_provider.dart';
 
 typedef LoadCourtInfoCallback = void Function(GameCourtParam court);
 

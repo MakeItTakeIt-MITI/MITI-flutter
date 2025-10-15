@@ -8,43 +8,31 @@ part 'cursor_model.g.dart';
   genericArgumentFactories: true,
 )
 class CursorPaginationModel<T> extends BaseModel {
-  /*
-    첫번째 게시글 id = earliest_cursor
-    최신 작성 게시글 id = latest_cursor
-    조회 게시글 목록 중 가장 먼저 작성된 게시글 id = first_cursor
-    조회 게시글 목록 중 가장 최신에 작성된 게시글 id = last_cursor
-   */
-  @JsonKey(name: 'latest_cursor')
-  final int? latestCursor;
-  @JsonKey(name: 'earliest_cursor')
-  final int? earliestCursor;
-  @JsonKey(name: 'first_cursor')
-  final int? firstCursor;
-  @JsonKey(name: 'last_cursor')
-  final int? lastCursor;
-
+  @JsonKey(name: 'page_first_cursor')
+  final int? pageFirstCursor;
+  @JsonKey(name: 'page_last_cursor')
+  final int? pageLastCursor;
+  @JsonKey(name: 'has_more')
+  final bool hasMore;
   final List<T> items;
 
   CursorPaginationModel({
-    required this.latestCursor,
-    required this.earliestCursor,
+    required this.pageFirstCursor,
+    required this.pageLastCursor,
+    required this.hasMore,
     required this.items,
-    required this.firstCursor,
-    required this.lastCursor,
   });
 
   CursorPaginationModel<T> copyWith({
-    int? latestCursor,
-    int? earliestCursor,
+    int? pageFirstCursor,
+    int? pageLastCursor,
     List<T>? items,
-    int? firstCursor,
-    int? lastCursor,
+    bool? hasMore,
   }) {
     return CursorPaginationModel<T>(
-      latestCursor: latestCursor ?? this.latestCursor,
-      earliestCursor: earliestCursor ?? this.earliestCursor,
-      firstCursor: firstCursor ?? this.firstCursor,
-      lastCursor: lastCursor ?? this.lastCursor,
+      pageFirstCursor: pageFirstCursor ?? this.pageFirstCursor,
+      pageLastCursor: pageLastCursor ?? this.pageLastCursor,
+      hasMore: hasMore ?? this.hasMore,
       items: items ?? this.items,
     );
   }
@@ -57,20 +45,18 @@ class CursorPaginationModel<T> extends BaseModel {
 
 class CursorPaginationModelRefetching<T> extends CursorPaginationModel<T> {
   CursorPaginationModelRefetching({
-    required super.latestCursor,
-    required super.earliestCursor,
-    required super.firstCursor,
-    required super.lastCursor,
+    required super.pageFirstCursor,
+    required super.pageLastCursor,
+    required super.hasMore,
     required super.items,
   });
 }
 
 class CursorPaginationModelFetchingMore<T> extends CursorPaginationModel<T> {
   CursorPaginationModelFetchingMore({
-    required super.latestCursor,
-    required super.earliestCursor,
-    required super.firstCursor,
-    required super.lastCursor,
+    required super.pageFirstCursor,
+    required super.pageLastCursor,
+    required super.hasMore,
     required super.items,
   });
 }

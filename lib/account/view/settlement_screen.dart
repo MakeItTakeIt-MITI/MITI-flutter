@@ -1,8 +1,6 @@
 import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -10,13 +8,13 @@ import 'package:intl/intl.dart';
 import 'package:miti/account/provider/account_pagination_provider.dart';
 import 'package:miti/account/view/settlement_detail_screen.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
-import 'package:miti/common/component/dispose_sliver_pagination_list_view.dart';
 import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/theme/color_theme.dart';
 
 import '../../common/component/custom_drop_down_button.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
+import '../../common/component/dispose_sliver_cursor_pagination_list_view.dart';
 import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
 import '../../game/component/game_state_label.dart';
@@ -67,7 +65,7 @@ class _SettlementListScreenState extends ConsumerState<SettlementListScreen> {
           param: SettlementPaginationParam(
             status: status,
           ),
-          paginationParams: const PaginationParam(page: 1),
+          cursorPaginationParams: const CursorPaginationParam(),
         );
   }
 
@@ -123,7 +121,7 @@ class _SettlementListScreenState extends ConsumerState<SettlementListScreen> {
               Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   final userId = ref.watch(authProvider)!.id!;
-                  return DisposeSliverPaginationListView(
+                  return DisposeSliverCursorPaginationListView(
                       provider: settlementPageProvider(
                           PaginationStateParam(path: userId)),
                       itemBuilder:
@@ -173,7 +171,7 @@ class _SettlementListScreenState extends ConsumerState<SettlementListScreen> {
           param: SettlementPaginationParam(
             status: status,
           ),
-          paginationParams: const PaginationParam(page: 1),
+          cursorPaginationParams: const CursorPaginationParam(),
         );
   }
 

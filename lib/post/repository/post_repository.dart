@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart' hide Headers;
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retrofit/http.dart';
@@ -12,7 +11,6 @@ import '../model/base_post_comment_response.dart';
 import '../model/base_post_response.dart';
 import '../model/popular_post_list_response.dart';
 import '../model/popular_search_word_list_response.dart';
-import '../model/post_list_response.dart';
 import '../model/post_response.dart';
 import '../param/post_comment_param.dart';
 import '../param/post_form_param.dart';
@@ -50,7 +48,6 @@ abstract class PostRepository {
   @GET('/posts/{postId}')
   Future<ResponseModel<PostResponse>> getPostDetail(
       {@Path() required int postId});
-
   /// 게시글 수정 API
   @Headers({'token': 'true'})
   @PATCH('/posts/{postId}')

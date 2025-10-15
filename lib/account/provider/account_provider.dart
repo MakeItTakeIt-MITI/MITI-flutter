@@ -17,7 +17,7 @@ class Settlement extends _$Settlement {
   }
 
   void getSettlement({required int userId, required int settlementId}) {
-    final repository = ref.watch(settlementPaginationRepositoryProvider);
+    final repository = ref.watch(settlementCursorPaginationRepositoryProvider);
     repository
         .getSettlement(userId: userId, settlementId: settlementId)
         .then((value) {
@@ -41,7 +41,7 @@ class Account extends _$Account {
   }
 
   void getAccountInfo() {
-    final repository = ref.watch(bankTransferPaginationRepositoryProvider);
+    final repository = ref.watch(bankTransferCursorPaginationRepositoryProvider);
     final userId = ref.read(authProvider)!.id!;
     repository.getAccountInfo(userId: userId).then((value) {
       logger.i(value);
@@ -57,7 +57,7 @@ class Account extends _$Account {
 
 @riverpod
 Future<BaseModel> requestTransfer(RequestTransferRef ref) async {
-  final repository = ref.watch(bankTransferPaginationRepositoryProvider);
+  final repository = ref.watch(bankTransferCursorPaginationRepositoryProvider);
   final userId = ref.watch(authProvider)!.id!;
   final param = ref.watch(transferFormProvider);
 

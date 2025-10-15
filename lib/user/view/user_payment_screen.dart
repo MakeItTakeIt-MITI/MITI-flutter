@@ -7,7 +7,7 @@ import 'package:miti/util/util.dart';
 
 import '../../auth/provider/auth_provider.dart';
 import '../../common/component/default_appbar.dart';
-import '../../common/component/dispose_sliver_pagination_list_view.dart';
+import '../../common/component/dispose_sliver_cursor_pagination_list_view.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
@@ -61,7 +61,7 @@ class _UserPaymentScreenState extends ConsumerState<UserPaymentScreen> {
           body: CustomScrollView(
             controller: _scrollController,
             slivers: [
-              DisposeSliverPaginationListView(
+              DisposeSliverCursorPaginationListView(
                 provider:
                     userPaymentPProvider(PaginationStateParam(path: userId)),
                 itemBuilder: (BuildContext context, int index, Base pModel) {

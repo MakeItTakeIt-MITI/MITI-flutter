@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/common/component/default_appbar.dart';
-import 'package:miti/common/component/dispose_sliver_pagination_list_view.dart';
 import 'package:miti/common/component/sliver_delegate.dart';
 import 'package:miti/common/param/pagination_param.dart';
 import 'package:miti/game/model/v2/notification/notification_response.dart';
@@ -16,6 +15,7 @@ import 'package:miti/notification/skeleton/notice_skeleton.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
+import '../../common/component/dispose_sliver_cursor_pagination_list_view.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
@@ -60,7 +60,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
           path: userId,
           forceRefetch: true,
           param: NotificationParam(),
-          paginationParams: const PaginationParam(page: 1),
+          cursorPaginationParams: const CursorPaginationParam(),
         );
   }
 
@@ -69,7 +69,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
     ref.read(provider.notifier).paginate(
           forceRefetch: true,
           param: NotificationParam(),
-          paginationParams: const PaginationParam(page: 1),
+          cursorPaginationParams: const CursorPaginationParam(),
         );
   }
 
@@ -84,7 +84,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
             physics: const AlwaysScrollableScrollPhysics(),
             controller: scrollController,
             slivers: [
-              DisposeSliverPaginationListView(
+              DisposeSliverCursorPaginationListView(
                 provider: pushPProvider(
                   PaginationStateParam(path: userId),
                 ),
@@ -123,7 +123,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
           physics: const AlwaysScrollableScrollPhysics(),
           controller: scrollController,
           slivers: [
-            DisposeSliverPaginationListView(
+            DisposeSliverCursorPaginationListView(
               provider: noticePProvider(
                 PaginationStateParam(),
               ),

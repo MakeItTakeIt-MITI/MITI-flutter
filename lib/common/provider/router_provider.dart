@@ -360,7 +360,6 @@ final routerProvider = Provider<GoRouter>((ref) {
               if (state.uri.queryParameters.containsKey('gameId')) {
                 gameId = int.parse(state.uri.queryParameters['gameId']!);
               }
-
               int? participationId;
               if (state.uri.queryParameters.containsKey('participationId')) {
                 participationId =

@@ -7,14 +7,13 @@ part 'base_game_court_by_date_response.g.dart';
 
 @JsonSerializable()
 class BaseGameCourtByDateResponse extends Base {
-  // The map where the key is a date string (YYYY-MM-DD) and the value is a list of games (BaseGameResponse)
   @JsonKey(name: "startdate")
   final String startDate;
-  final List<BaseGameResponse> games;
+  final BaseGameResponse game;
 
   BaseGameCourtByDateResponse({
     required this.startDate,
-    required this.games,
+    required this.game,
   });
 
   factory BaseGameCourtByDateResponse.fromJson(Map<String, dynamic> json) =>
@@ -24,10 +23,10 @@ class BaseGameCourtByDateResponse extends Base {
 
   BaseGameCourtByDateResponse copyWith({
     String? startDate,
-    List<BaseGameResponse>? games,
+    BaseGameResponse? game,
   }) {
     return BaseGameCourtByDateResponse(
-      games: games ?? this.games,
+      game: game ?? this.game,
       startDate: startDate ?? this.startDate,
     );
   }

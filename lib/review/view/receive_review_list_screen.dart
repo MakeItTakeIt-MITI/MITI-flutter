@@ -4,13 +4,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:miti/account/error/account_error.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/common/component/default_appbar.dart';
-import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/theme/text_theme.dart';
 
-import '../../common/component/dispose_sliver_pagination_list_view.dart';
+import '../../common/component/dispose_sliver_cursor_pagination_list_view.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/model/model_id.dart';
 import '../../common/param/pagination_param.dart';
@@ -71,7 +69,7 @@ class _ReceiveReviewListScreenState
           body: CustomScrollView(
             controller: _scrollController,
             slivers: [
-              DisposeSliverPaginationListView(
+              DisposeSliverCursorPaginationListView(
                 provider: userReceiveReviewsPProvider(
                     PaginationStateParam(path: userId)),
                 itemBuilder: (BuildContext context, int index, Base pModel) {

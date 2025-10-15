@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:miti/game/param/game_param.dart';
 import 'package:miti/game/provider/widget/game_filter_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
@@ -12,9 +11,7 @@ import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
 import '../../court/view/court_map_screen.dart';
-import '../../user/model/v2/private_user_guest_player_response.dart';
 import '../../user/provider/user_pagination_provider.dart';
-import '../model/v2/participation/participation_guest_player_response.dart';
 
 part 'game_provider.g.dart';
 
@@ -85,7 +82,7 @@ Future<BaseModel> gameCreate(GameCreateRef ref) async {
         .paginate(
           path: userId,
           forceRefetch: true,
-          paginationParams: const PaginationParam(page: 1),
+          cursorPaginationParams: const CursorPaginationParam(),
         );
     return value;
   }).catchError((e) {
@@ -354,7 +351,7 @@ Future<BaseModel> cancelRecruitGame(CancelRecruitGameRef ref,
         .paginate(
           path: userId,
           forceRefetch: true,
-          paginationParams: const PaginationParam(page: 1),
+          cursorPaginationParams : const CursorPaginationParam(),
         );
     return value;
   }).catchError((e) {

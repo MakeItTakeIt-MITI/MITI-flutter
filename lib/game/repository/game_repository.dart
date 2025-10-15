@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retrofit/http.dart';
 
+import '../../common/model/cursor_model.dart';
 import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
 import '../../common/repository/base_pagination_repository.dart';
@@ -157,7 +158,7 @@ abstract class GameRepository {
       {@Path() required int gameId, @Path() required int reviewId});
 }
 
-final gamePaginationRepositoryProvider = Provider<GamePRepository>((ref) {
+final gameCursorPaginationRepositoryProvider = Provider<GamePRepository>((ref) {
   final baseUrl =
       dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
@@ -165,15 +166,15 @@ final gamePaginationRepositoryProvider = Provider<GamePRepository>((ref) {
 });
 
 @RestApi()
-abstract class GamePRepository extends IBasePaginationRepository<
+abstract class GamePRepository extends IBaseCursorPaginationRepository<
     GameWithCourtMapResponse, GamePaginationParam> {
   factory GamePRepository(Dio dio, {String baseUrl}) = _GamePRepository;
 
   /// 경기 리스트 목록 조회 API
   @override
   @GET('/games/list')
-  Future<ResponseModel<PaginationModel<GameWithCourtMapResponse>>> paginate({
-    @Queries() required PaginationParam paginationParams,
+  Future<ResponseModel<CursorPaginationModel<GameWithCourtMapResponse>>> paginate({
+    @Queries() required CursorPaginationParam cursorPaginationParams,
     @Queries() GamePaginationParam? param,
     @Path('userId') int? path,
   });

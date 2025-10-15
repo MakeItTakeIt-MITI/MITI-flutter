@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/chat/param/chat_notice_param.dart';
 import 'package:miti/chat/provider/chat_form_provider.dart';
@@ -121,8 +122,8 @@ Future<BaseModel> chatNoticeDelete(ChatNoticeDeleteRef ref,
 }
 
 @riverpod
-Future<BaseModel> userChatNotice(UserChatNoticeRef ref,
-    {PaginationParam paginationParam = const PaginationParam(page: 1)}) async {
+Future<BaseModel> userChatNotice(Ref ref,
+    {CursorPaginationParam paginationParam = const CursorPaginationParam()}) async {
 
   final repository = ref.watch(chatRepositoryProvider);
   final userId = ref.read(authProvider)?.id ?? 0;

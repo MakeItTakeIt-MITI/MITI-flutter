@@ -1,11 +1,7 @@
 import 'dart:developer';
-import 'dart:math' hide log;
 
 import 'package:debounce_throttle/debounce_throttle.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,19 +11,15 @@ import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/component/form/keyboard_visibility_builder.dart';
 import 'package:miti/court/component/court_list_component.dart';
 import 'package:miti/game/error/game_error.dart';
-import 'package:miti/game/model/game_model.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
-import 'package:collection/collection.dart';
 
 import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
-import '../../common/error/view/error_screen.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
-import '../../common/provider/router_provider.dart';
 import '../../report/view/report_list_screen.dart';
 import '../../util/util.dart';
 import '../model/widget/user_reivew_short_info_model.dart';
@@ -35,8 +27,6 @@ import 'game_detail_screen.dart';
 
 class ReviewScreen extends ConsumerStatefulWidget {
   final int gameId;
-
-  // final int ratingId;
   final int? participationId;
   final UserReviewShortInfoModel userInfoModel;
 
@@ -47,7 +37,6 @@ class ReviewScreen extends ConsumerStatefulWidget {
     required this.gameId,
     this.participationId,
     required this.userInfoModel,
-    // required this.ratingId,
   });
 
   @override
@@ -72,7 +61,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
       setState(() {
         isLoading = true;
       });
-       Future.delayed(const Duration(seconds: 1), () {
+      Future.delayed(const Duration(seconds: 1), () {
         throttleCnt++;
       });
       await createReview(ref, context, widget.userInfoModel.nickname);
@@ -98,6 +87,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    log("widget.participationId.toString() ${widget.participationId.toString()}");
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
     // log("bottomPadding = $bottomPadding");
     log("review form");
@@ -125,6 +115,8 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                               child: TextButton(
                                 onPressed: () {
                                   context.pop();
+
+
                                   Map<String, String> queryParameters = {
                                     'gameId': widget.gameId.toString(),
                                     'participationId':

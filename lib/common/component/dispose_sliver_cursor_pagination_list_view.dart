@@ -8,14 +8,15 @@ import 'package:miti/common/component/pagination_list_view.dart';
 import 'package:miti/common/error/view/error_screen.dart';
 import 'package:miti/theme/text_theme.dart';
 
+import '../model/cursor_model.dart';
 import '../model/default_model.dart';
 import '../model/model_id.dart';
 import '../param/pagination_param.dart';
-import '../provider/pagination_provider.dart';
+import '../provider/cursor_pagination_provider.dart';
 
-class DisposeSliverPaginationListView<T extends Base, S>
+class DisposeSliverCursorPaginationListView<T extends Base, S>
     extends ConsumerStatefulWidget {
-  final AutoDisposeStateNotifierProvider<PaginationProvider, BaseModel>
+  final AutoDisposeStateNotifierProvider<CursorPaginationProvider, BaseModel>
       provider;
   final PaginationWidgetBuilder<T> itemBuilder;
   final S? param;
@@ -24,7 +25,7 @@ class DisposeSliverPaginationListView<T extends Base, S>
   final ScrollController controller;
   final Widget emptyWidget;
 
-  const DisposeSliverPaginationListView({
+  const DisposeSliverCursorPaginationListView({
     required this.provider,
     required this.itemBuilder,
     required this.skeleton,
@@ -36,12 +37,12 @@ class DisposeSliverPaginationListView<T extends Base, S>
   });
 
   @override
-  ConsumerState<DisposeSliverPaginationListView> createState() =>
+  ConsumerState<DisposeSliverCursorPaginationListView> createState() =>
       _PaginationListViewState<T>();
 }
 
 class _PaginationListViewState<T extends Base>
-    extends ConsumerState<DisposeSliverPaginationListView> {
+    extends ConsumerState<DisposeSliverCursorPaginationListView> {
   // final ScrollController _scrollController = ScrollController();
 
   @override
@@ -64,7 +65,7 @@ class _PaginationListViewState<T extends Base>
         widget.controller.position.maxScrollExtent - 150) {
       // log("scroll end");
       ref.read(widget.provider.notifier).paginate(
-            paginationParams: const PaginationParam(page: 1),
+            cursorPaginationParams: const CursorPaginationParam(),
             param: widget.param,
             fetchMore: true,
             path: family.path,
@@ -116,16 +117,16 @@ class _PaginationListViewState<T extends Base>
     // CursorPaginationFetchingMore
     // CursorPaginationRefetching
 
-    final cp = state as ResponseModel<PaginationModel<T>>;
-    log('state.data!.page_content = ${state.data!.page_content.length}');
-    if (state.data!.page_content.isEmpty) {
+    final cp = state as ResponseModel<CursorPaginationModel<T>>;
+    log('state.data!.page_content = ${state.data!.items.length}');
+    if (state.data!.items.isEmpty) {
       return SliverFillRemaining(child: widget.emptyWidget);
     }
     return SliverList.separated(
-      itemCount: cp.data!.page_content.length + 1,
+      itemCount: cp.data!.items.length + 1,
       itemBuilder: (_, index) {
-        if (index == (cp.data!.page_content.length)) {
-          if (cp is! ResponseModel<PaginationModelFetchingMore>) {
+        if (index == (cp.data!.items.length)) {
+          if (cp is! ResponseModel<CursorPaginationModelFetchingMore>) {
             WidgetsBinding.instance.addPostFrameCallback((_) {});
           }
           return Padding(
@@ -134,14 +135,14 @@ class _PaginationListViewState<T extends Base>
               vertical: 8.0,
             ),
             child: Center(
-              child: cp is ResponseModel<PaginationModelFetchingMore>
+              child: cp is ResponseModel<CursorPaginationModelFetchingMore>
                   ? const CircularProgressIndicator()
                   : Container(),
             ),
           );
         }
 
-        final pItem = cp.data!.page_content[index];
+        final pItem = cp.data!.items[index];
 
         return widget.itemBuilder(
           context,

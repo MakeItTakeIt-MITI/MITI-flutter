@@ -1,35 +1,24 @@
 import 'dart:developer';
-import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/common/component/custom_drop_down_button.dart';
-import 'package:miti/common/component/default_layout.dart';
-import 'package:miti/common/component/dispose_sliver_pagination_list_view.dart';
-import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/common/model/model_id.dart';
 import 'package:miti/common/param/pagination_param.dart';
-import 'package:miti/court/param/court_pagination_param.dart';
 import 'package:miti/court/provider/court_pagination_provider.dart';
-import 'package:miti/court/provider/court_provider.dart';
 import 'package:miti/court/provider/widget/court_search_provider.dart';
 import 'package:miti/court/view/court_detail_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
-import '../../common/component/custom_dialog.dart';
 import '../../common/component/default_appbar.dart';
+import '../../common/component/dispose_sliver_cursor_pagination_list_view.dart';
 import '../../common/component/sliver_delegate.dart';
 import '../component/court_search_card.dart';
 import '../component/skeleton/court_list_skeleton.dart';
-import '../model/court_model.dart';
 import '../model/v2/court_map_response.dart';
 import 'court_map_screen.dart';
 
@@ -64,7 +53,7 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
   Future<void> refresh() async {
     final form = ref.read(courtSearchProvider);
     ref.read(courtPageProvider(PaginationStateParam()).notifier).paginate(
-        paginationParams: const PaginationParam(page: 1),
+        cursorPaginationParams: const CursorPaginationParam(),
         param: form,
         forceRefetch: true);
   }
@@ -133,7 +122,7 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
                                 Widget? child) {
                               final form = ref.watch(courtSearchProvider);
 
-                              return DisposeSliverPaginationListView(
+                              return DisposeSliverCursorPaginationListView(
                                 provider:
                                     courtPageProvider(PaginationStateParam()),
                                 itemBuilder: (BuildContext context, int index,
@@ -174,7 +163,7 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
         .read(dropDownValueProvider(DropButtonType.district).notifier)
         .update((state) => region);
     ref.read(courtPageProvider(PaginationStateParam()).notifier).paginate(
-        paginationParams: const PaginationParam(page: 1),
+        cursorPaginationParams: const CursorPaginationParam(),
         forceRefetch: true,
         param: form);
   }
