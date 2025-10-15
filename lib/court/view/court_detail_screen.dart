@@ -402,6 +402,8 @@ class SoonestGamesComponent extends StatelessWidget {
   }
 
   void pushGameList(BuildContext context) {
+
+    print("클릭된 CourtId = ${courtId}");
     Map<String, String> pathParameters = {'courtId': courtId.toString()};
     context.pushNamed(CourtGameListScreen.routeName,
         pathParameters: pathParameters);

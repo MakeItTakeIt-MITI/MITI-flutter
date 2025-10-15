@@ -33,7 +33,8 @@ class _CourtGameListScreenState extends ConsumerState<CourtGameListScreen> {
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController()..addListener(_scrollListener);;
+    _scrollController = ScrollController()..addListener(_scrollListener);
+    ;
     // todo 지우기 여부 확인
     WidgetsBinding.instance.addPostFrameCallback((s) {
       ref
@@ -68,6 +69,7 @@ class _CourtGameListScreenState extends ConsumerState<CourtGameListScreen> {
                 sliver: Consumer(builder:
                     (BuildContext context, WidgetRef ref, Widget? child) {
                   final state = ref.watch(courtGamePaginationProvider(
+                      courtId: widget.courtId,
                       param: CourtPaginationParam(search: ''),
                       cursorParam: const CursorPaginationParam()));
 
@@ -84,14 +86,16 @@ class _CourtGameListScreenState extends ConsumerState<CourtGameListScreen> {
                     WidgetsBinding.instance.addPostFrameCallback((s) {
                       context.pushReplacementNamed(ErrorScreen.routeName);
                     });
-                    return Container();
+                    return SliverToBoxAdapter(child: Container());
                   }
 
-                  final cp = state
-                  as ResponseModel<CursorPaginationModel<List<BaseGameResponse>>>;
+                  final cp = state as ResponseModel<
+                      CursorPaginationModel<List<BaseGameResponse>>>;
                   log('state.data!.page_content = ${state.data!.items.length}');
+                  print(
+                      'state.data!.page_content = ${state.data!.items.length}');
                   if (state.data!.items.isEmpty) {
-                    return Container();
+                    return const SliverToBoxAdapter(child: Text("테스트스틑트"));
                   }
 
                   return SliverList.builder(
@@ -108,7 +112,7 @@ class _CourtGameListScreenState extends ConsumerState<CourtGameListScreen> {
                           ),
                           child: Center(
                             child: cp is ResponseModel<
-                                CursorPaginationModelFetchingMore>
+                                    CursorPaginationModelFetchingMore>
                                 ? const CircularProgressIndicator()
                                 : Container(),
                           ),
@@ -133,18 +137,18 @@ class _CourtGameListScreenState extends ConsumerState<CourtGameListScreen> {
   void _scrollListener() {
     if (_scrollController.position.pixels >
         _scrollController.position.maxScrollExtent - 300) {
-      final state = ref.watch(courtGamePaginationProvider(
-          param: CourtPaginationParam(search: ''),
-          cursorParam: const CursorPaginationParam()));
       ref
           .read(courtGamePaginationProvider(
-          param: CourtPaginationParam(search: ''),
-          cursorParam: const CursorPaginationParam()).notifier)
+                  courtId: widget.courtId,
+                  param: CourtPaginationParam(search: ''),
+                  cursorParam: const CursorPaginationParam())
+              .notifier)
           .paginate(
-        cursorPaginationParams: const CursorPaginationParam(),
-        fetchMore: true,
-        param: CourtPaginationParam(search: ''),
-      );
+            courtId: widget.courtId,
+            cursorPaginationParams: const CursorPaginationParam(),
+            fetchMore: true,
+            param: CourtPaginationParam(search: ''),
+          );
       // 스크롤이 끝에 도달했을 때 새로운 항목 로드
     }
   }

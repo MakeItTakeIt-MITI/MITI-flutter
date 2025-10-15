@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../common/model/cursor_model.dart';
@@ -19,32 +18,33 @@ class CourtGamePagination extends _$CourtGamePagination {
   @override
   BaseModel build(
       {CourtPaginationParam? param,
+      required int courtId,
       required CursorPaginationParam cursorParam}) {
     log("init pagination param= $param cursorParam = $cursorParam");
-    _initializeData(param, cursorParam);
+    _initializeData(param, cursorParam, courtId: courtId);
     return LoadingModel();
   }
 
   // 초기화 메서드 분리
   void _initializeData(
-      CourtPaginationParam? param, CursorPaginationParam cursorParam) {
+    CourtPaginationParam? param,
+    CursorPaginationParam cursorParam, {
+    required int courtId,
+  }) {
     // 다음 프레임에서 실행되도록 지연
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      paginate(cursorPaginationParams: cursorParam, param: param);
+      paginate(
+          cursorPaginationParams: cursorParam, param: param, courtId: courtId);
     });
   }
 
   Future<void> paginate(
-      {CourtPaginationParam? param,
+      {required int courtId,
+      CourtPaginationParam? param,
       CursorPaginationParam cursorPaginationParams =
           const CursorPaginationParam(),
       bool fetchMore = false,
       bool forceRefetch = false}) async {
-    int? userId = ref.read(authProvider)?.id;
-    if (userId == null) {
-      return;
-    }
-
     try {
       log('prev state type = ${state.runtimeType}');
 
@@ -71,8 +71,8 @@ class CourtGamePagination extends _$CourtGamePagination {
       log("fetchMore = $fetchMore");
 
       if (fetchMore) {
-        final pState =
-            state as ResponseModel<CursorPaginationModel<List<BaseGameResponse>>>;
+        final pState = state
+            as ResponseModel<CursorPaginationModel<List<BaseGameResponse>>>;
 
         state = ResponseModel(
             status_code: pState.status_code,
@@ -89,8 +89,8 @@ class CourtGamePagination extends _$CourtGamePagination {
             cursor: pState.data!.pageLastCursor);
       } else {
         if (state is ResponseModel<CursorPaginationModel> && !forceRefetch) {
-          final pState =
-              state as ResponseModel<CursorPaginationModel<List<BaseGameResponse>>>;
+          final pState = state
+              as ResponseModel<CursorPaginationModel<List<BaseGameResponse>>>;
           state = ResponseModel(
               status_code: pState.status_code,
               message: pState.message,
@@ -108,7 +108,7 @@ class CourtGamePagination extends _$CourtGamePagination {
 
       final repository = ref.watch(courtGameCursorPaginationRepositoryProvider);
       final resp = await repository.paginate(
-        path: userId,
+        path: courtId,
         param: param,
         cursorPaginationParams: cursorPaginationParams,
       );
