@@ -131,7 +131,7 @@ extension ChatModelValidation on List<ChatModel> {
     if (isEmpty || index < 0 || index >= length) return false;
 
     // 마지막 메시지는 무조건 날짜 표시
-    if (index == 0) return true;
+    if (index == length -1) return true;
 
     final current = this[index];
     final prev = this[index - 1];

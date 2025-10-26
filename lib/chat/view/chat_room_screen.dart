@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:debounce_throttle/debounce_throttle.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -132,7 +131,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                       Padding(
                         padding: EdgeInsets.symmetric(
                             horizontal: 8.w, vertical: 10.h),
-                        child: _InitChatMessageInfo(),
+                        child: const _InitChatMessageInfo(),
                       ),
                     ],
                   ));
@@ -149,12 +148,11 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                       reverse: true,
                       shrinkWrap: true,
                       itemBuilder: (_, index) {
-                        final actualIndex = chatMessages.length - 1 - index;
-                        final message = chatMessages[actualIndex];
-                        return _buildChatItem(message, actualIndex);
+                        final message = chatMessages[index];
+                        return _buildChatItem(message, index);
                       },
                       separatorBuilder: (_, index) {
-                        if (chatMessages[chatMessages.length - 1 - index]
+                        if (chatMessages[index]
                             .showDate) {
                           return SizedBox(
                             height: 0.h,

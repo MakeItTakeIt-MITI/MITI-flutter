@@ -95,7 +95,7 @@ class _CourtGameListScreenState extends ConsumerState<CourtGameListScreen> {
                   print(
                       'state.data!.page_content = ${state.data!.items.length}');
                   if (state.data!.items.isEmpty) {
-                    return const SliverToBoxAdapter(child: Text("테스트스틑트"));
+                    return SliverToBoxAdapter(child: Container());
                   }
 
                   return SliverList.builder(
