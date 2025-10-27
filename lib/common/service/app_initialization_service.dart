@@ -1,4 +1,3 @@
-// services/app_initialization_service.dart
 import 'dart:developer';
 import 'dart:io';
 
@@ -19,19 +18,21 @@ import '../../post/repository/search_history_repository.dart';
 
 class AppInitializationService {
   /// 환경 초기화
-  static Future<void> initialize(String env) async {
-    await _setupEnvironment(BuildEnvironment.production, env);
+  static Future<void> initialize(BuildEnvironment env) async {
+    await _setupEnvironment(env);
     await _setupFlutter();
     await _setupExternalServices(env);
   }
 
-  static Future<void> _setupEnvironment(
-      BuildEnvironment env, String envFile) async {
+  static Future<void> _setupEnvironment(BuildEnvironment env) async {
     EnvUtil.instance.initialize(environment: env);
 
-    print("Loading environment: $envFile");
-    log("Loading environment: $envFile");
-    await dotenv.load(fileName: envFile);
+    String fileName =
+        env == BuildEnvironment.development ? '.env.dev' : '.env.prod';
+
+    print("Loading environment: $fileName");
+    log("Loading environment: $fileName");
+    await dotenv.load(fileName: fileName);
 
     HttpOverrides.global = MyHttpOverrides();
   }
@@ -48,7 +49,7 @@ class AppInitializationService {
     await initializeDateFormatting('ko');
   }
 
-  static Future<void> _setupExternalServices(String env) async {
+  static Future<void> _setupExternalServices(BuildEnvironment env) async {
     // Naver Map 초기화
     await NaverMapSdk.instance.initialize(
       clientId: Environment.naverMapClientId,
@@ -68,7 +69,7 @@ class AppInitializationService {
     // Search History 초기화
     await SearchHistoryRepository().initialize();
 
-    final isDev = env == ".env.dev";
+    final isDev = env == BuildEnvironment.development;
     try {
       // Firebase 초기화
       await Firebase.initializeApp(
@@ -84,7 +85,6 @@ class AppInitializationService {
         rethrow;
       }
     }
-
   }
 }
 

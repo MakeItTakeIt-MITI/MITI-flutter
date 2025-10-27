@@ -3,32 +3,23 @@ import 'dart:developer';
 
 import 'package:bootpay/bootpay.dart';
 import 'package:bootpay/model/extra.dart';
-import 'package:bootpay/model/item.dart';
 import 'package:bootpay/model/payload.dart';
-import 'package:bootpay/model/user.dart';
+import 'package:collection/collection.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/component/default_layout.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/model/entity_enum.dart';
-import 'package:miti/court/view/court_map_screen.dart';
-import 'package:miti/game/model/game_payment_model.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:miti/game/view/game_refund_screen.dart';
 import 'package:miti/kakaopay/error/pay_error.dart';
-import 'package:miti/kakaopay/model/boot_pay_approve_model.dart';
-import 'package:miti/kakaopay/model/boot_pay_request_model.dart';
 import 'package:miti/kakaopay/model/pay_model.dart';
 import 'package:miti/kakaopay/provider/pay_provider.dart';
 import 'package:miti/report/model/agreement_policy_model.dart';
@@ -49,7 +40,6 @@ import '../model/v2/payment/base_payment_request_response.dart';
 import '../model/v2/payment/payment_completed_response.dart';
 import 'game_create_complete_screen.dart';
 import 'game_detail_screen.dart';
-import 'package:collection/collection.dart';
 
 class GamePaymentScreen extends ConsumerStatefulWidget {
   static String get routeName => 'paymentInfo';
@@ -74,6 +64,9 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
       : Environment.bootPayDevIosKey;
 
   String get applicationId {
+    debugPrint('Environment webApplicationId: $webApplicationId');
+    debugPrint('Environment androidApplicationId: $androidApplicationId');
+    debugPrint('Environment iosApplicationId: $iosApplicationId');
     return Bootpay().applicationId(
         webApplicationId, androidApplicationId, iosApplicationId);
   }
@@ -86,6 +79,8 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
 
   @override
   void initState() {
+    applicationId;
+
     super.initState();
     _throttler = Throttle(
       const Duration(seconds: 1),
