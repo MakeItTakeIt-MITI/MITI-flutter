@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:intl/intl.dart';
 import 'package:miti/game/param/game_param.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -33,8 +31,8 @@ class GameFilter extends _$GameFilter {
     final now = DateTime.now();
     final df = DateFormat('yyyy-MM-dd');
     final startDate = df.format(now);
-    const hour = '0';
-    const min = '0';
+    const hour = '00';
+    const min = '00';
 
     return GameListParam(
         startdate: startDate,
@@ -71,8 +69,8 @@ class GameFilter extends _$GameFilter {
     final now = DateTime.now();
     final df = DateFormat('yyyy-MM-dd');
     final startDate = df.format(now);
-    final hour = DateTime.now().hour.toString();
-    final min = ((DateTime.now().minute ~/ 10) * 10).toString();
+    final hour = DateTime.now().hour.toString().padLeft(2, '0');
+    final min = ((DateTime.now().minute ~/ 10) * 10).toString().padLeft(2,'0');
     switch (type) {
       case FilterType.date:
         state = GameListParam(
