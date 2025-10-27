@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -20,6 +19,7 @@ import '../../common/component/custom_bottom_sheet.dart';
 import '../../common/component/defalut_flashbar.dart';
 import '../../common/component/form/multi_line_text_field.dart';
 import '../../common/component/form/under_line_text_field.dart';
+import '../../common/model/cursor_model.dart';
 import '../../court/component/court_list_component.dart';
 import '../../game/component/game_recent_component.dart';
 import '../../notification/model/game_chat_notification_response.dart';
@@ -72,17 +72,17 @@ class _ChatNotificationFormScreenState
         if (result is ErrorModel) {
         } else {
           final model = (result as ResponseModel<
-                  PaginationModel<GameChatNotificationResponse>>)
+                  CursorPaginationModel<GameChatNotificationResponse>>)
               .data!;
-          if (model.page_content.isNotEmpty) {
+          if (model.items.isNotEmpty) {
             showCustomModalBottomSheet(
                 context,
                 UserChatNoticeComponent(
-                  models: model.page_content,
+                  models: model.items,
                   onSelect: () {
                     final selected = ref.read(selectedProvider);
                     final select =
-                        model.page_content.firstWhere((m) => m.id == selected);
+                        model.items.firstWhere((m) => m.id == selected);
                     ref
                         .read(chatFormProvider(gameId: widget.gameId).notifier)
                         .update(title: select.title, body: select.body);

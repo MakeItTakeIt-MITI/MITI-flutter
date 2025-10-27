@@ -3,6 +3,7 @@ import 'package:miti/common/model/default_model.dart';
 import 'package:miti/notification/provider/notification_provider.dart';
 import 'package:miti/notification/repository/notification_repository.dart';
 
+import '../../common/model/cursor_model.dart';
 import '../../common/param/pagination_param.dart';
 import '../../common/provider/cursor_pagination_provider.dart';
 import '../../game/model/v2/notification/base_notification_response.dart';
@@ -57,10 +58,10 @@ class PushPageStateNotifier extends CursorPaginationProvider<
   /// optimistic response
   void read({required int pushId, required WidgetRef ref}) {
     final model =
-        (state as ResponseModel<PaginationModel<BasePushNotificationResponse>>);
+        (state as ResponseModel<CursorPaginationModel<BasePushNotificationResponse>>);
     final pState = model.data!;
     bool hasUnConfirmed = false;
-    final newPageContent = pState.page_content.map((e) {
+    final newPageContent = pState.items.map((e) {
       if (e.id == pushId) {
         return e.copyWith(isRead: true);
       }
@@ -72,20 +73,20 @@ class PushPageStateNotifier extends CursorPaginationProvider<
     }).toList();
     ref.read(unreadPushProvider.notifier).get();
 
-    final newData = pState.copyWith(page_content: newPageContent);
+    final newData = pState.copyWith(items: newPageContent);
     state = model.copyWith(data: newData);
   }
 
   void allRead({required WidgetRef ref}) {
     final model =
-        (state as ResponseModel<PaginationModel<BasePushNotificationResponse>>);
+        (state as ResponseModel<CursorPaginationModel<BasePushNotificationResponse>>);
     final pState = model.data!;
-    final newPageContent = pState.page_content.map((e) {
+    final newPageContent = pState.items.map((e) {
       return e.copyWith(isRead: true);
     }).toList();
     ref.read(unreadPushProvider.notifier).get();
 
-    final newData = pState.copyWith(page_content: newPageContent);
+    final newData = pState.copyWith(items: newPageContent);
     state = model.copyWith(data: newData);
   }
 }

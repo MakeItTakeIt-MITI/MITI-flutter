@@ -9,6 +9,7 @@ import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
+import '../../common/model/cursor_model.dart';
 import '../../common/model/default_model.dart';
 import '../../game/param/game_param.dart';
 import '../model/court_model.dart';
@@ -203,14 +204,14 @@ class _CourtListComponentState extends ConsumerState<CourtListComponent> {
   }
 
   void onTap(WidgetRef ref, int idx,
-      ResponseModel<PaginationModel<CourtSearchModel>> model) {
+      ResponseModel<CursorPaginationModel<CourtSearchModel>> model) {
     final selectId = ref.read(selectedProvider);
-    if (selectId == model.data!.page_content[idx].id) {
+    if (selectId == model.data!.items[idx].id) {
       ref.read(selectedProvider.notifier).update((state) => null);
     } else {
       ref
           .read(selectedProvider.notifier)
-          .update((state) => model.data!.page_content[idx].id);
+          .update((state) => model.data!.items[idx].id);
     }
   }
 
