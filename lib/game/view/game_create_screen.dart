@@ -941,7 +941,8 @@ class _AddressComponentState extends State<AddressComponent> {
                                         courtSinglePageProvider(param: param)
                                             .future);
                                     if (result is ResponseModel<
-                                        CursorPaginationModel<CourtMapResponse>>) {
+                                        CursorPaginationModel<
+                                            CourtMapResponse>>) {
                                       final model = (result).data!.items;
 
                                       if (model.isNotEmpty) {
@@ -1269,9 +1270,7 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
             children: [
               SizedBox(height: 16.h),
               Text(
-                int.parse(max_invitation) < 1
-                    ? '총 모집 인원은 1명 이상이어야해요.'
-                    : '총 모집 인원은 최소 모집 인원보다 많아야해요.',
+                '총 모집 인원은 최소 모집 이상이어야 해요.',
                 style: MITITextStyle.xxsm.copyWith(color: MITIColor.error),
               ),
             ],

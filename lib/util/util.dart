@@ -285,11 +285,10 @@ class ValidRegExp {
     return input.isNotEmpty && input.length < 30;
   }
 
+  // 최소인원이 최대인원보다 큰지 확인
   static bool validForm(String min_invitation, String max_invitation) {
     if (min_invitation.isNotEmpty && max_invitation.isNotEmpty) {
-      if (int.parse(min_invitation) >= int.parse(max_invitation)) {
-        return false;
-      } else if (int.parse(max_invitation) <= 0) {
+      if (int.parse(min_invitation) > int.parse(max_invitation)) {
         return false;
       }
     }
