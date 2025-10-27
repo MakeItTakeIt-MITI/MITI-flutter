@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:collection/collection.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -37,7 +37,6 @@ import '../../../util/util.dart';
 import '../../error/auth_error.dart';
 import '../../model/signup_model.dart';
 import '../../provider/auth_provider.dart';
-import 'package:collection/collection.dart';
 
 class SignUpScreen extends ConsumerWidget {
   final SignupMethodType type;
@@ -794,7 +793,7 @@ class DescComponent extends ConsumerWidget {
       } else {
         title = '경기 참여에 필요한\n선수 프로필을 작성해주세요';
         desc = '입력하신 정보는 경기 참여 시 참고용으로 사용되어요.';
-  }
+      }
     } else if (ref.watch(progressProvider).progress == 4) {
       if (type == SignupMethodType.email) {
         title = '본인확인을 위한\n정보를 입력해주세요.';
@@ -926,19 +925,31 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
     super.dispose();
   }
 
-  void checkValid() {
-    log('ref.read(signUpFormProvider.notifier).validName() ${ref.read(signUpFormProvider.notifier).validName()}');
-    log('ref.read(signUpFormProvider.notifier).validBirth() ${ref.read(signUpFormProvider.notifier).validBirth()}');
-    log('ref.read(signUpFormProvider.notifier).validPhoneNumber() ${ref.read(signUpFormProvider.notifier).validPhoneNumber()}');
-    if (ref.read(signUpFormProvider.notifier).validName() &&
-        ref.read(signUpFormProvider.notifier).validBirth() &&
-        ref.read(signUpFormProvider.notifier).validPhoneNumber()) {
-      ref.read(progressProvider.notifier).updateValidNext(validNext: true);
-    } else {
-      ref.read(progressProvider.notifier).updateValidNext(validNext: false);
-    }
+  void checkValid(SignupMethodType type) {
+    final formNotifier = ref.read(signUpFormProvider.notifier);
+    final progressNotifier = ref.read(progressProvider.notifier);
+
+    bool isValid = _validateBySignupMethod(type, formNotifier);
+    progressNotifier.updateValidNext(validNext: isValid);
+
+    _printValidationDebugInfo(formNotifier);
   }
 
+  bool _validateBySignupMethod(SignupMethodType type, dynamic formNotifier) {
+    final baseValidation = formNotifier.validName() && formNotifier.validBirth();
+
+    if (type == SignupMethodType.kakao) {
+      return baseValidation;
+    }
+
+    return baseValidation && formNotifier.validPhoneNumber();
+  }
+
+  void _printValidationDebugInfo(dynamic formNotifier) {
+    debugPrint('validName: ${formNotifier.validName()}');
+    debugPrint('validBirth: ${formNotifier.validBirth()}');
+    debugPrint('validPhoneNumber: ${formNotifier.validPhoneNumber()}');
+  }
   @override
   Widget build(BuildContext context) {
     ref.listen(dateProvider(DateTimeType.start), (previous, next) {
@@ -958,7 +969,7 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
           textInputAction: TextInputAction.next,
           onChanged: (val) {
             ref.read(signUpFormProvider.notifier).updateForm(name: val);
-            checkValid();
+            checkValid(widget.type);
           },
           onNext: () {
             FocusScope.of(context).requestFocus(focusNodes[1]);
