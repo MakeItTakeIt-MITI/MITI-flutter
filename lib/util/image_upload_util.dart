@@ -23,7 +23,9 @@ import '../post/provider/post_form_provider.dart';
 /// 이미지 업로드를 위한 콜백 인터페이스
 abstract class ImageUploadCallback {
   void addLocalImage(ImagePath imagePath);
+
   void removeLocalImage(ImagePath imagePath);
+
   void updateLocalImageLoading(ImagePath oldImagePath, ImagePath newImagePath);
 }
 
@@ -40,7 +42,8 @@ class ImageUploadUtil {
   });
 
   /// 여러 이미지 선택 및 업로드
-  Future<void> pickMultipleImages({int limit = 10}) async {
+  Future<void> pickMultipleImages(
+      {int limit = 10, required FileCategoryType category}) async {
     // todo 동일한 이미지 올릴 시 제거 또는 id 를 추가해서 변경
     final picker = MultiImagePicker();
 
@@ -52,14 +55,14 @@ class ImageUploadUtil {
         Map<String, int> imageTypeCounts = _countImagesByType(images);
 
         final param = FileUploadParam(
-          category: FileCategoryType.post_image,
+          category: category,
           png: imageTypeCounts['png'],
           jpeg: imageTypeCounts['jpeg'],
           webp: imageTypeCounts['webp'],
         );
 
         final result =
-        await ref.read(fileUploadUrlProvider(param: param).future);
+            await ref.read(fileUploadUrlProvider(param: param).future);
 
         if (result is ResponseModel) {
           final model = (result as ResponseModel<FileUploadUrlResponse>).data!;
@@ -99,7 +102,7 @@ class ImageUploadUtil {
           imagesByType['webp']!.add(image);
           break;
         default:
-        // 기본적으로 jpeg로 처리
+          // 기본적으로 jpeg로 처리
           imagesByType['jpeg']!.add(image);
           break;
       }
@@ -112,7 +115,8 @@ class ImageUploadUtil {
   }
 
   /// 특정 타입의 이미지들을 해당 타입의 URL들로 업로드
-  void _uploadImagesByType(String type, List<XFile> images, List<UploadUrlResponse> urls) {
+  void _uploadImagesByType(
+      String type, List<XFile> images, List<UploadUrlResponse> urls) {
     log("Uploading $type images: ${images.length} files with ${urls.length} URLs");
 
     for (int i = 0; i < images.length && i < urls.length; i++) {
@@ -152,7 +156,7 @@ class ImageUploadUtil {
           counts['webp'] = (counts['webp'] ?? 0) + 1;
           break;
         default:
-        // 기본적으로 jpeg로 처리
+          // 기본적으로 jpeg로 처리
           counts['jpeg'] = (counts['jpeg'] ?? 0) + 1;
           break;
       }
@@ -264,11 +268,11 @@ class PostCommentFormImageUploadAdapter implements ImageUploadCallback {
   void addLocalImage(ImagePath imagePath) {
     ref
         .read(postCommentFormProvider(
-      isEdit: isEdit,
-      postId: postId,
-      commentId: commentId,
-      replyCommentId: replyCommentId,
-    ).notifier)
+          isEdit: isEdit,
+          postId: postId,
+          commentId: commentId,
+          replyCommentId: replyCommentId,
+        ).notifier)
         .addLocalImage(imagePath);
   }
 
@@ -276,11 +280,11 @@ class PostCommentFormImageUploadAdapter implements ImageUploadCallback {
   void removeLocalImage(ImagePath imagePath) {
     ref
         .read(postCommentFormProvider(
-      isEdit: isEdit,
-      postId: postId,
-      commentId: commentId,
-      replyCommentId: replyCommentId,
-    ).notifier)
+          isEdit: isEdit,
+          postId: postId,
+          commentId: commentId,
+          replyCommentId: replyCommentId,
+        ).notifier)
         .removeLocalImage(imagePath);
   }
 
@@ -288,11 +292,11 @@ class PostCommentFormImageUploadAdapter implements ImageUploadCallback {
   void updateLocalImageLoading(ImagePath oldImagePath, ImagePath newImagePath) {
     ref
         .read(postCommentFormProvider(
-      isEdit: isEdit,
-      postId: postId,
-      commentId: commentId,
-      replyCommentId: replyCommentId,
-    ).notifier)
+          isEdit: isEdit,
+          postId: postId,
+          commentId: commentId,
+          replyCommentId: replyCommentId,
+        ).notifier)
         .updateLocalImageLoading(oldImagePath, newImagePath);
   }
 }

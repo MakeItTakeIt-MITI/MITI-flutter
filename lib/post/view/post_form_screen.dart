@@ -450,7 +450,7 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
     final limit = ref
         .read(postFormProvider(postId: widget.postId).notifier)
         .getLimitImageCnt();
-    await _imageUploadUtil.pickMultipleImages(limit: limit);
+    await _imageUploadUtil.pickMultipleImages(limit: limit, category: FileCategoryType.post_image);
   }
 }
 

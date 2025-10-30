@@ -354,7 +354,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                           .notifier)
                       .getLimitImageCnt();
                   // 갤러리 기능 구현
-                  await _imageUploadUtil.pickMultipleImages(limit: limit);
+                  await _imageUploadUtil.pickMultipleImages(limit: limit, category: FileCategoryType.comment_image);
                 },
               );
             },

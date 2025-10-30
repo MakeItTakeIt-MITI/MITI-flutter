@@ -317,7 +317,7 @@ class _PostCommentDetailScreenState
                       ).notifier)
                       .getLimitImageCnt();
                   // 갤러리 기능 구현
-                  await _imageUploadUtil.pickMultipleImages(limit: limit);
+                  await _imageUploadUtil.pickMultipleImages(limit: limit, category: FileCategoryType.reply_comment_image);
                 },
               );
             },

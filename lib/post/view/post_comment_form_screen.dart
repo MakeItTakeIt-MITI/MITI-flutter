@@ -9,6 +9,7 @@ import '../../common/component/defalut_flashbar.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/component/form/multi_line_text_field.dart';
 import '../../common/model/default_model.dart';
+import '../../common/model/entity_enum.dart';
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
 import '../../util/image_upload_util.dart'; // 새로 만든 유틸리티 import
@@ -298,7 +299,7 @@ class _PostCommentFormScreenState extends ConsumerState<PostCommentFormScreen> {
                             .notifier)
                         .getLimitImageCnt();
                     // 갤러리 기능 구현
-                    await _imageUploadUtil.pickMultipleImages(limit: limit);
+                    await _imageUploadUtil.pickMultipleImages(limit: limit, category: FileCategoryType.comment_image);
                   },
                 ),
                 Spacer(),
