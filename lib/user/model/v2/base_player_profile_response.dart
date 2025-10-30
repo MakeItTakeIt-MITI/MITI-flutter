@@ -36,6 +36,51 @@ class PlayerProfileForm extends BasePlayerProfileResponse {
     );
   }
 
+  /// null로 설정하기 위한 copyWithNull 메서드
+  PlayerProfileForm copyWithNull({
+    bool gender = false,
+    bool height = false,
+    bool weight = false,
+    bool position = false,
+    bool role = false,
+  }) {
+    return PlayerProfileForm(
+      gender: gender ? null : this.gender,
+      height: height ? null : this.height,
+      weight: weight ? null : this.weight,
+      position: position ? null : this.position,
+      role: role ? null : this.role,
+      enableGender: enableGender,
+    );
+  }
+
+  /// 개별 필드 clear 메서드들
+  PlayerProfileForm clearGender() => copyWithNull(gender: true);
+
+  PlayerProfileForm clearHeight() => copyWithNull(height: true);
+
+  PlayerProfileForm clearWeight() => copyWithNull(weight: true);
+
+  PlayerProfileForm clearPosition() => copyWithNull(position: true);
+
+  PlayerProfileForm clearRole() => copyWithNull(role: true);
+
+  /// 리팩토링된 clear 메서드
+  PlayerProfileForm clear(PlayerProfileType profileType) {
+    switch (profileType) {
+      case PlayerProfileType.gender:
+        return clearGender();
+      case PlayerProfileType.height:
+        return clearHeight();
+      case PlayerProfileType.weight:
+        return clearWeight();
+      case PlayerProfileType.position:
+        return clearPosition();
+      case PlayerProfileType.role:
+        return clearRole();
+    }
+  }
+
   factory PlayerProfileForm.fromModel(
       {required BasePlayerProfileResponse model}) {
     return PlayerProfileForm(

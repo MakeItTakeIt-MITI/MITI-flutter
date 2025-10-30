@@ -7,7 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:miti/common/provider/widget/datetime_provider.dart';
 
-import '../../util/util.dart';
+import '../../../util/util.dart';
 
 class TimePicker extends ConsumerWidget {
   final DateTimeType type;

@@ -29,7 +29,7 @@ import 'package:miti/report/provider/report_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
-import '../../common/component/custom_time_picker.dart';
+import '../../common/component/picker/custom_time_picker.dart';
 import '../../common/provider/widget/form_provider.dart';
 import '../../common/view/operation_term_screen.dart';
 import '../../court/component/court_list_component.dart';

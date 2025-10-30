@@ -14,7 +14,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:miti/common/component/custom_dialog.dart';
-import 'package:miti/common/component/custom_time_picker.dart';
+import 'package:miti/common/component/picker/custom_time_picker.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/court/component/court_component.dart';
 import 'package:miti/game/component/game_state_label.dart';

@@ -1,19 +1,16 @@
-import 'dart:developer';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:miti/common/component/custom_text_form_field.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/component/default_layout.dart';
+import 'package:miti/common/component/picker/overlay_number_picker.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/user/provider/user_form_provider.dart';
 import 'package:miti/user/provider/user_provider.dart';
+
 import '../../common/component/defalut_flashbar.dart';
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
@@ -183,78 +180,78 @@ class _PlayerProfileFormState extends ConsumerState<_PlayerProfileForm> {
                 color: MITIColor.gray300,
               ),
             ),
-            if (widget.type == PlayerProfileType.height ||
-                widget.type == PlayerProfileType.weight)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  SizedBox(
-                      width: 120.w,
-                      child: CustomTextFormField(
-                        textEditingController: _editingController,
-                        height: 40.h,
-                        hintText: widget.type.displayName,
-                        keyboardType: TextInputType.number,
-                        textAlign: TextAlign.center,
-                        borderColor: formValid != null && !formValid
-                            ? MITIColor.error
-                            : null,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          NumberFormatter(
-                              minRange: widget.type == PlayerProfileType.height
-                                  ? 50
-                                  : 30,
-                              maxRange: widget.type == PlayerProfileType.height
-                                  ? 230
-                                  : 150),
-                        ],
-                        suffixIcon: Text(
-                          widget.type == PlayerProfileType.height ? "cm" : "kg",
-                          style: MITITextStyle.sm
-                              .copyWith(color: MITIColor.gray400),
-                        ),
-                        onChanged: (v) {
-                          if (v.isNotEmpty) {
-                            if (widget.type == PlayerProfileType.height) {
-                              ref
-                                  .read(userPlayerProfileFormProvider.notifier)
-                                  .update(height: int.parse(v));
-                            } else {
-                              ref
-                                  .read(userPlayerProfileFormProvider.notifier)
-                                  .update(weight: int.parse(v));
-                            }
-                          }
-                        },
-                      )),
-                ],
-              )
-            else
-              GestureDetector(
-                onTap: widget.enabled
-                    ? () => showBottomSheetForm(context, items, ref)
-                    : null,
-                child: Container(
-                  width: 120.w,
-                  height: 40.h,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.r),
-                    color: MITIColor.gray700,
-                  ),
-                  child: Center(
-                    child: Text(
-                      formValue ?? widget.type.displayName,
-                      style: MITITextStyle.md.copyWith(
-                          color: !widget.enabled
-                              ? MITIColor.gray600
-                              : formValue == null
-                                  ? MITIColor.gray500
-                                  : MITIColor.gray100),
-                    ),
+            // if (widget.type == PlayerProfileType.height ||
+            //     widget.type == PlayerProfileType.weight)
+            //   Column(
+            //     crossAxisAlignment: CrossAxisAlignment.end,
+            //     children: [
+            //       SizedBox(
+            //           width: 120.w,
+            //           child: CustomTextFormField(
+            //             textEditingController: _editingController,
+            //             height: 40.h,
+            //             hintText: widget.type.displayName,
+            //             keyboardType: TextInputType.number,
+            //             textAlign: TextAlign.center,
+            //             borderColor: formValid != null && !formValid
+            //                 ? MITIColor.error
+            //                 : null,
+            //             inputFormatters: [
+            //               FilteringTextInputFormatter.digitsOnly,
+            //               NumberFormatter(
+            //                   minRange: widget.type == PlayerProfileType.height
+            //                       ? 50
+            //                       : 30,
+            //                   maxRange: widget.type == PlayerProfileType.height
+            //                       ? 230
+            //                       : 150),
+            //             ],
+            //             suffixIcon: Text(
+            //               widget.type == PlayerProfileType.height ? "cm" : "kg",
+            //               style: MITITextStyle.sm
+            //                   .copyWith(color: MITIColor.gray400),
+            //             ),
+            //             onChanged: (v) {
+            //               if (v.isNotEmpty) {
+            //                 if (widget.type == PlayerProfileType.height) {
+            //                   ref
+            //                       .read(userPlayerProfileFormProvider.notifier)
+            //                       .update(height: int.parse(v));
+            //                 } else {
+            //                   ref
+            //                       .read(userPlayerProfileFormProvider.notifier)
+            //                       .update(weight: int.parse(v));
+            //                 }
+            //               }
+            //             },
+            //           )),
+            //     ],
+            //   )
+            // else
+            GestureDetector(
+              onTap: widget.enabled
+                  ? () => showBottomSheetForm(context, items, ref)
+                  : null,
+              child: Container(
+                width: 120.w,
+                height: 40.h,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.r),
+                  color: MITIColor.gray700,
+                ),
+                child: Center(
+                  child: Text(
+                    formValue ?? widget.type.displayName,
+                    style: MITITextStyle.md.copyWith(
+                        color: !widget.enabled
+                            ? MITIColor.gray600
+                            : formValue == null
+                                ? MITIColor.gray500
+                                : MITIColor.gray100),
                   ),
                 ),
-              )
+              ),
+            )
           ],
         ),
         SizedBox(
@@ -322,10 +319,28 @@ class _PlayerProfileFormState extends ConsumerState<_PlayerProfileForm> {
                   ref
                       .read(userPlayerProfileFormProvider.notifier)
                       .update(role: role);
+                } else if (widget.type == PlayerProfileType.weight) {
+                  ref
+                      .read(userPlayerProfileFormProvider.notifier)
+                      .update(weight: int.parse(selectedItem));
+                } else {
+                  ref
+                      .read(userPlayerProfileFormProvider.notifier)
+                      .update(height: int.parse(selectedItem));
                 }
                 context.pop();
                 FocusScope.of(context).unfocus();
               },
+              onClearItem: widget.type != PlayerProfileType.gender
+                  ? () {
+                      ref
+                          .read(userPlayerProfileFormProvider.notifier)
+                          .clear(widget.type);
+
+                      context.pop();
+                      FocusScope.of(context).unfocus();
+                    }
+                  : null,
             );
           });
         });
@@ -343,14 +358,17 @@ class _PlayerProfileFormState extends ConsumerState<_PlayerProfileForm> {
 
   String? getFormValue(WidgetRef ref) {
     switch (widget.type) {
-      case PlayerProfileType.height:
-        return ref
-            .watch(userPlayerProfileFormProvider.select((s) => s.height))
-            .toString();
+      case PlayerProfileType.height: {
+          final value =
+              ref.watch(userPlayerProfileFormProvider.select((s) => s.height));
+          return value == null ? null : "$value cm";
+        }
       case PlayerProfileType.weight:
-        return ref
-            .watch(userPlayerProfileFormProvider.select((s) => s.weight))
-            .toString();
+        {
+          final value =
+              ref.watch(userPlayerProfileFormProvider.select((s) => s.weight));
+          return value == null ? null : "$value kg";
+        }
       case PlayerProfileType.gender:
         return ref
             .watch(userPlayerProfileFormProvider.select((s) => s.gender))
@@ -378,13 +396,14 @@ class _PlayerProfileFormState extends ConsumerState<_PlayerProfileForm> {
   }
 }
 
-class BottomSheetWrapComponent extends StatelessWidget {
+class BottomSheetWrapComponent extends ConsumerStatefulWidget {
   final int crossAxisCount;
   final BottomSheetSelectItem onTapItem;
   final String title;
   final List<String> items;
   final String selectedItem;
   final VoidCallback onSubmitItem;
+  final VoidCallback? onClearItem;
 
   const BottomSheetWrapComponent({
     super.key,
@@ -394,7 +413,25 @@ class BottomSheetWrapComponent extends StatelessWidget {
     required this.selectedItem,
     required this.onSubmitItem,
     this.crossAxisCount = 3,
+    this.onClearItem,
   });
+
+  @override
+  ConsumerState<BottomSheetWrapComponent> createState() =>
+      _BottomSheetWrapComponentState();
+}
+
+class _BottomSheetWrapComponentState
+    extends ConsumerState<BottomSheetWrapComponent> {
+  late int? initialValue;
+
+  @override
+  void initState() {
+    super.initState();
+    initialValue = widget.title == '체중'
+        ? ref.read(userPlayerProfileFormProvider).weight
+        : ref.read(userPlayerProfileFormProvider).height;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -418,46 +455,106 @@ class BottomSheetWrapComponent extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                title,
+                widget.title,
                 style: MITITextStyle.mdBold.copyWith(
                   color: MITIColor.gray100,
                 ),
               ),
               SizedBox(height: 20.h),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  mainAxisSpacing: 12.r,
-                  crossAxisSpacing: 12.r,
-                  crossAxisCount: crossAxisCount,
-                  mainAxisExtent: 48.h,
+              if (widget.title == '체중' || widget.title == '신장')
+                SizedBox(
+                  height: 96.h,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Spacer(),
+                      SizedBox(
+                        width: 66.w,
+                        child: OverlayNumberPicker(
+                          initialValue: initialValue,
+                          start: widget.title == '체중' ? 30 : 50,
+                          end: widget.title == '체중' ? 150 : 230,
+                          onSelect: (int index) {
+                            widget.onTapItem(index.toString());
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 12.w,
+                            ),
+                            Text(
+                              "cm",
+                              style: MITITextStyle.sm,
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              else
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    mainAxisSpacing: 12.r,
+                    crossAxisSpacing: 12.r,
+                    crossAxisCount: widget.crossAxisCount,
+                    mainAxisExtent: 48.h,
+                  ),
+                  itemBuilder: (BuildContext context, int index) {
+                    return GestureDetector(
+                      onTap: () => widget.onTapItem(widget.items[index]),
+                      child: BottomSheetItem(
+                        isSelected: widget.items[index] == widget.selectedItem,
+                        text: widget.items[index],
+                      ),
+                    );
+                  },
+                  itemCount: widget.items.length,
                 ),
-                itemBuilder: (BuildContext context, int index) {
-                  return GestureDetector(
-                    onTap: () => onTapItem(items[index]),
-                    child: BottomSheetItem(
-                      isSelected: items[index] == selectedItem,
-                      text: items[index],
-                    ),
-                  );
-                },
-                itemCount: items.length,
-              ),
               SizedBox(height: 20.h),
-              TextButton(
-                  onPressed: selectedItem.isNotEmpty ? onSubmitItem : null,
-                  style: TextButton.styleFrom(
-                      backgroundColor: selectedItem.isNotEmpty
-                          ? MITIColor.primary
-                          : MITIColor.gray500),
-                  child: Text(
-                    '확인',
-                    style: MITITextStyle.mdBold.copyWith(
-                        color: selectedItem.isNotEmpty
-                            ? MITIColor.gray800
-                            : MITIColor.gray50),
-                  ))
+              Row(
+                children: [
+                  if (widget.onClearItem != null) ...[
+                    Flexible(
+                      child: TextButton(
+                          onPressed: widget.onClearItem,
+                          style: TextButton.styleFrom(
+                            side: const BorderSide(color: MITIColor.gray600),
+                            backgroundColor: MITIColor.gray700,
+                          ),
+                          child: Text(
+                            '선택안함',
+                            style: MITITextStyle.mdBold.copyWith(
+                                color: MITIColor.gray50),
+                          )),
+                    ),
+                    SizedBox(width: 22.w),
+                  ],
+                  Flexible(
+                    flex: 2,
+                    child: TextButton(
+                        onPressed: widget.selectedItem.isNotEmpty
+                            ? widget.onSubmitItem
+                            : null,
+                        style: TextButton.styleFrom(
+                            backgroundColor: widget.selectedItem.isNotEmpty
+                                ? MITIColor.primary
+                                : MITIColor.gray500),
+                        child: Text(
+                          '확인',
+                          style: MITITextStyle.mdBold.copyWith(
+                              color: widget.selectedItem.isNotEmpty
+                                  ? MITIColor.gray800
+                                  : MITIColor.gray50),
+                        )),
+                  ),
+                ],
+              )
             ],
           ),
         )

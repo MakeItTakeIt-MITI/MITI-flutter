@@ -1,4 +1,3 @@
-import 'package:miti/user/model/user_model.dart';
 import 'package:miti/user/param/user_profile_param.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -102,6 +101,10 @@ class UserPlayerProfileForm extends _$UserPlayerProfileForm {
       role: role,
       enableGender: enableGender,
     );
+  }
+
+  void clear(PlayerProfileType profileType) {
+    state = state.clear(profileType);
   }
 
   void updateByModel(BasePlayerProfileResponse model) {
