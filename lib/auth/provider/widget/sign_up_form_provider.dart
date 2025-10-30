@@ -59,9 +59,9 @@ class SignFormModel extends Equatable {
   final List<bool> checkBoxes;
   final String? signup_token;
   final String? userinfo_token;
-  final BasePlayerProfileResponse? playerProfile;
+  final BasePlayerProfileResponse playerProfile;
 
-  SignFormModel({
+  const SignFormModel({
     required this.nickname,
     this.email,
     required this.name,
@@ -72,11 +72,9 @@ class SignFormModel extends Equatable {
     required this.validCode,
     required this.showAutoComplete,
     required this.checkBoxes,
-    // required this.showDetail,
-    // required this.detailDesc,
     this.signup_token,
     this.userinfo_token,
-    this.playerProfile,
+    required this.playerProfile,
   });
 
   SignFormModel copyWith({
@@ -90,8 +88,6 @@ class SignFormModel extends Equatable {
     int? validCode,
     bool? showAutoComplete,
     List<bool>? checkBoxes,
-    List<bool>? showDetail,
-    List<String>? detailDesc,
     String? signup_token,
     String? userinfo_token,
     BasePlayerProfileResponse? playerProfile,
@@ -107,8 +103,6 @@ class SignFormModel extends Equatable {
       password: password ?? this.password,
       checkPassword: checkPassword ?? this.checkPassword,
       checkBoxes: checkBoxes ?? this.checkBoxes,
-      // showDetail: showDetail ?? this.showDetail,
-      // detailDesc: detailDesc ?? this.detailDesc,
       signup_token: signup_token ?? this.signup_token,
       userinfo_token: userinfo_token ?? this.userinfo_token,
       playerProfile: playerProfile ?? this.playerProfile,
@@ -157,7 +151,7 @@ class SignUpForm extends _$SignUpForm {
           password: '',
           checkPassword: '',
           checkBoxes: checkBoxes,
-          playerProfile: null);
+          playerProfile: BasePlayerProfileResponse());
     }
 
     return SignFormModel(
@@ -171,7 +165,7 @@ class SignUpForm extends _$SignUpForm {
       password: '',
       checkPassword: '',
       checkBoxes: const [false, false, false, false, false],
-      playerProfile: null,
+      playerProfile: BasePlayerProfileResponse(),
     );
   }
 
@@ -269,12 +263,6 @@ class SignUpForm extends _$SignUpForm {
         state.checkBoxes.length;
   }
 
-  void showDetail({required int idx}) {
-    // final List<bool> newShowDetail = List.from(state.showDetail);
-    // newShowDetail[idx] = !newShowDetail[idx];
-    // state = state.copyWith(showDetail: newShowDetail);
-  }
-
   bool validPersonalInfo(SignupMethodType type) {
     if (type != SignupMethodType.kakao) {
       return validName() && validBirth() && validPhoneNumber();
@@ -313,20 +301,5 @@ class Progress extends _$Progress {
 
   void updateValidNext({required bool validNext}) {
     state = state.copyWith(validNext: validNext);
-  }
-
-  void hideDetail() {
-    // // final details = ref.read(signUpFormProvider).showDetail;
-    // final checkBoxes = ref.read(signUpFormProvider).checkBoxes;
-    // final index = details.indexOf(true);
-    // final List<bool> newCheckBoxes = List.from(checkBoxes);
-    // newCheckBoxes[index + 1] = true;
-    // ref.read(signUpFormProvider.notifier).updateForm(
-    //     checkBoxes: newCheckBoxes, showDetail: [false, false, false, false]);
-    // if (ref.read(signUpFormProvider.notifier).validCheckBox()) {
-    //   state = state.copyWith(validNext: true);
-    // } else {
-    //   state = state.copyWith(validNext: false);
-    // }
   }
 }

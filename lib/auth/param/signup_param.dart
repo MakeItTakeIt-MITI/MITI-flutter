@@ -11,13 +11,13 @@ class SignUpBaseParam {
   final String name;
   final String birthday;
   @JsonKey(name: 'player_profile')
-  final BasePlayerProfileResponse? playerProfile;
+  final BasePlayerProfileResponse playerProfile;
 
   SignUpBaseParam({
     required this.nickname,
     required this.name,
     required this.birthday,
-     this.playerProfile,
+    required this.playerProfile,
   });
 
   Map<String, dynamic> toJson() => _$SignUpBaseParamToJson(this);
