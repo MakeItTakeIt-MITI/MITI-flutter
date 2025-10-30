@@ -151,4 +151,8 @@ class BasePlayerProfileResponse {
   bool validForm() {
     return validHeight() && validWeight();
   }
+
+  bool isAllNull(){
+    return gender == null && height == null && weight == null && position == null && role == null;
+  }
 }

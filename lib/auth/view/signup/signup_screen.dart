@@ -31,6 +31,7 @@ import '../../../common/view/operation_term_screen.dart';
 import '../../../game/view/game_refund_screen.dart';
 import '../../../report/model/agreement_policy_model.dart';
 import '../../../report/provider/report_provider.dart';
+import '../../../user/model/v2/base_player_profile_response.dart';
 import '../../../user/provider/user_form_provider.dart';
 import '../../../user/view/user_player_profile_screen.dart';
 import '../../../util/util.dart';
@@ -145,9 +146,9 @@ class PlayerProfileForm extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen(userPlayerProfileFormProvider, (prev, after) {
-      ref
-          .read(progressProvider.notifier)
-          .updateValidNext(validNext: after.validForm());
+      final validNext = after.isAllNull() ? false : after.validForm();
+
+      ref.read(progressProvider.notifier).updateValidNext(validNext: validNext);
       ref.read(signUpFormProvider.notifier).updateForm(playerProfile: after);
     });
     return Padding(
@@ -936,7 +937,8 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
   }
 
   bool _validateBySignupMethod(SignupMethodType type, dynamic formNotifier) {
-    final baseValidation = formNotifier.validName() && formNotifier.validBirth();
+    final baseValidation =
+        formNotifier.validName() && formNotifier.validBirth();
 
     if (type == SignupMethodType.kakao) {
       return baseValidation;
@@ -950,6 +952,7 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
     debugPrint('validBirth: ${formNotifier.validBirth()}');
     debugPrint('validPhoneNumber: ${formNotifier.validPhoneNumber()}');
   }
+
   @override
   Widget build(BuildContext context) {
     ref.listen(dateProvider(DateTimeType.start), (previous, next) {
@@ -1257,6 +1260,9 @@ class _NextButtonState extends ConsumerState<_NextButton> {
             padding: EdgeInsets.only(bottom: 12.h),
             child: GestureDetector(
               onTap: () {
+                ref
+                    .read(signUpFormProvider.notifier)
+                    .updateForm(playerProfile: BasePlayerProfileResponse());
                 ref.read(progressProvider.notifier).nextProgress();
               },
               child: Text(

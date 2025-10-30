@@ -36,7 +36,7 @@ class _OverlayNumberPickerState extends State<OverlayNumberPicker> {
         ? mid - widget.start
         : widget.initialValue! - widget.start;
     scrollController = FixedExtentScrollController(initialItem: initialIndex);
-    selectedNumber = mid;
+    selectedNumber = widget.initialValue ?? mid;
   }
 
   @override
