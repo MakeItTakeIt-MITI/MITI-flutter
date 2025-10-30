@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:json_annotation/json_annotation.dart';
 
 @JsonEnum(valueField: 'value')
@@ -362,22 +360,12 @@ enum PushNotificationTopicType {
   new_participation('새로운 참가 알림', true),
   @JsonValue('game_fee_changed')
   game_fee_changed('경기 참가비 변경 알림', true),
-  @JsonValue('host_report_reportee')
-  host_report_reportee('호스트 신고 알림 to 피신고 사용자', false),
-  @JsonValue('host_report_reporter')
-  host_report_reporter('호스트 신고 알림 to 신고 사용자', false),
-  @JsonValue('host_report_dismissed')
-  host_report_dismissed('호스트 신고 기각', false),
-  @JsonValue('host_user_penalized')
-  host_user_penalized('호스트 신고 인정', false),
-  @JsonValue('guest_report_reportee')
-  guest_report_reportee('게스트 신고 알림 to 피신고 사용자', false),
-  @JsonValue('guest_report_reporter')
-  guest_report_reporter('게스트 신고 알림 to 신고 사용자', false),
-  @JsonValue('guest_report_dismissed')
-  guest_report_dismissed('게스트 신고 기각', false),
-  @JsonValue('guest_user_penalized')
-  guest_user_penalized('게스트 신고 인정', false);
+  @JsonValue('report_reporter')
+  report_reporter('신고자 신고 안내', false),
+  @JsonValue('report_reportee')
+  report_reportee('피신고자 신고 안내', false),
+  @JsonValue('report_result')
+  report_result('신고 처리 결과', false);
 
   const PushNotificationTopicType(this.displayName, this.canSetting);
 
