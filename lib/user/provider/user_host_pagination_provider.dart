@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:developer';
 
 import 'package:collection/collection.dart';
@@ -164,7 +165,15 @@ class UserHostingPagination extends _$UserHostingPagination {
     List<BaseGameResponse> flattened = items.expand((list) => list).toList();
     flattened.insertAll(items.length, newItems);
 
-    final grouped = groupBy(flattened, (item) => item.startDate);
+    // 내림차순 정렬
+    final grouped = SplayTreeMap<String, List<BaseGameResponse>>(
+            (a, b) => b.compareTo(a)
+    );
+
+    for (final item in flattened) {
+      grouped.putIfAbsent(item.startDate, () => []).add(item);
+    }
+
     return grouped.values.toList();
   }
 }

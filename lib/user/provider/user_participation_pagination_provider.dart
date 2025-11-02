@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:developer';
 
 import 'package:collection/collection.dart';
@@ -18,8 +19,7 @@ part 'user_participation_pagination_provider.g.dart';
 class UserParticipationPagination extends _$UserParticipationPagination {
   @override
   BaseModel build(
-      {UserGameParam? param,
-        required CursorPaginationParam cursorParam}) {
+      {UserGameParam? param, required CursorPaginationParam cursorParam}) {
     log("init pagination param= $param cursorParam = $cursorParam");
     _initializeData(param, cursorParam);
     return LoadingModel();
@@ -36,10 +36,10 @@ class UserParticipationPagination extends _$UserParticipationPagination {
 
   Future<void> paginate(
       {UserGameParam? param,
-        CursorPaginationParam cursorPaginationParams =
-        const CursorPaginationParam(),
-        bool fetchMore = false,
-        bool forceRefetch = false}) async {
+      CursorPaginationParam cursorPaginationParams =
+          const CursorPaginationParam(),
+      bool fetchMore = false,
+      bool forceRefetch = false}) async {
     int? userId = ref.read(authProvider)?.id;
     if (userId == null) {
       return;
@@ -61,9 +61,9 @@ class UserParticipationPagination extends _$UserParticipationPagination {
 
       final isLoading = state is LoadingModel;
       final isRefetching =
-      state is ResponseModel<CursorPaginationModelRefetching>;
+          state is ResponseModel<CursorPaginationModelRefetching>;
       final isFetchingMore =
-      state is ResponseModel<CursorPaginationModelFetchingMore>;
+          state is ResponseModel<CursorPaginationModelFetchingMore>;
 
       if (fetchMore && (isLoading || isRefetching || isFetchingMore)) {
         return;
@@ -71,8 +71,8 @@ class UserParticipationPagination extends _$UserParticipationPagination {
       log("fetchMore = $fetchMore");
 
       if (fetchMore) {
-        final pState =
-        state as ResponseModel<CursorPaginationModel<List<BaseGameResponse>>>;
+        final pState = state
+            as ResponseModel<CursorPaginationModel<List<BaseGameResponse>>>;
 
         state = ResponseModel(
             status_code: pState.status_code,
@@ -89,8 +89,8 @@ class UserParticipationPagination extends _$UserParticipationPagination {
             cursor: pState.data!.pageLastCursor);
       } else {
         if (state is ResponseModel<CursorPaginationModel> && !forceRefetch) {
-          final pState =
-          state as ResponseModel<CursorPaginationModel<List<BaseGameResponse>>>;
+          final pState = state
+              as ResponseModel<CursorPaginationModel<List<BaseGameResponse>>>;
           state = ResponseModel(
               status_code: pState.status_code,
               message: pState.message,
@@ -121,7 +121,7 @@ class UserParticipationPagination extends _$UserParticipationPagination {
             CursorPaginationModelFetchingMore<List<BaseGameResponse>>>;
 
         final unionItems =
-        unionGroupItemsByStartDate(pState.data!.items, resp.data!.items);
+            unionGroupItemsByStartDate(pState.data!.items, resp.data!.items);
 
         state = ResponseModel<CursorPaginationModel<List<BaseGameResponse>>>(
             data: CursorPaginationModel(
@@ -164,7 +164,14 @@ class UserParticipationPagination extends _$UserParticipationPagination {
     List<BaseGameResponse> flattened = items.expand((list) => list).toList();
     flattened.insertAll(items.length, newItems);
 
-    final grouped = groupBy(flattened, (item) => item.startDate);
+    // 내림차순 정렬을 위한 커스텀 comparator
+    final grouped =
+        SplayTreeMap<String, List<BaseGameResponse>>((a, b) => b.compareTo(a));
+
+    for (final item in flattened) {
+      grouped.putIfAbsent(item.startDate, () => []).add(item);
+    }
+
     return grouped.values.toList();
   }
 }
