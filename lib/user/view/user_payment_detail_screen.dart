@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,11 +6,8 @@ import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/component/default_layout.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/user/error/user_error.dart';
-import 'package:miti/user/model/my_payment_model.dart';
 import 'package:miti/user/provider/user_provider.dart';
-import 'package:miti/user/view/user_payment_screen.dart';
 
-import '../../common/error/view/pay_error_screen.dart';
 import '../../common/model/entity_enum.dart';
 import '../../game/model/v2/payment/payment_result_response.dart';
 import '../../theme/color_theme.dart';
@@ -188,7 +184,7 @@ class _CancelInfoComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final finalAmount = total_amount - canceled_tax_free_amount;
+    final finalAmount = total_amount - canceled_total_amount;
     return Column(
       children: [
         getPayInfo('➀', '결제 금액', total_amount),
