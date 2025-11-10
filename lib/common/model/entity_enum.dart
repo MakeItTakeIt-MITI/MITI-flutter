@@ -64,7 +64,9 @@ enum PaymentResultStatusType {
   @JsonValue('failed')
   failed('PG 결제 실패'),
   @JsonValue('canceled')
-  canceled('PG 결제 취소');
+  canceled('PG 결제 취소'),
+  @JsonValue('cancel_pending')
+  cancel_pending('PG 결제 취소 대기중');
 
   const PaymentResultStatusType(this.name);
 

@@ -27,110 +27,111 @@ class ChatPagination extends _$ChatPagination {
   }
 
   Future<BaseModel> sendMessage({required String message}) async {
-      final repository = ref.watch(chatRepositoryProvider);
-      int? cursor;
-      if (state is ResponseModel<CursorPaginationModel<ChatModel>>) {
-        // 기존 채팅 마지막 cursor
-        cursor = (state as ResponseModel<CursorPaginationModel<ChatModel>>)
-            .data!
-            .pageLastCursor;
-      }
+    final repository = ref.watch(chatRepositoryProvider);
+    int? cursor;
+    if (state is ResponseModel<CursorPaginationModel<ChatModel>>) {
+      // 기존 채팅 마지막 cursor
+      cursor = (state as ResponseModel<CursorPaginationModel<ChatModel>>)
+          .data!
+          .pageFirstCursor;
+    }
 
-      return repository
-          .postChatMessage(gameId: gameId, body: message, cursor: cursor)
-          .then<BaseModel>((value) {
-        final response = value.data!;
-        final content = value.data!.items.toList();
+    return repository
+        .postChatMessage(gameId: gameId, body: message, cursor: cursor)
+        .then<BaseModel>((value) {
+      final response = value.data!;
+      final content = value.data!.items.toList();
 
-        final pState =
-            (state as ResponseModel<CursorPaginationModel<ChatModel>>).data!;
-        final isFirstMessage = pState.items.isEmpty;
-        final lastIdx = pState.items.length - 1;
-        final currentUserId = ref.read(authProvider)?.id ?? -1; // 현재 사용자 ID 가져오기
+      final pState =
+          (state as ResponseModel<CursorPaginationModel<ChatModel>>).data!;
+      final isFirstMessage = pState.items.isEmpty;
+      final lastIdx = pState.items.length - 1;
+      final currentUserId = ref.read(authProvider)?.id ?? -1; // 현재 사용자 ID 가져오기
 
-        final newChatMessages = value.data!.items.mapIndexed((idx, e) {
-          final isMine = e.user.id == currentUserId;
+      final newChatMessages = value.data!.items.mapIndexed((idx, e) {
+        final isMine = e.user.id == currentUserId;
 
-          // 첫 커서와 현재 맨 앞 커서가 일치하면 맨 앞 페이지
-          final lastPage = !value.data!
-              .hasMore;
-          // 메세지 커서와 첫 커서가 일치할 경우 맨 처음 메시지
-          final isFirstMessage = lastPage &&
-              value.data!.items[idx].id == value.data!.pageLastCursor;
+        // 첫 커서와 현재 맨 앞 커서가 일치하면 맨 앞 페이지
+        final lastPage = !value.data!.hasMore;
+        // 메세지 커서와 첫 커서가 일치할 경우 맨 처음 메시지
+        final isFirstMessage =
+            lastPage && value.data!.items[idx].id == value.data!.pageLastCursor;
 
-          final bool showDate = shouldShowDate(content, idx);
-          final bool showTime = shouldShowTime(content, idx);
-          final bool showUserInfo = shouldShowUserInfo(content, idx);
+        final bool showDate = shouldShowDate(content, idx);
+        final bool showTime = shouldShowTime(content, idx);
+        final bool showUserInfo = shouldShowUserInfo(content, idx);
 
-          return ChatModel.fromResponse(
-            response: e,
-            isMine: isMine,
-            showTime: showTime,
-            showDate: showDate,
-            isFirstMessage: isFirstMessage,
-            showUserInfo: showUserInfo,
-          );
-        }).toList();
-        if (!isFirstMessage) {
-          // [기존 채팅 마지막, 새 채팅들]
-          // 채팅이 최소 2개까지 subList 생성
-          log("=================================");
-          for (final m in pState.items) {
-            log("message = ${m.message} date = ${m.date} time = ${m.time} ");
-          }
-          log("=================================");
+        return ChatModel.fromResponse(
+          response: e,
+          isMine: isMine,
+          showTime: showTime,
+          showDate: showDate,
+          isFirstMessage: isFirstMessage,
+          showUserInfo: showUserInfo,
+        );
+      }).toList();
+      if (!isFirstMessage) {
+        // [기존 채팅 마지막, 새 채팅들]
+        // 채팅이 최소 2개까지 subList 생성
+        log("=================================");
+        for (final m in pState.items) {
+          log("message = ${m.message} date = ${m.date} time = ${m.time} ");
+        }
+        log("=================================");
 
-          log("lastIdx  = ${lastIdx}");
-          int existLastMessageIdx = lastIdx - 1;
-          // 기존 메시지 마지막 인덱스로 잡고 더 있을 경우 그 앞까지 잡기
-          int subListStartIdx = lastIdx;
-          if (existLastMessageIdx > 0) {
-            subListStartIdx--;
-          }
-
-          pState.items.insertAll(pState.items.length, newChatMessages);
-
-          final subList = pState.items.sublist(subListStartIdx, lastIdx + 2);
-
-          final newSubList = subList.mapIndexed((idx, e) {
-            return e.copyWith(
-              showDate: pState.items.shouldShowDateAt(subListStartIdx + idx),
-              showTime: pState.items.shouldShowTimeAt(subListStartIdx + idx),
-              showUserInfo: pState.items.shouldShowUserInfoAt(subListStartIdx + idx),
-            );
-          }).toList();
-
-          pState.items.replaceRange(
-              subListStartIdx, lastIdx + 2, newSubList);
-          state = ResponseModel(
-              status_code: 200,
-              message: "message",
-              data: pState.copyWith(
-                items: pState.items,
-                pageLastCursor: pState.pageLastCursor,
-                hasMore: pState.hasMore,
-              ));
-        } else {
-          // 새로 추가
-          state = ResponseModel(
-              status_code: 200,
-              message: "message",
-              data: pState.copyWith(
-                items: newChatMessages,
-                pageFirstCursor: response.pageFirstCursor,
-                pageLastCursor: response.pageLastCursor,
-                hasMore: response.hasMore,
-              ));
+        log("lastIdx  = ${lastIdx}");
+        int existLastMessageIdx = lastIdx - 1;
+        // 기존 메시지 마지막 인덱스로 잡고 더 있을 경우 그 앞까지 잡기
+        int subListStartIdx = lastIdx;
+        if (existLastMessageIdx > 0) {
+          subListStartIdx--;
         }
 
-        return CompletedModel(status_code: 0, message: message, data: null);
-      }).catchError((e) {
-        final error = ErrorModel.respToError(e);
-        logger.e(
-            'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
-        return error;
-        // state = error;
-      });
+        newChatMessages.insertAll(newChatMessages.length, pState.items);
+        // pState.items.insertAll(pState.items.length, newChatMessages);
+        //
+        // final subList = pState.items.sublist(subListStartIdx, lastIdx + 2);
+        //
+        // final newSubList = subList.mapIndexed((idx, e) {
+        //   return e.copyWith(
+        //     showDate: pState.items.shouldShowDateAt(subListStartIdx + idx),
+        //     showTime: pState.items.shouldShowTimeAt(subListStartIdx + idx),
+        //     showUserInfo: pState.items.shouldShowUserInfoAt(subListStartIdx + idx),
+        //   );
+        // }).toList();
+        //
+        // pState.items.replaceRange(
+        //     subListStartIdx, lastIdx + 2, newSubList);
+        state = ResponseModel(
+            status_code: 200,
+            message: "message",
+            data: pState.copyWith(
+              items: newChatMessages, //pState.items,
+              pageFirstCursor: response.pageFirstCursor,
+              pageLastCursor: pState.pageLastCursor,
+              hasMore: pState.hasMore,
+            ));
+      } else {
+        // 새로 추가
+        state = ResponseModel(
+            status_code: 200,
+            message: "message",
+            data: pState.copyWith(
+              items: newChatMessages,
+              pageFirstCursor: response.pageFirstCursor,
+              pageLastCursor: response.pageLastCursor,
+              hasMore: response.hasMore,
+            ));
+      }
+
+      return CompletedModel(status_code: 0, message: message, data: null);
+    }).catchError((e) {
+      final error = ErrorModel.respToError(e);
+      logger.e(
+          'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+      return error;
+      // state = error;
+    });
   }
 
   Future<void> getChatPagination({
@@ -165,11 +166,10 @@ class ChatPagination extends _$ChatPagination {
         final isMine = e.user.id == currentUserId;
 
         // 첫 커서와 현재 맨 앞 커서가 일치하면 맨 앞 페이지
-        final lastPage = !value.data!
-            .hasMore;
+        final lastPage = !value.data!.hasMore;
         // 메세지 커서와 첫 커서가 일치할 경우 맨 처음 메시지
-        final isFirstMessage = lastPage &&
-            value.data!.items[idx].id == value.data!.pageLastCursor;
+        final isFirstMessage =
+            lastPage && value.data!.items[idx].id == value.data!.pageLastCursor;
 
         final bool showDate = shouldShowDate(content, idx);
         final bool showTime = shouldShowTime(content, idx);

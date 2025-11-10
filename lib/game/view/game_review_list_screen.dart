@@ -87,14 +87,24 @@ class _GameReviewListScreenState extends State<GameReviewListScreen> {
                   );
                 }
 
+
+
                 final model =
                     (result as ResponseModel<GameRevieweeListResponse>).data!;
                 final userId = ref.read(authProvider)?.id ?? 0;
 
+                // 내가 호스트인 경우
+                // 호스트를 제외한 모든 참여자 리스트 보여주기
+
+                // 내가 참여자인 경우
+                // 호스트 + 나를 제외한 참여자 리스트 보여주기
+
+                bool isHost = userId == model.host.id;
+
                 /// 본인 리뷰 제거
                 model.participations.removeWhere((e) => e.user.id == userId);
 
-                if (model.participations.isEmpty) {
+                if (model.participations.isEmpty && isHost) {
                   return SliverFillRemaining(
                     child: Center(
                       child: Text(
@@ -437,7 +447,7 @@ class _GuestReviewComponent extends StatelessWidget {
                 separatorBuilder: (_, idx) {
                   return SizedBox(height: 10.h);
                 },
-                itemCount: participations.length ),
+                itemCount: participations.length),
         ],
       ),
     );

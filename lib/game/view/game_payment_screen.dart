@@ -428,6 +428,10 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
             {
               break;
             }
+          case PaymentResultStatusType.cancel_pending:
+            {
+              break;
+            }
         }
       }
     }
