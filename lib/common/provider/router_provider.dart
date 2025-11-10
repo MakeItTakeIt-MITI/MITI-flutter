@@ -377,6 +377,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                 userId = int.parse(state.uri.queryParameters['userId']!);
               }
 
+              int? commentId;
+              if (state.uri.queryParameters.containsKey('commentId')) {
+                commentId = int.parse(state.uri.queryParameters['commentId']!);
+              }
+
+              int? replyCommentId;
+              if (state.uri.queryParameters.containsKey('replyCommentId')) {
+                replyCommentId = int.parse(state.uri.queryParameters['replyCommentId']!);
+              }
+
               final ReportCategoryType reportType =
               state.extra as ReportCategoryType;
               return ReportListScreen(
@@ -385,6 +395,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                 participationId: participationId,
                 postId: postId,
                 userId: userId,
+                  commentId:commentId,
+                replyCommentId: replyCommentId,
               );
             },
             routes: [
@@ -418,12 +430,22 @@ final routerProvider = Provider<GoRouter>((ref) {
                   if (state.uri.queryParameters.containsKey('userId')) {
                     userId = int.parse(state.uri.queryParameters['userId']!);
                   }
+                  int? commentId;
+                  if (state.uri.queryParameters.containsKey('commentId')) {
+                    commentId = int.parse(state.uri.queryParameters['commentId']!);
+                  }
+                  int? replyCommentId;
+                  if (state.uri.queryParameters.containsKey('replyCommentId')) {
+                    replyCommentId = int.parse(state.uri.queryParameters['replyCommentId']!);
+                  }
                   return ReportFormScreen(
                     gameId: gameId,
                     reportId: reportId,
                     participationId: participationId,
                     postId: postId,
                     userId: userId,
+                    commentId: commentId,
+                    replyCommentId: replyCommentId,
                   );
                 },
               ),

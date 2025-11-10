@@ -146,7 +146,7 @@ class _PostCommentDetailScreenState
                       },
                       onReport: () {
                         Map<String, String> queryParameters = {
-                          'userId': model.writer.id.toString(),
+                          'commentId': widget.commentId.toString(),
                         };
                         context.pop();
                         context.pushNamed(
@@ -317,7 +317,9 @@ class _PostCommentDetailScreenState
                       ).notifier)
                       .getLimitImageCnt();
                   // 갤러리 기능 구현
-                  await _imageUploadUtil.pickMultipleImages(limit: limit, category: FileCategoryType.reply_comment_image);
+                  await _imageUploadUtil.pickMultipleImages(
+                      limit: limit,
+                      category: FileCategoryType.reply_comment_image);
                 },
               );
             },
@@ -528,8 +530,8 @@ class _ReplyCommentComponent extends StatelessWidget {
                                 },
                                 onReport: () {
                                   Map<String, String> queryParameters = {
-                                    'userId':
-                                        replyComments[idx].writer.id.toString(),
+                                    'replyCommentId':
+                                        replyComments[idx].id.toString(),
                                   };
                                   context.pop();
                                   context.pushNamed(

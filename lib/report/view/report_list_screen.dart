@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,6 +23,8 @@ class ReportListScreen extends StatelessWidget {
   final int? participationId;
   final int? postId;
   final int? userId;
+  final int? commentId;
+  final int? replyCommentId;
   final ReportCategoryType reportType;
 
   static String get routeName => 'reportList';
@@ -32,10 +36,14 @@ class ReportListScreen extends StatelessWidget {
     this.gameId,
     this.postId,
     this.userId,
+    this.commentId,
+    this.replyCommentId,
   });
 
   @override
   Widget build(BuildContext context) {
+    log("commentId = ${commentId}, replyCommentID = ${replyCommentId}");
+
     return Scaffold(
       appBar: const DefaultAppBar(
         backgroundColor: MITIColor.gray900,
@@ -101,6 +109,18 @@ class ReportListScreen extends StatelessWidget {
                             // userId가 null이 아니면 queryParameter에 추가
                             if (userId != null) {
                               queryParameters['userId'] = userId.toString();
+                            }
+
+                            // commentId가 null이 아니면 queryParameter에 추가
+                            if (commentId != null) {
+                              queryParameters['commentId'] =
+                                  commentId.toString();
+                            }
+
+                            // replyCommentId가 null이 아니면 queryParameter에 추가
+                            if (replyCommentId != null) {
+                              queryParameters['replyCommentId'] =
+                                  replyCommentId.toString();
                             }
 
                             context.pushNamed(

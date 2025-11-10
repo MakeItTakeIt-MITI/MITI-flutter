@@ -30,6 +30,8 @@ class ReportFormScreen extends ConsumerStatefulWidget {
   final int? participationId;
   final int? postId;
   final int? userId;
+  final int? commentId;
+  final int? replyCommentId;
 
   static String get routeName => 'reportForm';
 
@@ -40,6 +42,8 @@ class ReportFormScreen extends ConsumerStatefulWidget {
     this.participationId,
     this.postId,
     this.userId,
+    this.commentId,
+    this.replyCommentId,
   });
 
   @override
@@ -135,7 +139,7 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
               padding: EdgeInsets.symmetric(horizontal: 21.w),
               child: CustomScrollView(
                 keyboardDismissBehavior:
-                ScrollViewKeyboardDismissBehavior.onDrag,
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                 slivers: [
                   SliverToBoxAdapter(child: SizedBox(height: 32.h)),
                   SliverToBoxAdapter(
@@ -184,6 +188,8 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
       participationId: widget.participationId,
       postId: widget.postId,
       userId: widget.userId,
+      commentId: widget.commentId,
+      replyCommentId: widget.replyCommentId,
     ).future);
     if (context.mounted) {
       if (result is ErrorModel) {
@@ -193,10 +199,16 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
         } else if (widget.participationId == null && widget.gameId != null) {
           ReportError.fromModel(model: result)
               .responseError(context, ReportApiType.hostReport, ref);
-        }else if(widget.postId != null){
+        } else if (widget.postId != null) {
           ReportError.fromModel(model: result)
               .responseError(context, ReportApiType.postReport, ref);
-        }else if(widget.userId != null){
+        } else if (widget.userId != null) {
+          ReportError.fromModel(model: result)
+              .responseError(context, ReportApiType.userReport, ref);
+        } else if (widget.commentId != null) {
+          ReportError.fromModel(model: result)
+              .responseError(context, ReportApiType.userReport, ref);
+        } else if (widget.replyCommentId != null) {
           ReportError.fromModel(model: result)
               .responseError(context, ReportApiType.userReport, ref);
         }
@@ -246,8 +258,7 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
           Future.delayed(const Duration(milliseconds: 100), () {
             FlashUtil.showFlash(context, '신고가 완료되었습니다.');
           });
-        } else if (widget.userId != null) {
-
+        } else if (widget.commentId != null || widget.replyCommentId != null) {
           // todo 제대로 뒤로가기 되는지 확인
           Navigator.of(context).popUntil((route) {
             return route.settings.name == PostDetailScreen.routeName ||

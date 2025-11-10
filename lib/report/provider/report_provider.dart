@@ -65,11 +65,13 @@ Future<BaseModel> createReport(
   int? participationId,
   int? postId,
   int? userId,
+  int? commentId,
+  int? replyCommentId,
 }) async {
   final param = ref.read(reportFormProvider(reportReason: reportId));
   final repository = ref.watch(reportRepositoryProvider);
 
-  if (postId != null || userId != null) {
+  if (postId != null || userId != null || commentId != null || replyCommentId != null) {
     late Future<CompletedModel> result;
     if (postId != null) {
       result = repository.reportPost(
@@ -79,6 +81,16 @@ Future<BaseModel> createReport(
     } else if (userId != null) {
       result = repository.reportUser(
         userId: userId,
+        param: param,
+      );
+    } else if (commentId != null) {
+      result = repository.reportComment(
+        commentId: commentId,
+        param: param,
+      );
+    } else if (replyCommentId != null) {
+      result = repository.reportReplyComment(
+        replyCommentId: replyCommentId,
         param: param,
       );
     }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -101,9 +103,10 @@ class CommentComponent extends ConsumerWidget {
                                 );
                               },
                               onReport: () {
+                                log("comments[idx].id.toString() = ${comments[idx].id.toString()}");
                                 // 댓글 신고
                                 Map<String, String> queryParameters = {
-                                  'userId': comments[idx].writer.id.toString(),
+                                  'commentId': comments[idx].id.toString(),
                                 };
                                 context.pop();
                                 context.pushNamed(

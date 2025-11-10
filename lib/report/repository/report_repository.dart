@@ -3,19 +3,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/report/model/agreement_policy_model.dart';
-import 'package:miti/report/model/report_model.dart';
 import 'package:retrofit/http.dart';
 
 import '../../common/model/default_model.dart';
-import '../../common/param/pagination_param.dart';
-import '../../common/repository/base_pagination_repository.dart';
-import '../../dio/dio_interceptor.dart';
 import '../../dio/provider/dio_provider.dart';
 import '../../game/model/v2/report/base_guest_report_response.dart';
 import '../../game/model/v2/report/base_host_report_response.dart';
 import '../../game/model/v2/report/base_report_reason_response.dart';
 import '../../game/model/v2/report/base_report_type_response.dart';
-import '../../user/param/user_profile_param.dart';
 import '../param/report_param.dart';
 
 part 'report_repository.g.dart';
@@ -74,6 +69,22 @@ abstract class ReportRepository {
   @POST('/users/{userId}/reports')
   Future<CompletedModel> reportUser({
     @Path() required int userId,
+    @Body() required ReportParam param,
+  });
+
+  /// 게시글 댓글 신고 API
+  @Headers({'token': 'true'})
+  @POST('/comments/{commentId}/reports')
+  Future<CompletedModel> reportComment({
+    @Path() required int commentId,
+    @Body() required ReportParam param,
+  });
+
+  /// 게시글 대댓글 신고 API
+  @Headers({'token': 'true'})
+  @POST('/reply-comments/{reply_commentId}/reports')
+  Future<CompletedModel> reportReplyComment({
+    @Path("reply_commentId") required int replyCommentId,
     @Body() required ReportParam param,
   });
 

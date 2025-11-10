@@ -92,7 +92,6 @@ class CommentCard extends ConsumerStatefulWidget {
 }
 
 class _CommentCardState extends ConsumerState<CommentCard> {
-
   Future<void> _onOpen(LinkableElement link) async {
     if (!await launchUrl(Uri.parse(link.url))) {
       throw Exception('Could not launch ${link.url}');
@@ -132,13 +131,13 @@ class _CommentCardState extends ConsumerState<CommentCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: widget.images
                     .map((e) => Padding(
-                  padding: EdgeInsets.only(bottom: 7.h),
-                  child: Image.network(
-                    e,
-                    fit: BoxFit.contain,
-                    alignment: Alignment.topLeft,
-                  ),
-                ))
+                          padding: EdgeInsets.only(bottom: 7.h),
+                          child: Image.network(
+                            e,
+                            fit: BoxFit.contain,
+                            alignment: Alignment.topLeft,
+                          ),
+                        ))
                     .toList(),
               ),
               SizedBox(height: 7.h),
@@ -154,7 +153,8 @@ class _CommentCardState extends ConsumerState<CommentCard> {
                         if (isComment) {
                           final result = await ref.read(
                               postCommentUnLikeProvider(
-                                      commentId: widget.commentId, postId: widget.postId)
+                                      commentId: widget.commentId,
+                                      postId: widget.postId)
                                   .future);
                           if (result is ErrorModel) {
                             PostError.fromModel(model: result).responseError(
@@ -176,7 +176,8 @@ class _CommentCardState extends ConsumerState<CommentCard> {
                       } else {
                         if (isComment) {
                           final result = await ref.read(postCommentLikeProvider(
-                                  commentId: widget.commentId, postId: widget.postId)
+                                  commentId: widget.commentId,
+                                  postId: widget.postId)
                               .future);
                           if (result is ErrorModel) {
                             PostError.fromModel(model: result).responseError(
@@ -224,7 +225,8 @@ class _CommentCardState extends ConsumerState<CommentCard> {
                             builder: (_) {
                               return PostBottomSheetButton(
                                 isWriter:
-                                    widget.replyComments![idx].writer.id == userId,
+                                    widget.replyComments![idx].writer.id ==
+                                        userId,
                                 onDelete: () async {
                                   final result = await ref.read(
                                       postReplyCommentDeleteProvider(
@@ -236,9 +238,12 @@ class _CommentCardState extends ConsumerState<CommentCard> {
 
                                   if (result is! ErrorModel) {
                                     context.pop();
-                                  }else{
+                                  } else {
                                     PostError.fromModel(model: result)
-                                        .responseError(context, PostApiType.deleteReplyComment, ref);
+                                        .responseError(
+                                            context,
+                                            PostApiType.deleteReplyComment,
+                                            ref);
                                   }
                                 },
                                 onUpdate: () {
@@ -261,9 +266,8 @@ class _CommentCardState extends ConsumerState<CommentCard> {
                                 onReport: () {
                                   // // 대댓글 신고
                                   Map<String, String> queryParameters = {
-                                    'userId': widget.replyComments![idx]
-                                        .writer
-                                        .id
+                                    'replyCommentId': widget
+                                        .replyComments![idx].id
                                         .toString(),
                                   };
                                   context.pop();
