@@ -86,26 +86,29 @@ extension ChatModelValidation on List<ChatModel> {
     final current = this[index];
 
     // 첫 번째 메시지는 항상 시간 표시
-    if (index == length - 1) return true;
+    if (index == 0) return true;
 
     // 마지막 메시지 처리
-    if (index == 0) {
-      final next = this[index + 1];
+    if (index == length - 1) {
+      final prev = this[index - 1];
 
       // 이전 사용자와 다르면 시간 표시
-      if (current.user.id != next.user.id) return true;
+      if (current.user.id != prev.user.id) return true;
 
       // 같은 사용자지만 시간이 같으면 시간 숨김
       if (DateTimeUtil.isSameTime(
-          _parseDateTime(next), _parseDateTime(current))) {
+          _parseDateTime(prev), _parseDateTime(current))) {
         return false;
       }
 
       return true;
     }
 
-    final next = this[index + 1];
-    final prev = this[index - 1];
+    // 이후 메시지
+    final next = this[index - 1];
+
+    // 이전 메시지
+    final prev = this[index + 1];
 
     if (current.user.id != next.user.id) return true;
 
@@ -134,8 +137,11 @@ extension ChatModelValidation on List<ChatModel> {
     if (index == length -1) return true;
 
     final current = this[index];
-    final prev = this[index - 1];
 
+    // 이전에 작성한 메시지
+    final prev = this[index + 1];
+
+    // 현재 메시지와 이전에 작성한 메시지 날짜가 다르면 보여주기
     return !DateTimeUtil.isSameDay(
         _parseDateTime(current), _parseDateTime(prev));
   }
@@ -146,8 +152,9 @@ extension ChatModelValidation on List<ChatModel> {
     final current = this[index];
 
     // 마지막 메시지는 무조건 사용자 정보 표시
-    if (index == 0) return true;
-    final prev = this[index - 1];
+    if (index == length - 1) return true;
+
+    final prev = this[index + 1];
     return current.user.id != prev.user.id;
   }
 

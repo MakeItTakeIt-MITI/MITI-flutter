@@ -45,7 +45,7 @@ class ChatPagination extends _$ChatPagination {
       final pState =
           (state as ResponseModel<CursorPaginationModel<ChatModel>>).data!;
       final isFirstMessage = pState.items.isEmpty;
-      final lastIdx = pState.items.length - 1;
+      // final lastIdx = pState.items.length - 1;
       final currentUserId = ref.read(authProvider)?.id ?? -1; // 현재 사용자 ID 가져오기
 
       final newChatMessages = value.data!.items.mapIndexed((idx, e) {
@@ -72,14 +72,18 @@ class ChatPagination extends _$ChatPagination {
       }).toList();
       if (!isFirstMessage) {
         // [기존 채팅 마지막, 새 채팅들]
+
+        // [새 채팅, 기존 채팅]
         // 채팅이 최소 2개까지 subList 생성
         log("=================================");
         for (final m in pState.items) {
           log("message = ${m.message} date = ${m.date} time = ${m.time} ");
         }
         log("=================================");
+        int lastIdx = newChatMessages.length - 1;
 
         log("lastIdx  = ${lastIdx}");
+
         int existLastMessageIdx = lastIdx - 1;
         // 기존 메시지 마지막 인덱스로 잡고 더 있을 경우 그 앞까지 잡기
         int subListStartIdx = lastIdx;
@@ -90,18 +94,20 @@ class ChatPagination extends _$ChatPagination {
         newChatMessages.insertAll(newChatMessages.length, pState.items);
         // pState.items.insertAll(pState.items.length, newChatMessages);
         //
-        // final subList = pState.items.sublist(subListStartIdx, lastIdx + 2);
-        //
-        // final newSubList = subList.mapIndexed((idx, e) {
-        //   return e.copyWith(
-        //     showDate: pState.items.shouldShowDateAt(subListStartIdx + idx),
-        //     showTime: pState.items.shouldShowTimeAt(subListStartIdx + idx),
-        //     showUserInfo: pState.items.shouldShowUserInfoAt(subListStartIdx + idx),
-        //   );
-        // }).toList();
-        //
-        // pState.items.replaceRange(
-        //     subListStartIdx, lastIdx + 2, newSubList);
+        final subList = newChatMessages.sublist(subListStartIdx, lastIdx + 2);
+
+
+        final newSubList = subList.mapIndexed((idx, e) {
+          return e.copyWith(
+            showDate: newChatMessages.shouldShowDateAt(subListStartIdx + idx),
+            showTime: newChatMessages.shouldShowTimeAt(subListStartIdx + idx),
+            showUserInfo:
+                newChatMessages.shouldShowUserInfoAt(subListStartIdx + idx),
+          );
+        }).toList();
+        newChatMessages
+        .replaceRange(subListStartIdx, lastIdx + 2, newSubList);
+
         state = ResponseModel(
             status_code: 200,
             message: "message",
