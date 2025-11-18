@@ -111,6 +111,7 @@ class _ReceiveReviewListScreenState
 
 class _ReceiveReviewCard extends StatelessWidget {
   final int id;
+  final int reviewId;
   final BaseUserResponse reviewer;
   final ReviewType review_type;
   final int rating;
@@ -126,7 +127,8 @@ class _ReceiveReviewCard extends StatelessWidget {
       required this.rating,
       required this.tags,
       this.comment,
-      required this.game});
+      required this.game,
+      required this.reviewId});
 
   factory _ReceiveReviewCard.fromModel(
       {required BaseReceivedReviewResponse model}) {
@@ -139,6 +141,7 @@ class _ReceiveReviewCard extends StatelessWidget {
       rating: model.rating,
       tags: tags,
       game: model.game,
+      reviewId: model.reviewId,
     );
   }
 
@@ -184,7 +187,7 @@ class _ReceiveReviewCard extends StatelessWidget {
     );
     return GestureDetector(
       onTap: () {
-        final Map<String, String> pathParameters = {"reviewId": id.toString()};
+        final Map<String, String> pathParameters = {"reviewId": reviewId.toString()};
 
         final Map<String, String> queryParameters = {
           'userReviewType': UserReviewType.receive.value,

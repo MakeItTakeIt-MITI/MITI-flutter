@@ -72,7 +72,7 @@ class _WrittenReviewListScreenState
                     model: pModel,
                     onTap: () {
                       final Map<String, String> pathParameters = {
-                        "reviewId": model.id.toString()
+                        "reviewId": model.reviewId.toString()
                       };
 
                       final Map<String, String> queryParameters = {
