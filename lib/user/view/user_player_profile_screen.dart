@@ -180,54 +180,6 @@ class _PlayerProfileFormState extends ConsumerState<_PlayerProfileForm> {
                 color: MITIColor.gray300,
               ),
             ),
-            // if (widget.type == PlayerProfileType.height ||
-            //     widget.type == PlayerProfileType.weight)
-            //   Column(
-            //     crossAxisAlignment: CrossAxisAlignment.end,
-            //     children: [
-            //       SizedBox(
-            //           width: 120.w,
-            //           child: CustomTextFormField(
-            //             textEditingController: _editingController,
-            //             height: 40.h,
-            //             hintText: widget.type.displayName,
-            //             keyboardType: TextInputType.number,
-            //             textAlign: TextAlign.center,
-            //             borderColor: formValid != null && !formValid
-            //                 ? MITIColor.error
-            //                 : null,
-            //             inputFormatters: [
-            //               FilteringTextInputFormatter.digitsOnly,
-            //               NumberFormatter(
-            //                   minRange: widget.type == PlayerProfileType.height
-            //                       ? 50
-            //                       : 30,
-            //                   maxRange: widget.type == PlayerProfileType.height
-            //                       ? 230
-            //                       : 150),
-            //             ],
-            //             suffixIcon: Text(
-            //               widget.type == PlayerProfileType.height ? "cm" : "kg",
-            //               style: MITITextStyle.sm
-            //                   .copyWith(color: MITIColor.gray400),
-            //             ),
-            //             onChanged: (v) {
-            //               if (v.isNotEmpty) {
-            //                 if (widget.type == PlayerProfileType.height) {
-            //                   ref
-            //                       .read(userPlayerProfileFormProvider.notifier)
-            //                       .update(height: int.parse(v));
-            //                 } else {
-            //                   ref
-            //                       .read(userPlayerProfileFormProvider.notifier)
-            //                       .update(weight: int.parse(v));
-            //                 }
-            //               }
-            //             },
-            //           )),
-            //     ],
-            //   )
-            // else
             GestureDetector(
               onTap: widget.enabled
                   ? () => showBottomSheetForm(context, items, ref)
@@ -358,7 +310,8 @@ class _PlayerProfileFormState extends ConsumerState<_PlayerProfileForm> {
 
   String? getFormValue(WidgetRef ref) {
     switch (widget.type) {
-      case PlayerProfileType.height: {
+      case PlayerProfileType.height:
+        {
           final value =
               ref.watch(userPlayerProfileFormProvider.select((s) => s.height));
           return value == null ? null : "$value cm";
@@ -486,7 +439,7 @@ class _BottomSheetWrapComponentState
                               width: 12.w,
                             ),
                             Text(
-                              "cm",
+                              widget.title == '체중' ? "kg" : "cm",
                               style: MITITextStyle.sm,
                             )
                           ],
@@ -529,8 +482,8 @@ class _BottomSheetWrapComponentState
                           ),
                           child: Text(
                             '선택안함',
-                            style: MITITextStyle.mdBold.copyWith(
-                                color: MITIColor.gray50),
+                            style: MITITextStyle.mdBold
+                                .copyWith(color: MITIColor.gray50),
                           )),
                     ),
                     SizedBox(width: 22.w),
