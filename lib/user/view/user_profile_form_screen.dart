@@ -1,22 +1,12 @@
-import 'dart:developer';
-
 import 'package:debounce_throttle/debounce_throttle.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/auth/provider/update_token_provider.dart';
-import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
 import 'package:miti/common/component/defalut_flashbar.dart';
-import 'package:miti/common/component/default_layout.dart';
-import 'package:miti/common/provider/router_provider.dart';
-import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/error/user_error.dart';
@@ -25,13 +15,12 @@ import 'package:miti/user/provider/user_provider.dart';
 import 'package:miti/util/util.dart';
 
 import '../../auth/error/auth_error.dart';
-import '../../auth/model/code_model.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/provider/form_util_provider.dart';
 import '../../common/provider/widget/form_provider.dart';
-import '../model/user_model.dart';
+import '../../game/model/v2/auth/password_update_request_response.dart';
 import '../param/user_profile_param.dart';
 
 class UserProfileFormScreen extends ConsumerStatefulWidget {
@@ -247,10 +236,10 @@ class _PasswordFormState extends ConsumerState<_PasswordForm> {
             .responseError(context, AuthApiType.tokenForPassword, ref);
       }
     } else {
-      final model = (result as ResponseModel<UpdateTokenModel>).data!;
+      final model = (result as ResponseModel<PasswordUpdateRequestResponse>).data!;
       ref
           .read(userPasswordFormProvider.notifier)
-          .update(password_update_token: model.password_update_token);
+          .update(password_update_token: model.passwordUpdateToken);
     }
   }
 }

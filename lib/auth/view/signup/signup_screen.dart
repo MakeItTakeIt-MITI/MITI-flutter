@@ -1329,6 +1329,8 @@ class _NextButtonState extends ConsumerState<_NextButton> {
       case SignupMethodType.kakao:
         param = SignUpKakaoParam.fromForm(model: model);
         break;
+      default:
+        break;
     }
     final result =
         await ref.read(signUpProvider(type: widget.type, param: param).future);
