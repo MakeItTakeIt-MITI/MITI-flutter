@@ -91,7 +91,8 @@ enum ReviewType {
 }
 
 enum ItemType {
-  pickup_game('픽업게임');
+  pickup_game('픽업게임'),
+  participation_fee('경기 참가비');
 
   const ItemType(this.value);
 
@@ -228,7 +229,8 @@ enum PlayerReviewTagType {
 enum SignupMethodType {
   email,
   kakao,
-  apple;
+  apple,
+  password_update;
 
   static SignupMethodType stringToEnum({required String value}) {
     return SignupMethodType.values.firstWhere((e) => e.name == value);
