@@ -2,10 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:debounce_throttle/debounce_throttle.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -27,8 +24,8 @@ import '../../common/component/custom_text_form_field.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/model/default_model.dart';
 import '../../common/provider/widget/form_provider.dart';
-import '../../dio/response_code.dart';
 import '../../court/view/court_map_screen.dart';
+import '../../dio/response_code.dart';
 import '../../theme/color_theme.dart';
 import '../param/auth_param.dart';
 
@@ -386,12 +383,14 @@ class KakaoLoginButton extends ConsumerWidget {
             ),
             const Spacer(),
             Text(
-              '카카오로 3초만에 시작하기',
+              '카카오로 계속하기',
               style: MITITextStyle.smBold.copyWith(
                 color: MITIColor.gray800,
               ),
             ),
-            SizedBox(width: 72.5.w),
+            const Spacer(),
+            SizedBox(width: 20.w + 24.r,)
+
           ],
         ),
       ),
@@ -431,13 +430,15 @@ class AppleLoginButton extends ConsumerWidget {
                   const ColorFilter.mode(Color(0xFF000000), BlendMode.srcIn),
             ),
             const Spacer(),
+
             Text(
-              'Apple ID로 시작하기',
+              'Apple로 계속하기',
               style: MITITextStyle.smBold.copyWith(
                 color: MITIColor.gray800,
               ),
             ),
-            SizedBox(width: 88.5.w),
+            const Spacer(),
+            SizedBox(width: 20.w + 24.r,)
           ],
         ),
       ),

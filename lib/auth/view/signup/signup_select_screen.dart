@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -135,13 +134,17 @@ class EmailSignUpButton extends StatelessWidget {
               ),
             ),
             const Spacer(),
+
+
             Text(
-              '이메일로 시작하기',
+              '이메일로 계속하기',
               style: MITITextStyle.smBold.copyWith(
                 color: MITIColor.gray800,
               ),
             ),
-            SizedBox(width: 97.5.w),
+            const Spacer(),
+
+            SizedBox(width: 20.w + 24.r,)
           ],
         ),
       ),
