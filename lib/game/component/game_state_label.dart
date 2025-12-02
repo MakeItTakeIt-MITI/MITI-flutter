@@ -17,20 +17,20 @@ class GameStateLabel extends StatelessWidget {
 
     switch (gameStatus) {
       case GameStatusType.open:
-        backgroundColor = const Color(0xFF9DB6D4);
-        textColor = const Color(0xFF303FC5);
+        backgroundColor = const Color(0xFF1ADCDF).withValues(alpha: .2);
+        textColor = V2MITIColor.primary5;
         break;
       case GameStatusType.closed:
-        backgroundColor = const Color(0xFF92D2D4);
-        textColor = const Color(0xFF00797B);
+        backgroundColor = const Color(0xFFFF7114).withValues(alpha: .2);
+        textColor = V2MITIColor.orange5;
         break;
       case GameStatusType.completed:
-        backgroundColor = const Color(0xFFC1C1C1);
-        textColor = const Color(0xFF484848);
+        backgroundColor = V2MITIColor.white.withValues(alpha: .2);
+        textColor = V2MITIColor.white;
         break;
       case GameStatusType.canceled:
-        backgroundColor = const Color(0xFFE9C4D3);
-        textColor = const Color(0xFFDB0059);
+        backgroundColor = const Color(0xFF999999).withValues(alpha: .2);
+        textColor = V2MITIColor.gray5;
         break;
     }
     return Container(
@@ -41,7 +41,7 @@ class GameStateLabel extends StatelessWidget {
       padding: EdgeInsets.all(4.r),
       child: Text(
         gameStatus.displayName,
-        style: MITITextStyle.xxxsmBold.copyWith(color: textColor),
+        style: V2MITITextStyle.label10Bold.copyWith(color: textColor),
       ),
     );
   }

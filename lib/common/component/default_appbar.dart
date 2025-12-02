@@ -24,7 +24,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.isSliver = false,
     this.actions,
     this.backgroundColor,
-    this.leadingIcon = "back_arrow",
+    this.leadingIcon = "header_left",
     this.hasBorder = true,
     this.canPop = true,
   });
@@ -35,7 +35,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
     if (isSliver) {
       return SliverAppBar(
         toolbarHeight: 44.h,
-        leadingWidth: 24.r + 13.w,
+        leadingWidth: 24.r + 24.w,
         title: Text(
           title ?? '',
           style: MITITextStyle.mdBold.copyWith(
@@ -62,7 +62,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
 
         leading: context.canPop() && canPop
             ? Padding(
-                padding: EdgeInsets.only(left: 13.w),
+                padding: EdgeInsets.only(left: 16.w),
                 child: IconButton(
                   constraints: BoxConstraints.tight(Size(24.r, 24.r)),
                   padding: EdgeInsets.zero,
@@ -89,7 +89,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
     return AppBar(
       toolbarHeight: 44.h,
-      leadingWidth: 24.r + 13.w,
+      leadingWidth: 24.r + 24.w,
       shape: hasBorder
           ? const Border(
               bottom: BorderSide(color: MITIColor.gray600),
@@ -110,7 +110,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: true,
       leading: context.canPop() && canPop
           ? Padding(
-              padding: EdgeInsets.only(left: 13.w),
+              padding: EdgeInsets.only(left: 16.w),
               child: IconButton(
                 constraints: BoxConstraints.tight(Size(24.r, 24.r)),
                 padding: EdgeInsets.zero,

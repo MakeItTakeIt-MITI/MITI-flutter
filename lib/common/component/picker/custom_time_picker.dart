@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:miti/court/view/court_map_screen.dart';
 import 'package:miti/game/provider/widget/game_filter_provider.dart';
 import 'package:miti/game/view/game_create_screen.dart';
 
@@ -249,7 +250,7 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
         decoration: BoxDecoration(
           borderRadius: BorderRadiusDirectional.all(Radius.circular(8.r)),
           color: CupertinoDynamicColor.resolve(
-              MITIColor.white.withOpacity(0.1), context),
+             V2MITIColor.gray8.withValues(alpha: 0.1), context),
         ),
       );
 
@@ -265,14 +266,11 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
 
     final hour = selectedHour + (isAfternoon ? 12 : 0) + twelveAmPm;
     final String starttime = "$hour:$selectedMinute";
-    ref.read(gameFilterProvider.notifier).update(starttime: starttime);
+    ref.read(gameFilterProvider(routeName: CourtMapScreen.routeName).notifier).update(starttime: starttime);
   }
 
   @override
   void dispose() {
-    // timePeriodController.dispose();
-    // hourController.dispose();
-    // minController.dispose();
     super.dispose();
   }
 
@@ -282,7 +280,7 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
       children: <Widget>[
         Flexible(
           child: CupertinoPicker(
-              itemExtent: 32.h,
+              itemExtent: 30.h,
               diameterRatio: 10,
               squeeze: 1.0,
               onSelectedItemChanged: (int index) {
@@ -300,11 +298,11 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
               children: ['오전', '오후']
                   .mapIndexed((index, e) => Center(
                       child: Text(e,
-                          style: MITITextStyle.md.copyWith(
+                          style: V2MITITextStyle.smallMedium.copyWith(
                             color: isAfternoon && index == 1 ||
                                     !isAfternoon && index == 0
-                                ? MITIColor.primary
-                                : MITIColor.gray300,
+                                ? V2MITIColor.primary5
+                                : V2MITIColor.gray8,
                           ))))
                   .toList() //generateDateItems(),
               ),
@@ -312,7 +310,7 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
         SizedBox(width: 7.w),
         Flexible(
           child: CupertinoPicker(
-            itemExtent: 32.h,
+            itemExtent: 30.h,
             diameterRatio: 10,
             squeeze: 1.0,
             onSelectedItemChanged: (int index) {
@@ -327,10 +325,10 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
             children: List<Widget>.generate(12, (int index) {
               return Center(
                   child: Text(index == 0 ? '12' : oneDigitFormat(index),
-                      style: MITITextStyle.md.copyWith(
+                      style: V2MITITextStyle.smallMedium.copyWith(
                         color: selectedHour == index
-                            ? MITIColor.primary
-                            : MITIColor.gray300,
+                            ? V2MITIColor.primary5
+                            : V2MITIColor.gray8,
                       )));
             }),
           ),
@@ -338,7 +336,7 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
         SizedBox(width: 7.w),
         Flexible(
           child: CupertinoPicker(
-            itemExtent: 32.h,
+            itemExtent: 30.h,
             diameterRatio: 10,
             squeeze: 1.0,
             onSelectedItemChanged: (int index) {
@@ -354,10 +352,10 @@ class _CustomTimePickerState extends ConsumerState<CustomTimePicker> {
               return Center(
                   child: Text(
                 oneDigitFormat(index * 10),
-                style: MITITextStyle.md.copyWith(
+                style: V2MITITextStyle.smallMedium.copyWith(
                   color: selectedMinute ~/ 10 == index
-                      ? MITIColor.primary
-                      : MITIColor.gray300,
+                      ? V2MITIColor.primary5
+                      : V2MITIColor.gray8,
                 ),
               ));
             }),

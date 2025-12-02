@@ -14,11 +14,11 @@ import 'package:miti/util/naver_map_util.dart';
 
 import '../../common/component/default_appbar.dart';
 import '../../common/component/share_fab_component.dart';
+import '../../game/component/game_card.dart';
 import '../../util/util.dart';
 import '../component/skeleton/court_detail_skeleton.dart';
 import '../model/v2/court_operations_response.dart';
 import 'court_game_list_screen.dart';
-import 'court_map_screen.dart';
 
 class CourtDetailScreen extends ConsumerStatefulWidget {
   static String get routeName => 'courtDetail';

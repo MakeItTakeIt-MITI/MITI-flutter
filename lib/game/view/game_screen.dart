@@ -10,6 +10,7 @@ import 'package:miti/user/view/user_participation_screen.dart';
 
 import '../../auth/provider/auth_provider.dart';
 import '../../common/component/custom_drop_down_button.dart';
+import '../../common/component/fab_button.dart';
 import '../../common/component/sliver_delegate.dart';
 import '../../common/model/entity_enum.dart';
 import '../../common/param/pagination_param.dart';
@@ -76,33 +77,9 @@ class _GameScreenState extends ConsumerState<GameScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: GestureDetector(
+      floatingActionButton: FABButton(
         onTap: () => context.pushNamed(GameCreateScreen.routeName),
-        child: Container(
-          padding:
-              EdgeInsets.only(left: 12.w, right: 16.w, top: 10.h, bottom: 10.h),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50.r),
-            color: MITIColor.primary,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.add,
-                color: MITIColor.gray800,
-              ),
-              Text(
-                '경기 생성',
-                style: MITITextStyle.md.copyWith(
-                  color: MITIColor.gray800,
-                  fontWeight: FontWeight.w600,
-                ),
-              )
-            ],
-          ),
-        ),
+        text: '경기 생성',
       ),
       body: SafeArea(
         child: NestedScrollView(
@@ -349,27 +326,27 @@ class _GameFilterComponentState extends ConsumerState<_GameFilterComponent> {
     if (widget.type == UserGameType.host) {
       ref
           .read(userHostingPaginationProvider(
-          cursorParam: const CursorPaginationParam())
-          .notifier)
+                  cursorParam: const CursorPaginationParam())
+              .notifier)
           .paginate(
-        forceRefetch: true,
-        param: UserGameParam(
-          game_status: gameStatus,
-        ),
-        cursorPaginationParams: const CursorPaginationParam(),
-      );
+            forceRefetch: true,
+            param: UserGameParam(
+              game_status: gameStatus,
+            ),
+            cursorPaginationParams: const CursorPaginationParam(),
+          );
     } else {
       ref
           .read(userParticipationPaginationProvider(
-          cursorParam: const CursorPaginationParam())
-          .notifier)
+                  cursorParam: const CursorPaginationParam())
+              .notifier)
           .paginate(
-        forceRefetch: true,
-        param: UserGameParam(
-          game_status: gameStatus,
-        ),
-        cursorPaginationParams: const CursorPaginationParam(),
-      );
+            forceRefetch: true,
+            param: UserGameParam(
+              game_status: gameStatus,
+            ),
+            cursorPaginationParams: const CursorPaginationParam(),
+          );
     }
   }
 }

@@ -24,6 +24,7 @@ class DisposeSliverCursorPaginationListView<T extends Base, S>
   final double separateSize;
   final ScrollController controller;
   final Widget emptyWidget;
+  final Widget? separatorWidget;
 
   const DisposeSliverCursorPaginationListView({
     required this.provider,
@@ -33,6 +34,7 @@ class DisposeSliverCursorPaginationListView<T extends Base, S>
     this.param,
     this.separateSize = 16,
     required this.emptyWidget,
+    this.separatorWidget,
     super.key,
   });
 
@@ -151,11 +153,15 @@ class _PaginationListViewState<T extends Base>
         );
       },
       separatorBuilder: (_, index) {
-        return Container(
-          color: Colors.transparent,
-          height: widget.separateSize.h,
-          width: widget.separateSize.w,
-        );
+        if (widget.separatorWidget == null) {
+          return Container(
+            color: Colors.transparent,
+            height: widget.separateSize.h,
+            width: widget.separateSize.w,
+          );
+        }
+
+        return widget.separatorWidget!;
       },
     );
   }

@@ -5,7 +5,7 @@ enum GameStatusType {
   @JsonValue('open')
   open('모집중', 'open'),
   @JsonValue('closed')
-  closed('모집완료(마감)', 'closed'),
+  closed('모집완료', 'closed'),
   @JsonValue('canceled')
   canceled('경기취소', 'canceled'),
   @JsonValue('completed')

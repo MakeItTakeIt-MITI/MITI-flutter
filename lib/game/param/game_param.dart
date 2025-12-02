@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -13,17 +11,19 @@ class GameListParam extends Equatable {
   final String? starttime;
   @JsonKey(name: "game_status")
   final List<GameStatusType> gameStatus;
+  final List<DistrictType> province;
 
-  const GameListParam({
+  const GameListParam( {
     this.startdate,
     this.starttime,
     required this.gameStatus,
+    required this.province,
   });
 
   Map<String, dynamic> toJson() => _$GameListParamToJson(this);
 
   @override
-  List<Object?> get props => [startdate, starttime, gameStatus];
+  List<Object?> get props => [startdate, starttime, gameStatus, province];
 
   @override
   bool? get stringify => true;
@@ -32,11 +32,13 @@ class GameListParam extends Equatable {
     String? startdate,
     String? starttime,
     List<GameStatusType>? gameStatus,
+    List<DistrictType>? province,
   }) {
     return GameListParam(
       startdate: startdate ?? this.startdate,
       starttime: starttime ?? this.starttime,
       gameStatus: gameStatus ?? this.gameStatus,
+      province: province ?? this.province,
     );
   }
 }

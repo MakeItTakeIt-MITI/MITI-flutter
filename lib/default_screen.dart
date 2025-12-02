@@ -130,8 +130,8 @@ class CustomBottomNavigationBar extends StatelessWidget {
     return Container(
       alignment: Alignment.bottomCenter,
       decoration: const BoxDecoration(
-        border: Border(top: BorderSide(color: MITIColor.gray700)),
-        color: MITIColor.gray900,
+        border: Border(top: BorderSide(color: V2MITIColor.gray10)),
+        color: V2MITIColor.gray12,
       ),
       constraints: BoxConstraints.tight(Size(double.infinity, 86.h)),
       child: Row(
@@ -210,7 +210,7 @@ class CustomBottomItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = MITITextStyle.xxsmSemiBold;
+    final textStyle = V2MITITextStyle.tinyBoldTight;
     return InkWell(
       onTap: onTap,
       child: Column(
@@ -224,14 +224,14 @@ class CustomBottomItem extends StatelessWidget {
             height: 24.r,
             width: 24.r,
             colorFilter: ColorFilter.mode(
-                selected ? MITIColor.primary : MITIColor.gray600,
+                selected ? V2MITIColor.primary5 : V2MITIColor.gray5,
                 BlendMode.srcIn),
           ),
           SizedBox(height: 6.h),
           Text(
             label,
             style: textStyle.copyWith(
-              color: selected ? MITIColor.primary : MITIColor.gray600,
+              color: selected ? V2MITIColor.primary5 : V2MITIColor.gray5,
             ),
           )
         ],

@@ -26,7 +26,7 @@ class MapGameList extends _$MapGameList {
   Future<void> getList() async {
     state = LoadingModel();
     final repository = ref.watch(gameRepositoryProvider);
-    final param = ref.read(gameFilterProvider);
+    final param = ref.read(gameFilterProvider(routeName: CourtMapScreen.routeName));
     repository.getMapGameList(param: param).then((value) {
       logger.i(value);
       ref.read(selectGameListProvider.notifier).update((state) => value.data!);
