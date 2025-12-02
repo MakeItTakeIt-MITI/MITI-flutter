@@ -55,4 +55,34 @@ class V2MITIColor {
   static const Color red7 = Color(0xFF8B2523);
   static const Color red8 = Color(0xFF5C1817);
   static const Color red9 = Color(0xFF451211);
+
+  static const Color purple1 = Color(0xFFDECEFB);
+  static const Color purple2 = Color(0xFFBD9DF7);
+  static const Color purple3 = Color(0xFF9C6CF3);
+  static const Color purple4 = Color(0xFF7B3AEF);
+  static const Color purple5 = Color(0xFF5B0AEC);
+  static const Color purple6 = Color(0xFF4808BC);
+  static const Color purple7 = Color(0xFF36068D);
+  static const Color purple8 = Color(0xFF24045E);
+  static const Color purple9 = Color(0xFF12022F);
+
+  static const Color orange1 = Color(0xFFFFE2D0);
+  static const Color orange2 = Color(0xFFFFC6A1);
+  static const Color orange3 = Color(0xFFFFA972);
+  static const Color orange4 = Color(0xFFFF8D42);
+  static const Color orange5 = Color(0xFFFF7114);
+  static const Color orange6 = Color(0xFFCC5A10);
+  static const Color orange7 = Color(0xFF99430C);
+  static const Color orange8 = Color(0xFF662D08);
+  static const Color orange9 = Color(0xFF331604);
+
+  static const Color green1 = Color(0xFFCCE5CC);
+  static const Color green2 = Color(0xFF99CC99);
+  static const Color green3 = Color(0xFF66B266);
+  static const Color green4 = Color(0xFF329932);
+  static const Color green5 = Color(0xFF008000);
+  static const Color green6 = Color(0xFF006600);
+  static const Color green7 = Color(0xFF004C00);
+  static const Color green8 = Color(0xFF003300);
+  static const Color green9 = Color(0xFF001900);
 }

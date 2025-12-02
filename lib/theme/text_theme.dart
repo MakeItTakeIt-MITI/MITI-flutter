@@ -1,6 +1,122 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+class V2MITITextStyle {
+  static final TextStyle title1 = TextStyle(
+    fontSize: 48.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.bold,
+  );
+
+  static final TextStyle miniMediumTight = TextStyle(
+      fontSize: 10.sp,
+      fontFamily: 'Pretendard',
+      fontWeight: FontWeight.w500,
+      height: 1.2);
+
+  static final TextStyle miniMedium = TextStyle(
+    fontSize: 10.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w500,
+  );
+
+  static final TextStyle miniRegular = TextStyle(
+    fontSize: 10.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w400,
+  );
+
+  static final TextStyle tinyRegular = TextStyle(
+    fontSize: 12.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w400,
+  );
+
+  static final TextStyle regularBold = TextStyle(
+    fontSize: 16.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.bold,
+  );
+
+  static final TextStyle regularBoldTight = TextStyle(
+    fontSize: 16.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.bold,
+    height: 1.25
+  );
+
+  static final TextStyle regularMediumNormal = TextStyle(
+      fontSize: 16.sp,
+      fontFamily: 'Pretendard',
+      fontWeight: FontWeight.bold,
+      height: 1.5);
+
+  static final TextStyle smallMedium = TextStyle(
+    fontSize: 14.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w500,
+  );
+
+  static final TextStyle smallBold = TextStyle(
+    fontSize: 14.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.bold,
+  );
+
+  static final TextStyle smallBoldNormal = TextStyle(
+      fontSize: 14.sp,
+      fontFamily: 'Pretendard',
+      fontWeight: FontWeight.bold,
+      height: 1.4);
+
+  static final TextStyle smallMediumTight = TextStyle(
+    fontSize: 14.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w500,
+    height: 1.14,
+  );
+
+  static final TextStyle smallBoldTight = TextStyle(
+    fontSize: 14.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.bold,
+    height: 1.14,
+  );
+
+  static final TextStyle tinyMedium = TextStyle(
+    fontSize: 12.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w500,
+  );
+
+  static final TextStyle tinyMediumNormal = TextStyle(
+    fontSize: 12.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w500,
+    height: 1.3,
+  );
+
+  static final TextStyle tinyMediumTight = TextStyle(
+    fontSize: 12.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w500,
+    height: 1.16,
+  );
+
+  static final TextStyle tinyBoldTight = TextStyle(
+    fontSize: 12.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.bold,
+    height: 1.16,
+  );
+
+  static final TextStyle label10Bold = TextStyle(
+    fontSize: 10.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.bold,
+  );
+}
+
 class MITITextStyle {
   static final TextStyle xxl140 = TextStyle(
     fontSize: 24.sp,
