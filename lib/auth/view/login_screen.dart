@@ -16,6 +16,7 @@ import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/common/provider/form_util_provider.dart';
 import 'package:miti/common/provider/secure_storage_provider.dart';
 import 'package:miti/theme/text_theme.dart';
+import 'package:miti/user/model/v2/base_deleted_user_response.dart';
 import 'package:miti/util/util.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -27,6 +28,7 @@ import '../../common/provider/widget/form_provider.dart';
 import '../../court/view/court_map_screen.dart';
 import '../../dio/response_code.dart';
 import '../../theme/color_theme.dart';
+import '../../user/view/restore_user_screen.dart';
 import '../param/auth_param.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -254,8 +256,17 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
       ).future);
       if (mounted) {
         if (result is ErrorModel) {
-          AuthError.fromModel(model: result)
-              .responseError(context, AuthApiType.login, ref);
+          /// 탈퇴 사용자 복구 로직
+          /// 1. 에러 응답의 탈퇴 사용자 정보 및 복구 토큰 파싱
+          /// 2. 파싱한 데이터로 유저 정보 복구 api 실행
+          /// 3. 정상 응답 시 로그인 처리
+          if (result.status_code == Forbidden && result.error_code == 590) {
+            final deleteUser = BaseDeletedUserResponse.fromJson(result.data!);
+            await _routeRestoreUserInfo(deleteUser, ref, context, mounted);
+          } else {
+            AuthError.fromModel(model: result)
+                .responseError(context, AuthApiType.login, ref);
+          }
         } else {
           context.goNamed(CourtMapScreen.routeName);
         }
@@ -348,9 +359,15 @@ class KakaoLoginButton extends ConsumerWidget {
           }
 
           if (context.mounted) {
-            AuthError.fromModel(model: result).responseError(
-                context, AuthApiType.oauth, ref,
-                object: SignupMethodType.kakao);
+            if (result.status_code == Forbidden && result.error_code == 590) {
+              final deleteUser = BaseDeletedUserResponse.fromJson(result.data!);
+              await _routeRestoreUserInfo(
+                  deleteUser, ref, context, context.mounted);
+            } else {
+              AuthError.fromModel(model: result).responseError(
+                  context, AuthApiType.oauth, ref,
+                  object: SignupMethodType.kakao);
+            }
           }
           throw Exception();
         } else {
@@ -389,8 +406,9 @@ class KakaoLoginButton extends ConsumerWidget {
               ),
             ),
             const Spacer(),
-            SizedBox(width: 20.w + 24.r,)
-
+            SizedBox(
+              width: 20.w + 24.r,
+            )
           ],
         ),
       ),
@@ -430,7 +448,6 @@ class AppleLoginButton extends ConsumerWidget {
                   const ColorFilter.mode(Color(0xFF000000), BlendMode.srcIn),
             ),
             const Spacer(),
-
             Text(
               'Apple로 계속하기',
               style: MITITextStyle.smBold.copyWith(
@@ -438,7 +455,9 @@ class AppleLoginButton extends ConsumerWidget {
               ),
             ),
             const Spacer(),
-            SizedBox(width: 20.w + 24.r,)
+            SizedBox(
+              width: 20.w + 24.r,
+            )
           ],
         ),
       ),
@@ -458,16 +477,23 @@ class AppleLoginButton extends ConsumerWidget {
 
     if (context.mounted) {
       if (result is ErrorModel) {
-        if (context.mounted) {
-          AuthError.fromModel(model: result).responseError(
-              context, AuthApiType.oauth, ref,
-              object: SignupMethodType.apple);
-        }
         if (result.status_code == Forbidden && result.error_code == 540) {
           final String userInfoToken = result.data['userinfo_token'];
           log("userInfoToken = $userInfoToken");
           final storage = ref.read(secureStorageProvider);
           await storage.write(key: "userInfoToken", value: userInfoToken);
+        }
+
+        if (context.mounted) {
+          if (result.status_code == Forbidden && result.error_code == 590) {
+            final deleteUser = BaseDeletedUserResponse.fromJson(result.data!);
+            await _routeRestoreUserInfo(
+                deleteUser, ref, context, context.mounted);
+          } else {
+            AuthError.fromModel(model: result).responseError(
+                context, AuthApiType.oauth, ref,
+                object: SignupMethodType.apple);
+          }
         }
       } else {
         context.goNamed(CourtMapScreen.routeName);
@@ -530,4 +556,15 @@ class HelpComponent extends StatelessWidget {
       ],
     );
   }
+}
+
+Future<void> _routeRestoreUserInfo(BaseDeletedUserResponse deleteUser,
+    WidgetRef ref, BuildContext context, bool mounted) async {
+  context.goNamed(
+    RestoreUserScreen.routeName,
+    extra: {
+      'deleteUser': deleteUser,
+      'fromLogin': true,
+    },
+  );
 }

@@ -16,7 +16,7 @@ Future<void> showCustomModalBottomSheet(
           top: Radius.circular(20.r),
         ),
       ),
-      backgroundColor: MITIColor.gray800,
+      backgroundColor: V2MITIColor.gray12,
       builder: (context) {
         return Padding(
             padding: EdgeInsets.only(
@@ -24,11 +24,57 @@ Future<void> showCustomModalBottomSheet(
             child: child);
       });
 }
+
 class CustomBottomSheet {
+  static Future<void> showNormal({
+    required BuildContext context,
+    required Widget content,
+    required VoidCallback onPressed,
+    required String buttonText,
+  }) {
+    return showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(20.r),
+          ),
+        ),
+        backgroundColor: V2MITIColor.gray12,
+        builder: (context) {
+          return Column(
+            mainAxisSize: MainAxisSize.min
+            ,
+            children: [
+              // drag handle
+              Container(
+                decoration: BoxDecoration(
+                  color: V2MITIColor.white,
+                  borderRadius: BorderRadius.circular(4.r),
+                ),
+                height: 5.h,
+                width: 140.w,
+                margin: EdgeInsets.symmetric(vertical: 8.h),
+              ),
+              content,
+              Padding(
+                padding: EdgeInsets.only(
+                    left: 16.w, right: 16.w, top: 12.h, bottom: 24.h),
+                child: TextButton(
+                  onPressed: onPressed,
+                  child: Text(buttonText),
+                ),
+              ),
+            ],
+          );
+        });
+  }
+
   static Future<T?> show<T>({
     required BuildContext context,
     required String title,
-    required List<Widget> Function(void Function() refreshModal) childrenBuilder, // 변경된 부분
+    required List<Widget> Function(void Function() refreshModal)
+        childrenBuilder, // 변경된 부분
     VoidCallback? onClose,
     double? maxHeight,
   }) {
@@ -51,7 +97,8 @@ class CustomBottomSheet {
             return _buildContent(
               context: context,
               title: title,
-              children: childrenBuilder(refreshModal), // setState 전달
+              children: childrenBuilder(refreshModal),
+              // setState 전달
               onClose: onClose,
               maxHeight: maxHeight,
             );
@@ -69,9 +116,8 @@ class CustomBottomSheet {
     double? maxHeight,
   }) {
     return Container(
-      constraints: maxHeight != null
-          ? BoxConstraints(maxHeight: maxHeight)
-          : null,
+      constraints:
+          maxHeight != null ? BoxConstraints(maxHeight: maxHeight) : null,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         child: Column(

@@ -33,11 +33,10 @@ class V2MITITextStyle {
   );
 
   static final TextStyle tinyRegularTight = TextStyle(
-    fontSize: 12.sp,
-    fontFamily: 'Pretendard',
-    fontWeight: FontWeight.w400,
-    height: 1.16
-  );
+      fontSize: 12.sp,
+      fontFamily: 'Pretendard',
+      fontWeight: FontWeight.w400,
+      height: 1.16);
 
   static final TextStyle regularBold = TextStyle(
     fontSize: 16.sp,
@@ -45,12 +44,17 @@ class V2MITITextStyle {
     fontWeight: FontWeight.bold,
   );
 
+  static final TextStyle regularRegularTight = TextStyle(
+      fontSize: 16.sp,
+      fontFamily: 'Pretendard',
+      fontWeight: FontWeight.w400,
+      height: 1.25);
+
   static final TextStyle regularBoldTight = TextStyle(
-    fontSize: 16.sp,
-    fontFamily: 'Pretendard',
-    fontWeight: FontWeight.bold,
-    height: 1.25
-  );
+      fontSize: 16.sp,
+      fontFamily: 'Pretendard',
+      fontWeight: FontWeight.bold,
+      height: 1.25);
 
   static final TextStyle regularMediumNormal = TextStyle(
       fontSize: 16.sp,
@@ -58,12 +62,17 @@ class V2MITITextStyle {
       fontWeight: FontWeight.bold,
       height: 1.5);
 
+  static final TextStyle regularMediumTight = TextStyle(
+      fontSize: 16.sp,
+      fontFamily: 'Pretendard',
+      fontWeight: FontWeight.w500,
+      height: 1.25);
+
   static final TextStyle smallRegularNormal = TextStyle(
-    fontSize: 14.sp,
-    fontFamily: 'Pretendard',
-    fontWeight: FontWeight.w400,
-    height: 1.4
-  );
+      fontSize: 14.sp,
+      fontFamily: 'Pretendard',
+      fontWeight: FontWeight.w400,
+      height: 1.4);
 
   static final TextStyle smallMedium = TextStyle(
     fontSize: 14.sp,
@@ -72,11 +81,10 @@ class V2MITITextStyle {
   );
 
   static final TextStyle smallMediumNormal = TextStyle(
-    fontSize: 14.sp,
-    fontFamily: 'Pretendard',
-    fontWeight: FontWeight.w500,
-    height: 1.4
-  );
+      fontSize: 14.sp,
+      fontFamily: 'Pretendard',
+      fontWeight: FontWeight.w500,
+      height: 1.4);
 
   static final TextStyle smallBold = TextStyle(
     fontSize: 14.sp,
@@ -102,6 +110,13 @@ class V2MITITextStyle {
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.bold,
     height: 1.14,
+  );
+
+  static final TextStyle largeBoldTight = TextStyle(
+    fontSize: 18.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.bold,
+    height: 1.1,
   );
 
   static final TextStyle tinyMedium = TextStyle(

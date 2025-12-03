@@ -29,37 +29,31 @@ class GameCardByDate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final date = DateTime.parse(model.first.startDate);
-    final formatDate = DateFormat('yyyy년 MM월 dd일 EEE', "ko").format(date);
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 16.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(left: 12.w),
-            child: Text(
-              "$formatDate요일",
-              style:
-                  MITITextStyle.smSemiBold.copyWith(color: MITIColor.gray100),
-            ),
-          ),
-          SizedBox(height: 12.h),
-          ListView.separated(
-            padding: EdgeInsets.zero,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (_, idx) {
-              return GameCard.fromModel(
-                model: model[idx],
-              );
-            },
-            separatorBuilder: (_, idx) {
-              return SizedBox(height: 12.h);
-            },
-            itemCount: model.length,
-          ),
-        ],
-      ),
+    final formatDate = DateFormat('yyyy년 MM월 dd일 (EEE', "ko").format(date);
+    return Column(
+      spacing: 12.h,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "$formatDate요일)",
+          style: V2MITITextStyle.smallMediumNormal
+              .copyWith(color: V2MITIColor.white),
+        ),
+        ListView.separated(
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemBuilder: (_, idx) {
+            return GameCard.fromModel(
+              model: model[idx],
+            );
+          },
+          separatorBuilder: (_, idx) {
+            return SizedBox(height: 12.h);
+          },
+          itemCount: model.length,
+        ),
+      ],
     );
   }
 }

@@ -10,7 +10,7 @@ import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
 import '../../common/repository/base_pagination_repository.dart';
 import '../../dio/provider/dio_provider.dart';
-import '../../game/model/v2/game/base_game_court_by_date_response.dart';
+import '../../game/model/v2/auth/login_response.dart';
 import '../../game/model/v2/game/base_game_response.dart';
 import '../../game/model/v2/payment/base_payment_result_response.dart';
 import '../../game/model/v2/payment/payment_result_response.dart';
@@ -82,28 +82,19 @@ abstract class UserRepository {
     @Body() required UserPasswordParam param,
   });
 
-  // @Headers({'token': 'true'})
-  // @GET('/users/{userId}/written-reviews/{reviewType}/{reviewId}')
-  // Future<ResponseModel<MyWrittenReviewDetailModel>> getWrittenReview({
-  //   @Path() required int userId,
-  //   @Path() required String reviewType,
-  //   @Path() required int reviewId,
-  // });
-  //
-  // @Headers({'token': 'true'})
-  // @GET('/users/{userId}/received-reviews/{reviewType}/{reviewId}')
-  // Future<ResponseModel<MyReceiveReviewDetailModel>> getReceiveReview({
-  //   @Path() required int userId,
-  //   @Path() required String reviewType,
-  //   @Path() required int reviewId,
-  // });
-
   /// 결제 내역 상세 조회 API
   @Headers({'token': 'true'})
   @GET('/users/{userId}/payment-results/{paymentResultId}')
   Future<ResponseModel<PaymentResultResponse>> getPaymentResultDetail({
     @Path() required int userId,
     @Path() required int paymentResultId,
+  });
+
+  /// 유저 정보 복구 API
+  @POST('/users/{userId}/restore')
+  Future<ResponseModel<LoginResponse>> restoreUserInfo({
+    @Path() required int userId,
+    @Body() required UserRestoreInfoParam userRestoreToken,
   });
 }
 
@@ -116,8 +107,8 @@ final userParticipationPRepositoryProvider =
 });
 
 @RestApi()
-abstract class UserParticipationPRepository extends IBaseCursorPaginationRepository<
-    BaseGameResponse, UserGameParam> {
+abstract class UserParticipationPRepository
+    extends IBaseCursorPaginationRepository<BaseGameResponse, UserGameParam> {
   factory UserParticipationPRepository(Dio dio, {String baseUrl}) =
       _UserParticipationPRepository;
 
@@ -141,8 +132,9 @@ final userWrittenReviewsPRepositoryProvider =
 });
 
 @RestApi()
-abstract class UserWrittenReviewsPRepository extends IBaseCursorPaginationRepository<
-    BaseWrittenReviewResponse, UserReviewParam> {
+abstract class UserWrittenReviewsPRepository
+    extends IBaseCursorPaginationRepository<BaseWrittenReviewResponse,
+        UserReviewParam> {
   factory UserWrittenReviewsPRepository(Dio dio, {String baseUrl}) =
       _UserWrittenReviewsPRepository;
 
@@ -150,7 +142,8 @@ abstract class UserWrittenReviewsPRepository extends IBaseCursorPaginationReposi
   @override
   @Headers({'token': 'true'})
   @GET('/users/{userId}/written-reviews')
-  Future<ResponseModel<CursorPaginationModel<BaseWrittenReviewResponse>>> paginate({
+  Future<ResponseModel<CursorPaginationModel<BaseWrittenReviewResponse>>>
+      paginate({
     @Queries() required CursorPaginationParam cursorPaginationParams,
     @Queries() UserReviewParam? param,
     @Path('userId') int? path,
@@ -166,8 +159,9 @@ final userReceiveReviewsPRepositoryProvider =
 });
 
 @RestApi()
-abstract class UserReceiveReviewsPRepository extends IBaseCursorPaginationRepository<
-    BaseReceivedReviewResponse, UserReviewParam> {
+abstract class UserReceiveReviewsPRepository
+    extends IBaseCursorPaginationRepository<BaseReceivedReviewResponse,
+        UserReviewParam> {
   factory UserReceiveReviewsPRepository(Dio dio, {String baseUrl}) =
       _UserReceiveReviewsPRepository;
 
@@ -175,7 +169,8 @@ abstract class UserReceiveReviewsPRepository extends IBaseCursorPaginationReposi
   @override
   @Headers({'token': 'true'})
   @GET('/users/{userId}/received-reviews')
-  Future<ResponseModel<CursorPaginationModel<BaseReceivedReviewResponse>>> paginate({
+  Future<ResponseModel<CursorPaginationModel<BaseReceivedReviewResponse>>>
+      paginate({
     @Queries() required CursorPaginationParam cursorPaginationParams,
     @Queries() UserReviewParam? param,
     @Path('userId') int? path,
@@ -190,8 +185,8 @@ final userHostingPRepositoryProvider = Provider<UserHostingPRepository>((ref) {
 });
 
 @RestApi()
-abstract class UserHostingPRepository extends IBaseCursorPaginationRepository<
-    BaseGameResponse, UserGameParam> {
+abstract class UserHostingPRepository
+    extends IBaseCursorPaginationRepository<BaseGameResponse, UserGameParam> {
   factory UserHostingPRepository(Dio dio, {String baseUrl}) =
       _UserHostingPRepository;
 
@@ -223,7 +218,8 @@ abstract class UserPaymentPRepository extends IBaseCursorPaginationRepository<
   @override
   @Headers({'token': 'true'})
   @GET('/users/{userId}/payment-results')
-  Future<ResponseModel<CursorPaginationModel<BasePaymentResultResponse>>> paginate({
+  Future<ResponseModel<CursorPaginationModel<BasePaymentResultResponse>>>
+      paginate({
     @Queries() required CursorPaginationParam cursorPaginationParams,
     @Queries() UserPaymentParam? param,
     @Path('userId') int? path,

@@ -89,7 +89,7 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
                   delegate: SliverAppBarDelegate(
                     height: 58.h,
                     child: Container(
-                        color: MITIColor.gray800,
+                        color: V2MITIColor.gray12,
                         height: 58.h,
                         child: SearchComponent(
                           onChanged: searchCourt,
@@ -102,10 +102,11 @@ class _CourtSearchScreenState extends ConsumerState<CourtSearchListScreen> {
           }),
           body: Builder(
             builder: (BuildContext context) {
-              return Padding(
+              return Container(
                 padding: EdgeInsets.only(
                   top: 58.h + 48.h,
                 ),
+                color: V2MITIColor.gray12,
                 child: RefreshIndicator(
                   onRefresh: refresh,
                   child: CustomScrollView(

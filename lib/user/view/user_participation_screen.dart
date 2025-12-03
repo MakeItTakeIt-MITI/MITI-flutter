@@ -146,7 +146,7 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
 
               return SliverPadding(
                 padding: EdgeInsets.only(right: 21.w, left: 21.w, bottom: 20.h),
-                sliver: SliverList.builder(
+                sliver: SliverList.separated(
                   itemBuilder: (_, index) {
                     if (index == (cp.data!.items.length)) {
                       if (cp is! ResponseModel<
@@ -168,11 +168,14 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
                     }
 
                     final pItem = cp.data!.items[index];
+
                     return GameCardByDate.fromModel(
                       model: pItem,
                     );
                   },
-                  itemCount: cp.data!.items.length + 1,
+                  itemCount: cp.data!.items.length + 1, separatorBuilder: (BuildContext context, int index) {
+                    return  SizedBox(height: 32.h);
+                },
                 ),
               );
             },

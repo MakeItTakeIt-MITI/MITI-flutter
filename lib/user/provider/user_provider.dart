@@ -1,21 +1,16 @@
 import 'dart:developer';
 
-import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
-import 'package:miti/common/param/pagination_param.dart';
 import 'package:miti/review/repository/review_repository.dart';
 import 'package:miti/user/provider/user_form_provider.dart';
 import 'package:miti/user/repository/user_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../auth/model/auth_model.dart';
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
-import '../../game/model/game_model.dart';
-import '../../review/model/v2/guest_review_response.dart';
 import '../../review/model/v2/host_review_response.dart';
-import '../model/user_model.dart';
 import '../model/v2/user_info_response.dart';
 import '../param/user_profile_param.dart';
 
@@ -275,11 +270,31 @@ Future<BaseModel> updatePlayerProfile(UpdatePlayerProfileRef ref) async {
       .updatePlayerInfo(userId: userId, param: param)
       .then<BaseModel>((value) {
     logger.i(value);
-    if(param.gender != null && param.enableGender){
+    if (param.gender != null && param.enableGender) {
       ref
           .read(userPlayerProfileFormProvider.notifier)
           .update(enableGender: false);
     }
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
+}
+
+@riverpod
+Future<BaseModel> restoreUserInfo(Ref ref,
+    {required int userId, required String userRestoreToken}) async {
+  return await ref
+      .watch(userRepositoryProvider)
+      .restoreUserInfo(
+          userId: userId,
+          userRestoreToken:
+              UserRestoreInfoParam(userRestoreToken: userRestoreToken))
+      .then<BaseModel>((value) {
+    logger.i(value);
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);

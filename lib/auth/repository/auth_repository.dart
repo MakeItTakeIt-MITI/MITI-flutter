@@ -63,7 +63,6 @@ abstract class AuthRepository {
   Future<ResponseModel<PasswordVerifyModel>> verifyPasswordPhone(
       {@Body() required PhoneVerifyParam param});
 
-  // @Header("")
   @POST('/auth/login/{provider}')
   Future<ResponseModel<LoginResponse>> login({
     @Path() required SignupMethodType provider,

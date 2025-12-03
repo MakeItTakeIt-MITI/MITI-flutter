@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:miti/user/provider/user_provider.dart';
 
 import '../../common/model/entity_enum.dart';
 import '../../common/param/pagination_param.dart';
@@ -98,6 +97,27 @@ class UserPaymentParam extends DefaultParam {
 
   @override
   Map<String, dynamic> toJson() => _$UserPaymentParamToJson(this);
+
+  @override
+  bool? get stringify => true;
+}
+
+
+
+@JsonSerializable()
+class UserRestoreInfoParam extends DefaultParam {
+  @JsonKey(name: 'user_restore_token')
+  final String userRestoreToken;
+
+  UserRestoreInfoParam({
+   required this.userRestoreToken,
+  });
+
+  @override
+  List<Object?> get props => [userRestoreToken];
+
+  @override
+  Map<String, dynamic> toJson() => _$UserRestoreInfoParamToJson(this);
 
   @override
   bool? get stringify => true;

@@ -11,15 +11,14 @@ import 'package:miti/notification/view/notification_screen.dart';
 import 'package:miti/support/view/guide_screen.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/component/skeleton/profile_skeleton.dart';
+import 'package:miti/user/view/profile_screen.dart';
 import 'package:miti/user/view/profile_update_screen.dart';
 import 'package:miti/user/view/user_payment_screen.dart';
-import 'package:miti/user/view/profile_screen.dart';
 
 import '../../account/view/settlement_management_screen.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/model/entity_enum.dart';
 import '../../etc/view/tc_policy_screen.dart';
-import '../../game/model/game_model.dart';
 import '../../notification/view/notification_setting_screen.dart';
 import '../../review/model/v2/base_guest_rating_response.dart';
 import '../../review/view/receive_review_list_screen.dart';
@@ -27,12 +26,11 @@ import '../../review/view/written_review_list_screen.dart';
 import '../../support/view/faq_screen.dart';
 import '../../support/view/support_screen.dart';
 import '../../theme/color_theme.dart';
+import '../../util/util.dart';
 import '../component/skeleton/receive_review_skeleton.dart';
 import '../error/user_error.dart';
-import '../model/user_model.dart';
 import '../model/v2/user_info_response.dart';
 import '../provider/user_provider.dart';
-import '../../util/util.dart';
 
 class ProfileBody extends ConsumerStatefulWidget {
   static String get routeName => 'profileMenu';
@@ -118,16 +116,19 @@ class _ProfileBodyState extends ConsumerState<ProfileBody> {
           ),
         ];
       },
-      body: const CustomScrollView(
+      body:  CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _ProfileComponent(),
-                _ReviewComponent(),
-                _MenuComponent(),
-              ],
+            child: Container(
+              color: V2MITIColor.gray12,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _ProfileComponent(),
+                  _ReviewComponent(),
+                  _MenuComponent(),
+                ],
+              ),
             ),
           )
         ],
@@ -310,35 +311,32 @@ class _MenuItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        color: MITIColor.gray800,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                Text(
-                  title,
-                  style: MITITextStyle.mdLight.copyWith(
-                    color: MITIColor.gray100,
-                  ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Text(
+                title,
+                style: MITITextStyle.mdLight.copyWith(
+                  color: MITIColor.gray100,
                 ),
-                SizedBox(width: 12.w),
-                if (option != null) option!,
-              ],
-            ),
-            SvgPicture.asset(
-              AssetUtil.getAssetPath(
-                type: AssetType.icon,
-                name: 'chevron_right',
               ),
-              colorFilter: const ColorFilter.mode(
-                MITIColor.gray400,
-                BlendMode.srcIn,
-              ),
+              SizedBox(width: 12.w),
+              if (option != null) option!,
+            ],
+          ),
+          SvgPicture.asset(
+            AssetUtil.getAssetPath(
+              type: AssetType.icon,
+              name: 'chevron_right',
             ),
-          ],
-        ),
+            colorFilter: const ColorFilter.mode(
+              MITIColor.gray400,
+              BlendMode.srcIn,
+            ),
+          ),
+        ],
       ),
     );
   }

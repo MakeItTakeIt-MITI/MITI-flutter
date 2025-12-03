@@ -3,20 +3,18 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_switch/flutter_switch.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/notification/param/push_setting_param.dart';
 import 'package:miti/notification/provider/notification_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
-import 'package:flutter_switch/flutter_switch.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../common/component/custom_dialog.dart';
 import '../../common/model/entity_enum.dart';
 import '../../game/model/v2/notification/push_notification_setting_response.dart';
-import '../model/push_model.dart';
 
 final permissionNotiProvider = StateProvider<bool>((s) => true);
 
@@ -111,7 +109,6 @@ class _NotificationSettingScreenState
     return Scaffold(
       appBar: const DefaultAppBar(
         title: '알림 설정',
-        backgroundColor: MITIColor.gray800,
         hasBorder: false,
       ),
       body: Padding(

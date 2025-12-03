@@ -91,18 +91,18 @@ class _GameScreenState extends ConsumerState<GameScreen>
                   delegate: SliverAppBarDelegate(
                       child: TabBar(
                     indicatorWeight: 1.w,
-                    unselectedLabelColor: MITIColor.gray500,
+                    unselectedLabelColor: V2MITIColor.gray6,
                     indicatorSize: TabBarIndicatorSize.tab,
-                    labelStyle: MITITextStyle.xxsm,
+                    labelStyle: V2MITITextStyle.tinyMediumNormal,
                     controller: tabController,
-                    dividerColor: MITIColor.gray500,
+                    dividerColor:V2MITIColor.gray6,
                     onTap: (idx) {
                       tabController.animateTo(idx);
                     },
                     tabs: [
                       Tab(
                         height: 44.h,
-                        child: const Text('게스트 경기'),
+                        child:  const Text('게스트 경기'),
                       ),
                       Tab(
                         height: 44.h,
