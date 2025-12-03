@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/chat/provider/chat_approve_provider.dart';
 import 'package:miti/common/component/custom_dialog.dart';
@@ -202,6 +203,8 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                                 type: AssetType.icon, name: 'comments'),
                             width: 24.r,
                             height: 24.r,
+                            colorFilter: const ColorFilter.mode(
+                                MITIColor.white, BlendMode.srcIn),
                           ),
                         ),
                       ),
@@ -221,7 +224,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                   WidgetsBinding.instance.addPostFrameCallback((s) =>
                       GameError.fromModel(model: result)
                           .responseError(context, GameApiType.get, ref));
-                  return Text('에러입니다.');
+                  return const Text('에러입니다.');
                 }
                 result as ResponseModel<GameDetailResponse>;
                 final model = result.data!;
@@ -235,6 +238,8 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                         children: [
                           SingleChildScrollView(
                             child: Column(
+                              spacing: 12.h,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 CourtMapComponent(
                                   latLng: NLatLng(
@@ -242,33 +247,41 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                                     double.parse(model.court.longitude),
                                   ),
                                 ),
-                                SummaryComponent.fromDetailModel(model: model),
-                                getDivider(),
-                                ParticipationComponent.fromModel(model: model),
-                                getDivider(),
-                                Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    SizedBox(height: 20.h),
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 21.w),
-                                      child: Text(
-                                        '호스트 소개',
-                                        style: MITITextStyle.mdBold
-                                            .copyWith(color: MITIColor.gray100),
+                                Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16.w),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    spacing: 20.h,
+                                    children: [
+                                      SummaryComponent.fromDetailModel(
+                                          model: model),
+                                      ParticipationComponent.fromModel(
+                                          model: model),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        spacing: 12.h,
+                                        children: [
+                                          Text(
+                                            '호스트 정보',
+                                            style: V2MITITextStyle
+                                                .smallBoldTight
+                                                .copyWith(
+                                                    color: V2MITIColor.white),
+                                          ),
+                                          UserShortInfoComponent.fromHostModel(
+                                              model: model.host),
+                                        ],
                                       ),
-                                    ),
-                                    UserShortInfoComponent.fromHostModel(
-                                        model: model.host),
-                                  ],
-                                ),
-                                getDivider(),
-                                InfoComponent(
-                                  info: model.info,
-                                ),
-                                SizedBox(height: 60.h),
+                                      InfoComponent(
+                                        info: model.info,
+                                      ),
+                                      SizedBox(height: 60.h),
+                                    ],
+                                  ),
+                                )
                               ],
                             ),
                           ),
@@ -295,9 +308,9 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
     log('policyValid $policyValid policyCreatedAtValid = $policyCreatedAtValid ');
     log('DateTime.now().difference(createdAt).inHours = ${createdAt.difference(DateTime.now()).inHours}');
     final editValid = policyValid && policyCreatedAtValid;
-    final buttonTextStyle = MITITextStyle.btnTextBStyle.copyWith(
+
+    final buttonTextStyle = V2MITITextStyle.regularBold.copyWith(
       color: Colors.white,
-      height: 1,
     );
     final editButton = Row(
       children: [
@@ -343,12 +356,16 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                   }
                 : null,
             style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all(MITIColor.gray700),
+              side: WidgetStateProperty.all(BorderSide(
+                  color: editValid ? Colors.transparent : V2MITIColor.gray6)),
+              backgroundColor: WidgetStateProperty.all(
+                editValid ? V2MITIColor.red5 : Colors.transparent,
+              ),
             ),
             child: Text(
               "경기 취소",
-              style: MITITextStyle.md.copyWith(
-                  color: editValid ? MITIColor.error : MITIColor.gray500),
+              style: V2MITITextStyle.regularBold.copyWith(
+                  color: editValid ? V2MITIColor.white : V2MITIColor.gray6),
             ),
           ),
         ),
@@ -366,7 +383,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
               );
             },
             style: TextButton.styleFrom(
-              fixedSize: Size(double.infinity, 48.h),
+              fixedSize: Size(double.infinity, 44.h),
             ),
             child: const Text('경기 수정하기'),
           ),
@@ -386,21 +403,22 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
         );
       },
       style: TextButton.styleFrom(
-        fixedSize: Size(double.infinity, 48.h),
-        backgroundColor: const Color(0xFFF64061),
+        fixedSize: Size(double.infinity, 44.h),
+        backgroundColor: V2MITIColor.red5,
       ),
       child: Text(
         '참여 취소하기',
         style: buttonTextStyle,
       ),
     );
+
     final cancelDisableButton = Center(
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 17.h),
         child: Text(
-          '경기 시간 2시간 이내에는 참여 취소가 불가능합니다.',
-          style: MITITextStyle.sm.copyWith(
-            color: MITIColor.gray50,
+          '경기 시작 2시간 이내에는 참여 취소가 불가합니다.',
+          style: V2MITITextStyle.smallRegularNormal.copyWith(
+            color: V2MITIColor.gray4,
           ),
         ),
       ),
@@ -412,20 +430,20 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
             pathParameters: pathParameters);
       },
       style: TextButton.styleFrom(
-        fixedSize: Size(double.infinity, 48.h),
+        fixedSize: Size(double.infinity, 44.h),
       ),
       child: const Text(
-        '경기 참여하기',
+        '참여하기',
       ),
     );
     final disabledParticipationButton = TextButton(
       onPressed: null,
       style: TextButton.styleFrom(
-          fixedSize: Size(double.infinity, 48.h),
-          backgroundColor: MITIColor.gray700),
+          fixedSize: Size(double.infinity, 44.h),
+          backgroundColor: V2MITIColor.gray7),
       child: Text(
-        '경기 참여하기',
-        style: MITITextStyle.mdBold.copyWith(color: MITIColor.gray500),
+        '참여하기',
+        style: V2MITITextStyle.regularBold.copyWith(color:V2MITIColor.white),
       ),
     );
     final reviewButton = TextButton(
@@ -438,12 +456,13 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
         );
       },
       style: TextButton.styleFrom(
-        fixedSize: Size(double.infinity, 48.h),
-        maximumSize: Size(double.infinity, 48.h),
-        minimumSize: Size(double.infinity, 48.h),
+        fixedSize: Size(double.infinity, 44.h),
+        maximumSize: Size(double.infinity, 44.h),
+        minimumSize: Size(double.infinity, 44.h),
       ),
-      child: const Text('리뷰 작성하기'),
+      child: const Text('리뷰 작성'),
     );
+
     final reportButton = TextButton(
         onPressed: () {
           showDialog(
@@ -498,18 +517,17 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
           );
         },
         style: TextButton.styleFrom(
-          fixedSize: Size(98.w, 48.h),
-          maximumSize: Size(98.w, 48.h),
-          minimumSize: Size(98.w, 48.h),
-          backgroundColor: MITIColor.gray700,
+          fixedSize: Size(98.w, 44.h),
+          maximumSize: Size(98.w, 44.h),
+          minimumSize: Size(98.w, 44.h),
+          backgroundColor: V2MITIColor.red5,
         ),
         child: Text(
-          "신고하기",
-          style: MITITextStyle.md.copyWith(
-            color: MITIColor.error,
+          "신고",
+          style: V2MITITextStyle.regularBold.copyWith(
+            color: V2MITIColor.white,
           ),
         ));
-
     if (model.is_host) {
       switch (gameStatus) {
         case GameStatusType.open || GameStatusType.closed:
@@ -554,12 +572,9 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
           } else {
             button = Align(
               child: Row(
+                spacing: 12.w,
                 mainAxisSize: MainAxisSize.max,
-                children: [
-                  reportButton,
-                  SizedBox(width: 12.w),
-                  Expanded(child: reviewButton)
-                ],
+                children: [reportButton, Expanded(child: reviewButton)],
               ),
             );
           }
@@ -608,28 +623,14 @@ class InfoComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            '모집 정보',
-            style: MITITextStyle.mdBold.copyWith(
-              color: MITIColor.gray100,
-            ),
-          ),
-          SizedBox(height: 20.h),
-          Linkify(
-            onOpen: _onOpen,
-            text: info,
-            style: MITITextStyle.sm150.copyWith(color: MITIColor.gray100),
-            options: const LinkifyOptions(
-              humanize: false,
-              removeWww: false,
-            ),
-          ),
-        ],
+    return Linkify(
+      onOpen: _onOpen,
+      text: info,
+      style:
+          V2MITITextStyle.smallMediumNormal.copyWith(color: V2MITIColor.white),
+      options: const LinkifyOptions(
+        humanize: false,
+        removeWww: false,
       ),
     );
   }
@@ -694,83 +695,55 @@ class UserShortInfoComponent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  if (profileImageUrl != null)
-                    CircleAvatar(
-                      radius: 18.r,
-                      backgroundColor: Colors.transparent,
-                      backgroundImage:
-                          NetworkImage(profileImageUrl, scale: 36.r),
-                    )
-                  else
-                    SvgPicture.asset(
-                      AssetUtil.getAssetPath(
-                          type: AssetType.icon, name: 'user_thum'),
-                      width: 36.r,
-                      height: 36.r,
+        return Column(
+          children: [
+            Row(
+              spacing: 12.w,
+              children: [
+                CircleAvatar(
+                  radius: 20.r,
+                  backgroundColor: Colors.transparent,
+                  backgroundImage: NetworkImage(profileImageUrl, scale: 40.r),
+                ),
+                Column(
+                  spacing: 8.h,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "$nickname 님",
+                      style: V2MITITextStyle.smallBoldTight
+                          .copyWith(color: V2MITIColor.white),
                     ),
-                  SizedBox(width: 12.w),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "$nickname 님",
-                        style: MITITextStyle.smBold
-                            .copyWith(color: MITIColor.gray100),
-                      ),
-                      SizedBox(height: 4.h),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            ...getStar(rating.averageRating ?? 0),
-                            SizedBox(width: 6.w),
-                            Text(
-                              rating.averageRating?.toStringAsFixed(1) ?? '0',
-                              style: MITITextStyle.sm.copyWith(
-                                color: MITIColor.gray100,
-                              ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        spacing: 6.w,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [...getStar(rating.averageRating ?? 0)],
+                          ),
+                          Text(
+                            rating.averageRating?.toStringAsFixed(1) ?? '0',
+                            style: V2MITITextStyle.smallMediumTight.copyWith(
+                              color: V2MITIColor.white,
                             ),
-                            SizedBox(width: 6.w),
-                            Text(
-                              '리뷰 ${rating.numOfReviews}',
-                              style: MITITextStyle.sm.copyWith(
-                                  color: MITIColor.gray100,
-                                  decoration: TextDecoration.underline,
-                                  decorationColor: MITIColor.gray100),
-                            ),
-                          ],
-                        ),
+                          ),
+                          Text(
+                            '리뷰 ${rating.numOfReviews}',
+                            style: V2MITITextStyle.smallMediumTight.copyWith(
+                                color: V2MITIColor.gray7,
+                                decoration: TextDecoration.underline,
+                                decorationColor: V2MITIColor.gray7),
+                          ),
+                        ],
                       ),
-                    ],
-                  )
-                ],
-              ),
-              // SizedBox(height: 19.h),
-              // ListView.separated(
-              //     padding: EdgeInsets.zero,
-              //     shrinkWrap: true,
-              //     physics: const NeverScrollableScrollPhysics(),
-              //     itemBuilder: (_, idx) {
-              //       return Text(
-              //         reviews[idx].comment,
-              //         overflow: TextOverflow.ellipsis,
-              //         style: MITITextStyle.reviewSummaryStyle
-              //             .copyWith(color: const Color(0xFF666666)),
-              //       );
-              //     },
-              //     separatorBuilder: (_, idx) {
-              //       return SizedBox(height: 8.h);
-              //     },
-              //     itemCount: reviews.length),
-            ],
-          ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ],
         );
       },
     );
@@ -811,84 +784,69 @@ class ParticipationComponent extends StatelessWidget {
   Widget build(BuildContext context) {
     final isParticipation = user_participation_id != null || isHost;
 
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          GestureDetector(
-            onTap: isParticipation
-                ? () {
-                    Map<String, String> pathParameters = {
-                      'gameId': gameId.toString()
-                    };
-                    context.pushNamed(
-                      GameParticipationScreen.routeName,
-                      pathParameters: pathParameters,
-                    );
-                  }
-                : null,
-            child: Container(
-              color: MITIColor.gray800,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "참가 완료된 게스트 ($num_of_confirmed_participations / $max_invitation)",
-                    style:
-                        MITITextStyle.mdBold.copyWith(color: MITIColor.gray100),
-                    textAlign: TextAlign.left,
-                  ),
-                  Visibility(
-                    visible: isParticipation,
-                    child: SvgPicture.asset(
-                      AssetUtil.getAssetPath(
-                        type: AssetType.icon,
-                        name: 'chevron_right',
-                      ),
-                      colorFilter: const ColorFilter.mode(
-                        MITIColor.gray400,
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                  ),
-                ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        GestureDetector(
+          onTap: isParticipation
+              ? () {
+                  Map<String, String> pathParameters = {
+                    'gameId': gameId.toString()
+                  };
+                  context.pushNamed(
+                    GameParticipationScreen.routeName,
+                    pathParameters: pathParameters,
+                  );
+                }
+              : null,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "참가 완료 게스트 ($num_of_confirmed_participations/$max_invitation)",
+                style: V2MITITextStyle.regularBold
+                    .copyWith(color: V2MITIColor.white),
+                textAlign: TextAlign.left,
               ),
-            ),
-          ),
-          SizedBox(height: 20.h),
-          if (participations.isNotEmpty)
-            SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    ...participations.mapIndexed((idx, e) => Row(
-                          children: [
-                            _GuestTile(
-                              name: participations[idx].user.nickname,
-                              profileImageUrl:
-                                  participations[idx].user.profileImageUrl,
-                            ),
-                            SizedBox(width: 12.w),
-                          ],
-                        )),
-                  ],
-                )),
-          if (participations.isEmpty)
-            SizedBox(
-              height: 56.h,
-              child: Align(
-                alignment: Alignment.centerLeft,
+              Visibility(
+                visible: isParticipation,
                 child: Text(
-                  "아직 참여한 게스트가 없습니다.",
-                  style: MITITextStyle.xxsm.copyWith(
-                    color: MITIColor.gray100,
-                  ),
+                  "전체",
+                  style: V2MITITextStyle.xxsmLight
+                      .copyWith(color: V2MITIColor.gray8),
                 ),
               ),
-            )
-        ],
-      ),
+            ],
+          ),
+        ),
+        SizedBox(height: 12.h),
+        if (participations.isNotEmpty)
+          SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                spacing: 6.w,
+                children: [
+                  ...participations.mapIndexed((idx, e) => _GuestTile(
+                        name: participations[idx].user.nickname,
+                        profileImageUrl:
+                            participations[idx].user.profileImageUrl,
+                      )),
+                ],
+              ))
+        else
+          SizedBox(
+            height: 60.h,
+            child: Align(
+              alignment: Alignment.center,
+              child: Text(
+                "아직 참여한 게스트가 없습니다.",
+                style: V2MITITextStyle.tinyRegularTight.copyWith(
+                  color: MITIColor.gray100,
+                ),
+              ),
+            ),
+          )
+      ],
     );
   }
 }
@@ -908,14 +866,14 @@ class _GuestTile extends StatelessWidget {
       children: [
         CircleAvatar(
           backgroundColor: Colors.transparent,
-          radius: 18.r,
-          backgroundImage: NetworkImage(profileImageUrl, scale: 36.r),
+          radius: 20.r,
+          backgroundImage: NetworkImage(profileImageUrl, scale: 40.r),
         ),
-        SizedBox(height: 8.h),
+        SizedBox(height: 6.h),
         Text(
           "$subName 님",
-          style: MITITextStyle.xxsm.copyWith(
-            color: MITIColor.gray100,
+          style: V2MITITextStyle.tinyRegularTight.copyWith(
+            color: V2MITIColor.white,
           ),
         )
       ],
@@ -928,6 +886,7 @@ class SummaryComponent extends StatelessWidget {
   final SettlementStatusType? bankStatus;
   final String title;
   final String gameDate;
+  final String gameTime;
   final String address;
   final String? courtName;
   final String? fee;
@@ -944,6 +903,7 @@ class SummaryComponent extends StatelessWidget {
     this.gameStatus,
     required this.title,
     required this.gameDate,
+    required this.gameTime,
     required this.address,
     this.courtName,
     this.fee,
@@ -959,18 +919,16 @@ class SummaryComponent extends StatelessWidget {
 
   factory SummaryComponent.fromDetailModel(
       {required GameDetailResponse model, bool isUpdateForm = false}) {
+    log("startdate = ${model.startdate}");
+
     final start = DateTime.parse("${model.startdate} ${model.starttime}");
     final end = DateTime.parse("${model.enddate} ${model.endtime}");
 
-    log("start $start");
-    final startDate = model.startdate.replaceAll('-', '. ');
-    final endDate = model.startdate.replaceAll('-', '. ');
-
     final time =
         '${model.starttime.substring(0, 5)} ~ ${model.endtime.substring(0, 5)}';
-    final gameDate = startDate == endDate
-        ? '$startDate $time'
-        : '$startDate ${model.starttime.substring(0, 5)} ~ $endDate ${model.endtime.substring(0, 5)}';
+
+    final gameDate = DateFormat('yyyy년 MM월 dd일').format(start);
+
     return SummaryComponent(
       gameId: model.id,
       gameStatus: model.game_status,
@@ -985,6 +943,7 @@ class SummaryComponent extends StatelessWidget {
       isUpdateForm: isUpdateForm,
       latitude: model.court.latitude,
       longitude: model.court.longitude,
+      gameTime: time,
     );
   }
 
@@ -1011,6 +970,7 @@ class SummaryComponent extends StatelessWidget {
       max_invitation: model.maxInvitation,
       num_of_participations: model.numOfParticipations,
       duration: end.difference(start).inMinutes.toString(),
+      gameTime: time,
     );
   }
 
@@ -1037,18 +997,16 @@ class SummaryComponent extends StatelessWidget {
       max_invitation: model.maxInvitation,
       num_of_participations: model.numOfParticipations,
       duration: end.difference(start).inMinutes.toString(),
+      gameTime: time,
     );
   }
 
-  Row gameInfoComponent(
-      {required String title, String? content, required String svgPath}) {
+  Row gameInfoComponent({required String title, required String svgPath}) {
     return Row(children: [
       SvgPicture.asset(
-        width: 16.r,
-        height: 16.r,
-        colorFilter: ColorFilter.mode(
-            content != null ? MITIColor.primary : MITIColor.gray100,
-            BlendMode.srcIn),
+        width: 12.r,
+        height: 12.r,
+        colorFilter: const ColorFilter.mode(V2MITIColor.gray2, BlendMode.srcIn),
         AssetUtil.getAssetPath(
           type: AssetType.icon,
           name: svgPath,
@@ -1058,38 +1016,20 @@ class SummaryComponent extends StatelessWidget {
       Expanded(
         child: GestureDetector(
           onTap: () async {
-            if (content == null) return;
+            if (svgPath == 'map_pin') return;
             await NaverMapUtil.searchRoute(
               destinationAddress: address,
               destinationLat: double.parse(latitude!),
               destinationLng: double.parse(longitude!),
             );
           },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: MITITextStyle.sm.copyWith(
-                    color: content != null
-                        ? MITIColor.primary
-                        : MITIColor.gray100),
-                textAlign: TextAlign.left,
-              ),
-              if (content != null)
-                Padding(
-                  padding: EdgeInsets.only(top: 4.h),
-                  child: Text(
-                    content,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: MITITextStyle.sm.copyWith(color: MITIColor.primary),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-            ],
+          child: Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: V2MITITextStyle.miniMediumTight
+                .copyWith(color: V2MITIColor.gray2),
+            textAlign: TextAlign.left,
           ),
         ),
       )
@@ -1124,9 +1064,9 @@ class SummaryComponent extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          "참가비 $fee 원",
-          style: MITITextStyle.mdBold.copyWith(
-            color: MITIColor.primary,
+          "$fee 원",
+          style: V2MITITextStyle.labelMdBold.copyWith(
+            color: V2MITIColor.primary5,
           ),
           textAlign: TextAlign.left,
         ),
@@ -1188,58 +1128,61 @@ class SummaryComponent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final desc = [
-      "$duration분 경기",
+      "$address $courtName",
+      gameTime,
       "$num_of_participations / $max_invitation",
-      address,
     ];
-    final svgPath = ["clock", "people", "map_pin"];
+    final svgPath = [
+      "map_pin",
+      "clock",
+      "people",
+    ];
 
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (gameStatus != null) GameStateLabel(gameStatus: gameStatus!),
-          if (bankStatus != null) SettlementLabel(settlementType: bankStatus!),
-          SizedBox(height: 12.h),
-          Text(
-            title,
-            style: MITITextStyle.mdBold.copyWith(
-              color: MITIColor.gray100,
+    return Column(
+      spacing: 8.h,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (gameStatus != null) GameStateLabel(gameStatus: gameStatus!),
+        if (bankStatus != null) SettlementLabel(settlementType: bankStatus!),
+        Text(
+          title,
+          style: V2MITITextStyle.smallBoldTight.copyWith(
+            color: V2MITIColor.white,
+          ),
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 5.h,
+          children: [
+            Text(
+              gameDate,
+              style:
+                  V2MITITextStyle.miniMedium.copyWith(color: V2MITIColor.gray2),
             ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            gameDate,
-            style: MITITextStyle.sm.copyWith(color: MITIColor.gray400),
-            textAlign: TextAlign.left,
-          ),
-          SizedBox(height: 20.h),
-          ListView.separated(
-              padding: EdgeInsets.zero,
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemBuilder: (_, idx) {
-                final content = idx == 2 ? courtName : null;
-                return gameInfoComponent(
-                  title: desc[idx],
-                  content: content,
-                  svgPath: svgPath[idx],
-                );
-              },
-              separatorBuilder: (_, idx) => SizedBox(height: 4.h),
-              itemCount: 3),
-          Visibility(
-              visible: gameId != null,
-              child: Column(
-                children: [
-                  SizedBox(height: 20.h),
-                  feeComponent(context),
-                ],
-              ))
-        ],
-      ),
+            Text(
+              '$duration 분 경기',
+              style:
+                  V2MITITextStyle.miniMedium.copyWith(color: V2MITIColor.gray2),
+            ),
+          ],
+        ),
+        ListView.separated(
+            padding: EdgeInsets.zero,
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemBuilder: (_, idx) {
+              return gameInfoComponent(
+                title: desc[idx],
+                svgPath: svgPath[idx],
+              );
+            },
+            separatorBuilder: (_, idx) => SizedBox(height: 4.h),
+            itemCount: 3),
+        Visibility(
+          visible: gameId != null,
+          child: feeComponent(context),
+        )
+      ],
     );
   }
 }

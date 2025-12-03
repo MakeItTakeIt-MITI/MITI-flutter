@@ -42,7 +42,7 @@ class ShareFabComponent extends StatelessWidget {
       childrenAnimation: ExpandableFabAnimation.none,
       distance: 60.h,
       overlayStyle: ExpandableFabOverlayStyle(
-        color: Colors.black.withOpacity(.64),
+        color: Colors.black.withValues(alpha: .6),
       ),
       openButtonBuilder: FloatingActionButtonBuilder(
           size: 44.r,

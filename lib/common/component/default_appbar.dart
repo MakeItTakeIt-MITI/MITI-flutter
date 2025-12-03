@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -38,11 +37,11 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
         leadingWidth: 24.r + 24.w,
         title: Text(
           title ?? '',
-          style: MITITextStyle.mdBold.copyWith(
-            color: MITIColor.white,
+          style: V2MITITextStyle.regularBold.copyWith(
+            color: V2MITIColor.white,
           ),
         ),
-        backgroundColor: backgroundColor ?? MITIColor.gray800,
+        backgroundColor: backgroundColor ?? V2MITIColor.gray12,
         floating: false,
         // AppBar가 떠 있지 않게 설정
         expandedHeight: null,
@@ -50,13 +49,14 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
         flexibleSpace: null,
         // 유연한 공간을 설정하지 않음
         /// 앱바 pinned 시 surface 컬러
-        surfaceTintColor: backgroundColor ?? MITIColor.gray800,
+        surfaceTintColor: backgroundColor ?? V2MITIColor.gray12,
         shape: hasBorder
             ? const Border(
                 bottom: BorderSide(color: MITIColor.gray600),
               )
             : Border(
-                bottom: BorderSide(color: backgroundColor ?? MITIColor.gray800),
+                bottom:
+                    BorderSide(color: backgroundColor ?? V2MITIColor.gray12),
               ),
         centerTitle: true,
 
@@ -95,18 +95,18 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
               bottom: BorderSide(color: MITIColor.gray600),
             )
           : Border(
-              bottom: BorderSide(color: backgroundColor ?? MITIColor.gray800),
+              bottom: BorderSide(color: backgroundColor ??  V2MITIColor.gray12),
             ),
       title: Text(
         title ?? '',
-        style: MITITextStyle.mdBold.copyWith(
-          color: MITIColor.white,
+        style: V2MITITextStyle.regularBold.copyWith(
+          color: V2MITIColor.white,
         ),
       ),
-      backgroundColor: backgroundColor ?? MITIColor.gray800,
+      backgroundColor: backgroundColor ??  V2MITIColor.gray12,
 
       /// 앱바 pinned 시 surface 컬러
-      surfaceTintColor: backgroundColor ?? MITIColor.gray800,
+      surfaceTintColor: backgroundColor ??  V2MITIColor.gray12,
       centerTitle: true,
       leading: context.canPop() && canPop
           ? Padding(

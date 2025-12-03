@@ -58,7 +58,8 @@ void _foregroundRouting(NotificationResponse details) async {
       }
     }
 
-    final topicEnum = PushNotificationTopicType.stringToEnum(value: resultMap['topic']!);
+    final topicEnum =
+        PushNotificationTopicType.stringToEnum(value: resultMap['topic']!);
     final model = PushDataModel(
         pushId: resultMap['pushId']!,
         topic: topicEnum,
@@ -154,7 +155,8 @@ class _MyAppState extends ConsumerState<MyApp> {
       debugPrint('uri.queryParameters: ${uri.queryParameters}');
 
       if (uri.queryParameters['url'] != null) {
-        final paths = Uri.parse(uri.queryParameters['url']!).path.substring(1).split('/');
+        final paths =
+            Uri.parse(uri.queryParameters['url']!).path.substring(1).split('/');
         debugPrint('paths: ${paths}');
 
         if (paths[0] == 'games') {
@@ -178,7 +180,8 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   // 기존 FCM 설정 로직
   void _fcmSetting() async {
-    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
       sound: true,
@@ -193,8 +196,10 @@ class _MyAppState extends ConsumerState<MyApp> {
         final pushId = event.data['push_notification_id'];
         String topic = event.data['topic'];
         final topicEnum = PushNotificationTopicType.stringToEnum(value: topic);
-        final model = PushDataModel(pushId: pushId, topic: topicEnum, gameId: gameId);
-        rootNavKey.currentContext!.goNamed(SplashScreen.routeName, extra: model);
+        final model =
+            PushDataModel(pushId: pushId, topic: topicEnum, gameId: gameId);
+        rootNavKey.currentContext!
+            .goNamed(SplashScreen.routeName, extra: model);
       }
     });
 
@@ -206,8 +211,10 @@ class _MyAppState extends ConsumerState<MyApp> {
         String topic = message.data['topic'];
         log('message.data = ${message.data}');
         final topicEnum = PushNotificationTopicType.stringToEnum(value: topic);
-        final model = PushDataModel(pushId: pushId, topic: topicEnum, gameId: gameId);
-        rootNavKey.currentContext!.goNamed(SplashScreen.routeName, extra: model);
+        final model =
+            PushDataModel(pushId: pushId, topic: topicEnum, gameId: gameId);
+        rootNavKey.currentContext!
+            .goNamed(SplashScreen.routeName, extra: model);
       }
     });
 
@@ -219,7 +226,8 @@ class _MyAppState extends ConsumerState<MyApp> {
         String? pushId = message.data['push_notification_id'];
         String? topic = message.data['topic'];
 
-        final flutterLocalNotificationsPlugin = ref.read(notificationProvider.notifier).getNotification;
+        final flutterLocalNotificationsPlugin =
+            ref.read(notificationProvider.notifier).getNotification;
         if (Platform.isAndroid) {
           await flutterLocalNotificationsPlugin?.show(
               notification.hashCode,
@@ -242,7 +250,8 @@ class _MyAppState extends ConsumerState<MyApp> {
         }
 
         final secureProvider = ref.read(secureStorageProvider);
-        final String? storagePushCnt = await secureProvider.read(key: 'pushCnt');
+        final String? storagePushCnt =
+            await secureProvider.read(key: 'pushCnt');
 
         int pushCnt = int.parse(storagePushCnt ?? '-1') + 1;
         AppBadgePlus.updateBadge(pushCnt);
@@ -258,14 +267,18 @@ class _MyAppState extends ConsumerState<MyApp> {
   void _localNotificationSetting() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       final notification = await _initLocalNotification();
-      ref.read(notificationProvider.notifier).setNotificationPlugin(notification);
+      ref
+          .read(notificationProvider.notifier)
+          .setNotificationPlugin(notification);
     });
   }
 
   Future<FlutterLocalNotificationsPlugin> _initLocalNotification() async {
-    final FlutterLocalNotificationsPlugin localNotification = FlutterLocalNotificationsPlugin();
+    final FlutterLocalNotificationsPlugin localNotification =
+        FlutterLocalNotificationsPlugin();
 
-    const AndroidInitializationSettings initSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_notification');
+    const AndroidInitializationSettings initSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_notification');
     const initSettingsIOS = DarwinInitializationSettings(
       requestSoundPermission: false,
       requestBadgePermission: false,
@@ -293,7 +306,8 @@ class _MyAppState extends ConsumerState<MyApp> {
             }
           }
 
-          final topicEnum = PushNotificationTopicType.stringToEnum(value: resultMap['topic']!);
+          final topicEnum = PushNotificationTopicType.stringToEnum(
+              value: resultMap['topic']!);
           final model = PushDataModel(
               pushId: resultMap['pushId']!,
               topic: topicEnum,
@@ -320,8 +334,12 @@ class _MyAppState extends ConsumerState<MyApp> {
       case PushNotificationTopicType.game_status_changed:
       case PushNotificationTopicType.new_participation:
       case PushNotificationTopicType.game_fee_changed:
-        ref.read(pushProvider(pushId: int.parse(model.pushId)).notifier).get(pushId: int.parse(model.pushId));
-        Map<String, String> pathParameters = {'gameId': model.gameId.toString()};
+        ref
+            .read(pushProvider(pushId: int.parse(model.pushId)).notifier)
+            .get(pushId: int.parse(model.pushId));
+        Map<String, String> pathParameters = {
+          'gameId': model.gameId.toString()
+        };
         rootNavKey.currentContext!.goNamed(
           GameDetailScreen.routeName,
           pathParameters: pathParameters,
@@ -379,13 +397,13 @@ class _MyAppState extends ConsumerState<MyApp> {
     return ThemeData(
       colorScheme: const ColorScheme(
         brightness: Brightness.dark,
-        primary: MITIColor.primary,
-        onPrimary: MITIColor.primary,
+        primary: V2MITIColor.primary5,
+        onPrimary: V2MITIColor.primary5,
         secondary: Colors.white,
         onSecondary: Colors.white,
         error: MITIColor.error,
         onError: MITIColor.error,
-        surface: MITIColor.gray800,
+        surface: V2MITIColor.gray12,
         onSurface: MITIColor.gray100,
       ),
       pageTransitionsTheme: const PageTransitionsTheme(
@@ -404,10 +422,10 @@ class _MyAppState extends ConsumerState<MyApp> {
       textButtonTheme: TextButtonThemeData(
         style: ButtonStyle(
           textStyle: WidgetStateProperty.all(
-            MITITextStyle.mdBold.copyWith(color: MITIColor.gray800),
+            V2MITITextStyle.regularBold.copyWith(color: V2MITIColor.gray12),
           ),
-          foregroundColor: WidgetStateProperty.all(MITIColor.gray800),
-          backgroundColor: WidgetStateProperty.all(MITIColor.primary),
+          foregroundColor: WidgetStateProperty.all(V2MITIColor.gray12),
+          backgroundColor: WidgetStateProperty.all(V2MITIColor.primary5),
           shape: WidgetStateProperty.all(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8.r),

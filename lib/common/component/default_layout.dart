@@ -9,8 +9,8 @@ import '../../court/view/court_map_screen.dart';
 import '../../court/view/court_search_screen.dart';
 import '../../default_screen.dart';
 import '../../game/view/game_screen.dart';
-import '../../user/view/profile_menu_screen.dart';
 import '../../theme/color_theme.dart';
+import '../../user/view/profile_menu_screen.dart';
 
 class DefaultLayout extends StatefulWidget {
   final int bottomIdx;
@@ -52,9 +52,9 @@ class _DefaultLayoutState extends State<DefaultLayout> {
               context.goNamed(CourtSearchListScreen.routeName);
             } else if (page == 2) {
               context.goNamed(CourtMapScreen.routeName);
-            } else if(page== 3){
+            } else if (page == 3) {
               context.goNamed(GameScreen.routeName);
-            }else if(page == 4){
+            } else if (page == 4) {
               context.goNamed(ProfileBody.routeName);
             }
           },
@@ -77,13 +77,13 @@ class BottomButton extends StatelessWidget {
         border: hasBorder
             ? Border(
                 top: BorderSide(
-                  color: MITIColor.gray600,
+                  color: V2MITIColor.gray11,
                   width: 1.h,
                 ),
               )
             : null,
       ),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 18.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
