@@ -6,52 +6,80 @@ part 'payment_result_response.g.dart';
 
 @JsonSerializable()
 class PaymentResultResponse extends IModelWithId {
-  @JsonKey(name: 'item_type')
-  final ItemType itemType;
-
   @JsonKey(name: 'status')
   final PaymentResultStatusType status;
 
-  @JsonKey(name: 'payment_method')
-  final PaymentMethodType paymentMethod;
-
-  @JsonKey(name: 'quantity')
-  final int quantity;
+  @JsonKey(name: 'item_type')
+  final ItemType itemType;
 
   @JsonKey(name: 'item_name')
   final String itemName;
 
-  @JsonKey(name: 'total_amount')
-  final int totalAmount;
+  @JsonKey(name: 'payment_method')
+  final PaymentMethodType paymentMethod;
+
+  @JsonKey(name: 'origin_amount')
+  final int? originAmount;
 
   @JsonKey(name: 'tax_free_amount')
   final int taxFreeAmount;
 
-  @JsonKey(name: 'canceled_total_amount')
-  final int? canceledTotalAmount;
+  @JsonKey(name: 'vat_amount')
+  final int vatAmount;
 
-  @JsonKey(name: 'canceled_tax_free_amount')
-  final int? canceledTaxFreeAmount;
+  @JsonKey(name: 'point_amount')
+  final int? pointAmount;
+
+  @JsonKey(name: 'discount_amount')
+  final int? discountAmount;
+
+  @JsonKey(name: 'final_amount')
+  final int finalAmount;
+
+  @JsonKey(name: 'cancelation_reason')
+  final PaymentCancelationReason? cancelationReason;
+
+  @JsonKey(name: 'canceled_vat_amount')
+  final int? canceledVatAmount;
+
+  @JsonKey(name: 'canceled_point_amount')
+  final int? canceledPointAmount;
+
+  @JsonKey(name: 'canceled_final_amount')
+  final int? canceledFinalAmount;
+
+  @JsonKey(name: 'created_at')
+  final DateTime createdAt;
 
   @JsonKey(name: 'approved_at')
-  final String approvedAt;
+  final DateTime? approvedAt;
 
   @JsonKey(name: 'canceled_at')
-  final String? canceledAt;
+  final DateTime? canceledAt;
+
+  @JsonKey(name: 'failed_at')
+  final DateTime? failedAt;
 
   PaymentResultResponse({
     required super.id,
-    required this.itemType,
     required this.status,
-    required this.paymentMethod,
-    required this.quantity,
+    required this.itemType,
     required this.itemName,
-    required this.totalAmount,
+    required this.paymentMethod,
+     this.originAmount,
     required this.taxFreeAmount,
-    this.canceledTotalAmount,
-    this.canceledTaxFreeAmount,
-    required this.approvedAt,
+    required this.vatAmount,
+     this.pointAmount,
+     this.discountAmount,
+    required this.finalAmount,
+    this.cancelationReason,
+    this.canceledVatAmount,
+    this.canceledPointAmount,
+    this.canceledFinalAmount,
+    required this.createdAt,
+    this.approvedAt,
     this.canceledAt,
+    this.failedAt,
   });
 
   factory PaymentResultResponse.fromJson(Map<String, dynamic> json) =>
@@ -61,32 +89,45 @@ class PaymentResultResponse extends IModelWithId {
 
   PaymentResultResponse copyWith({
     int? id,
-    ItemType? itemType,
     PaymentResultStatusType? status,
-    PaymentMethodType? paymentMethod,
-    int? quantity,
+    ItemType? itemType,
     String? itemName,
-    int? totalAmount,
+    PaymentMethodType? paymentMethod,
+    int? originAmount,
     int? taxFreeAmount,
-    int? canceledTotalAmount,
-    int? canceledTaxFreeAmount,
-    String? approvedAt,
-    String? canceledAt,
+    int? vatAmount,
+    int? pointAmount,
+    int? discountAmount,
+    int? finalAmount,
+    PaymentCancelationReason? cancelationReason,
+    int? canceledVatAmount,
+    int? canceledPointAmount,
+    int? canceledFinalAmount,
+    DateTime? createdAt,
+    DateTime? approvedAt,
+    DateTime? canceledAt,
+    DateTime? failedAt,
   }) {
     return PaymentResultResponse(
       id: id ?? this.id,
-      itemType: itemType ?? this.itemType,
       status: status ?? this.status,
-      paymentMethod: paymentMethod ?? this.paymentMethod,
-      quantity: quantity ?? this.quantity,
+      itemType: itemType ?? this.itemType,
       itemName: itemName ?? this.itemName,
-      totalAmount: totalAmount ?? this.totalAmount,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      originAmount: originAmount ?? this.originAmount,
       taxFreeAmount: taxFreeAmount ?? this.taxFreeAmount,
-      canceledTotalAmount: canceledTotalAmount ?? this.canceledTotalAmount,
-      canceledTaxFreeAmount:
-          canceledTaxFreeAmount ?? this.canceledTaxFreeAmount,
+      vatAmount: vatAmount ?? this.vatAmount,
+      pointAmount: pointAmount ?? this.pointAmount,
+      discountAmount: discountAmount ?? this.discountAmount,
+      finalAmount: finalAmount ?? this.finalAmount,
+      cancelationReason: cancelationReason ?? this.cancelationReason,
+      canceledVatAmount: canceledVatAmount ?? this.canceledVatAmount,
+      canceledPointAmount: canceledPointAmount ?? this.canceledPointAmount,
+      canceledFinalAmount: canceledFinalAmount ?? this.canceledFinalAmount,
+      createdAt: createdAt ?? this.createdAt,
       approvedAt: approvedAt ?? this.approvedAt,
       canceledAt: canceledAt ?? this.canceledAt,
+      failedAt: failedAt ?? this.failedAt,
     );
   }
 }

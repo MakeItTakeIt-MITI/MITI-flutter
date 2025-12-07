@@ -746,3 +746,15 @@ enum FileType {
   jpeg,
   webp;
 }
+
+
+enum PaymentCancelationReason {
+  simple_cancelation('단순 결제 취소'),
+  game_cancelation('경기 취소'),
+  converted_to_free_game('무료 경기 전환'),
+  report_result('신고 처리 결과');
+
+  final String displayName;
+
+  const PaymentCancelationReason(this.displayName);
+}

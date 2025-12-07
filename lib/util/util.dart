@@ -137,6 +137,10 @@ class DateTimeUtil {
         .format(DateTime.parse(dateTime).toLocal());
   }
 
+  static String formatDateTimeToString(DateTime dateTime) {
+    return DateFormat('yyyy 년 MM 월 dd 일 HH:mm', 'ko').format(dateTime);
+  }
+
   static String formatDate(DateTime dateTime) {
     final formatter = DateFormat("MM월 dd일");
     return formatter.format(dateTime);

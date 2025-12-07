@@ -81,6 +81,12 @@ class V2MITITextStyle {
       fontWeight: FontWeight.w400,
       height: 1.4);
 
+  static final TextStyle smallRegularTight = TextStyle(
+      fontSize: 14.sp,
+      fontFamily: 'Pretendard',
+      fontWeight: FontWeight.w400,
+      height: 1.14);
+
   static final TextStyle smallMedium = TextStyle(
     fontSize: 14.sp,
     fontFamily: 'Pretendard',
@@ -124,6 +130,13 @@ class V2MITITextStyle {
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.bold,
     height: 1.1,
+  );
+
+  static final TextStyle tinyRegularNormal = TextStyle(
+    fontSize: 12.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w400,
+    height: 1.3,
   );
 
   static final TextStyle tinyMedium = TextStyle(

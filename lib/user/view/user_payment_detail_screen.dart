@@ -26,6 +26,7 @@ class UserPaymentDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: const DefaultAppBar(
         title: '결제 내역 확인',
+        hasBorder: false,
       ),
       bottomNavigationBar: BottomButton(
         hasBorder: false,
@@ -47,35 +48,44 @@ class UserPaymentDetailScreen extends StatelessWidget {
           } else if (result is ErrorModel) {
             UserError.fromModel(model: result)
                 .responseError(context, UserApiType.paymentResultDetail, ref);
-            return Text('error');
+            return const Text('error');
           }
           final model = (result as ResponseModel<PaymentResultResponse>).data!;
-          final approvedAt = DateTimeUtil.formatStringDateTime(model.approvedAt);
+
+          final approvedAt = model.approvedAt != null
+              ? DateTimeUtil.formatDateTimeToString(model.approvedAt!)
+              : null;
           final String? canceledAt = model.canceledAt != null
-              ? DateTimeUtil.formatStringDateTime(model.canceledAt!)
+              ? DateTimeUtil.formatDateTimeToString(model.canceledAt!)
               : null;
           return Column(
             children: [
               Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: 20.w,
-                  vertical: 35.h,
+                  vertical: 16.h,
                 ),
                 child: Column(
+                  spacing: 16.h,
                   children: [
                     _PaymentSimpleInfoComponent.fromDetailModel(model: model),
-                    SizedBox(height: 21.h),
-                    _PaymentDateInfoComponent(
-                      title: '결제 승인',
-                      dateTime: approvedAt,
-                    ),
-                    SizedBox(height: 10.h),
-                    _PaymentDateInfoComponent(
-                      title: '결제 취소',
-                      dateTime: canceledAt,
-                    ),
-                    SizedBox(height: 21.h),
-                    _CancelInfoComponent.fromModel(model: model),
+                    if (approvedAt != null || canceledAt != null)
+                      Column(
+                        spacing: 10.h,
+                        children: [
+                          if (approvedAt != null)
+                            _PaymentDateInfoComponent(
+                              title: '결제 승인',
+                              dateTime: approvedAt,
+                            ),
+                          if (canceledAt != null)
+                            _PaymentDateInfoComponent(
+                              title: '결제 취소',
+                              dateTime: canceledAt,
+                            ),
+                        ],
+                      ),
+                    _PaymentInfoComponent.fromModel(model: model),
                   ],
                 ),
               ),
@@ -101,14 +111,14 @@ class _PaymentDateInfoComponent extends StatelessWidget {
       children: [
         Text(
           title,
-          style: MITITextStyle.xxsm.copyWith(
-            color: MITIColor.white,
+          style: V2MITITextStyle.tinyMediumTight.copyWith(
+            color: V2MITIColor.white,
           ),
         ),
         Text(
           dateTime ?? '',
-          style: MITITextStyle.xxsmLight150.copyWith(
-            color: MITIColor.white,
+          style: V2MITITextStyle.tinyRegularTight.copyWith(
+            color: V2MITIColor.white,
           ),
         )
       ],
@@ -116,27 +126,27 @@ class _PaymentDateInfoComponent extends StatelessWidget {
   }
 }
 
-class _CancelInfoComponent extends StatelessWidget {
-  final int total_amount;
-  final int tax_free_amount;
-  final int canceled_total_amount;
-  final int canceled_tax_free_amount;
+class _PaymentInfoComponent extends StatelessWidget {
+  final int? originAmount;
+  final int discountAmount;
+  final int finalAmount;
+  final int canceledFinalAmount;
 
-  const _CancelInfoComponent({
+  const _PaymentInfoComponent({
     super.key,
-    required this.total_amount,
-    required this.tax_free_amount,
-    required this.canceled_total_amount,
-    required this.canceled_tax_free_amount,
+    required this.originAmount,
+    required this.discountAmount,
+    required this.finalAmount,
+    required this.canceledFinalAmount,
   });
 
-  factory _CancelInfoComponent.fromModel(
+  factory _PaymentInfoComponent.fromModel(
       {required PaymentResultResponse model}) {
-    return _CancelInfoComponent(
-      total_amount: model.totalAmount,
-      tax_free_amount: model.taxFreeAmount,
-      canceled_total_amount: model.canceledTotalAmount ?? 0,
-      canceled_tax_free_amount: model.canceledTaxFreeAmount ?? 0,
+    return _PaymentInfoComponent(
+      originAmount: model.originAmount,
+      discountAmount: model.discountAmount ?? 0,
+      finalAmount: model.finalAmount,
+      canceledFinalAmount: model.canceledFinalAmount ?? 0,
     );
   }
 
@@ -148,15 +158,15 @@ class _CancelInfoComponent extends StatelessWidget {
           children: [
             Text(
               idx,
-              style: MITITextStyle.xxsmLight.copyWith(
-                color: MITIColor.white,
+              style: V2MITITextStyle.tinyRegularNormal.copyWith(
+                color: V2MITIColor.white,
               ),
             ),
             SizedBox(width: 5.w),
             Text(
               title,
-              style: MITITextStyle.xxsmLight.copyWith(
-                color: MITIColor.white,
+              style: V2MITITextStyle.tinyRegularNormal.copyWith(
+                color: V2MITIColor.white,
               ),
             ),
           ],
@@ -165,15 +175,15 @@ class _CancelInfoComponent extends StatelessWidget {
           children: [
             Text(
               NumberUtil.format(amount.toString()),
-              style: MITITextStyle.xxsm.copyWith(
-                color: MITIColor.white,
+              style: V2MITITextStyle.tinyMediumTight.copyWith(
+                color: V2MITIColor.white,
               ),
             ),
             SizedBox(width: 5.w),
             Text(
               '원',
-              style: MITITextStyle.xxsmLight150.copyWith(
-                color: MITIColor.white,
+              style: V2MITITextStyle.tinyRegularNormal.copyWith(
+                color: V2MITIColor.white,
               ),
             ),
           ],
@@ -184,46 +194,44 @@ class _CancelInfoComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final finalAmount = total_amount - canceled_total_amount;
     return Column(
       children: [
-        getPayInfo('➀', '결제 금액', total_amount),
-        SizedBox(height: 8.h),
-        getPayInfo('②', '결제 비과세 금액', tax_free_amount),
-        SizedBox(height: 8.h),
-        getPayInfo('③', '결제 취소 금액', canceled_total_amount),
-        SizedBox(height: 8.h),
-        getPayInfo('④', '결제 취소 비과세 금액', canceled_tax_free_amount),
-        Divider(
-          height: 17.h,
-          color: MITIColor.gray750,
+        Column(
+          spacing: 8.h,
+          children: [
+            getPayInfo('➀', '상품 금액', originAmount ?? 0),
+            getPayInfo('②', '할인 금액', discountAmount),
+            getPayInfo('③', '결제 금액', finalAmount),
+            getPayInfo('④', '결제 취소 금액', canceledFinalAmount),
+          ],
         ),
+        Divider(height: 16.h, color: V2MITIColor.gray10),
         Row(
           children: [
             Text(
               '최종 결제 금액',
-              style: MITITextStyle.sm150.copyWith(
-                color: MITIColor.white,
+              style: V2MITITextStyle.smallRegularNormal.copyWith(
+                color: V2MITIColor.white,
               ),
             ),
             SizedBox(width: 10.w),
             Text(
-              '➀ - ③',
-              style: MITITextStyle.xxsm.copyWith(
-                color: Colors.white,
+              '③ - ④',
+              style: V2MITITextStyle.tinyRegularNormal.copyWith(
+                color: V2MITIColor.white,
               ),
             ),
             const Spacer(),
             Text(
-              NumberUtil.format(finalAmount.toString()),
-              style: MITITextStyle.smSemiBold.copyWith(
-                color: MITIColor.white,
+              NumberUtil.format((finalAmount - canceledFinalAmount).toString()),
+              style: V2MITITextStyle.smallMediumTight.copyWith(
+                color: V2MITIColor.white,
               ),
             ),
             SizedBox(width: 5.w),
             Text(
               '원',
-              style: MITITextStyle.sm.copyWith(
+              style: V2MITITextStyle.smallRegularTight.copyWith(
                 color: MITIColor.white,
               ),
             ),
@@ -239,14 +247,11 @@ class _PaymentSimpleInfoComponent extends StatelessWidget {
   final ItemType itemType;
   final PaymentResultStatusType status;
   final PaymentMethodType paymentMethod;
-  final int quantity;
   final String itemName;
   final int totalAmount;
   final int taxFreeAmount;
   final int? canceledTotalAmount;
   final int? canceledTaxFreeAmount;
-  final String approvedAt;
-  final String? canceledAt;
 
   const _PaymentSimpleInfoComponent({
     super.key,
@@ -254,14 +259,11 @@ class _PaymentSimpleInfoComponent extends StatelessWidget {
     required this.itemType,
     required this.status,
     required this.paymentMethod,
-    required this.quantity,
     required this.itemName,
     required this.totalAmount,
     required this.taxFreeAmount,
     this.canceledTotalAmount,
     this.canceledTaxFreeAmount,
-    required this.approvedAt,
-    this.canceledAt,
   });
 
   factory _PaymentSimpleInfoComponent.fromDetailModel(
@@ -271,14 +273,11 @@ class _PaymentSimpleInfoComponent extends StatelessWidget {
       itemType: model.itemType,
       status: model.status,
       paymentMethod: model.paymentMethod,
-      quantity: model.quantity,
       itemName: model.itemName,
-      totalAmount: model.totalAmount,
+      totalAmount: model.finalAmount,
       taxFreeAmount: model.taxFreeAmount,
-      canceledTotalAmount: model.canceledTotalAmount,
-      canceledTaxFreeAmount: model.canceledTaxFreeAmount,
-      approvedAt: model.approvedAt,
-      canceledAt: model.canceledAt,
+      canceledTotalAmount: model.canceledFinalAmount,
+      canceledTaxFreeAmount: model.canceledVatAmount,
     );
   }
 
@@ -292,41 +291,41 @@ class _PaymentSimpleInfoComponent extends StatelessWidget {
             children: [
               Text(
                 itemType.value,
-                style: MITITextStyle.xxsm.copyWith(
-                  color: MITIColor.gray100,
+                style: V2MITITextStyle.tinyMediumTight.copyWith(
+                  color: V2MITIColor.gray1,
                 ),
               ),
               SizedBox(height: 8.h),
               Text(
                 itemName,
-                style: MITITextStyle.xxsm.copyWith(
-                  color: MITIColor.gray100,
+                style: V2MITITextStyle.regularMediumTight.copyWith(
+                  color: V2MITIColor.gray1,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-              SizedBox(height: 4.h),
+              SizedBox(height: 2.h),
               Row(
                 children: [
                   Text(
                     paymentMethod.displayName,
-                    style: MITITextStyle.xxsmLight.copyWith(
-                      color: MITIColor.gray400,
+                    style: V2MITITextStyle.tinyRegular.copyWith(
+                      color: V2MITIColor.gray5,
                     ),
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 6.w),
                     child: Text(
                       '|',
-                      style: MITITextStyle.xxsmLight.copyWith(
-                        color: MITIColor.gray400,
+                      style: V2MITITextStyle.tinyRegular.copyWith(
+                        color: V2MITIColor.gray5,
                       ),
                     ),
                   ),
                   Text(
                     status.name,
-                    style: MITITextStyle.xxsmLight.copyWith(
-                      color: MITIColor.gray400,
+                    style: V2MITITextStyle.tinyRegular.copyWith(
+                      color: V2MITIColor.gray5,
                     ),
                   ),
                 ],
@@ -334,15 +333,6 @@ class _PaymentSimpleInfoComponent extends StatelessWidget {
             ],
           ),
         ),
-        SizedBox(width: 50.w),
-        Text(
-          totalAmount == 0
-              ? '무료'
-              : '${NumberUtil.format(totalAmount.toString())}원',
-          style: MITITextStyle.lg.copyWith(
-            color: MITIColor.gray100,
-          ),
-        )
       ],
     );
   }
