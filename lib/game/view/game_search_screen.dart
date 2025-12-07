@@ -552,7 +552,7 @@ class _GameSearchBody extends StatelessWidget {
     return Builder(
       builder: (context) {
         return Padding(
-          padding: EdgeInsets.only(top: 46.h),
+          padding: EdgeInsets.only(top: 46.h + 8.h),
           child: RefreshIndicator(
             onRefresh: onRefresh,
             child: CustomScrollView(
@@ -591,7 +591,7 @@ class _GameListSection extends ConsumerWidget {
       provider: gamePageProvider(PaginationStateParam()),
       itemBuilder: (context, index, model) {
         final gameModel = model as GameWithCourtMapResponse;
-        return CourtCard.fromModel(
+        return GameCard.fromModel(
           model: gameModel,
           showDate: true,
         );

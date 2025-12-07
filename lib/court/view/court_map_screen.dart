@@ -269,7 +269,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
       padding: EdgeInsets.symmetric(vertical: 12.h),
       sliver: SliverList.separated(
         itemBuilder: (_, idx) {
-          return CourtCard.fromModel(model: modelList[idx]);
+          return GameCard.fromModel(model: modelList[idx]);
         },
         separatorBuilder: (_, idx) {
           return Divider(

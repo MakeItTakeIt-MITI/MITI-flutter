@@ -1,7 +1,6 @@
 import 'dart:collection';
 import 'dart:developer';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/user/repository/user_repository.dart';
@@ -10,7 +9,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../common/model/cursor_model.dart';
 import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
-import '../../game/model/v2/game/base_game_response.dart';
+import '../../game/model/base_game_meta_response.dart';
 import '../param/user_profile_param.dart';
 
 part 'user_host_pagination_provider.g.dart';
@@ -73,12 +72,12 @@ class UserHostingPagination extends _$UserHostingPagination {
 
       if (fetchMore) {
         final pState =
-        state as ResponseModel<CursorPaginationModel<List<BaseGameResponse>>>;
+        state as ResponseModel<CursorPaginationModel<List<BaseGameMetaResponse>>>;
 
         state = ResponseModel(
             status_code: pState.status_code,
             message: pState.message,
-            data: CursorPaginationModelFetchingMore<List<BaseGameResponse>>(
+            data: CursorPaginationModelFetchingMore<List<BaseGameMetaResponse>>(
               items: pState.data!.items,
               pageFirstCursor: pState.data!.pageFirstCursor,
               pageLastCursor: pState.data!.pageLastCursor,
@@ -91,11 +90,11 @@ class UserHostingPagination extends _$UserHostingPagination {
       } else {
         if (state is ResponseModel<CursorPaginationModel> && !forceRefetch) {
           final pState =
-          state as ResponseModel<CursorPaginationModel<List<BaseGameResponse>>>;
+          state as ResponseModel<CursorPaginationModel<List<BaseGameMetaResponse>>>;
           state = ResponseModel(
               status_code: pState.status_code,
               message: pState.message,
-              data: CursorPaginationModelRefetching<List<BaseGameResponse>>(
+              data: CursorPaginationModelRefetching<List<BaseGameMetaResponse>>(
                 items: pState.data!.items,
                 pageFirstCursor: pState.data!.pageFirstCursor,
                 pageLastCursor: pState.data!.pageLastCursor,
@@ -119,12 +118,12 @@ class UserHostingPagination extends _$UserHostingPagination {
 
       if (state is ResponseModel<CursorPaginationModelFetchingMore>) {
         final pState = state as ResponseModel<
-            CursorPaginationModelFetchingMore<List<BaseGameResponse>>>;
+            CursorPaginationModelFetchingMore<List<BaseGameMetaResponse>>>;
 
         final unionItems =
         unionGroupItemsByStartDate(pState.data!.items, resp.data!.items);
 
-        state = ResponseModel<CursorPaginationModel<List<BaseGameResponse>>>(
+        state = ResponseModel<CursorPaginationModel<List<BaseGameMetaResponse>>>(
             data: CursorPaginationModel(
                 pageFirstCursor: pState.data!.pageFirstCursor,
                 pageLastCursor: resp.data!.pageLastCursor,
@@ -135,7 +134,7 @@ class UserHostingPagination extends _$UserHostingPagination {
         log("change state type = ${state.runtimeType} ");
       } else {
         final mapItems = groupItemsByStartDate(resp.data!.items);
-        state = ResponseModel<CursorPaginationModel<List<BaseGameResponse>>>(
+        state = ResponseModel<CursorPaginationModel<List<BaseGameMetaResponse>>>(
             data: CursorPaginationModel(
                 pageFirstCursor: resp.data!.pageFirstCursor,
                 pageLastCursor: resp.data!.pageLastCursor,
@@ -152,21 +151,29 @@ class UserHostingPagination extends _$UserHostingPagination {
     }
   }
 
-  // 시작 날짜별로 그룹화
-  List<List<BaseGameResponse>> groupItemsByStartDate(
-      List<BaseGameResponse> items) {
-    final grouped = groupBy(items, (item) => item.startDate);
+// 시작 날짜별로 그룹화
+  List<List<BaseGameMetaResponse>> groupItemsByStartDate(
+      List<BaseGameMetaResponse> items) {
+    // 내림차순 정렬을 위한 SplayTreeMap 사용
+    final grouped = SplayTreeMap<String, List<BaseGameMetaResponse>>(
+            (a, b) => b.compareTo(a)
+    );
+
+    for (final item in items) {
+      grouped.putIfAbsent(item.startDate, () => []).add(item);
+    }
+
     return grouped.values.toList();
   }
 
-  // 시작 날짜별로 그룹화
-  List<List<BaseGameResponse>> unionGroupItemsByStartDate(
-      List<List<BaseGameResponse>> items, List<BaseGameResponse> newItems) {
-    List<BaseGameResponse> flattened = items.expand((list) => list).toList();
-    flattened.insertAll(items.length, newItems);
+// 시작 날짜별로 그룹화
+  List<List<BaseGameMetaResponse>> unionGroupItemsByStartDate(
+      List<List<BaseGameMetaResponse>> items, List<BaseGameMetaResponse> newItems) {
+    List<BaseGameMetaResponse> flattened = items.expand((list) => list).toList();
+    flattened.addAll(newItems);
 
     // 내림차순 정렬
-    final grouped = SplayTreeMap<String, List<BaseGameResponse>>(
+    final grouped = SplayTreeMap<String, List<BaseGameMetaResponse>>(
             (a, b) => b.compareTo(a)
     );
 

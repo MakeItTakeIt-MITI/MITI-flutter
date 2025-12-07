@@ -59,7 +59,7 @@ class V2MITITextStyle {
   static final TextStyle regularMediumNormal = TextStyle(
       fontSize: 16.sp,
       fontFamily: 'Pretendard',
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.w500,
       height: 1.5);
 
   static final TextStyle regularMediumTight = TextStyle(

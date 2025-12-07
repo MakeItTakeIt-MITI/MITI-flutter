@@ -6,16 +6,16 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../common/model/entity_enum.dart';
-import '../../court/model/v2/court_map_response.dart';
 import '../../theme/color_theme.dart';
 import '../../theme/text_theme.dart';
 import '../../util/util.dart';
+import '../model/base_game_meta_response.dart';
 import '../model/v2/game/game_response.dart';
 import '../model/v2/game/game_with_court_map_response.dart';
 import '../view/game_detail_screen.dart';
 import 'game_state_label.dart';
 
-class CourtCard extends StatelessWidget {
+class GameCard extends StatelessWidget {
   final int id;
   final GameStatusType game_status;
   final String title;
@@ -24,12 +24,13 @@ class CourtCard extends StatelessWidget {
   final String enddate;
   final String endtime;
   final String fee;
-  final CourtMapResponse? court;
+  final String? courtName;
+  final String? courtAddress;
   final int num_of_participations;
   final int max_invitation;
   final bool showDate;
 
-  const CourtCard({
+  const GameCard({
     super.key,
     required this.game_status,
     required this.title,
@@ -38,53 +39,72 @@ class CourtCard extends StatelessWidget {
     required this.enddate,
     required this.endtime,
     required this.fee,
-    required this.court,
+    required this.courtName,
+    required this.courtAddress,
     required this.num_of_participations,
     required this.max_invitation,
     required this.id,
     required this.showDate,
   });
 
-  factory CourtCard.fromModel(
+  factory GameCard.fromModel(
       {required GameWithCourtMapResponse model, bool showDate = false}) {
-    final fee = model.fee == 0
-        ? '무료'
-        : "${NumberFormat.decimalPattern().format(model.fee)} 원";
-    return CourtCard(
+    final detail = model.court.addressDetail ?? '';
+    return GameCard(
       game_status: model.gameStatus,
       title: model.title,
       startdate: model.startDate,
       starttime: model.startTime,
       enddate: model.endDate,
       endtime: model.endTime,
-      fee: fee,
-      court: model.court,
+      fee: formatFee(model.fee),
       num_of_participations: model.numOfParticipations,
       max_invitation: model.maxInvitation,
       id: model.id,
       showDate: showDate,
+      courtName: model.court.name,
+      courtAddress: "${model.court.address} $detail",
     );
   }
 
-  factory CourtCard.fromSoonestGameModel({required GameResponse model}) {
-    final fee = model.fee == 0
-        ? '무료'
-        : "₩${NumberFormat.decimalPattern().format(model.fee)}";
-    return CourtCard(
+  factory GameCard.fromMetaModel({required BaseGameMetaResponse model}) {
+    return GameCard(
       game_status: model.gameStatus,
       title: model.title,
       startdate: model.startDate,
       starttime: model.startTime,
       enddate: model.endDate,
       endtime: model.endTime,
-      fee: fee,
+      fee: formatFee(model.fee),
       num_of_participations: model.numOfParticipations,
       max_invitation: model.maxInvitation,
       id: model.id,
-      court: null,
+      showDate: false,
+      courtName: model.courtName,
+      courtAddress: null,
+    );
+  }
+
+  factory GameCard.fromSoonestGameModel({required GameResponse model}) {
+    return GameCard(
+      game_status: model.gameStatus,
+      title: model.title,
+      startdate: model.startDate,
+      starttime: model.startTime,
+      enddate: model.endDate,
+      endtime: model.endTime,
+      fee: formatFee(model.fee),
+      num_of_participations: model.numOfParticipations,
+      max_invitation: model.maxInvitation,
+      id: model.id,
+      courtAddress: null,
+      courtName: null,
       showDate: false,
     );
   }
+
+  static String formatFee(int fee) =>
+      fee == 0 ? '무료' : "${NumberFormat.decimalPattern().format(fee)} 원";
 
   @override
   Widget build(BuildContext context) {
@@ -163,7 +183,7 @@ class CourtCard extends StatelessWidget {
             children: [
               Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  if (court != null) {
+                  if (courtAddress != null || courtName != null) {
                     return Row(
                       spacing: 4.w,
                       children: [
@@ -175,22 +195,24 @@ class CourtCard extends StatelessWidget {
                           colorFilter: const ColorFilter.mode(
                               MITIColor.gray500, BlendMode.srcIn),
                         ),
-                        Flexible(
-                          child: Text(
-                            court?.address ?? " ${court?.addressDetail}",
-                            style: V2MITITextStyle.miniMediumTight.copyWith(
-                                color: MITIColor.gray300,
-                                overflow: TextOverflow.ellipsis),
+                        if (courtAddress != null)
+                          Flexible(
+                            child: Text(
+                              courtAddress!,
+                              style: V2MITITextStyle.miniMediumTight.copyWith(
+                                  color: MITIColor.gray300,
+                                  overflow: TextOverflow.ellipsis),
+                            ),
                           ),
-                        ),
-                        Flexible(
-                          child: Text(
-                            "${court?.name}",
-                            style: V2MITITextStyle.miniMediumTight.copyWith(
-                                color: MITIColor.gray300,
-                                overflow: TextOverflow.ellipsis),
-                          ),
-                        )
+                        if (courtName != null)
+                          Flexible(
+                            child: Text(
+                              courtName!,
+                              style: V2MITITextStyle.miniMediumTight.copyWith(
+                                  color: MITIColor.gray300,
+                                  overflow: TextOverflow.ellipsis),
+                            ),
+                          )
                       ],
                     );
                   } else {

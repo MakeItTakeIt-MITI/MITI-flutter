@@ -596,7 +596,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                     parentNavigatorKey: rootNavKey,
                     name: GameSearchScreen.routeName,
                     builder: (context, state) {
-                      return GameSearchScreen();
+                      return const GameSearchScreen();
                     },
                   )
                 ],

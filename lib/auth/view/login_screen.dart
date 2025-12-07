@@ -560,10 +560,14 @@ class HelpComponent extends StatelessWidget {
 
 Future<void> _routeRestoreUserInfo(BaseDeletedUserResponse deleteUser,
     WidgetRef ref, BuildContext context, bool mounted) async {
+  final formattedDeleteUser = deleteUser.copyWith(
+      phone: "${deleteUser.phone.substring(0, 3)}-${deleteUser.phone.substring(3, 7)}-${deleteUser.phone.substring(7)}",
+      birthday: deleteUser.birthday.replaceAll('-', '.'));
+
   context.goNamed(
     RestoreUserScreen.routeName,
     extra: {
-      'deleteUser': deleteUser,
+      'deleteUser': formattedDeleteUser,
       'fromLogin': true,
     },
   );

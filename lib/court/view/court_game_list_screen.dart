@@ -12,7 +12,7 @@ import '../../common/model/cursor_model.dart';
 import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
 import '../../game/component/game_list_component.dart';
-import '../../game/model/v2/game/base_game_response.dart';
+import '../../game/model/base_game_meta_response.dart';
 import '../param/court_pagination_param.dart';
 import 'court_map_screen.dart';
 
@@ -90,7 +90,7 @@ class _CourtGameListScreenState extends ConsumerState<CourtGameListScreen> {
                   }
 
                   final cp = state as ResponseModel<
-                      CursorPaginationModel<List<BaseGameResponse>>>;
+                      CursorPaginationModel<List<BaseGameMetaResponse>>>;
                   log('state.data!.page_content = ${state.data!.items.length}');
                   print(
                       'state.data!.page_content = ${state.data!.items.length}');

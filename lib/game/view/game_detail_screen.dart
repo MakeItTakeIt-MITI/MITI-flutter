@@ -14,7 +14,6 @@ import 'package:intl/intl.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/chat/provider/chat_approve_provider.dart';
 import 'package:miti/common/component/custom_dialog.dart';
-import 'package:miti/common/component/defalut_flashbar.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/component/default_layout.dart';
 import 'package:miti/common/model/default_model.dart';
@@ -443,7 +442,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
           backgroundColor: V2MITIColor.gray7),
       child: Text(
         '참여하기',
-        style: V2MITITextStyle.regularBold.copyWith(color:V2MITIColor.white),
+        style: V2MITITextStyle.regularBold.copyWith(color: V2MITIColor.white),
       ),
     );
     final reviewButton = TextButton(
@@ -894,7 +893,6 @@ class SummaryComponent extends StatelessWidget {
   final int max_invitation;
   final int num_of_participations;
   final int? gameId;
-  final bool isUpdateForm;
   final String? latitude;
   final String? longitude;
 
@@ -912,13 +910,12 @@ class SummaryComponent extends StatelessWidget {
     this.bankStatus,
     required this.duration,
     this.gameId,
-    this.isUpdateForm = false,
     this.latitude,
     this.longitude,
   });
 
   factory SummaryComponent.fromDetailModel(
-      {required GameDetailResponse model, bool isUpdateForm = false}) {
+      {required GameDetailResponse model}) {
     log("startdate = ${model.startdate}");
 
     final start = DateTime.parse("${model.startdate} ${model.starttime}");
@@ -940,7 +937,6 @@ class SummaryComponent extends StatelessWidget {
       max_invitation: model.max_invitation,
       num_of_participations: model.num_of_participations,
       duration: end.difference(start).inMinutes.toString(),
-      isUpdateForm: isUpdateForm,
       latitude: model.court.latitude,
       longitude: model.court.longitude,
       gameTime: time,
@@ -1016,7 +1012,7 @@ class SummaryComponent extends StatelessWidget {
       Expanded(
         child: GestureDetector(
           onTap: () async {
-            if (svgPath == 'map_pin') return;
+            if (svgPath != 'map_pin') return;
             await NaverMapUtil.searchRoute(
               destinationAddress: address,
               destinationLat: double.parse(latitude!),
@@ -1036,94 +1032,24 @@ class SummaryComponent extends StatelessWidget {
     ]);
   }
 
-  Widget _freeChip({required String title}) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(100.r),
-        color: MITIColor.gray600,
-      ),
-      padding: EdgeInsets.symmetric(
-        horizontal: 16.w,
-        vertical: 8.h,
-      ),
-      child: Text(
-        title,
-        style: MITITextStyle.smBold.copyWith(
-          color: MITIColor.primary,
-        ),
-      ),
-    );
-  }
-
   Widget feeComponent(BuildContext context) {
-    if (fee == "0") {
-      return _freeChip(title: "무료 경기");
-    }
-
+    final text = fee == "0" ? '참가비 무료' : "$fee 원";
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          "$fee 원",
+          text,
           style: V2MITITextStyle.labelMdBold.copyWith(
             color: V2MITIColor.primary5,
           ),
           textAlign: TextAlign.left,
         ),
-        if (isUpdateForm)
-          GestureDetector(
-            onTap: () {
-              showModalBottomSheet(
-                  context: context,
-                  builder: (_) {
-                    return BottomDialog(
-                      hasPop: true,
-                      title: '경기 참가비 무료로 전환',
-                      content:
-                          '무료 경기로 변경 시, 기존 참가자의 결제는 자동으로 취소되며\n이후 참가비 변경이 불가능합니다.',
-                      btn: Consumer(
-                        builder: (BuildContext context, WidgetRef ref,
-                            Widget? child) {
-                          final throttler = Throttle(
-                            const Duration(seconds: 1),
-                            initialValue: false,
-                            checkEquality: true,
-                          );
-                          throttler.values.listen((bool s) {
-                            _changeFree(ref, context);
-                          });
-                          return TextButton(
-                            onPressed: () async {
-                              throttler.setValue(true);
-                            },
-                            child: const Text("무료 경기로 전환"),
-                          );
-                        },
-                      ),
-                    );
-                  });
-            },
-            child: _freeChip(title: "무료 경기로 전환하기"),
-          ),
+
       ],
     );
   }
 
-  Future<void> _changeFree(WidgetRef ref, BuildContext context) async {
-    final result = await ref.read(gameFreeProvider(gameId: gameId!).future);
 
-    if (context.mounted) {
-      if (result is ErrorModel) {
-        GameError.fromModel(model: result)
-            .responseError(context, GameApiType.free, ref);
-      } else {
-        context.pop();
-        Future.delayed(const Duration(milliseconds: 100), () {
-          FlashUtil.showFlash(context, '무료 경기로 전환되었습니다.');
-        });
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {

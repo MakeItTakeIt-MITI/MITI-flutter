@@ -1,13 +1,9 @@
-import 'dart:developer';
-
 import 'package:debounce_throttle/debounce_throttle.dart';
-import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miti/common/component/custom_bottom_sheet.dart';
 import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/game/error/game_error.dart';
@@ -16,11 +12,10 @@ import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
+import '../../common/component/defalut_flashbar.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
-import '../../common/provider/router_provider.dart';
 import '../../util/util.dart';
-import '../model/game_model.dart';
 import '../model/v2/game/game_detail_response.dart';
 import 'game_create_screen.dart';
 import 'game_detail_screen.dart';
@@ -124,9 +119,7 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
       child: Scaffold(
         appBar: const DefaultAppBar(
           title: '경기 수정하기',
-          backgroundColor: MITIColor.gray750,
         ),
-        backgroundColor: MITIColor.gray750,
         bottomNavigationBar: BottomButton(
           button: TextButton(
             onPressed: valid() && !isLoading
@@ -136,65 +129,128 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
                 : () {},
             style: TextButton.styleFrom(
                 backgroundColor: valid() && !isLoading
-                    ? MITIColor.primary
-                    : MITIColor.gray500),
+                    ? V2MITIColor.primary5
+                    : V2MITIColor.gray7),
             child: Text(
-              '저장하기',
-              style: MITITextStyle.btnTextBStyle.copyWith(
+              '수정하기',
+              style: V2MITITextStyle.regularBold.copyWith(
                 color: valid() && !isLoading
-                    ? MITIColor.gray800
-                    : MITIColor.gray50,
+                    ? V2MITIColor.black
+                    : V2MITIColor.white,
               ),
             ),
           ),
         ),
-        body: CustomScrollView(
-          controller: _scrollController,
-          slivers: [
-            SliverToBoxAdapter(
-              child: Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  final result =
-                      ref.watch(gameDetailProvider(gameId: widget.gameId));
-                  if (result is LoadingModel) {
-                    return CircularProgressIndicator();
-                  } else if (result is ErrorModel) {
-                    GameError.fromModel(model: result)
-                        .responseError(context, GameApiType.get, ref);
-                    return Text('에러');
-                  }
-                  result as ResponseModel<GameDetailResponse>;
-                  final model = result.data!;
-                  return Column(
-                    children: [
-                      SummaryComponent.fromDetailModel(
-                        model: model,
-                        isUpdateForm: true,
-                      ),
-                      getDivider(),
-                      _GameUpdateFormComponent(
-                        initMaxValue: model.max_invitation.toString(),
-                        initMinValue: model.min_invitation.toString(),
-                        focusNodes: focusNodes,
-                        formKeys: formKeys,
-                      ),
-                      getDivider(),
-                      _InfoComponent(
-                        info: model.info,
-                        focusNodes: focusNodes,
-                        formKeys: formKeys,
-                      ),
-                      SizedBox(height: 80.h),
-                      // const Spacer(),
-                    ],
-                  );
-                },
+        body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+          child: CustomScrollView(
+            controller: _scrollController,
+            slivers: [
+              SliverToBoxAdapter(
+                child: Consumer(
+                  builder:
+                      (BuildContext context, WidgetRef ref, Widget? child) {
+                    final result =
+                        ref.watch(gameDetailProvider(gameId: widget.gameId));
+                    if (result is LoadingModel) {
+                      return const CircularProgressIndicator();
+                    } else if (result is ErrorModel) {
+                      GameError.fromModel(model: result)
+                          .responseError(context, GameApiType.get, ref);
+                      return const Text('에러');
+                    }
+                    result as ResponseModel<GameDetailResponse>;
+                    final model = result.data!;
+                    return Column(
+                      spacing: 36.h,
+                      children: [
+                        Column(
+                          spacing: 16.h,
+                          children: [
+                            SummaryComponent.fromDetailModel(
+                              model: model,
+                            ),
+
+                            /// 무료 전환 버튼
+                            if(model.fee != 0)
+                              TextButton(
+                                onPressed: () {
+                                  final throttler = Throttle(
+                                    const Duration(seconds: 1),
+                                    initialValue: false,
+                                    checkEquality: true,
+                                  );
+                                  throttler.values.listen((bool s) {
+                                    _changeFree(ref, context);
+                                  });
+
+                                  CustomBottomSheet.showStringContent(
+                                    context: context,
+                                    content:
+                                    '무료 경기 전환시,\n참가한 게스트들의 참가비는 자동으로 환불되며,\n유료 경기로 재전환이 불가합니다.',
+                                    onPressed: () async {
+                                      throttler.setValue(true);
+                                    },
+                                    buttonText: '무료 경기로 전환하기',
+                                    contentPadding:
+                                    EdgeInsets.symmetric(vertical: 28.h),
+                                    hasPop: true,
+                                  );
+                                },
+                                style: ButtonStyle(
+                                    backgroundColor: WidgetStateProperty.all(
+                                        Colors.transparent),
+                                    side: WidgetStateProperty.all(
+                                        const BorderSide(
+                                            color: V2MITIColor.gray6))),
+                                child: Text(
+                                  "무료 경기로 전환하기",
+                                  style: V2MITITextStyle.regularBold
+                                      .copyWith(color: V2MITIColor.gray6),
+                                ),
+                              )
+                          ],
+                        ),
+                        _GameUpdateFormComponent(
+                          initMaxValue: model.max_invitation.toString(),
+                          initMinValue: model.min_invitation.toString(),
+                          focusNodes: focusNodes,
+                          formKeys: formKeys,
+                        ),
+                        _InfoComponent(
+                          info: model.info,
+                          focusNodes: focusNodes,
+                          formKeys: formKeys,
+                        ),
+                        SizedBox(height: 80.h),
+                        // const Spacer(),
+                      ],
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  Future<void> _changeFree(WidgetRef ref, BuildContext context) async {
+    final result =
+        await ref.read(gameFreeProvider(gameId: widget.gameId!).future);
+
+    if (context.mounted) {
+      if (result is ErrorModel) {
+        GameError.fromModel(model: result)
+            .responseError(context, GameApiType.free, ref);
+      } else {
+        context.pop();
+        Future.delayed(const Duration(milliseconds: 100), () {
+          FlashUtil.showFlash(context, '무료 경기로 전환되었습니다.');
+        });
+      }
+    }
   }
 
   Future<void> onUpdate(BuildContext context) async {
@@ -276,27 +332,24 @@ class _GameUpdateFormComponentState
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            '참여 인원 수정',
-            style: MITITextStyle.mdBold.copyWith(
-              color: MITIColor.gray100,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          '참여 인원 수정',
+          style: V2MITITextStyle.smallRegularNormal.copyWith(
+            color: V2MITIColor.white,
           ),
-          SizedBox(height: 20.h),
-          ApplyForm(
-            initMaxValue: widget.initMaxValue,
-            initMinValue: widget.initMinValue,
-            formKeys: widget.formKeys,
-            focusNodes: widget.focusNodes,
-            isUpdateForm: true,
-          ),
-        ],
-      ),
+        ),
+        SizedBox(height: 4.h),
+        ApplyForm(
+          initMaxValue: widget.initMaxValue,
+          initMinValue: widget.initMinValue,
+          formKeys: widget.formKeys,
+          focusNodes: widget.focusNodes,
+          isUpdateForm: true,
+        ),
+      ],
     );
   }
 }
@@ -328,60 +381,57 @@ class _InfoComponentState extends ConsumerState<_InfoComponent> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            '모집 정보',
-            style: MITITextStyle.mdBold.copyWith(
-              color: MITIColor.gray100,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          '모집 정보',
+          style: V2MITITextStyle.regularBold.copyWith(
+            color: V2MITIColor.white,
           ),
-          SizedBox(height: 20.h),
-          Scrollbar(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              reverse: true,
-              child: TextFormField(
-                focusNode: widget.focusNodes[2],
-                key: widget.formKeys[2],
-                initialValue: widget.info,
-                maxLines: null,
-                textAlignVertical: TextAlignVertical.top,
-                style: MITITextStyle.sm150.copyWith(
-                  color: MITIColor.gray100,
+        ),
+        Divider(color: V2MITIColor.gray10, height: 16.h),
+        Scrollbar(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            reverse: true,
+            child: TextFormField(
+              focusNode: widget.focusNodes[2],
+              key: widget.formKeys[2],
+              initialValue: widget.info,
+              maxLines: null,
+              textAlignVertical: TextAlignVertical.top,
+              style: MITITextStyle.sm150.copyWith(
+                color: MITIColor.gray100,
+              ),
+              onChanged: (val) {
+                ref.read(gameFormProvider.notifier).update(info: val);
+              },
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                  borderSide: BorderSide.none,
                 ),
-                onChanged: (val) {
-                  ref.read(gameFormProvider.notifier).update(info: val);
-                },
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.r),
-                    borderSide: BorderSide.none,
-                  ),
-                  constraints: BoxConstraints(
-                    minHeight: 68.h,
-                    maxHeight: 500.h,
-                  ),
-                  hintText:
-                      '주차, 샤워 가능 여부, 경기 진행 방식, 필요한 유니폼 색상 등 참가들에게 공지할 정보들을 입력해주세요',
-                  hintStyle: MITITextStyle.sm150.copyWith(
-                    color: MITIColor.gray500,
-                  ),
-                  hintMaxLines: 10,
-                  fillColor: MITIColor.gray700,
-                  filled: true,
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-                  // isDense: true,
+                constraints: BoxConstraints(
+                  minHeight: 68.h,
+                  maxHeight: 500.h,
                 ),
+                hintText:
+                    '주차, 샤워 가능 여부, 경기 진행 방식, 필요한 유니폼 색상 등 참가들에게 공지할 정보들을 입력해주세요',
+                hintStyle: MITITextStyle.sm150.copyWith(
+                  color: MITIColor.gray500,
+                ),
+                hintMaxLines: 10,
+                fillColor: MITIColor.gray700,
+                filled: true,
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+                // isDense: true,
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

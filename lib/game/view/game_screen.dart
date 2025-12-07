@@ -1,15 +1,17 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miti/game/provider/widget/game_status_filter_provider.dart';
 import 'package:miti/game/view/game_create_screen.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/provider/user_provider.dart';
 import 'package:miti/user/view/user_participation_screen.dart';
 
-import '../../auth/provider/auth_provider.dart';
-import '../../common/component/custom_drop_down_button.dart';
+import '../../common/component/custom_bottom_sheet.dart';
 import '../../common/component/fab_button.dart';
 import '../../common/component/sliver_delegate.dart';
 import '../../common/model/entity_enum.dart';
@@ -19,9 +21,7 @@ import '../../user/param/user_profile_param.dart';
 import '../../user/provider/user_host_pagination_provider.dart';
 import '../../user/provider/user_participation_pagination_provider.dart';
 import '../../util/util.dart';
-
-final currentGameTypeProvider = StateProvider.autoDispose<UserGameType>(
-    (ref) => UserGameType.participation);
+import '../component/game_list_filter_status_bar.dart';
 
 class GameScreen extends ConsumerStatefulWidget {
   static String get routeName => 'game';
@@ -36,11 +36,11 @@ class _GameScreenState extends ConsumerState<GameScreen>
     with SingleTickerProviderStateMixin {
   late final TabController tabController;
   final items = [
+    '전체',
     '모집 중',
     '모집 완료',
     '경기 취소',
     '경기 완료',
-    '전체',
   ];
 
   @override
@@ -50,15 +50,39 @@ class _GameScreenState extends ConsumerState<GameScreen>
       length: 2,
       vsync: this,
     )..addListener(() {
-        ref.read(currentGameTypeProvider.notifier).update((s) =>
-            tabController.index == 0
-                ? UserGameType.participation
-                : UserGameType.host);
-        ref
-            .read(dropDownValueProvider(DropButtonType.game).notifier)
-            .update((s) => null);
+        ref.read(gameStatusFilterProvider.notifier).selectAll();
         removeFocus();
       });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.listenManual(gameStatusFilterProvider, (previous, next) {
+        log('next = ${next}');
+        _handleFilterChange(next);
+      });
+    });
+  }
+
+  void _handleFilterChange(List<GameStatusType> statuses) {
+    final param = UserGameParam(game_status: statuses);
+    const cursorParam = CursorPaginationParam();
+    log("message");
+    if (tabController.index == 1) {
+      ref
+          .read(
+              userHostingPaginationProvider(cursorParam: cursorParam).notifier)
+          .paginate(
+              forceRefetch: true,
+              param: param,
+              cursorPaginationParams: cursorParam);
+    } else {
+      ref
+          .read(userParticipationPaginationProvider(cursorParam: cursorParam)
+              .notifier)
+          .paginate(
+              forceRefetch: true,
+              param: param,
+              cursorPaginationParams: cursorParam);
+    }
   }
 
   void removeFocus() {
@@ -72,6 +96,21 @@ class _GameScreenState extends ConsumerState<GameScreen>
     });
     tabController.dispose();
     super.dispose();
+  }
+
+  GameStatusType? _getStatusFromString(String displayName) {
+    switch (displayName.replaceAll(" ", "")) {
+      case '모집중':
+        return GameStatusType.open;
+      case '모집완료':
+        return GameStatusType.closed;
+      case '경기취소':
+        return GameStatusType.canceled;
+      case '경기완료':
+        return GameStatusType.completed;
+      default:
+        return null;
+    }
   }
 
   @override
@@ -95,14 +134,14 @@ class _GameScreenState extends ConsumerState<GameScreen>
                     indicatorSize: TabBarIndicatorSize.tab,
                     labelStyle: V2MITITextStyle.tinyMediumNormal,
                     controller: tabController,
-                    dividerColor:V2MITIColor.gray6,
+                    dividerColor: V2MITIColor.gray6,
                     onTap: (idx) {
                       tabController.animateTo(idx);
                     },
                     tabs: [
                       Tab(
                         height: 44.h,
-                        child:  const Text('게스트 경기'),
+                        child: const Text('게스트 경기'),
                       ),
                       Tab(
                         height: 44.h,
@@ -115,14 +154,174 @@ class _GameScreenState extends ConsumerState<GameScreen>
                 Consumer(
                   builder:
                       (BuildContext context, WidgetRef ref, Widget? child) {
-                    final type = ref.watch(currentGameTypeProvider);
+                    final selectedStatuses =
+                        ref.watch(gameStatusFilterProvider);
+                    final isAllSelected =
+                        selectedStatuses.length == GameStatusType.values.length;
+
                     return SliverPersistentHeader(
                       pinned: true,
                       delegate: SliverAppBarDelegate(
-                          height: 58.h,
-                          child: _GameFilterComponent(
-                            type: type,
-                          )),
+                        height: 58.h,
+                        child: GameListFilterStatusBar(
+                          onFilterTap: () {
+                            // 현재 선택된 상태를 임시 상태로 복사
+                            List<GameStatusType> tempSelectedStatuses =
+                                List.from(selectedStatuses);
+
+                            CustomBottomSheet.showWidgetContent(
+                                context: context,
+                                content: StatefulBuilder(
+                                    builder: (context, setBottomSheetState) {
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      ListView.separated(
+                                        shrinkWrap: true,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        itemBuilder: (_, idx) {
+                                          bool isSelected;
+
+                                          // ✅ 선택 상태 판단 로직 개선
+                                          if (idx == 0) {
+                                            // '전체'
+                                            isSelected = tempSelectedStatuses
+                                                    .length ==
+                                                GameStatusType.values.length;
+                                          } else {
+                                            // 개별 항목
+                                            isSelected = _containStatus(
+                                                tempSelectedStatuses,
+                                                items[idx]);
+                                          }
+
+                                          return GestureDetector(
+                                            behavior:
+                                                HitTestBehavior.translucent,
+                                            onTap: () {
+                                              setBottomSheetState(() {
+                                                if (idx == 0) {
+                                                  // '전체' 클릭
+                                                  // ✅ 전체 선택 시 모든 항목 선택
+                                                  tempSelectedStatuses =
+                                                      GameStatusType.values
+                                                          .toList();
+                                                } else {
+                                                  // 개별 항목 클릭
+                                                  final status =
+                                                      _getStatusFromString(
+                                                          items[idx]);
+                                                  if (status != null) {
+                                                    // ✅ 현재 전체가 선택되어 있는지 확인
+                                                    bool
+                                                        isCurrentlyAllSelected =
+                                                        tempSelectedStatuses
+                                                                .length ==
+                                                            GameStatusType
+                                                                .values.length;
+
+                                                    if (isCurrentlyAllSelected) {
+                                                      // ✅ 전체 선택 상태에서 개별 항목 클릭 시 → 해당 항목만 제거
+                                                      tempSelectedStatuses =
+                                                          GameStatusType.values
+                                                              .where(
+                                                                  (element) =>
+                                                                      element !=
+                                                                      status)
+                                                              .toList();
+                                                    } else {
+                                                      // ✅ 일반적인 토글 로직
+                                                      if (tempSelectedStatuses
+                                                          .contains(status)) {
+                                                        tempSelectedStatuses
+                                                            .remove(status);
+                                                      } else {
+                                                        tempSelectedStatuses
+                                                            .add(status);
+
+                                                        // ✅ 모든 항목이 선택되면 자동으로 '전체' 상태가 됨
+                                                        if (tempSelectedStatuses
+                                                                .length ==
+                                                            GameStatusType
+                                                                .values
+                                                                .length) {
+                                                          // 이미 모든 항목이 선택되어 있음 (자동으로 '전체' 표시됨)
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              });
+                                            },
+                                            child: SizedBox(
+                                              height: 48.h,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    items[idx],
+                                                    style: V2MITITextStyle
+                                                        .regularMediumNormal
+                                                        .copyWith(
+                                                            color: isSelected
+                                                                ? V2MITIColor
+                                                                    .primary5
+                                                                : V2MITIColor
+                                                                    .white),
+                                                  ),
+                                                  SvgPicture.asset(
+                                                    AssetUtil.getAssetPath(
+                                                        type: AssetType.icon,
+                                                        name: "active_check"),
+                                                    height: 16.r,
+                                                    width: 16.r,
+                                                    colorFilter:
+                                                        ColorFilter.mode(
+                                                      isSelected
+                                                          ? V2MITIColor.primary5
+                                                          : V2MITIColor.white,
+                                                      BlendMode.srcIn,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        separatorBuilder: (_, idx) => Divider(
+                                            height: 16.h,
+                                            color: V2MITIColor.gray10),
+                                        itemCount: items.length,
+                                      ),
+                                    ],
+                                  );
+                                }),
+                                onPressed: () {
+                                  ref
+                                      .read(gameStatusFilterProvider.notifier)
+                                      .setSelectedStatuses(
+                                          tempSelectedStatuses);
+                                  context.pop();
+                                },
+                                title: '경기 상태',
+                                buttonText: '설정하기',
+                                useRootNavigator: true,
+                                hasPop: true);
+                          },
+                          onDeleted: (GameStatusType status) {
+                            ref
+                                .read(gameStatusFilterProvider.notifier)
+                                .toggleStatus(status);
+                          },
+                          items: selectedStatuses,
+                        ),
+                        // _GameFilterComponent(
+                        //   type: type,
+                        // )
+                      ),
                     );
                   },
                 ),
@@ -139,214 +338,8 @@ class _GameScreenState extends ConsumerState<GameScreen>
       ),
     );
   }
-}
 
-class _GameFilterComponent extends ConsumerStatefulWidget {
-  final UserGameType type;
-
-  const _GameFilterComponent({super.key, required this.type});
-
-  @override
-  ConsumerState<_GameFilterComponent> createState() =>
-      _GameFilterComponentState();
-}
-
-class _GameFilterComponentState extends ConsumerState<_GameFilterComponent> {
-  GameStatusType? getStatus(String? value) {
-    switch (value) {
-      case '모집 중':
-        return GameStatusType.open;
-      case '모집 완료':
-        return GameStatusType.closed;
-      case '경기 취소':
-        return GameStatusType.canceled;
-      case '경기 완료':
-        return GameStatusType.completed;
-      default:
-        return null;
-    }
-  }
-
-  final items = [
-    '전체',
-    '모집 중',
-    '모집 완료',
-    '경기 취소',
-    '경기 완료',
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final id = ref.watch(authProvider)!.id!;
-    return SizedBox(
-      height: 58.h,
-      child: Padding(
-        padding:
-            EdgeInsets.only(left: 21.w, right: 21.w, top: 20.h, bottom: 10.h),
-        child: Row(
-          children: [
-            Text(
-              widget.type == UserGameType.host
-                  ? '호스트가 되어 게스트를 모집한 경기'
-                  : '게스트로 참여한 경기',
-              style: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
-            ),
-            const Spacer(),
-            Consumer(
-              builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                final gameStatus = getStatus(
-                    ref.watch(dropDownValueProvider(DropButtonType.game)));
-                final selectStatus = gameStatus?.displayName ?? '전체';
-                return GestureDetector(
-                  onTap: () {
-                    showModalBottomSheet(
-                        isScrollControlled: true,
-                        useRootNavigator: true,
-                        context: context,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(20.r),
-                          ),
-                        ),
-                        backgroundColor: MITIColor.gray800,
-                        builder: (context) {
-                          return Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.symmetric(vertical: 8.h),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: MITIColor.gray100,
-                                    borderRadius: BorderRadius.circular(8.r),
-                                  ),
-                                  width: 60.w,
-                                  height: 4.h,
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(20.r),
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    Text(
-                                      '경기 상태',
-                                      style: MITITextStyle.mdBold.copyWith(
-                                        color: MITIColor.gray100,
-                                      ),
-                                    ),
-                                    SizedBox(height: 20.h),
-                                    ...items.map((i) {
-                                      return GestureDetector(
-                                        onTap: () {
-                                          changeDropButton(i, id);
-                                          context.pop();
-                                        },
-                                        child: Container(
-                                          height: 60.h,
-                                          decoration: const BoxDecoration(
-                                            border: Border(
-                                              bottom: BorderSide(
-                                                color: MITIColor.gray700,
-                                              ),
-                                            ),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                i,
-                                                style: MITITextStyle.smSemiBold
-                                                    .copyWith(
-                                                        color: selectStatus == i
-                                                            ? MITIColor.primary
-                                                            : MITIColor
-                                                                .gray100),
-                                              ),
-                                              if (selectStatus == i)
-                                                SvgPicture.asset(
-                                                  AssetUtil.getAssetPath(
-                                                      type: AssetType.icon,
-                                                      name: "active_check"),
-                                                  height: 24.r,
-                                                  width: 24.r,
-                                                )
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    })
-                                  ],
-                                ),
-                              )
-                            ],
-                          );
-                        });
-                  },
-                  child: Container(
-                    width: 92.w,
-                    height: 28.h,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100.r),
-                      color: MITIColor.gray700,
-                    ),
-                    padding: EdgeInsets.only(left: 16.w, right: 4.w),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          gameStatus?.displayName ?? '전체',
-                          style: MITITextStyle.xxsmLight
-                              .copyWith(color: MITIColor.gray100),
-                        ),
-                        Icon(
-                          Icons.keyboard_arrow_down,
-                          color: MITIColor.primary,
-                          size: 16.r,
-                        )
-                      ],
-                    ),
-                  ),
-                );
-              },
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  void changeDropButton(String? value, int id) {
-    ref
-        .read(dropDownValueProvider(DropButtonType.game).notifier)
-        .update((state) => value);
-    final gameStatus = getStatus(value!);
-    if (widget.type == UserGameType.host) {
-      ref
-          .read(userHostingPaginationProvider(
-                  cursorParam: const CursorPaginationParam())
-              .notifier)
-          .paginate(
-            forceRefetch: true,
-            param: UserGameParam(
-              game_status: gameStatus,
-            ),
-            cursorPaginationParams: const CursorPaginationParam(),
-          );
-    } else {
-      ref
-          .read(userParticipationPaginationProvider(
-                  cursorParam: const CursorPaginationParam())
-              .notifier)
-          .paginate(
-            forceRefetch: true,
-            param: UserGameParam(
-              game_status: gameStatus,
-            ),
-            cursorPaginationParams: const CursorPaginationParam(),
-          );
-    }
+  _containStatus(List<GameStatusType> origin, String target) {
+    return origin.any((e) => e.displayName == target.replaceAll(" ", ""));
   }
 }

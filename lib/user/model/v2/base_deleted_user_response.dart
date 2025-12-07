@@ -12,6 +12,10 @@ class BaseDeletedUserResponse extends IModelWithId {
   @JsonKey(name: 'name')
   final String name;
 
+  @JsonKey(name: 'phone')
+  final String phone;
+  @JsonKey(name: 'birthday')
+  final String birthday;
   @JsonKey(name: 'signup_method')
   final SignupMethodType signupMethod;
 
@@ -22,6 +26,8 @@ class BaseDeletedUserResponse extends IModelWithId {
     required super.id,
     required this.nickname,
     required this.name,
+    required this.phone,
+    required this.birthday,
     required this.signupMethod,
     required this.userRestoreToken,
   });
@@ -35,6 +41,8 @@ class BaseDeletedUserResponse extends IModelWithId {
     int? id,
     String? nickname,
     String? name,
+    String? phone,
+    String? birthday,
     SignupMethodType? signupMethod,
     String? userRestoreToken,
   }) {
@@ -42,6 +50,8 @@ class BaseDeletedUserResponse extends IModelWithId {
       id: id ?? this.id,
       nickname: nickname ?? this.nickname,
       name: name ?? this.name,
+      phone: phone ?? this.phone,
+      birthday: birthday ?? this.birthday,
       signupMethod: signupMethod ?? this.signupMethod,
       userRestoreToken: userRestoreToken ?? this.userRestoreToken,
     );

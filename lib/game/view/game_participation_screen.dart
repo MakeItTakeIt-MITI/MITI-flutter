@@ -45,7 +45,7 @@ class GameParticipationScreen extends StatelessWidget {
                   child: Text(
                     "참가자 목록 및 선수 정보",
                     style:
-                        MITITextStyle.smSemiBold.copyWith(color: Colors.white),
+                    MITITextStyle.smSemiBold.copyWith(color: Colors.white),
                   ),
                 ),
                 _ParticipationFilterButton(
@@ -57,7 +57,7 @@ class GameParticipationScreen extends StatelessWidget {
           Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
               final result =
-                  ref.watch(gamePlayerProfileProvider(gameId: gameId));
+              ref.watch(gamePlayerProfileProvider(gameId: gameId));
               if (result is LoadingModel) {
                 return const Expanded(
                     child: Center(child: CircularProgressIndicator()));
@@ -65,9 +65,11 @@ class GameParticipationScreen extends StatelessWidget {
                 return Text('error');
               }
               final model =
-                  (result as ResponseModel<GamePlayerListResponse>).data!;
+              (result as ResponseModel<GamePlayerListResponse>).data!;
               log('model length = ${model.participants.length}');
-              final userId = ref.watch(authProvider)?.id;
+              final userId = ref
+                  .watch(authProvider)
+                  ?.id;
               final isParticipants =
                   model.participants.any((p) => p.id == userId) ||
                       model.host.id == userId;
@@ -78,7 +80,7 @@ class GameParticipationScreen extends StatelessWidget {
                     child: Text(
                       '참가한 게스트가 없습니다.',
                       style:
-                          MITITextStyle.xxl140.copyWith(color: MITIColor.white),
+                      MITITextStyle.xxl140.copyWith(color: MITIColor.white),
                     ),
                   ),
                 );
@@ -87,7 +89,7 @@ class GameParticipationScreen extends StatelessWidget {
               return Expanded(
                 child: ListView.separated(
                     padding:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                    EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                     itemBuilder: (_, idx) {
                       return _ParticipationPlayerCard.fromModel(
                         model: model.participants[idx],
@@ -131,7 +133,7 @@ class _ParticipationPlayerCard extends StatelessWidget {
 
   factory _ParticipationPlayerCard.fromModel(
       {required PrivateParticipationGuestPlayerResponse model,
-      required isParticipants}) {
+        required isParticipants}) {
     return _ParticipationPlayerCard(
       id: model.id,
       participationStatus: model.participationStatus,
@@ -190,7 +192,7 @@ class _ParticipationPlayerCard extends StatelessWidget {
                     Text(
                       "${guestRating.averageRating ?? 0}",
                       style:
-                          MITITextStyle.sm.copyWith(color: MITIColor.gray100),
+                      MITITextStyle.sm.copyWith(color: MITIColor.gray100),
                     ),
                     SizedBox(width: 6.w),
                     Text(
@@ -257,6 +259,8 @@ class _ParticipationFilterButtonState
               final selectStatus = participationStatus ?? '참가순';
               return GestureDetector(
                 onTap: () {
+
+
                   showModalBottomSheet(
                       isScrollControlled: true,
                       useRootNavigator: true,
@@ -311,15 +315,15 @@ class _ParticipationFilterButtonState
                                         ),
                                         child: Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                                          MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
                                               i,
                                               style: MITITextStyle.smSemiBold
                                                   .copyWith(
-                                                      color: selectStatus == i
-                                                          ? MITIColor.primary
-                                                          : MITIColor.gray100),
+                                                  color: selectStatus == i
+                                                      ? MITIColor.primary
+                                                      : MITIColor.gray100),
                                             ),
                                             if (selectStatus == i)
                                               SvgPicture.asset(

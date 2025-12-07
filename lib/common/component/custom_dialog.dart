@@ -1,8 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/theme/color_theme.dart';
@@ -81,6 +79,65 @@ class CustomDialog extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class V2BottomDialog extends StatelessWidget {
+  final String content;
+  final Widget btn;
+  final bool hasPop;
+
+  const V2BottomDialog(
+      {super.key,
+      required this.content,
+      required this.btn,
+      this.hasPop = false});
+
+  Widget popButton(BuildContext context) {
+
+    return Align(
+        alignment: Alignment.topRight,
+        child: IconButton(
+            onPressed: () => context.pop(),
+            style: ButtonStyle(
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                padding: WidgetStateProperty.all(EdgeInsets.zero)),
+            constraints: BoxConstraints.tight(Size(24.r, 24.r)),
+            icon: const Icon(
+              Icons.close,
+              color: MITIColor.white,
+            )));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+        color: MITIColor.gray700,
+      ),
+      padding: EdgeInsets.only(
+          left: 16.w, right: 16.w, top: hasPop ? 20.h : 30.h, bottom: 41.h),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (hasPop) popButton(context),
+          Text(
+            content,
+            textAlign: TextAlign.center,
+            style: V2MITITextStyle.smallRegularNormal.copyWith(
+              color: V2MITIColor.gray1,
+            ),
+          ),
+          btn,
+          if (Platform.isIOS)
+            SizedBox(
+              height: 21.h,
+            )
+        ],
       ),
     );
   }

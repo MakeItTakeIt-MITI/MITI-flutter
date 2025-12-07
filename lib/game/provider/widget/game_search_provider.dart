@@ -22,7 +22,7 @@ class GameSearch extends _$GameSearch {
     bool isAll = false,
   }) {
     state = state.copyWith(
-      title: title,
+      search: title,
       gameStatus: gameStatus,
       province: province,
       isAll: isAll,

@@ -72,11 +72,11 @@ class RestoreUserScreen extends StatelessWidget {
                 ),
                 _UserInfo(
                   title: '생년월일',
-                  content: '',
+                  content: deleteUser.birthday,
                 ),
                 _UserInfo(
                   title: '휴대폰번호',
-                  content: '',
+                  content: deleteUser.phone,
                 ),
                 _UserInfo(
                   title: '로그인방식',
@@ -99,7 +99,7 @@ class RestoreUserScreen extends StatelessWidget {
                 InkWell(
                   onTap: () async {
                     final uri =
-                        Uri.parse('https://www.makeittakeit.kr/inquiries');
+                        Uri.parse('https://www.makeittakeit.kr/inquiries/new');
                     if (await canLaunchUrl(uri)) {
                       await launchUrl(uri);
                     }

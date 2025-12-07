@@ -10,6 +10,7 @@ import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
 import '../../common/repository/base_pagination_repository.dart';
 import '../../dio/provider/dio_provider.dart';
+import '../../game/model/base_game_meta_response.dart';
 import '../../game/model/v2/auth/login_response.dart';
 import '../../game/model/v2/game/base_game_response.dart';
 import '../../game/model/v2/payment/base_payment_result_response.dart';
@@ -108,7 +109,7 @@ final userParticipationPRepositoryProvider =
 
 @RestApi()
 abstract class UserParticipationPRepository
-    extends IBaseCursorPaginationRepository<BaseGameResponse, UserGameParam> {
+    extends IBaseCursorPaginationRepository<BaseGameMetaResponse, UserGameParam> {
   factory UserParticipationPRepository(Dio dio, {String baseUrl}) =
       _UserParticipationPRepository;
 
@@ -116,7 +117,7 @@ abstract class UserParticipationPRepository
   @override
   @Headers({'token': 'true'})
   @GET('/users/{userId}/participated-games')
-  Future<ResponseModel<CursorPaginationModel<BaseGameResponse>>> paginate({
+  Future<ResponseModel<CursorPaginationModel<BaseGameMetaResponse>>> paginate({
     @Queries() required CursorPaginationParam cursorPaginationParams,
     @Queries() UserGameParam? param,
     @Path('userId') int? path,
@@ -186,7 +187,7 @@ final userHostingPRepositoryProvider = Provider<UserHostingPRepository>((ref) {
 
 @RestApi()
 abstract class UserHostingPRepository
-    extends IBaseCursorPaginationRepository<BaseGameResponse, UserGameParam> {
+    extends IBaseCursorPaginationRepository<BaseGameMetaResponse, UserGameParam> {
   factory UserHostingPRepository(Dio dio, {String baseUrl}) =
       _UserHostingPRepository;
 
@@ -194,7 +195,7 @@ abstract class UserHostingPRepository
   @override
   @Headers({'token': 'true'})
   @GET('/users/{userId}/hosted-games')
-  Future<ResponseModel<CursorPaginationModel<BaseGameResponse>>> paginate({
+  Future<ResponseModel<CursorPaginationModel<BaseGameMetaResponse>>> paginate({
     @Queries() required CursorPaginationParam cursorPaginationParams,
     @Queries() UserGameParam? param,
     @Path('userId') int? path,

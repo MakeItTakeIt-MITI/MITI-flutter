@@ -360,7 +360,7 @@ class SoonestGamesComponent extends StatelessWidget {
                     //     itemCount: itemCount),
                     ListView.separated(
                       itemBuilder: (_, idx) {
-                        return CourtCard.fromSoonestGameModel(
+                        return GameCard.fromSoonestGameModel(
                             model: model.soonestGames[idx]);
                       },
                       separatorBuilder: (_, idx) => SizedBox(

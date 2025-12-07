@@ -10,7 +10,6 @@ import 'package:miti/common/provider/widget/form_provider.dart';
 import 'package:miti/dio/response_code.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:miti/theme/color_theme.dart';
-import 'package:miti/theme/text_theme.dart';
 
 import '../../common/component/custom_dialog.dart';
 import '../../common/component/custom_text_form_field.dart';
@@ -733,37 +732,21 @@ class AuthError extends ErrorBase {
   void _restoreUserInfo(BuildContext context, WidgetRef ref) {
     /// 요청 제한시간 초과
     if (this.status_code == Gone && this.error_code == 240) {
-      CustomBottomSheet.showNormal(
+      CustomBottomSheet.showStringContent(
         context: context,
         onPressed: () => {context.pop(), context.pop()},
         buttonText: '돌아가기',
-        content: Padding(
-          padding: EdgeInsets.symmetric(vertical: 55.h),
-          child: Center(
-            child: Text(
-              "요청의 유효시간이 초과되었습니다.\n잠시 후에 다시 시도해주세요!",
-              style: V2MITITextStyle.smallRegularNormal
-                  .copyWith(color: V2MITIColor.gray1),
-            ),
-          ),
-        ),
+        content: '요청의 유효시간이 초과되었습니다.\n잠시 후에 다시 시도해주세요!',
+        contentPadding: EdgeInsets.symmetric(vertical: 55.h),
       );
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 유저 정보 조회 실패
-      CustomBottomSheet.showNormal(
+      CustomBottomSheet.showStringContent(
         context: context,
         onPressed: () => {context.pop(), context.pop()},
         buttonText: '돌아가기',
-        content: Padding(
-          padding: EdgeInsets.symmetric(vertical: 55.h),
-          child: Center(
-            child: Text(
-              "계정 정보가 일치하지 않습니다.\n잠시 후에 다시 시도해주세요!",
-              style: V2MITITextStyle.smallRegularNormal
-                  .copyWith(color: V2MITIColor.gray1),
-            ),
-          ),
-        ),
+        content: '계정 정보가 일치하지 않습니다.\n잠시 후에 다시 시도해주세요!',
+        contentPadding: EdgeInsets.symmetric(vertical: 55.h),
       );
     } else {
       /// 서버 오류

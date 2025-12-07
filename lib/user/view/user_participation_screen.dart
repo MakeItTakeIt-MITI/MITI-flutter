@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:miti/common/component/custom_drop_down_button.dart';
 import 'package:miti/common/param/pagination_param.dart';
+import 'package:miti/game/provider/widget/game_status_filter_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/user/provider/user_host_pagination_provider.dart';
 import 'package:miti/user/provider/user_participation_pagination_provider.dart';
@@ -17,7 +17,7 @@ import '../../common/model/default_model.dart';
 import '../../common/model/entity_enum.dart';
 import '../../court/view/court_map_screen.dart';
 import '../../game/component/game_list_component.dart';
-import '../../game/model/v2/game/base_game_response.dart';
+import '../../game/model/base_game_meta_response.dart';
 import '../../theme/text_theme.dart';
 import '../param/user_profile_param.dart';
 
@@ -71,12 +71,10 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
   }
 
   Future<void> refresh() async {
-    final gameStatus =
-        getStatus(ref.read(dropDownValueProvider(DropButtonType.game)));
+    final gameStatus = ref.read(gameStatusFilterProvider);
     if (widget.type == UserGameType.host) {
       ref
           .read(userHostingPaginationProvider(
-                  param: UserGameParam(game_status: gameStatus),
                   cursorParam: const CursorPaginationParam())
               .notifier)
           .paginate(
@@ -89,7 +87,6 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
     } else {
       ref
           .read(userParticipationPaginationProvider(
-                  param: UserGameParam(game_status: gameStatus),
                   cursorParam: const CursorPaginationParam())
               .notifier)
           .paginate(
@@ -111,15 +108,10 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
         slivers: [
           Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              final gameStatus = getStatus(
-                  ref.watch(dropDownValueProvider(DropButtonType.game)));
-
               final state = widget.type == UserGameType.host
                   ? ref.watch(userHostingPaginationProvider(
-                      param: UserGameParam(game_status: gameStatus),
                       cursorParam: const CursorPaginationParam()))
                   : ref.watch(userParticipationPaginationProvider(
-                      param: UserGameParam(game_status: gameStatus),
                       cursorParam: const CursorPaginationParam()));
 
               // 완전 처음 로딩일때
@@ -138,7 +130,7 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
               }
 
               final cp = state as ResponseModel<
-                  CursorPaginationModel<List<BaseGameResponse>>>;
+                  CursorPaginationModel<List<BaseGameMetaResponse>>>;
               log('state.data!.page_content = ${state.data!.items.length}');
               if (state.data!.items.isEmpty) {
                 return getEmptyWidget(widget.type);
@@ -173,9 +165,10 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
                       model: pItem,
                     );
                   },
-                  itemCount: cp.data!.items.length + 1, separatorBuilder: (BuildContext context, int index) {
-                    return  SizedBox(height: 32.h);
-                },
+                  itemCount: cp.data!.items.length + 1,
+                  separatorBuilder: (BuildContext context, int index) {
+                    return SizedBox(height: 32.h);
+                  },
                 ),
               );
             },
@@ -205,8 +198,8 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
           SizedBox(height: 20.h),
           Text(
             desc,
-            style:
-                MITITextStyle.pageSubTextStyle.copyWith(color: MITIColor.gray100),
+            style: MITITextStyle.pageSubTextStyle
+                .copyWith(color: MITIColor.gray100),
           )
         ],
       ),
@@ -216,13 +209,12 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
   void _scrollListener() {
     if (_scrollController.position.pixels >
         _scrollController.position.maxScrollExtent - 300) {
-      final gameStatus =
-          getStatus(ref.read(dropDownValueProvider(DropButtonType.game)));
+      final gameStatus = ref.watch(gameStatusFilterProvider);
+
       if (widget.type == UserGameType.host) {
         log("더 불러오기!!");
         ref
             .read(userHostingPaginationProvider(
-                    param: UserGameParam(game_status: gameStatus),
                     cursorParam: const CursorPaginationParam())
                 .notifier)
             .paginate(
@@ -235,7 +227,6 @@ class _GameHostScreenState extends ConsumerState<UserParticipationScreen> {
       } else {
         ref
             .read(userParticipationPaginationProvider(
-                    param: UserGameParam(game_status: gameStatus),
                     cursorParam: const CursorPaginationParam())
                 .notifier)
             .paginate(
