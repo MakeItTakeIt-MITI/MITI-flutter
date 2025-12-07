@@ -52,7 +52,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
         surfaceTintColor: backgroundColor ?? V2MITIColor.gray12,
         shape: hasBorder
             ? const Border(
-                bottom: BorderSide(color: MITIColor.gray600),
+                bottom: BorderSide(color: V2MITIColor.gray10),
               )
             : Border(
                 bottom:
@@ -92,7 +92,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
       leadingWidth: 24.r + 24.w,
       shape: hasBorder
           ? const Border(
-              bottom: BorderSide(color: MITIColor.gray600),
+              bottom: BorderSide(color: V2MITIColor.gray10),
             )
           : Border(
               bottom: BorderSide(color: backgroundColor ??  V2MITIColor.gray12),

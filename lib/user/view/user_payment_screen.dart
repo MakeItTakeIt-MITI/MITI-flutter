@@ -46,15 +46,13 @@ class _UserPaymentScreenState extends ConsumerState<UserPaymentScreen> {
   Widget build(BuildContext context) {
     final userId = ref.watch(authProvider)!.id!;
     return Scaffold(
-      backgroundColor: MITIColor.gray800,
       body: NestedScrollView(
           headerSliverBuilder: (_, __) {
             return [
               const DefaultAppBar(
                 isSliver: true,
                 title: '결제 내역 확인',
-                backgroundColor: MITIColor.gray800,
-                hasBorder: false,
+                hasBorder: true,
               )
             ];
           },
@@ -77,12 +75,13 @@ class _UserPaymentScreenState extends ConsumerState<UserPaymentScreen> {
                           pathParameters: pathParameters,
                         );
                       },
-                      child: PaymentCard.fromModel(model: pModel));
+                      child: _PaymentCard.fromModel(model: pModel));
                 },
                 skeleton: const PaymentCardListSkeleton(),
                 param: UserPaymentParam(),
                 controller: _scrollController,
                 separateSize: 0,
+                separatorWidget: Divider(height: 16.h, color: V2MITIColor.gray10,),
                 emptyWidget: Container(
                   color: MITIColor.gray750,
                   child: Column(
@@ -111,60 +110,53 @@ class _UserPaymentScreenState extends ConsumerState<UserPaymentScreen> {
   }
 }
 
-class PaymentCard extends StatelessWidget {
+class _PaymentCard extends StatelessWidget {
   final int id;
-  final ItemType itemType;
   final PaymentResultStatusType status;
-  final PaymentMethodType paymentMethod;
-  final int quantity;
+  final ItemType itemType;
   final String itemName;
-  final int totalAmount;
-  final String approvedAt;
+  final PaymentMethodType paymentMethod;
+  final int finalAmount;
+  final DateTime createdAt;
+  final DateTime approvedAt;
 
-  const PaymentCard({
+  const _PaymentCard({
     super.key,
     required this.id,
     required this.status,
     required this.itemType,
-    required this.paymentMethod,
-    required this.approvedAt,
-    required this.totalAmount,
     required this.itemName,
-    required this.quantity,
+    required this.paymentMethod,
+    required this.finalAmount,
+    required this.createdAt,
+    required this.approvedAt,
   });
 
-  factory PaymentCard.fromModel({required BasePaymentResultResponse model}) {
-    return PaymentCard(
+  factory _PaymentCard.fromModel({required BasePaymentResultResponse model}) {
+    return _PaymentCard(
       id: model.id,
       status: model.status,
       itemType: model.itemType,
-      paymentMethod: model.paymentMethod,
-      approvedAt: model.approvedAt,
-      totalAmount: model.totalAmount,
       itemName: model.itemName,
-      quantity: model.quantity,
+      paymentMethod: model.paymentMethod,
+      finalAmount: model.finalAmount,
+      createdAt: model.createdAt,
+      approvedAt: model.approvedAt,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final date = DateTimeUtil.parseMd(dateTime: DateTime.parse(approvedAt));
+    final date = DateTimeUtil.parseMd(dateTime: approvedAt);
     return Container(
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: MITIColor.gray700,
-          ),
-        ),
-      ),
       padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             date,
-            style: MITITextStyle.xxsm.copyWith(
-              color: MITIColor.gray400,
+            style: V2MITITextStyle.tinyMediumTight.copyWith(
+              color: V2MITIColor.gray5,
             ),
           ),
           SizedBox(width: 20.w),
@@ -174,15 +166,15 @@ class PaymentCard extends StatelessWidget {
               children: [
                 Text(
                   itemType.value,
-                  style: MITITextStyle.xxsm.copyWith(
-                    color: MITIColor.gray100,
+                  style: V2MITITextStyle.tinyMediumTight.copyWith(
+                    color: V2MITIColor.gray1,
                   ),
                 ),
                 SizedBox(height: 8.h),
                 Text(
                   itemName,
-                  style: MITITextStyle.xxsm.copyWith(
-                    color: MITIColor.gray100,
+                  style: V2MITITextStyle.regularMediumTight.copyWith(
+                    color: V2MITIColor.gray1,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -192,23 +184,23 @@ class PaymentCard extends StatelessWidget {
                   children: [
                     Text(
                       paymentMethod.displayName,
-                      style: MITITextStyle.xxsmLight.copyWith(
-                        color: MITIColor.gray400,
+                      style: V2MITITextStyle.tinyRegular.copyWith(
+                        color: V2MITIColor.gray5,
                       ),
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 6.w),
                       child: Text(
                         '|',
-                        style: MITITextStyle.xxsmLight.copyWith(
-                          color: MITIColor.gray400,
+                        style: V2MITITextStyle.tinyRegular.copyWith(
+                          color: V2MITIColor.gray5,
                         ),
                       ),
                     ),
                     Text(
                       status.name,
-                      style: MITITextStyle.xxsmLight.copyWith(
-                        color: MITIColor.gray400,
+                      style: V2MITITextStyle.tinyRegular.copyWith(
+                        color: V2MITIColor.gray5,
                       ),
                     ),
                   ],
@@ -217,11 +209,11 @@ class PaymentCard extends StatelessWidget {
             ),
           ),
           Text(
-            totalAmount == 0
+            finalAmount == 0
                 ? '무료'
-                : '${NumberUtil.format(totalAmount.toString())}원',
-            style: MITITextStyle.lg.copyWith(
-              color: MITIColor.gray100,
+                : '${NumberUtil.format(finalAmount.toString())}원',
+            style: V2MITITextStyle.largeMediumTight.copyWith(
+              color: V2MITIColor.gray1,
             ),
           )
         ],

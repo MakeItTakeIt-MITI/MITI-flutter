@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class V2MITITextStyle {
+  static final TextStyle largeMediumTight = TextStyle(
+    fontSize: 18.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w500,
+    height: 1.1,
+  );
+
   static final TextStyle title1 = TextStyle(
     fontSize: 48.sp,
     fontFamily: 'Pretendard',

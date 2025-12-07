@@ -6,37 +6,37 @@ import '../../../../common/model/entity_enum.dart';
 part 'base_payment_result_response.g.dart';
 
 @JsonSerializable()
-class BasePaymentResultResponse extends IModelWithId{
-
-  @JsonKey(name: 'item_type')
-  final ItemType itemType;
+class BasePaymentResultResponse extends IModelWithId {
 
   @JsonKey(name: 'status')
   final PaymentResultStatusType status;
 
-  @JsonKey(name: 'payment_method')
-  final PaymentMethodType paymentMethod;
-
-  @JsonKey(name: 'quantity')
-  final int quantity;
+  @JsonKey(name: 'item_type')
+  final ItemType itemType;
 
   @JsonKey(name: 'item_name')
   final String itemName;
 
-  @JsonKey(name: 'total_amount')
-  final int totalAmount;
+  @JsonKey(name: 'payment_method')
+  final PaymentMethodType paymentMethod;
+
+  @JsonKey(name: 'final_amount')
+  final int finalAmount;
+
+  @JsonKey(name: 'created_at')
+  final DateTime createdAt;
 
   @JsonKey(name: 'approved_at')
-  final String approvedAt;
+  final DateTime approvedAt;
 
   BasePaymentResultResponse({
     required super.id,
-    required this.itemType,
     required this.status,
-    required this.paymentMethod,
-    required this.quantity,
+    required this.itemType,
     required this.itemName,
-    required this.totalAmount,
+    required this.paymentMethod,
+    required this.finalAmount,
+    required this.createdAt,
     required this.approvedAt,
   });
 
@@ -47,22 +47,22 @@ class BasePaymentResultResponse extends IModelWithId{
 
   BasePaymentResultResponse copyWith({
     int? id,
-    ItemType? itemType,
     PaymentResultStatusType? status,
-    PaymentMethodType? paymentMethod,
-    int? quantity,
+    ItemType? itemType,
     String? itemName,
-    int? totalAmount,
-    String? approvedAt,
+    PaymentMethodType? paymentMethod,
+    int? finalAmount,
+    DateTime? createdAt,
+    DateTime? approvedAt,
   }) {
     return BasePaymentResultResponse(
       id: id ?? this.id,
-      itemType: itemType ?? this.itemType,
       status: status ?? this.status,
-      paymentMethod: paymentMethod ?? this.paymentMethod,
-      quantity: quantity ?? this.quantity,
+      itemType: itemType ?? this.itemType,
       itemName: itemName ?? this.itemName,
-      totalAmount: totalAmount ?? this.totalAmount,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      finalAmount: finalAmount ?? this.finalAmount,
+      createdAt: createdAt ?? this.createdAt,
       approvedAt: approvedAt ?? this.approvedAt,
     );
   }
