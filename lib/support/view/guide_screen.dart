@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,10 +11,9 @@ import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/support/provider/support_provider.dart';
 import 'package:miti/theme/color_theme.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:miti/theme/text_theme.dart';
-import 'package:collection/collection.dart';
 import 'package:miti/util/util.dart';
+
 import '../../game/model/v2/support/service_guide_response.dart';
 import '../component/skeleton/guide_skeleton.dart';
 
@@ -60,7 +61,7 @@ class _GuideScreenState extends ConsumerState<GuideScreen> {
           if (result is LoadingModel) {
             return const GuideSkeleton();
           } else if (result is ErrorModel) {
-            return Text("error");
+            return const Text("error");
           }
           final model = (result as ResponseListModel<ServiceGuideResponse>).data!;
           final List<String> images =

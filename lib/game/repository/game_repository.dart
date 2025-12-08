@@ -11,14 +11,12 @@ import '../../dio/provider/dio_provider.dart';
 import '../../review/model/v2/game_reviewee_list_response.dart';
 import '../../review/model/v2/guest_review_response.dart';
 import '../model/game_model.dart';
+import '../model/participation_payment_detail_response.dart';
 import '../model/v2/game/game_detail_response.dart';
-import '../model/v2/game/game_participation_payment_detail_response.dart';
 import '../model/v2/game/game_player_list_response.dart';
-import '../model/v2/game/game_response.dart';
 import '../model/v2/game/game_with_court_map_response.dart';
 import '../model/v2/game/game_with_court_response.dart';
 import '../model/v2/participation/participation_game_response.dart';
-import '../model/v2/participation/participation_guest_player_response.dart';
 import '../model/v2/payment/participation_refund_info_response.dart';
 import '../param/game_pagination_param.dart';
 import '../param/game_param.dart';
@@ -72,7 +70,7 @@ abstract class GameRepository {
   /// 경기 참여 결제 정보 조회 API
   @Headers({'token': 'true'})
   @GET('/games/{gameId}/payment-info')
-  Future<ResponseModel<GameParticipationPaymentDetailResponse>> getPayment(
+  Future<ResponseModel<ParticipationPaymentDetailResponse>> getPayment(
       {@Path() required int gameId});
 
   /// 경기 피리뷰자 목록 조회 API

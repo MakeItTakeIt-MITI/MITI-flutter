@@ -27,6 +27,12 @@ class V2MITITextStyle {
     fontWeight: FontWeight.w500,
   );
 
+  static final TextStyle miniBoldTight = TextStyle(
+      fontSize: 10.sp,
+      fontFamily: 'Pretendard',
+      fontWeight: FontWeight.bold,
+      height: 1.2);
+
   static final TextStyle miniRegular = TextStyle(
     fontSize: 10.sp,
     fontFamily: 'Pretendard',
@@ -74,6 +80,12 @@ class V2MITITextStyle {
       fontFamily: 'Pretendard',
       fontWeight: FontWeight.w500,
       height: 1.25);
+
+  static final TextStyle smallRegular = TextStyle(
+    fontSize: 14.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w400,
+  );
 
   static final TextStyle smallRegularNormal = TextStyle(
       fontSize: 14.sp,
@@ -125,11 +137,19 @@ class V2MITITextStyle {
     height: 1.14,
   );
 
+
   static final TextStyle largeBoldTight = TextStyle(
     fontSize: 18.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.bold,
     height: 1.1,
+  );
+
+  static final TextStyle largeBoldNormal= TextStyle(
+    fontSize: 18.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.bold,
+    height: 1.3,
   );
 
   static final TextStyle tinyRegularNormal = TextStyle(

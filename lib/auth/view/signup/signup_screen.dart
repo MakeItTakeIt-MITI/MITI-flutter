@@ -261,11 +261,13 @@ class _CheckBoxFormV2State extends ConsumerState<CheckBoxFormV2> {
     final checked = ref.watch(checkProvider(2));
     return Column(
       mainAxisSize: MainAxisSize.min,
+      spacing: 8.h,
       children: [
         Flexible(
           child: CustomCheckBox(
             title: '약관 전체 동의하기',
-            textStyle: MITITextStyle.md.copyWith(color: MITIColor.gray100),
+            textStyle: V2MITITextStyle.regularMediumNormal
+                .copyWith(color: V2MITIColor.white),
             check: checked,
             isCheckBox: true,
             onTap: widget.allTap,
@@ -273,8 +275,8 @@ class _CheckBoxFormV2State extends ConsumerState<CheckBoxFormV2> {
         ),
         Divider(
           thickness: 1.h,
-          color: MITIColor.gray600,
-          height: 40.h,
+          color: V2MITIColor.gray10,
+          height: 16.h,
         ),
         ListView.separated(
             padding: EdgeInsets.zero,
@@ -283,7 +285,7 @@ class _CheckBoxFormV2State extends ConsumerState<CheckBoxFormV2> {
             itemBuilder: (_, idx) {
               return widget.checkBoxes[idx];
             },
-            separatorBuilder: (_, idx) => SizedBox(height: 16.h),
+            separatorBuilder: (_, idx) => SizedBox(height: 10.h),
             itemCount: widget.checkBoxes.length)
       ],
     );
@@ -439,14 +441,10 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
                 onTap: widget.showDetail,
                 child: Text(
                   '확인',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontFamily: 'Pretendard',
-                    color: MITIColor.gray400,
-                    fontWeight: FontWeight.w400,
-                    letterSpacing: -0.28.sp,
+                  style: V2MITITextStyle.smallMediumTight.copyWith(
+                    color: V2MITIColor.gray6,
                     decoration: TextDecoration.underline,
-                    decorationColor: MITIColor.gray400,
+                    decorationColor: V2MITIColor.gray6,
                   ),
                 ),
               ),

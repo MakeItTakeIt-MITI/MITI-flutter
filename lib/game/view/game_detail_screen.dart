@@ -38,8 +38,8 @@ import '../../user/model/v2/user_host_rating_response.dart';
 import '../../util/naver_map_util.dart';
 import '../../util/util.dart';
 import '../component/skeleton/game_detail_skeleton.dart';
+import '../model/base_game_meta_response.dart';
 import '../model/v2/game/game_detail_response.dart';
-import '../model/v2/game/game_participation_payment_detail_response.dart';
 import '../model/v2/game/game_with_court_response.dart';
 import '../model/v2/participation/base_participation_response.dart';
 import 'game_participation_screen.dart';
@@ -944,7 +944,7 @@ class SummaryComponent extends StatelessWidget {
   }
 
   factory SummaryComponent.fromPaymentModel(
-      {required GameParticipationPaymentDetailResponse model}) {
+      {required BaseGameMetaResponse model}) {
     final start = DateTime.parse("${model.startDate} ${model.startTime}");
     final end = DateTime.parse("${model.endDate} ${model.endTime}");
     final startDate = model.startDate.replaceAll('-', '. ');
@@ -955,14 +955,14 @@ class SummaryComponent extends StatelessWidget {
     final gameDate = startDate == endDate
         ? '$startDate $time'
         : '$startDate ${model.startTime.substring(0, 5)} ~ $endDate ${model.endTime.substring(0, 5)}';
-    final address = '${model.court.address} ${model.court.addressDetail ?? ''}';
+    final address = '${model.address} ${model.addressDetail ?? ''}';
     return SummaryComponent(
+      gameId: model.id,
       gameStatus: model.gameStatus,
       title: model.title,
       gameDate: gameDate,
       address: address,
-      fee: NumberUtil.format(
-          model.paymentInformation.paymentAmount.gameFeeAmount.toString()),
+      fee: NumberUtil.format(model.fee.toString()),
       max_invitation: model.maxInvitation,
       num_of_participations: model.numOfParticipations,
       duration: end.difference(start).inMinutes.toString(),
@@ -988,8 +988,6 @@ class SummaryComponent extends StatelessWidget {
       title: model.title,
       gameDate: gameDate,
       address: address,
-      // fee: NumberUtil.format(
-      //     model.payment_information.payment_amount.game_fee_amount.toString()),
       max_invitation: model.maxInvitation,
       num_of_participations: model.numOfParticipations,
       duration: end.difference(start).inMinutes.toString(),
@@ -1044,12 +1042,9 @@ class SummaryComponent extends StatelessWidget {
           ),
           textAlign: TextAlign.left,
         ),
-
       ],
     );
   }
-
-
 
   @override
   Widget build(BuildContext context) {

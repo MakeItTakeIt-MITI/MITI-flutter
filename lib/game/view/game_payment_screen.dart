@@ -32,10 +32,11 @@ import '../../auth/view/signup/signup_screen.dart';
 import '../../common/view/operation_term_screen.dart';
 import '../../env/environment.dart';
 import '../../kakaopay/param/boot_pay_approve_param.dart';
+import '../base_coupon_info_response.dart';
+import '../component/coupon_selection.dart';
 import '../component/skeleton/game_payment_skeleton.dart';
 import '../error/game_error.dart';
-import '../model/v2/game/game_participation_payment_detail_response.dart';
-import '../model/v2/game/game_participation_payment_response.dart';
+import '../model/participation_payment_detail_response.dart';
 import '../model/v2/payment/base_payment_request_response.dart';
 import '../model/v2/payment/payment_completed_response.dart';
 import 'game_create_complete_screen.dart';
@@ -74,7 +75,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
   bool isLoading = false;
   late Throttle<int> _throttler;
   late PaymentMethodType type;
-
+  BaseCouponInfoResponse? selectedCoupon;
   int throttleCnt = 0;
 
   @override
@@ -111,20 +112,17 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
   @override
   Widget build(BuildContext context) {
     final result = ref.watch(paymentProvider(gameId: widget.gameId));
-    GameParticipationPaymentDetailResponse? model;
+    ParticipationPaymentDetailResponse? model;
 
-    if (result is ResponseModel<GameParticipationPaymentDetailResponse>) {
+    if (result is ResponseModel<ParticipationPaymentDetailResponse>) {
       model = result.data!;
     }
 
     log('result type = ${result.runtimeType}');
-    final fee = model?.paymentInformation.finalPaymentAmount;
-    type = model?.isFreeGame == null || model!.isFreeGame
-        ? PaymentMethodType.empty_pay
-        : PaymentMethodType.kakao;
+    final fee = model?.game.fee;
+    type = fee == 0 ? PaymentMethodType.empty_pay : PaymentMethodType.kakao;
 
     return Scaffold(
-      backgroundColor: MITIColor.gray750,
       bottomNavigationBar: Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
           bool validCheckBox = true;
@@ -153,15 +151,16 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
                   : () {},
               style: TextButton.styleFrom(
                 fixedSize: Size(double.infinity, 48.h),
-                backgroundColor:
-                    valid && !isLoading ? MITIColor.primary : MITIColor.gray700,
+                backgroundColor: valid && !isLoading
+                    ? V2MITIColor.primary5
+                    : V2MITIColor.gray7,
               ),
               child: Text(
                 fee != null && fee == 0 ? '참여하기' : '결제하기',
-                style: MITITextStyle.btnTextBStyle.copyWith(
+                style: V2MITITextStyle.regularBold.copyWith(
                   color: valid && !isLoading
-                      ? MITIColor.gray800
-                      : MITIColor.gray50,
+                      ? V2MITIColor.black
+                      : V2MITIColor.white,
                 ),
               ),
             ),
@@ -174,7 +173,6 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
             const DefaultAppBar(
               isSliver: true,
               title: '경기 결제 정보',
-              backgroundColor: MITIColor.gray750,
             ),
           ];
         }),
@@ -195,41 +193,58 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
                   } else if (result is ErrorModel) {
                     GameError.fromModel(model: result).responseError(
                         context, GameApiType.getPaymentInfo, ref);
-                    return Text('에러');
+                    return const Text('에러');
                   }
 
-                  final model = (result as ResponseModel<
-                          GameParticipationPaymentDetailResponse>)
+                  final model = (result
+                          as ResponseModel<ParticipationPaymentDetailResponse>)
                       .data!;
-                  final visiblePay =
-                      model.paymentInformation.paymentAmount.gameFeeAmount != 0;
+
                   return SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        SummaryComponent.fromPaymentModel(model: model),
-                        getDivider(),
-                        PaymentComponent.fromModel(
-                            model: model.paymentInformation),
-                        // Visibility(
-                        //     visible: visiblePay,
-                        //     child: Column(
-                        //       children: [
-                        //         getDivider(),
-                        //         const PayWayButton(),
-                        //       ],
-                        //     )),
-                        getDivider(),
-                        const PaymentAndRefundPolicyComponent(
-                          title: '결제 및 환불 정책',
-                          isPayment: true,
-                        ),
-                        getDivider(),
-                        PaymentCheckForm(
-                          type: AgreementRequestType.game_participation,
-                          gameId: widget.gameId,
-                          payType: type,
-                        ),
-                      ],
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 16.w, vertical: 20.h),
+                      child: Column(
+                        spacing: 36.h,
+                        children: [
+                          SummaryComponent.fromPaymentModel(model: model.game),
+                          if (model.couponInfo.isNotEmpty)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              spacing: 16.h,
+                              children: [
+                                Text(
+                                  '쿠폰',
+                                  style: V2MITITextStyle.regularBold
+                                      .copyWith(color: V2MITIColor.white),
+                                ),
+                                CouponSelection(
+                                  coupons: model.couponInfo,
+                                  onSelect: (BaseCouponInfoResponse coupon) {
+                                    setState(() {
+                                      selectedCoupon = coupon;
+                                    });
+                                  },
+                                  selectedId: selectedCoupon?.id,
+                                ),
+                              ],
+                            ),
+                          _PaymentInfo(
+                            originAmount: model.game.fee,
+                            couponFinalDiscountAmount:
+                                selectedCoupon?.couponFinalDiscountAmount,
+                          ),
+                          const PaymentAndRefundPolicyComponent(
+                            title: '결제 및 환불 정책',
+                            isPayment: true,
+                          ),
+                          PaymentCheckForm(
+                            type: AgreementRequestType.game_participation,
+                            gameId: widget.gameId,
+                            payType: type,
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -436,51 +451,92 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
       }
     }
   }
+}
 
-// Future<void> onPay(
-//     WidgetRef ref, BuildContext context, PaymentMethodType type) async {
-//   final result = await ref
-//       .read(readyPayProvider(gameId: widget.gameId, type: type).future);
-//   if (context.mounted) {
-//     if (result is ErrorModel) {
-//       PayError.fromModel(model: result)
-//           .responseError(context, PayApiType.ready, ref);
-//     } else {
-//       switch (type) {
-//         case PaymentMethodType.kakao:
-//           final model = (result as ResponseModel<PayBaseModel>).data!;
-//           model as PayReadyModel;
-//           // log('model = ${model.runtimeType}');
-//
-//           final pathParameters = {'gameId': widget.gameId.toString()};
-//           final queryParameters = {
-//             'redirectUrl': model.next_redirect_mobile_url
-//           };
-//           context.goNamed(
-//             BootPayScreen.routeName,
-//             pathParameters: pathParameters,
-//             queryParameters: queryParameters,
-//           );
-//           break;
-//         case PaymentMethodType.empty_pay:
-//           log("무료 경기 참여 완료");
-//           Map<String, String> pathParameters = {
-//             'gameId': widget.gameId.toString()
-//           };
-//           const GameCompleteType extra = GameCompleteType.payment;
-//
-//           context.goNamed(
-//             GameCompleteScreen.routeName,
-//             pathParameters: pathParameters,
-//             extra: extra,
-//           );
-//           break;
-//         default:
-//           break;
-//       }
-//     }
-//   }
-// }
+class _PaymentInfo extends StatelessWidget {
+  final int originAmount;
+  final int? couponFinalDiscountAmount;
+
+  const _PaymentInfo(
+      {super.key,
+      required this.originAmount,
+      required this.couponFinalDiscountAmount});
+
+  Widget getAmount(int amount, bool isNegative) {
+    String newText = '${isNegative ? '-' : ''}${formatAmount(amount)}';
+
+    return Text(
+      newText,
+      style: V2MITITextStyle.smallRegular.copyWith(
+          color: isNegative ? V2MITIColor.red5 : V2MITIColor.primary5),
+    );
+  }
+
+  String formatAmount(int amount) {
+    final formatter = NumberFormat.decimalPattern();
+    return '₩ ${formatter.format(amount)}원';
+  }
+
+  Widget getAmountInfo(String title, int amount, bool isNegative) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style:
+              V2MITITextStyle.smallRegular.copyWith(color: V2MITIColor.gray1),
+        ),
+        getAmount(amount, isNegative)
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final finalAmount =
+        formatAmount(originAmount - (couponFinalDiscountAmount ?? 0));
+    return Column(
+      spacing: 16.h,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          "결제 정보",
+          style: V2MITITextStyle.regularBold.copyWith(color: V2MITIColor.white),
+        ),
+        Column(
+          spacing: 8.h,
+          children: [
+            Column(
+              spacing: 12.h,
+              children: [
+                getAmountInfo('1. 원 금액', originAmount, false),
+                if (couponFinalDiscountAmount != null)
+                  getAmountInfo('2. 쿠폰 할인', couponFinalDiscountAmount!, true)
+              ],
+            ),
+            const Divider(
+              color: V2MITIColor.gray10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '최종 결제 금액',
+                  style: V2MITITextStyle.regularBold
+                      .copyWith(color: V2MITIColor.gray1),
+                ),
+                Text(
+                  finalAmount,
+                  style: V2MITITextStyle.regularBold
+                      .copyWith(color: V2MITIColor.gray1),
+                )
+              ],
+            )
+          ],
+        )
+      ],
+    );
+  }
 }
 
 class PaymentCheckForm extends ConsumerStatefulWidget {
@@ -542,7 +598,8 @@ class PaymentCheckFormState extends ConsumerState<PaymentCheckForm> {
     final checkBoxes = model.mapIndexed((idx, e) {
       return CustomCheckBox(
           title: '${e.is_required ? '[필수] ' : '[선택] '} ${e.policy.name}',
-          textStyle: MITITextStyle.sm.copyWith(color: MITIColor.gray200),
+          textStyle: V2MITITextStyle.smallMediumTight
+              .copyWith(color: V2MITIColor.gray1),
           check: isCheckBoxes[idx],
           hasDetail: e.is_required,
           showDetail: () {
@@ -566,313 +623,27 @@ class PaymentCheckFormState extends ConsumerState<PaymentCheckForm> {
             onCheck(ref, idx);
           });
     }).toList();
-    return Padding(
-      padding:
-          EdgeInsets.only(top: 24.h, left: 21.w, right: 21.w, bottom: 28.h),
-      child: CheckBoxFormV2(
-        checkBoxes: checkBoxes,
-        allTap: () {
-          ref.read(checkProvider(2).notifier).update((state) => !state);
-          final List<bool> isCheckBoxes = List.generate(
-              result.data!.length, (e) => ref.read(checkProvider(2)));
-          if (widget.type == AgreementRequestType.game_participation) {
-            ref
-                .read(gameParticipationFormProvider(
-                        gameId: widget.gameId, type: widget.payType!)
-                    .notifier)
-                .update(isCheckBoxes: isCheckBoxes);
-          } else {
-            ref
-                .read(gameRefundFormProvider.notifier)
-                .update(isCheckBoxes: isCheckBoxes);
-          }
-        },
-      ),
+    return CheckBoxFormV2(
+      checkBoxes: checkBoxes,
+      allTap: () {
+        ref.read(checkProvider(2).notifier).update((state) => !state);
+        final List<bool> isCheckBoxes = List.generate(
+            result.data!.length, (e) => ref.read(checkProvider(2)));
+        if (widget.type == AgreementRequestType.game_participation) {
+          ref
+              .read(gameParticipationFormProvider(
+                      gameId: widget.gameId, type: widget.payType!)
+                  .notifier)
+              .update(isCheckBoxes: isCheckBoxes);
+        } else {
+          ref
+              .read(gameRefundFormProvider.notifier)
+              .update(isCheckBoxes: isCheckBoxes);
+        }
+      },
     );
   }
 }
-
-class PaymentComponent extends StatelessWidget {
-  final String game_fee_amount;
-  final String commission_amount;
-  final String vat_amount;
-  final String totalAmount;
-  final String promotion_amount;
-  final String final_payment_amount;
-
-  const PaymentComponent(
-      {super.key,
-      required this.game_fee_amount,
-      required this.commission_amount,
-      required this.vat_amount,
-      required this.totalAmount,
-      required this.promotion_amount,
-      required this.final_payment_amount});
-
-  factory PaymentComponent.fromModel(
-      {required GameParticipationPaymentResponse model}) {
-    final payment = model.paymentAmount;
-    final game_fee_amount =
-        NumberFormat.decimalPattern().format(payment.gameFeeAmount);
-    final miti_commission_amount =
-        NumberFormat.decimalPattern().format(payment.commissionAmount);
-    final vat_amount = NumberFormat.decimalPattern().format(payment.vatAmount);
-    final totalAmount =
-        NumberFormat.decimalPattern().format(payment.totalAmount);
-    final promotion_amount = NumberFormat.decimalPattern()
-        .format(model.discountAmount.promotionAmount);
-    final final_payment_amount =
-        NumberFormat.decimalPattern().format(model.finalPaymentAmount);
-    return PaymentComponent(
-      game_fee_amount: game_fee_amount,
-      commission_amount: miti_commission_amount,
-      vat_amount: vat_amount,
-      totalAmount: totalAmount,
-      promotion_amount: promotion_amount,
-      final_payment_amount: final_payment_amount,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding:
-          EdgeInsets.only(top: 24.h, left: 21.w, right: 21.w, bottom: 28.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            '결제 및 할인 정보',
-            style: MITITextStyle.mdBold.copyWith(
-              color: MITIColor.gray100,
-            ),
-          ),
-          SizedBox(height: 20.h),
-          getPayment(
-              title: '경기 참여 비용',
-              fee: game_fee_amount == '0' ? '무료' : '₩ $game_fee_amount'),
-          Visibility(
-              visible: final_payment_amount != '0',
-              child: Column(
-                children: [
-                  SizedBox(height: 12.h),
-                  getPayment(title: '결제 수수료', fee: '₩ $commission_amount'),
-                  // SizedBox(height: 12.h),
-                  // getPayment(
-                  //     title: '프로모션 할인',
-                  //     fee: promotion_amount,
-                  //     color: MITIColor.error),
-                ],
-              )),
-          getDivider(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '총 결제 금액',
-                style: MITITextStyle.mdBold.copyWith(
-                  color: MITIColor.gray100,
-                ),
-              ),
-              Text(
-                final_payment_amount == '0' ? '무료' : '₩ $final_payment_amount',
-                style: MITITextStyle.mdBold.copyWith(
-                  color: MITIColor.primary,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Row getPayment({required String title, required String fee, Color? color}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title,
-          style: MITITextStyle.sm.copyWith(
-            color: MITIColor.gray100,
-          ),
-        ),
-        Text(
-          fee,
-          style: MITITextStyle.sm.copyWith(
-            color: color ?? MITIColor.gray100,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Divider getDivider() {
-    return Divider(
-      color: MITIColor.gray700,
-      height: 41.h,
-    );
-  }
-}
-
-// class PayWayButton extends ConsumerWidget {
-//   const PayWayButton({super.key});
-//
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     // final selected = ref.watch(checkProvider(1));
-//     final paymentWay = ref.watch(paymentWayProvider);
-//     return Padding(
-//       padding:
-//           EdgeInsets.only(top: 24.h, left: 21.w, right: 21.w, bottom: 28.h),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.stretch,
-//         children: [
-//           Text(
-//             '결제 수단',
-//             style: MITITextStyle.mdBold.copyWith(
-//               color: MITIColor.gray100,
-//             ),
-//           ),
-//           SizedBox(height: 20.h),
-//           SizedBox(
-//             height: 44.h,
-//             child: Row(
-//               children: [
-//                 Expanded(
-//                   child: TextButton(
-//                     onPressed: () {
-//                       ref
-//                           .read(paymentWayProvider.notifier)
-//                           .update((state) => PaymentMethodType.kakao);
-//                     },
-//                     style: TextButton.styleFrom(
-//                       backgroundColor: paymentWay == PaymentMethodType.kakao
-//                           ? const Color(0xFFFFF100)
-//                           : MITIColor.gray800,
-//                       fixedSize: Size(double.infinity, 44.h),
-//                       shape: RoundedRectangleBorder(
-//                         side: BorderSide(
-//                           color: paymentWay == PaymentMethodType.kakao
-//                               ? const Color(0xFFFFF100)
-//                               : MITIColor.gray700,
-//                         ),
-//                         borderRadius: BorderRadius.all(Radius.circular(8.r)),
-//                       ),
-//                     ),
-//                     child: SvgPicture.asset(
-//                       AssetUtil.getAssetPath(
-//                           type: AssetType.icon, name: 'kakaopay'),
-//                       colorFilter: ColorFilter.mode(
-//                           paymentWay == PaymentMethodType.kakao
-//                               ? const Color(0xFF040000)
-//                               : const Color(0xFFFFF100),
-//                           BlendMode.srcIn),
-//                     ),
-//                   ),
-//                 ),
-//                 SizedBox(width: 10.w),
-//                 Expanded(
-//                   child: TextButton(
-//                     onPressed: () {
-//                       ref
-//                           .read(paymentWayProvider.notifier)
-//                           .update((state) => PaymentMethodType.card);
-//                     },
-//                     style: TextButton.styleFrom(
-//                       backgroundColor: paymentWay == PaymentMethodType.card
-//                           ? MITIColor.primary
-//                           : MITIColor.gray800,
-//                       fixedSize: Size(double.infinity, 44.h),
-//                       shape: RoundedRectangleBorder(
-//                         side: BorderSide(
-//                           color: paymentWay == PaymentMethodType.card
-//                               ? MITIColor.primary
-//                               : MITIColor.gray700,
-//                         ),
-//                         borderRadius: BorderRadius.all(Radius.circular(8.r)),
-//                       ),
-//                     ),
-//                     child: Row(
-//                       mainAxisAlignment: MainAxisAlignment.center,
-//                       children: [
-//                         SvgPicture.asset(
-//                           AssetUtil.getAssetPath(
-//                               type: AssetType.icon, name: 'card'),
-//                           colorFilter: ColorFilter.mode(
-//                               paymentWay == PaymentMethodType.card
-//                                   ? MITIColor.black
-//                                   : MITIColor.gray400,
-//                               BlendMode.srcIn),
-//                         ),
-//                         SizedBox(width: 2.w),
-//                         Text(
-//                           '신용카드',
-//                           style: MITITextStyle.xxsmSemiBold.copyWith(
-//                             color: paymentWay == PaymentMethodType.card
-//                                 ? MITIColor.black
-//                                 : MITIColor.gray400,
-//                           ),
-//                         )
-//                       ],
-//                     ),
-//                   ),
-//                 ),
-//                 SizedBox(width: 10.w),
-//                 // Expanded(
-//                 //   child: TextButton(
-//                 //     onPressed: () {
-//                 //       ref
-//                 //           .read(paymentWayProvider.notifier)
-//                 //           .update((state) => PaymentMethodType.bank);
-//                 //     },
-//                 //     style: TextButton.styleFrom(
-//                 //       backgroundColor: paymentWay == PaymentMethodType.bank
-//                 //           ? MITIColor.primary
-//                 //           : MITIColor.gray800,
-//                 //       fixedSize: Size(double.infinity, 44.h),
-//                 //       shape: RoundedRectangleBorder(
-//                 //         side: BorderSide(
-//                 //           color: paymentWay == PaymentMethodType.bank
-//                 //               ? MITIColor.primary
-//                 //               : MITIColor.gray700,
-//                 //         ),
-//                 //         borderRadius: BorderRadius.all(Radius.circular(8.r)),
-//                 //       ),
-//                 //     ),
-//                 //     child: Row(
-//                 //       mainAxisAlignment: MainAxisAlignment.center,
-//                 //       children: [
-//                 //         SvgPicture.asset(
-//                 //           AssetUtil.getAssetPath(
-//                 //               type: AssetType.icon, name: 'account_transfer'),
-//                 //           colorFilter: ColorFilter.mode(
-//                 //               paymentWay == PaymentMethodType.bank
-//                 //                   ? MITIColor.black
-//                 //                   : MITIColor.gray400,
-//                 //               BlendMode.srcIn),
-//                 //         ),
-//                 //         SizedBox(width: 2.w),
-//                 //         Text(
-//                 //           '계좌이체',
-//                 //           style: MITITextStyle.xxsmSemiBold.copyWith(
-//                 //             color: paymentWay == PaymentMethodType.bank
-//                 //                 ? MITIColor.black
-//                 //                 : MITIColor.gray400,
-//                 //           ),
-//                 //         )
-//                 //       ],
-//                 //     ),
-//                 //   ),
-//                 // ),
-//               ],
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
 
 class PaymentAndRefundPolicyComponent extends StatelessWidget {
   final bool isPayment;
@@ -893,102 +664,101 @@ class PaymentAndRefundPolicyComponent extends StatelessWidget {
       '• 위의 환불 수수료 정책에 따른 환불 수수료가 300원 미만인 경우, 최소 환불 수수료인 300원이 적용됩니다.'
     ];
 
-    return Padding(
-      padding:
-          EdgeInsets.only(top: 24.h, left: 21.w, right: 21.w, bottom: 28.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            title,
-            style: MITITextStyle.mdBold.copyWith(
-              color: MITIColor.gray100,
-            ),
+    return Column(
+      spacing: 16.h,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          title,
+          style: V2MITITextStyle.regularBold.copyWith(
+            color: V2MITIColor.gray1,
           ),
-          SizedBox(height: 20.h),
-          Text(
-            '경기 참가비 결제의 모든 관리와 책임의 주체는 MITI 이며, MITI는 서비스 이용 과정에서 발생하는 불만이나 분쟁을 해결하기 위하여 원이 및 피해 파악 등 필요한 조치를 시행할 것입니다.',
-            style: MITITextStyle.xxsmLight150.copyWith(
-              color: MITIColor.gray100,
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 29.h,
+          children: [
+            Text(
+              '경기 참가비 결제의 모든 관리와 책임의 주체는 MITI 이며, MITI는 서비스 이용 과정에서 발생하는 불만이나 분쟁을 해결하기 위하여 원이 및 피해 파악 등 필요한 조치를 시행할 것입니다.\n\n환불은 참여자가 지불한 참가비가 취소되는 방식으로 진행되며, 결제 취소 금액은 환불 정책에 따라 책정됩니다.',
+              style: V2MITITextStyle.tinyRegularNormal.copyWith(
+                color: V2MITIColor.gray1,
+              ),
             ),
-          ),
-          SizedBox(height: 12.h),
-          Text(
-            '환불은 참여자가 지불한 참가비가 취소되는 방식으로 진행되며, 결제 취소 금액은 환불 정책에 따라 책정됩니다.',
-            style: MITITextStyle.xxsmLight150.copyWith(
-              color: MITIColor.gray100,
-            ),
-          ),
-          SizedBox(height: 20.h),
-          Text(
-            '참여 취소 환불 수수료 정책',
-            style: MITITextStyle.smSemiBold.copyWith(
-              color: MITIColor.gray100,
-            ),
-          ),
-          SizedBox(height: 12.h),
-          ListView.separated(
-              padding: EdgeInsets.zero,
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemBuilder: (_, idx) {
-                return Text(
-                  contents[idx],
-                  style: MITITextStyle.xxsmLight150
-                      .copyWith(color: MITIColor.gray100),
-                );
-              },
-              separatorBuilder: (_, idx) => SizedBox(
-                    height: 8.h,
-                  ),
-              itemCount: contents.length),
-          Visibility(
-            visible: isPayment,
-            child: Column(
+            Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 12.h,
               children: [
-                SizedBox(height: 20.h),
                 Text(
-                  '유의 사항',
-                  style: MITITextStyle.smSemiBold.copyWith(
-                    color: MITIColor.gray100,
+                  '참여 취소 환불 수수료 정책',
+                  style: V2MITITextStyle.smallBoldNormal.copyWith(
+                    color: V2MITIColor.gray1,
                   ),
                 ),
-                SizedBox(height: 12.h),
-                Text.rich(
-                  TextSpan(children: [
-                    TextSpan(
-                      text: '• 경기 시작까지 2시간 미만 남은 경기는 참여 완료시 ',
-                      style: MITITextStyle.xxsmLight.copyWith(
-                        color: MITIColor.gray100,
-                      ),
-                    ),
-                    TextSpan(
-                      text: '참여 취소가 불가능',
-                      style: MITITextStyle.xxsmLight.copyWith(
-                        color: MITIColor.error,
-                      ),
-                    ),
-                    TextSpan(
-                      text: '합니다.',
-                      style: MITITextStyle.xxsmLight.copyWith(
-                        color: MITIColor.gray100,
-                      ),
-                    ),
-                  ]),
-                ),
-                SizedBox(height: 8.h),
-                Text(
-                  '• 참여가 어려운 경우, [게스트 경기 목록]에서 참여를 취소해주세요.',
-                  style: MITITextStyle.xxsmLight.copyWith(
-                    color: MITIColor.gray100,
-                  ),
-                )
+                ListView.separated(
+                    padding: EdgeInsets.zero,
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemBuilder: (_, idx) {
+                      return Text(
+                        contents[idx],
+                        style: V2MITITextStyle.tinyRegularNormal
+                            .copyWith(color: V2MITIColor.gray1),
+                      );
+                    },
+                    separatorBuilder: (_, idx) => SizedBox(
+                          height: 8.h,
+                        ),
+                    itemCount: contents.length),
               ],
-            ),
+            )
+          ],
+        ),
+        Visibility(
+          visible: isPayment,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: 20.h),
+              Text(
+                '유의 사항',
+                style: V2MITITextStyle.smallBoldNormal.copyWith(
+                  color: V2MITIColor.gray1,
+                ),
+              ),
+              SizedBox(height: 12.h),
+              Text.rich(
+                TextSpan(children: [
+                  TextSpan(
+                    text: '• 경기 시작까지 2시간 미만 남은 경기는 참여 완료시 ',
+                    style: V2MITITextStyle.tinyRegularNormal.copyWith(
+                      color: V2MITIColor.gray1,
+                    ),
+                  ),
+                  TextSpan(
+                    text: '참여 취소가 불가능',
+                    style: V2MITITextStyle.tinyRegularNormal.copyWith(
+                      color: V2MITIColor.red4,
+                    ),
+                  ),
+                  TextSpan(
+                    text: '합니다.',
+                    style: V2MITITextStyle.tinyRegularNormal.copyWith(
+                      color: V2MITIColor.gray1,
+                    ),
+                  ),
+                ]),
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                '• 참여가 어려운 경우, [게스트 경기 목록]에서 참여를 취소해주세요.',
+                style: V2MITITextStyle.tinyRegularNormal.copyWith(
+                  color: V2MITIColor.gray1,
+                ),
+              )
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

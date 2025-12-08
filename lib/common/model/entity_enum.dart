@@ -747,7 +747,6 @@ enum FileType {
   webp;
 }
 
-
 enum PaymentCancelationReason {
   simple_cancelation('단순 결제 취소'),
   game_cancelation('경기 취소'),
@@ -757,4 +756,17 @@ enum PaymentCancelationReason {
   final String displayName;
 
   const PaymentCancelationReason(this.displayName);
+}
+
+enum CouponStatusType {
+  pending('할당 대기중'),
+  reserved('예약'),
+  active('활성화'),
+  used('사용완료'),
+  disabled('비활성화'),
+  expired('만료');
+
+  final String displayName;
+
+  const CouponStatusType(this.displayName);
 }
