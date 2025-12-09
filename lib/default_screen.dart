@@ -53,7 +53,6 @@ class _DefaultShellScreenState extends ConsumerState<DefaultShellScreen> {
 
     return Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: MITIColor.gray800,
         body: widget.body,
         bottomNavigationBar: Consumer(
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
