@@ -12,6 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:miti/common/component/custom_bottom_sheet.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/component/default_layout.dart';
 import 'package:miti/common/model/default_model.dart';
@@ -181,6 +182,71 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
             SliverFillRemaining(
               child: Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  // 2. Side Effect 처리용
+                  // build 함수 내에서 특정 Provider의 상태 변화를 감지합니다.
+                  ref.listen<BaseModel>(
+                    paymentProvider(gameId: widget.gameId),
+                    (previous, next) {
+                      // previous: 변경 전 상태 (nullable)
+                      // next: 변경 후 상태
+
+                      // "로딩 중이거나 데이터가 없던 상태"에서 -> "성공적으로 데이터를 받은 상태"로 변했을 때만 실행
+                      if (previous is! ResponseModel &&
+                          next is ResponseModel<
+                              ParticipationPaymentDetailResponse>) {
+                        // 데이터가 로드된 직후 실행할 로직 (모달 띄우기)
+                        // 화면이 빌드된 직후 실행되도록 microtask 사용 추천
+                        Future.microtask(() {
+                          final coupons = next.data!.couponInfo;
+                          if (coupons.isEmpty) return;
+
+                          if (!context.mounted) return; // 위젯이 살아있는지 확인
+
+                          /// 쿠폰 가격이 제일 작으면서 최종 할인이 제일 큰 순으로 정렬
+                          coupons.sort((c1, c2) {
+                            // 1순위: 최종 할인 금액 (내림차순: c2 vs c1)
+                            int compareResult = c2.couponFinalDiscountAmount
+                                .compareTo(c1.couponFinalDiscountAmount);
+
+                            // 1순위가 같지 않으면(0이 아니면) 그 결과를 바로 반환
+                            if (compareResult != 0) {
+                              return compareResult;
+                            }
+
+                            // 1순위가 같으면 2순위 비교: 쿠폰 할인 금액 (오름차순: c2 vs c1)
+                            return c1.couponDiscountAmount
+                                .compareTo(c2.couponDiscountAmount);
+                          });
+
+                          CustomBottomSheet.showWidgetContent(
+                              title: '쿠폰 사용하기',
+                              hasPop: true,
+                              context: context,
+                              content: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                spacing: 10.h,
+                                children: [
+                                  Text(
+                                    '사용가능한 쿠폰이 있습니다! 쿠폰을 하시시고 참가비를 할인받아보세요!',
+                                    style: V2MITITextStyle.tinyRegularNormal
+                                        .copyWith(color: V2MITIColor.gray3),
+                                  ),
+                                  CouponCard.fromModel(
+                                      model: coupons.first, isSelected: true),
+                                ],
+                              ),
+                              onPressed: () => {
+                                    setState(() {
+                                      selectedCoupon = coupons.first;
+                                    }),
+                                    context.pop()
+                                  },
+                              buttonText: '사용하기');
+                        });
+                      }
+                    },
+                  );
+
                   final result =
                       ref.watch(paymentProvider(gameId: widget.gameId));
                   if (result is LoadingModel) {

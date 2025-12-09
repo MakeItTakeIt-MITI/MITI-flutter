@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,7 +10,6 @@ import 'package:miti/etc/provider/tc_policy_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
-import '../../notification/view/notification_detail_screen.dart';
 import '../component/skeleton/tc_policy_detail_skeleton.dart';
 import '../component/skeleton/tc_policy_skeleton.dart';
 
@@ -24,11 +22,9 @@ class TcPolicyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const DefaultAppBar(
-        backgroundColor: MITIColor.gray800,
         hasBorder: false,
         title: '약관 및 정책',
       ),
-      backgroundColor: MITIColor.gray800,
       body: Padding(
         padding: EdgeInsets.all(21.r),
         child: Consumer(
@@ -97,9 +93,7 @@ class TcPolicyDetailScreen extends ConsumerWidget {
 
     final model = (result as ResponseModel<TcPolicyDetailModel>).data!;
     return Dialog.fullscreen(
-      backgroundColor: MITIColor.gray800,
       child: Scaffold(
-        backgroundColor: MITIColor.gray800,
         appBar: const DefaultAppBar(
           hasBorder: false,
           leadingIcon: "remove",

@@ -20,9 +20,7 @@ class OperationTermScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog.fullscreen(
-      backgroundColor: MITIColor.gray800,
       child: Scaffold(
-        backgroundColor: MITIColor.gray800,
         appBar: const DefaultAppBar(
           hasBorder: false,
           leadingIcon: "remove",

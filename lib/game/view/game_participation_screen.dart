@@ -270,7 +270,6 @@ class _ParticipationFilterButtonState
                           top: Radius.circular(20.r),
                         ),
                       ),
-                      backgroundColor: MITIColor.gray800,
                       builder: (context) {
                         return Column(
                           mainAxisSize: MainAxisSize.min,

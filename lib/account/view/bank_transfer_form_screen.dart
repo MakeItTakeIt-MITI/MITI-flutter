@@ -199,7 +199,6 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
                           top: Radius.circular(20.r),
                         ),
                       ),
-                      backgroundColor: MITIColor.gray800,
                       builder: (context) {
                         return StatefulBuilder(builder:
                             (BuildContext context, StateSetter setState) {

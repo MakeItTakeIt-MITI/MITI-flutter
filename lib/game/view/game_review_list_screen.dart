@@ -54,7 +54,6 @@ class _GameReviewListScreenState extends State<GameReviewListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MITIColor.gray750,
       body: NestedScrollView(
         controller: _scrollController,
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -62,7 +61,6 @@ class _GameReviewListScreenState extends State<GameReviewListScreen> {
             const DefaultAppBar(
               title: '경기 리뷰 남기기',
               isSliver: true,
-              backgroundColor: MITIColor.gray750,
             )
           ];
         },

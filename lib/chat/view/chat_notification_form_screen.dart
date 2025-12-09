@@ -181,10 +181,8 @@ class _ChatNotificationFormScreenState
     }
 
     return Scaffold(
-      backgroundColor: MITIColor.gray800,
       bottomNavigationBar: bottomButton,
       appBar: DefaultAppBar(
-        backgroundColor: MITIColor.gray800,
         hasBorder: false,
         title: "공지 작성하기",
         actions: [
