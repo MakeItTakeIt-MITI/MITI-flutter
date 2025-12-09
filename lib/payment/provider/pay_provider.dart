@@ -1,39 +1,35 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:miti/common/model/entity_enum.dart';
-import 'package:miti/kakaopay/repository/pay_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
-import '../../game/model/v2/payment/base_payment_request_response.dart';
-import '../../game/provider/game_provider.dart';
-import '../model/boot_pay_request_model.dart';
-import '../model/pay_model.dart';
 import '../param/boot_pay_approve_param.dart';
+import '../param/pay_request_param.dart';
+import '../repository/pay_repository.dart';
 
 part 'pay_provider.g.dart';
 
 @Riverpod()
-Future<BaseModel> readyPay(ReadyPayRef ref,
-    {required int gameId, required PaymentMethodType type}) async {
+Future<BaseModel> readyPay(Ref ref,
+    {required PayRequestParam param}) async {
   final repository = ref.watch(payRepositoryProvider);
 
   return repository
-      .requestBootPay(gameId: gameId)
+      .requestBootPay(param: param)
       .then<BaseModel>((value) async {
     final model = value.data!;
-    switch (type) {
-      case PaymentMethodType.empty_pay:
-        ref
-            .read(gameDetailProvider(gameId: gameId).notifier)
-            .get(gameId: gameId);
-        break;
-      default:
-        model as BasePaymentRequestResponse;
-        final orderId = model.orderId;
-        logger.i('readyPay orderId = $orderId!');
-        break;
-    }
+    // switch (type) {
+    //   case PaymentMethodType.empty_pay:
+    //     ref
+    //         .read(gameDetailProvider(gameId: gameId).notifier)
+    //         .get(gameId: gameId);
+    //     break;
+    //   default:
+    //     model as BasePaymentRequestResponse;
+    //     final orderId = model.orderId;
+    //     logger.i('readyPay orderId = $orderId!');
+    //     break;
+    // }
     return value;
   }).catchError((e) {
     final error = ErrorModel.respToError(e);

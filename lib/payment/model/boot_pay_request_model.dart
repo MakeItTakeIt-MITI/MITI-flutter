@@ -1,6 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:miti/common/model/entity_enum.dart';
-import 'package:miti/kakaopay/model/pay_model.dart';
+import 'package:miti/payment/model/pay_model.dart';
 
 part 'boot_pay_request_model.g.dart';
 

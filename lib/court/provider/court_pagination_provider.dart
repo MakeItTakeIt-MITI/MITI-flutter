@@ -8,7 +8,7 @@ import '../../common/logger/custom_logger.dart';
 import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
 import '../../common/provider/cursor_pagination_provider.dart';
-import '../../game/model/v2/game/base_game_response.dart';
+import '../../game/model/base_game_meta_response.dart';
 import '../model/v2/court_map_response.dart';
 
 part 'court_pagination_provider.g.dart';
@@ -64,7 +64,7 @@ final courtGamePageProvider = StateNotifierProvider.family.autoDispose<
 });
 
 class CourtGamePageStateNotifier extends CursorPaginationProvider<
-    BaseGameResponse,
+    BaseGameMetaResponse,
     CourtPaginationParam,
     CourtGameCursorPaginationRepository> {
   CourtGamePageStateNotifier({

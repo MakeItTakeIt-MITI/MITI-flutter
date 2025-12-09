@@ -1,29 +1,13 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/court/view/court_map_screen.dart';
 import 'package:miti/theme/text_theme.dart';
 
-class KakaoPayCancelScreen extends StatelessWidget {
-  static String get routeName => 'kakaypayCancel';
-
-  const KakaoPayCancelScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        child: Center(child: Text('결제 취소입니다.')),
-      ),
-    );
-  }
-}
-
-class KakaoPayApprovalScreen extends StatelessWidget {
+class PayApprovalScreen extends StatelessWidget {
   static String get routeName => 'KakaoPayApproval';
 
-  const KakaoPayApprovalScreen({super.key});
+  const PayApprovalScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

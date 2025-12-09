@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:bootpay/bootpay.dart';
 import 'package:bootpay/model/extra.dart';
 import 'package:bootpay/model/payload.dart';
+import 'package:bootpay/model/user.dart';
 import 'package:collection/collection.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/foundation.dart';
@@ -20,9 +21,8 @@ import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
 import 'package:miti/game/view/game_refund_screen.dart';
-import 'package:miti/kakaopay/error/pay_error.dart';
-import 'package:miti/kakaopay/model/pay_model.dart';
-import 'package:miti/kakaopay/provider/pay_provider.dart';
+import 'package:miti/payment/model/payment_ready_response.dart';
+import 'package:miti/payment/param/pay_request_param.dart';
 import 'package:miti/report/model/agreement_policy_model.dart';
 import 'package:miti/report/provider/report_provider.dart';
 import 'package:miti/theme/color_theme.dart';
@@ -32,14 +32,15 @@ import 'package:miti/util/util.dart';
 import '../../auth/view/signup/signup_screen.dart';
 import '../../common/view/operation_term_screen.dart';
 import '../../env/environment.dart';
-import '../../kakaopay/param/boot_pay_approve_param.dart';
+import '../../payment/error/pay_error.dart';
+import '../../payment/model/payment_completion_response.dart';
+import '../../payment/param/boot_pay_approve_param.dart';
+import '../../payment/provider/pay_provider.dart';
 import '../base_coupon_info_response.dart';
 import '../component/coupon_selection.dart';
 import '../component/skeleton/game_payment_skeleton.dart';
 import '../error/game_error.dart';
 import '../model/participation_payment_detail_response.dart';
-import '../model/v2/payment/base_payment_request_response.dart';
-import '../model/v2/payment/payment_completed_response.dart';
 import 'game_create_complete_screen.dart';
 import 'game_detail_screen.dart';
 
@@ -47,7 +48,10 @@ class GamePaymentScreen extends ConsumerStatefulWidget {
   static String get routeName => 'paymentInfo';
   final int gameId;
 
-  const GamePaymentScreen({super.key, required this.gameId});
+  const GamePaymentScreen({
+    super.key,
+    required this.gameId,
+  });
 
   @override
   ConsumerState<GamePaymentScreen> createState() => _GamePaymentScreenState();
@@ -96,7 +100,14 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
       Future.delayed(const Duration(seconds: 1), () {
         throttleCnt++;
       });
-      await onBootPay(ref, context, type);
+      await onBootPay(
+          ref,
+          context,
+          type,
+          PayRequestParam(
+              itemType: ItemType.participation_fee,
+              game: widget.gameId,
+              coupon: selectedCoupon?.id));
       setState(() {
         isLoading = false;
       });
@@ -322,16 +333,16 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
     );
   }
 
-  Future<void> onBootPay(
-      WidgetRef ref, BuildContext context, PaymentMethodType type) async {
-    final result = await ref
-        .read(readyPayProvider(gameId: widget.gameId, type: type).future);
+  Future<void> onBootPay(WidgetRef ref, BuildContext context,
+      PaymentMethodType type, PayRequestParam param) async {
+    final result = await ref.read(readyPayProvider(param: param).future);
     if (context.mounted) {
       if (result is ErrorModel) {
         PayError.fromModel(model: result)
             .responseError(context, PayApiType.ready, ref);
       } else {
-        final payBaseModel = (result as ResponseModel<PayBaseModel>).data!;
+        final payBaseModel =
+            (result as ResponseModel<PaymentReadyResponse>).data!;
 
         switch (type) {
           case PaymentMethodType.empty_pay:
@@ -348,7 +359,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
             );
             break;
           default:
-            final model = payBaseModel as BasePaymentRequestResponse;
+            final model = payBaseModel;
             bootpayReqeustDataInit(model);
             goBootpayTest(context);
             break;
@@ -361,7 +372,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
     }
   }
 
-  bootpayReqeustDataInit(BasePaymentRequestResponse model) {
+  bootpayReqeustDataInit(PaymentReadyResponse model) {
     // Item item1 = Item();
     // item1.name = "미키 '마우스"; // 주문정보에 담길 상품명
     // item1.qty = 1; // 해당 상품의 주문 수량
@@ -371,9 +382,9 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
     // List<Item>? itemList = [item1];
     // payload.items = itemList; // 상품정보 배열
 
-    payload.orderName = model.itemName; //결제할 상품명
-    payload.price = model.totalAmount.toDouble(); //정기결제시 0 혹은 주석
-    payload.taxFree = model.taxFreeAmount.toDouble();
+    payload.orderName = model.orderName; //결제할 상품명
+    payload.price = model.price.toDouble(); //정기결제시 0 혹은 주석
+    payload.taxFree = model.taxFree.toDouble();
     payload.orderId = model.orderId; //주문번호, 개발사에서 고유값으로 지정해야함
 
     // User user = User(); // 구매자 정보
@@ -387,11 +398,12 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
 
     // payload.extra?.directCardQuota =1;
 
-    // User user = User(); // 구매자 정보
-    // user.username = "사용자 이름";
-    // user.email = "user1234@gmail.com";
+    User user = User(); // 구매자 정보
+    user.id = model.user.id;
+    user.username = model.user.username;
+    user.email = model.user.email;
     // user.area = "서울";
-    // user.phone = "010-4033-4678";
+    user.phone = model.user.phone;
     // user.addr = '서울시 동작구 상도로 222';
 
     Extra extra = Extra(); // 결제 옵션
@@ -485,7 +497,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
         PayError.fromModel(model: result, object: widget.gameId)
             .responseError(context, PayApiType.bootPayApproval, ref);
       } else {
-        final model = (result as ResponseModel<PaymentCompletedResponse>).data!;
+        final model = (result as ResponseModel<PaymentCompletionResponse>).data!;
         switch (model.status) {
           case PaymentResultStatusType.approved:
             {

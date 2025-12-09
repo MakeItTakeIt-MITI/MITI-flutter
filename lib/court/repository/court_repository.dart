@@ -8,7 +8,7 @@ import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
 import '../../common/repository/base_pagination_repository.dart';
 import '../../dio/provider/dio_provider.dart';
-import '../../game/model/v2/game/base_game_court_by_date_response.dart';
+import '../../game/model/base_game_meta_response.dart';
 import '../../game/model/v2/game/base_game_response.dart';
 import '../model/v2/court_map_response.dart';
 import '../model/v2/court_operations_response.dart';
@@ -67,14 +67,14 @@ final courtGameCursorPaginationRepositoryProvider =
 
 @RestApi()
 abstract class CourtGameCursorPaginationRepository extends IBaseCursorPaginationRepository<
-    BaseGameResponse, CourtPaginationParam> {
+    BaseGameMetaResponse, CourtPaginationParam> {
   factory CourtGameCursorPaginationRepository(Dio dio, {String baseUrl}) =
       _CourtGameCursorPaginationRepository;
 
   /// 경기장 경기 목록 조회 API
   @override
   @GET('/courts/{courtId}/games')
-  Future<ResponseModel<CursorPaginationModel<BaseGameResponse>>> paginate({
+  Future<ResponseModel<CursorPaginationModel<BaseGameMetaResponse>>> paginate({
     @Queries() required CursorPaginationParam cursorPaginationParams,
     @Queries() CourtPaginationParam? param,
     @Path('courtId') int? path,

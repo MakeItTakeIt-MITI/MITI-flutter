@@ -202,7 +202,7 @@ class CouponCard extends StatelessWidget {
                   if (validUntil != null)
                     Text(
                       DateFormat('yyyy년 MM월 dd일').format(validUntil!),
-                      style: V2MITITextStyle.largeBoldNormal
+                      style: V2MITITextStyle.tinyMediumNormal
                           .copyWith(color: V2MITIColor.gray3),
                     )
                 ],

@@ -58,8 +58,8 @@ import '../../game/view/game_create_complete_screen.dart';
 import '../../game/view/game_participation_screen.dart';
 import '../../game/view/game_review_list_screen.dart';
 import '../../game/view/game_screen.dart';
-import '../../kakaopay/view/approval_screen.dart';
 import '../../notification/view/notification_setting_screen.dart';
+import '../../payment/view/approval_screen.dart';
 import '../../post/view/post_comment_detail_screen.dart';
 import '../../post/view/post_list_screen.dart';
 import '../../post/view/post_search_screen.dart';
@@ -616,9 +616,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                     GoRoute(
                       path: 'approval',
                       parentNavigatorKey: rootNavKey,
-                      name: KakaoPayApprovalScreen.routeName,
+                      name: PayApprovalScreen.routeName,
                       builder: (context, state) {
-                        return KakaoPayApprovalScreen();
+                        return const PayApprovalScreen();
                       },
                     ),
                     GoRoute(

@@ -425,8 +425,11 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
     final participationButton = TextButton(
       onPressed: () {
         Map<String, String> pathParameters = {'gameId': model.id.toString()};
-        context.pushNamed(GamePaymentScreen.routeName,
-            pathParameters: pathParameters);
+
+        context.pushNamed(
+          GamePaymentScreen.routeName,
+          pathParameters: pathParameters,
+        );
       },
       style: TextButton.styleFrom(
         fixedSize: Size(double.infinity, 44.h),

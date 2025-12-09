@@ -97,6 +97,11 @@ enum ItemType {
   const ItemType(this.value);
 
   final String value;
+
+  static ItemType stringToEnum({required String value}) {
+
+    return ItemType.values.firstWhere((e) => e.name == value);
+  }
 }
 
 enum SettlementType {

@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 
 import '../../../../common/model/entity_enum.dart';
-import '../../../../kakaopay/model/pay_model.dart';
+import '../../../../payment/model/pay_model.dart';
 
 part 'base_payment_request_response.g.dart';
 
