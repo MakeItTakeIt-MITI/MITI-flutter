@@ -414,10 +414,11 @@ class _MyAppState extends ConsumerState<MyApp> {
       ),
       fontFamily: 'Pretendard',
       inputDecorationTheme: InputDecorationTheme(
-        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-        hintStyle: MITITextStyle.md.copyWith(color: MITIColor.gray500),
-        fillColor: MITIColor.gray700,
-        filled: true,
+        contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+        hintStyle: V2MITITextStyle.regularMediumNormal
+            .copyWith(color: V2MITIColor.gray6),
+        // fillColor: MITIColor.gray700,
+        filled: false,
       ),
       textButtonTheme: TextButtonThemeData(
         style: ButtonStyle(
@@ -431,8 +432,8 @@ class _MyAppState extends ConsumerState<MyApp> {
               borderRadius: BorderRadius.circular(8.r),
             ),
           ),
-          minimumSize: WidgetStateProperty.all(Size(double.infinity, 48.h)),
-          maximumSize: WidgetStateProperty.all(Size(double.infinity, 48.h)),
+          minimumSize: WidgetStateProperty.all(Size(double.infinity, 44.h)),
+          maximumSize: WidgetStateProperty.all(Size(double.infinity, 44.h)),
         ),
       ),
     );

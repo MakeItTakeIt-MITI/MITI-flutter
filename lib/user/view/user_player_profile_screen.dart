@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miti/common/component/custom_bottom_sheet.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/component/default_layout.dart';
 import 'package:miti/common/component/picker/overlay_number_picker.dart';
@@ -176,8 +177,8 @@ class _PlayerProfileFormState extends ConsumerState<_PlayerProfileForm> {
           children: [
             Text(
               widget.type.displayName,
-              style: MITITextStyle.mdLight.copyWith(
-                color: MITIColor.gray300,
+              style: V2MITITextStyle.smallRegularNormal.copyWith(
+                color: V2MITIColor.white,
               ),
             ),
             GestureDetector(
@@ -185,21 +186,20 @@ class _PlayerProfileFormState extends ConsumerState<_PlayerProfileForm> {
                   ? () => showBottomSheetForm(context, items, ref)
                   : null,
               child: Container(
-                width: 120.w,
+                width: 140.w,
                 height: 40.h,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.r),
-                  color: MITIColor.gray700,
-                ),
+                    borderRadius: BorderRadius.circular(4.r),
+                    border: Border.all(color: V2MITIColor.gray6)),
                 child: Center(
                   child: Text(
                     formValue ?? widget.type.displayName,
-                    style: MITITextStyle.md.copyWith(
+                    style: V2MITITextStyle.regularMediumNormal.copyWith(
                         color: !widget.enabled
-                            ? MITIColor.gray600
+                            ? V2MITIColor.gray6
                             : formValue == null
-                                ? MITIColor.gray500
-                                : MITIColor.gray100),
+                                ? V2MITIColor.gray6
+                                : V2MITIColor.white),
                   ),
                 ),
               ),
@@ -228,74 +228,68 @@ class _PlayerProfileFormState extends ConsumerState<_PlayerProfileForm> {
   void showBottomSheetForm(
       BuildContext context, List<String> items, WidgetRef ref) {
     String selectedItem = '';
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(20.r),
-          ),
-        ),
-        backgroundColor: MITIColor.gray800,
-        builder: (context) {
-          return StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
-            return BottomSheetWrapComponent(
-              crossAxisCount: widget.type == PlayerProfileType.gender ? 2 : 3,
-              onTapItem: (v) {
-                setState(() {
-                  if (selectedItem == v) {
-                    selectedItem = '';
-                  } else {
-                    selectedItem = v;
-                  }
-                });
-              },
-              items: items,
-              title: widget.type.displayName,
-              selectedItem: selectedItem,
-              onSubmitItem: () {
-                if (widget.type == PlayerProfileType.gender) {
-                  final gender = GenderType.stringToEnum(value: selectedItem);
-                  ref
-                      .read(userPlayerProfileFormProvider.notifier)
-                      .update(gender: gender);
-                } else if (widget.type == PlayerProfileType.position) {
-                  final position =
-                      PlayerPositionType.stringToEnum(value: selectedItem);
-                  ref
-                      .read(userPlayerProfileFormProvider.notifier)
-                      .update(position: position);
-                } else if (widget.type == PlayerProfileType.role) {
-                  final role = PlayerRoleType.stringToEnum(value: selectedItem);
-                  ref
-                      .read(userPlayerProfileFormProvider.notifier)
-                      .update(role: role);
-                } else if (widget.type == PlayerProfileType.weight) {
-                  ref
-                      .read(userPlayerProfileFormProvider.notifier)
-                      .update(weight: int.parse(selectedItem));
-                } else {
-                  ref
-                      .read(userPlayerProfileFormProvider.notifier)
-                      .update(height: int.parse(selectedItem));
-                }
-                context.pop();
-                FocusScope.of(context).unfocus();
-              },
-              onClearItem: widget.type != PlayerProfileType.gender
-                  ? () {
-                      ref
-                          .read(userPlayerProfileFormProvider.notifier)
-                          .clear(widget.type);
 
-                      context.pop();
-                      FocusScope.of(context).unfocus();
-                    }
-                  : null,
-            );
-          });
-        });
+    CustomBottomSheet.showWidgetContent(
+        title: widget.type.displayName,
+        context: context,
+        content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return BottomSheetWrapComponent(
+            crossAxisCount: widget.type == PlayerProfileType.gender ? 2 : 3,
+            onTapItem: (v) {
+              setState(() {
+                if (selectedItem == v) {
+                  selectedItem = '';
+                } else {
+                  selectedItem = v;
+                }
+              });
+            },
+            items: items,
+            title: widget.type.displayName,
+            selectedItem: selectedItem,
+            onSubmitItem: () {
+              if (widget.type == PlayerProfileType.gender) {
+                final gender = GenderType.stringToEnum(value: selectedItem);
+                ref
+                    .read(userPlayerProfileFormProvider.notifier)
+                    .update(gender: gender);
+              } else if (widget.type == PlayerProfileType.position) {
+                final position =
+                    PlayerPositionType.stringToEnum(value: selectedItem);
+                ref
+                    .read(userPlayerProfileFormProvider.notifier)
+                    .update(position: position);
+              } else if (widget.type == PlayerProfileType.role) {
+                final role = PlayerRoleType.stringToEnum(value: selectedItem);
+                ref
+                    .read(userPlayerProfileFormProvider.notifier)
+                    .update(role: role);
+              } else if (widget.type == PlayerProfileType.weight) {
+                ref
+                    .read(userPlayerProfileFormProvider.notifier)
+                    .update(weight: int.parse(selectedItem));
+              } else {
+                ref
+                    .read(userPlayerProfileFormProvider.notifier)
+                    .update(height: int.parse(selectedItem));
+              }
+              context.pop();
+              FocusScope.of(context).unfocus();
+            },
+            onClearItem: widget.type != PlayerProfileType.gender
+                ? () {
+                    ref
+                        .read(userPlayerProfileFormProvider.notifier)
+                        .clear(widget.type);
+
+                    context.pop();
+                    FocusScope.of(context).unfocus();
+                  }
+                : null,
+          );
+        }),
+        buttonText: '설정하기');
   }
 
   List<String> getItems() {
@@ -391,125 +385,107 @@ class _BottomSheetWrapComponentState
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 8.h),
-          child: Container(
-            decoration: BoxDecoration(
-              color: MITIColor.gray100,
-              borderRadius: BorderRadius.circular(8.r),
-            ),
-            width: 60.w,
-            height: 4.h,
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.all(20.r),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                widget.title,
-                style: MITITextStyle.mdBold.copyWith(
-                  color: MITIColor.gray100,
-                ),
-              ),
-              SizedBox(height: 20.h),
-              if (widget.title == '체중' || widget.title == '신장')
-                SizedBox(
-                  height: 96.h,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Spacer(),
-                      SizedBox(
-                        width: 66.w,
-                        child: OverlayNumberPicker(
-                          initialValue: initialValue,
-                          start: widget.title == '체중' ? 30 : 50,
-                          end: widget.title == '체중' ? 150 : 230,
-                          onSelect: (int index) {
-                            widget.onTapItem(index.toString());
-                          },
-                        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(height: 20.h),
+            if (widget.title == '체중' || widget.title == '신장')
+              SizedBox(
+                height: 96.h,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Spacer(),
+                    SizedBox(
+                      width: 66.w,
+                      child: OverlayNumberPicker(
+                        initialValue: initialValue,
+                        start: widget.title == '체중' ? 30 : 50,
+                        end: widget.title == '체중' ? 150 : 230,
+                        onSelect: (int index) {
+                          widget.onTapItem(index.toString());
+                        },
                       ),
-                      Expanded(
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: 12.w,
-                            ),
-                            Text(
-                              widget.title == '체중' ? "kg" : "cm",
-                              style: MITITextStyle.sm,
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                )
-              else
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    mainAxisSpacing: 12.r,
-                    crossAxisSpacing: 12.r,
-                    crossAxisCount: widget.crossAxisCount,
-                    mainAxisExtent: 48.h,
-                  ),
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      onTap: () => widget.onTapItem(widget.items[index]),
-                      child: BottomSheetItem(
-                        isSelected: widget.items[index] == widget.selectedItem,
-                        text: widget.items[index],
-                      ),
-                    );
-                  },
-                  itemCount: widget.items.length,
-                ),
-              SizedBox(height: 20.h),
-              Row(
-                children: [
-                  if (widget.onClearItem != null) ...[
-                    Flexible(
-                      child: TextButton(
-                          onPressed: widget.onClearItem,
-                          style: TextButton.styleFrom(
-                            side: const BorderSide(color: MITIColor.gray600),
-                            backgroundColor: MITIColor.gray700,
+                    ),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 12.w,
                           ),
+                          Text(
+                            widget.title == '체중' ? "kg" : "cm",
+                            style: MITITextStyle.sm,
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              )
+            else
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  mainAxisSpacing: 12.r,
+                  crossAxisSpacing: 17.r,
+                  crossAxisCount: widget.crossAxisCount,
+                  mainAxisExtent: 48.h,
+                ),
+                itemBuilder: (BuildContext context, int index) {
+                  return GestureDetector(
+                    onTap: () => widget.onTapItem(widget.items[index]),
+                    child: BottomSheetItem(
+                      isSelected: widget.items[index] == widget.selectedItem,
+                      text: widget.items[index],
+                    ),
+                  );
+                },
+                itemCount: widget.items.length,
+              ),
+            SizedBox(height: 20.h),
+            Padding(
+                padding: EdgeInsets.only(bottom: 24.h),
+                child: Row(
+                  children: [
+                    if (widget.onClearItem != null) ...[
+                      Flexible(
+                        child: TextButton(
+                            onPressed: widget.onClearItem,
+                            style: TextButton.styleFrom(
+                              side: const BorderSide(color: MITIColor.gray600),
+                              backgroundColor: V2MITIColor.gray9,
+                            ),
+                            child: Text(
+                              '선택안함',
+                              style: V2MITITextStyle.regularBold
+                                  .copyWith(color: V2MITIColor.white),
+                            )),
+                      ),
+                      SizedBox(width: 12.w),
+                    ],
+                    Flexible(
+                      flex: 2,
+                      child: TextButton(
+                          onPressed: widget.selectedItem.isNotEmpty
+                              ? widget.onSubmitItem
+                              : null,
+                          style: TextButton.styleFrom(
+                              backgroundColor: widget.selectedItem.isNotEmpty
+                                  ? V2MITIColor.primary5
+                                  : V2MITIColor.gray7),
                           child: Text(
-                            '선택안함',
-                            style: MITITextStyle.mdBold
-                                .copyWith(color: MITIColor.gray50),
+                            '확인',
+                            style: V2MITITextStyle.regularBold.copyWith(
+                                color: widget.selectedItem.isNotEmpty
+                                    ? V2MITIColor.black
+                                    : V2MITIColor.white),
                           )),
                     ),
-                    SizedBox(width: 22.w),
                   ],
-                  Flexible(
-                    flex: 2,
-                    child: TextButton(
-                        onPressed: widget.selectedItem.isNotEmpty
-                            ? widget.onSubmitItem
-                            : null,
-                        style: TextButton.styleFrom(
-                            backgroundColor: widget.selectedItem.isNotEmpty
-                                ? MITIColor.primary
-                                : MITIColor.gray500),
-                        child: Text(
-                          '확인',
-                          style: MITITextStyle.mdBold.copyWith(
-                              color: widget.selectedItem.isNotEmpty
-                                  ? MITIColor.gray800
-                                  : MITIColor.gray50),
-                        )),
-                  ),
-                ],
-              )
-            ],
-          ),
+                ))
+          ],
         )
       ],
     );
@@ -526,18 +502,17 @@ class BottomSheetItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 8.h),
+      padding: EdgeInsets.symmetric(vertical: 16.h),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8.r),
         border: Border.all(
-            color: isSelected ? MITIColor.primary : MITIColor.gray800),
-        color: MITIColor.gray750,
+            color: isSelected ? V2MITIColor.primary5 : V2MITIColor.gray8),
       ),
       alignment: Alignment.center,
       child: Text(
         text,
-        style: MITITextStyle.sm.copyWith(
-          color: MITIColor.gray100,
+        style: V2MITITextStyle.smallRegularTight.copyWith(
+          color: V2MITIColor.gray1,
         ),
       ),
     );

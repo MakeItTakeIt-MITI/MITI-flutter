@@ -128,13 +128,13 @@ class SignUpScreen extends ConsumerWidget {
         return PersonalInfoForm(type: type);
       }
       return Column(
-        children: [SizedBox(height: 40.h), const CheckBoxForm()],
+        children: [SizedBox(height: 20.h), const CheckBoxForm()],
       );
     } else if (ref.watch(progressProvider).progress == 5) {
       return const PlayerProfileForm();
     } else {
       return Column(
-        children: [SizedBox(height: 40.h), const CheckBoxForm()],
+        children: [SizedBox(height: 20.h), const CheckBoxForm()],
       );
     }
   }
@@ -152,7 +152,7 @@ class PlayerProfileForm extends ConsumerWidget {
       ref.read(signUpFormProvider.notifier).updateForm(playerProfile: after);
     });
     return Padding(
-      padding: EdgeInsets.only(top: 48.h),
+      padding: EdgeInsets.only(top: 16.h),
       child: const PlayerProfileFormComponent(),
     );
   }
@@ -337,13 +337,12 @@ class _CheckBoxFormState extends ConsumerState<CheckBoxForm> {
     final checkBoxes = model.mapIndexed((idx, e) {
       return CustomCheckBox(
           title: '${e.is_required ? '[필수] ' : '[선택] '} ${e.policy.name}',
-          textStyle: MITITextStyle.sm.copyWith(color: MITIColor.gray200),
+          textStyle: V2MITITextStyle.smallMediumTight.copyWith(color: V2MITIColor.gray1),
           check: isCheckBoxes[idx],
           hasDetail: e.is_required,
           showDetail: () {
             showDialog(
                 context: context,
-                barrierColor: MITIColor.gray800,
                 builder: (context) {
                   return OperationTermScreen(
                     title: model[idx].policy.name,
@@ -827,14 +826,14 @@ class DescComponent extends ConsumerWidget {
         desc = '입력하신 정보는 안전하게 보관되며 공개되지 않아요.';
       } else {
         title = 'MITI 회원 이용약관';
-        desc = '약관에 동의하시면 회원가입이 완료됩니다.';
+        desc = '서비스 이용에 필요한 약관 및 동의입니다.';
       }
     } else if (ref.watch(progressProvider).progress == 5) {
       title = '선수 프로필을 입력해주세요.';
       desc = '입력하신 정보는 같은 경기 참가자들에게 공개됩니다.';
     } else {
       title = 'MITI 회원 이용약관';
-      desc = '약관에 동의하시면 회원가입이 완료됩니다.';
+      desc = '서비스 이용에 필요한 약관 및 동의입니다.';
     }
 
     return Column(

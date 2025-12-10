@@ -115,7 +115,7 @@ class CustomBottomSheet {
       {required BuildContext context,
       String? title,
       required Widget content,
-      required VoidCallback onPressed,
+      VoidCallback? onPressed,
       required String buttonText,
       EdgeInsetsGeometry contentPadding = EdgeInsets.zero,
       bool useRootNavigator = false,
@@ -161,13 +161,14 @@ class CustomBottomSheet {
                 ),
 
                 content,
-                Padding(
-                  padding: EdgeInsets.only(top: 12.h, bottom: 24.h),
-                  child: TextButton(
-                    onPressed: onPressed,
-                    child: Text(buttonText),
+                if (onPressed != null)
+                  Padding(
+                    padding: EdgeInsets.only(top: 12.h, bottom: 24.h),
+                    child: TextButton(
+                      onPressed: onPressed,
+                      child: Text(buttonText),
+                    ),
                   ),
-                ),
               ],
             ),
           );

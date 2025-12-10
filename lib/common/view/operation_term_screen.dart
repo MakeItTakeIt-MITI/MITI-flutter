@@ -26,18 +26,17 @@ class OperationTermScreen extends StatelessWidget {
           leadingIcon: "remove",
         ),
         body: Padding(
-          padding:
-              EdgeInsets.only(top: 20.h, left: 21.w, right: 21.w, bottom: 20.h),
+          padding: EdgeInsets.all(16.r),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
                 title,
-                style: MITITextStyle.xxl140.copyWith(
-                  color: MITIColor.white,
+                style: V2MITITextStyle.title3.copyWith(
+                  color: V2MITIColor.white,
                 ),
               ),
-              SizedBox(height: 12.h),
+              SizedBox(height: 20.h),
               Expanded(
                 child: Scrollbar(
                   child: SingleChildScrollView(
