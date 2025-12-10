@@ -562,7 +562,7 @@ class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
                     showDetail: () {
                       showDialog(
                           context: context,
-                          barrierColor: MITIColor.gray800,
+                          barrierColor: V2MITIColor.gray12,
                           builder: (context) {
                             return OperationTermScreen(
                               title: model[idx].policy.name,

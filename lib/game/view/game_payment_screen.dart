@@ -299,9 +299,9 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
                                   coupons: model.couponInfo,
                                   onSelect: (BaseCouponInfoResponse coupon) {
                                     setState(() {
-                                      if(selectedCoupon?.id == coupon.id){
+                                      if (selectedCoupon?.id == coupon.id) {
                                         selectedCoupon = null;
-                                      }else{
+                                      } else {
                                         selectedCoupon = coupon;
                                       }
                                     });
@@ -501,7 +501,8 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
         PayError.fromModel(model: result, object: widget.gameId)
             .responseError(context, PayApiType.bootPayApproval, ref);
       } else {
-        final model = (result as ResponseModel<PaymentCompletionResponse>).data!;
+        final model =
+            (result as ResponseModel<PaymentCompletionResponse>).data!;
         switch (model.status) {
           case PaymentResultStatusType.approved:
             {
@@ -687,7 +688,7 @@ class PaymentCheckFormState extends ConsumerState<PaymentCheckForm> {
           showDetail: () {
             showDialog(
                 context: context,
-                barrierColor: MITIColor.gray800,
+                barrierColor: V2MITIColor.gray12,
                 builder: (context) {
                   return OperationTermScreen(
                     title: model[idx].policy.name,
@@ -760,13 +761,13 @@ class PaymentAndRefundPolicyComponent extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           spacing: 29.h,
           children: [
-            if(isPayment)
-            Text(
-              '경기 참가비 결제의 모든 관리와 책임의 주체는 MITI 이며, MITI는 서비스 이용 과정에서 발생하는 불만이나 분쟁을 해결하기 위하여 원이 및 피해 파악 등 필요한 조치를 시행할 것입니다.\n\n환불은 참여자가 지불한 참가비가 취소되는 방식으로 진행되며, 결제 취소 금액은 환불 정책에 따라 책정됩니다.',
-              style: V2MITITextStyle.tinyRegularNormal.copyWith(
-                color: V2MITIColor.gray1,
+            if (isPayment)
+              Text(
+                '경기 참가비 결제의 모든 관리와 책임의 주체는 MITI 이며, MITI는 서비스 이용 과정에서 발생하는 불만이나 분쟁을 해결하기 위하여 원이 및 피해 파악 등 필요한 조치를 시행할 것입니다.\n\n환불은 참여자가 지불한 참가비가 취소되는 방식으로 진행되며, 결제 취소 금액은 환불 정책에 따라 책정됩니다.',
+                style: V2MITITextStyle.tinyRegularNormal.copyWith(
+                  color: V2MITIColor.gray1,
+                ),
               ),
-            ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               spacing: 12.h,
@@ -829,15 +830,14 @@ class PaymentAndRefundPolicyComponent extends StatelessWidget {
                 ),
               ]),
             ),
-            if(isPayment)
-            SizedBox(height: 8.h),
-            if(isPayment)
-            Text(
-              '• 참여가 어려운 경우, [게스트 경기 목록]에서 참여를 취소해주세요.',
-              style: V2MITITextStyle.tinyRegularNormal.copyWith(
-                color: V2MITIColor.gray1,
-              ),
-            )
+            if (isPayment) SizedBox(height: 8.h),
+            if (isPayment)
+              Text(
+                '• 참여가 어려운 경우, [게스트 경기 목록]에서 참여를 취소해주세요.',
+                style: V2MITITextStyle.tinyRegularNormal.copyWith(
+                  color: V2MITIColor.gray1,
+                ),
+              )
           ],
         ),
       ],

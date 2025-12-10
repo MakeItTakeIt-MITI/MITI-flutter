@@ -342,6 +342,7 @@ class _CheckBoxFormState extends ConsumerState<CheckBoxForm> {
           hasDetail: e.is_required,
           showDetail: () {
             showDialog(
+                barrierColor: V2MITIColor.gray12,
                 context: context,
                 builder: (context) {
                   return OperationTermScreen(
