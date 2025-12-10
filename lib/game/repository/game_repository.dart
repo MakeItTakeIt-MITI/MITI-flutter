@@ -81,17 +81,15 @@ abstract class GameRepository {
 
   /// 경기 참여 취소 및 환불 API
   @Headers({'token': 'true'})
-  @DELETE('/games/{gameId}/participations/{participationId}')
+  @DELETE('/participations/{participationId}')
   Future<ResponseModel<ParticipationGameResponse>> cancelGame({
-    @Path('gameId') required int gameId,
     @Path('participationId') required int participationId,
   });
 
   /// 경기 참여 환불 정보 조회 API
   @Headers({'token': 'true'})
-  @GET('/games/{gameId}/participations/{participationId}/refund-info')
+  @GET('/participations/{participationId}/refund-info')
   Future<ResponseModel<ParticipationRefundInfoResponse>> refundInfo({
-    @Path('gameId') required int gameId,
     @Path('participationId') required int participationId,
   });
 
@@ -136,8 +134,7 @@ abstract class GameRepository {
   /// 경기 참가자 선수 프로필 목록 조회 API
   @Headers({'token': 'true'})
   @GET('/games/{gameId}/participations')
-  Future<ResponseModel<GamePlayerListResponse>>
-      getParticipationProfile({
+  Future<ResponseModel<GamePlayerListResponse>> getParticipationProfile({
     @Path() required int gameId,
   });
 
@@ -171,7 +168,8 @@ abstract class GamePRepository extends IBaseCursorPaginationRepository<
   /// 경기 리스트 목록 조회 API
   @override
   @GET('/games/list')
-  Future<ResponseModel<CursorPaginationModel<GameWithCourtMapResponse>>> paginate({
+  Future<ResponseModel<CursorPaginationModel<GameWithCourtMapResponse>>>
+      paginate({
     @Queries() required CursorPaginationParam cursorPaginationParams,
     @Queries() GamePaginationParam? param,
     @Path('userId') int? path,

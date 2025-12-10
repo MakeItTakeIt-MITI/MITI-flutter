@@ -172,7 +172,7 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
                             ),
 
                             /// 무료 전환 버튼
-                            if(model.fee != 0)
+                            if (model.fee != 0)
                               TextButton(
                                 onPressed: () {
                                   final throttler = Throttle(
@@ -186,14 +186,15 @@ class _GameUpdateScreenState extends ConsumerState<GameUpdateScreen> {
 
                                   CustomBottomSheet.showStringContent(
                                     context: context,
+                                    title: '참가비 변경',
                                     content:
-                                    '무료 경기 전환시,\n참가한 게스트들의 참가비는 자동으로 환불되며,\n유료 경기로 재전환이 불가합니다.',
+                                        '무료 경기 전환시,\n참가한 게스트들의 참가비는 자동으로 환불되며,\n유료 경기로 재전환이 불가합니다.',
                                     onPressed: () async {
                                       throttler.setValue(true);
                                     },
                                     buttonText: '무료 경기로 전환하기',
                                     contentPadding:
-                                    EdgeInsets.symmetric(vertical: 28.h),
+                                        EdgeInsets.symmetric(vertical: 28.h),
                                     hasPop: true,
                                   );
                                 },

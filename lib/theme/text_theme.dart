@@ -15,6 +15,12 @@ class V2MITITextStyle {
     fontWeight: FontWeight.bold,
   );
 
+  static final TextStyle title3 = TextStyle(
+      fontSize: 24.sp,
+      fontFamily: 'Pretendard',
+      fontWeight: FontWeight.bold,
+      height: 1.33);
+
   static final TextStyle miniMediumTight = TextStyle(
       fontSize: 10.sp,
       fontFamily: 'Pretendard',
@@ -25,6 +31,13 @@ class V2MITITextStyle {
     fontSize: 10.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w500,
+  );
+
+  static final TextStyle miniMediumNormal = TextStyle(
+    fontSize: 10.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w500,
+    height: 1.4
   );
 
   static final TextStyle miniBoldTight = TextStyle(
@@ -137,7 +150,6 @@ class V2MITITextStyle {
     height: 1.14,
   );
 
-
   static final TextStyle largeBoldTight = TextStyle(
     fontSize: 18.sp,
     fontFamily: 'Pretendard',
@@ -145,7 +157,7 @@ class V2MITITextStyle {
     height: 1.1,
   );
 
-  static final TextStyle largeBoldNormal= TextStyle(
+  static final TextStyle largeBoldNormal = TextStyle(
     fontSize: 18.sp,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.bold,
@@ -184,6 +196,13 @@ class V2MITITextStyle {
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.bold,
     height: 1.16,
+  );
+
+  static final TextStyle tinyBoldNormal = TextStyle(
+    fontSize: 12.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.bold,
+    height: 1.33,
   );
 
   static final TextStyle label10Bold = TextStyle(

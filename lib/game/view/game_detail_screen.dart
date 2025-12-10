@@ -39,8 +39,8 @@ import '../../util/naver_map_util.dart';
 import '../../util/util.dart';
 import '../component/skeleton/game_detail_skeleton.dart';
 import '../model/base_game_meta_response.dart';
+import '../model/base_game_with_court_response.dart';
 import '../model/v2/game/game_detail_response.dart';
-import '../model/v2/game/game_with_court_response.dart';
 import '../model/v2/participation/base_participation_response.dart';
 import 'game_participation_screen.dart';
 import 'game_payment_screen.dart';
@@ -974,7 +974,7 @@ class SummaryComponent extends StatelessWidget {
   }
 
   factory SummaryComponent.fromRefundModel(
-      {required GameWithCourtResponse model}) {
+      {required BaseGameWithCourtResponse model, required String fee}) {
     final start = DateTime.parse("${model.startDate} ${model.startTime}");
     final end = DateTime.parse("${model.endDate} ${model.endTime}");
     final startDate = model.startDate.replaceAll('-', '. ');
@@ -991,10 +991,14 @@ class SummaryComponent extends StatelessWidget {
       title: model.title,
       gameDate: gameDate,
       address: address,
-      max_invitation: model.maxInvitation,
-      num_of_participations: model.numOfParticipations,
+      max_invitation: 0,
+      // model.maxInvitation,
+      num_of_participations: 0,
+      // model.numOfParticipations,
       duration: end.difference(start).inMinutes.toString(),
       gameTime: time,
+      fee: fee,
+      gameId: model.id,
     );
   }
 
@@ -1052,7 +1056,7 @@ class SummaryComponent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final desc = [
-      "$address $courtName",
+      "$address ${courtName ?? ''}",
       gameTime,
       "$num_of_participations / $max_invitation",
     ];

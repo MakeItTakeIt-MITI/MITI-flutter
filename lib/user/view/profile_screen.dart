@@ -1,15 +1,11 @@
 import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:miti/account/component/bank_card.dart';
-import 'package:miti/account/error/account_error.dart';
-import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/auth/provider/logout_provider.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/model/default_model.dart';
@@ -25,7 +21,6 @@ import '../../auth/error/auth_error.dart';
 import '../../common/component/custom_dialog.dart';
 import '../../util/util.dart';
 import '../component/skeleton/user_info_skeleton.dart';
-import '../model/user_model.dart';
 import '../model/v2/user_info_response.dart';
 
 class UserProfileScreen extends ConsumerWidget {
@@ -99,15 +94,11 @@ class _UserInfoComponent extends ConsumerWidget {
     final model = (result as ResponseModel<UserInfoResponse>).data!;
     String? birthday;
     String? phone;
-    if (model.birthday != null) {
-      final birth = DateTime.parse(model.birthday!);
-      final df = DateFormat('yy.MM.dd');
-      birthday = df.format(birth);
-    }
-    if (model.phone != null) {
-      phone = formatPhoneNumber(model.phone!);
-    }
-    String loginType = model.signupMethod == SignupMethodType.email
+    final birth = DateTime.parse(model.birthday);
+    final df = DateFormat('yy.MM.dd');
+    birthday = df.format(birth);
+      phone = formatPhoneNumber(model.phone);
+      String loginType = model.signupMethod == SignupMethodType.email
         ? 'Email'
         : model.signupMethod == SignupMethodType.apple
             ? 'Apple ID'
@@ -118,11 +109,11 @@ class _UserInfoComponent extends ConsumerWidget {
       padding: EdgeInsets.symmetric(horizontal: 21.w, vertical: 20.h),
       child: Column(
         children: [
-          getInfo(title: '이름', desc: model.nickname),
-          if (birthday != null) SizedBox(height: 12.h),
-          if (birthday != null) getInfo(title: '생년월일', desc: birthday),
-          if (phone != null) SizedBox(height: 12.h),
-          if (phone != null) getInfo(title: '휴대폰 번호', desc: phone),
+          getInfo(title: '이름', desc: model.name),
+          SizedBox(height: 12.h),
+          getInfo(title: '생년월일', desc: birthday),
+          SizedBox(height: 12.h),
+          getInfo(title: '휴대폰 번호', desc: phone),
           SizedBox(height: 12.h),
           getInfo(title: '로그인 방식', desc: loginType)
         ],

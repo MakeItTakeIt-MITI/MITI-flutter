@@ -68,36 +68,37 @@ class _CouponSelectionState extends State<CouponSelection> {
             )
           ],
         ),
-        CarouselSlider(
-          carouselController: carouselController,
-          options: CarouselOptions(
-              enlargeCenterPage: true,
-              viewportFraction: 1,
-              // height: 140.h,
-              aspectRatio: 2.5,
-              enlargeFactor: 0,
-              initialPage: 0,
-              enlargeStrategy: CenterPageEnlargeStrategy.height,
-              enableInfiniteScroll: false,
-              animateToClosest: false,
-              onPageChanged: (idx, _) {
-                setState(() {
-                  currentIdx = idx;
-                  log('currentIdx = $currentIdx');
-                });
-              }),
-          items: widget.coupons.mapIndexed((idx, coupon) {
-            return Builder(
-              builder: (BuildContext context) {
-                return GestureDetector(
-                  onTap: () => widget.onSelect(coupon),
-                  child: CouponCard.fromModel(
-                      model: coupon,
-                      isSelected: widget.selectedId == coupon.id),
-                );
-              },
-            );
-          }).toList(),
+        ConstrainedBox(
+          constraints: BoxConstraints(minHeight: 140.h, maxHeight: 150.h),
+          child: CarouselSlider(
+            carouselController: carouselController,
+            options: CarouselOptions(
+                enlargeCenterPage: true,
+                viewportFraction: 1,
+                enlargeFactor: 0,
+                initialPage: 0,
+                enlargeStrategy: CenterPageEnlargeStrategy.height,
+                enableInfiniteScroll: false,
+                animateToClosest: false,
+                onPageChanged: (idx, _) {
+                  setState(() {
+                    currentIdx = idx;
+                    log('currentIdx = $currentIdx');
+                  });
+                }),
+            items: widget.coupons.mapIndexed((idx, coupon) {
+              return Builder(
+                builder: (BuildContext context) {
+                  return GestureDetector(
+                    onTap: () => widget.onSelect(coupon),
+                    child: CouponCard.fromModel(
+                        model: coupon,
+                        isSelected: widget.selectedId == coupon.id),
+                  );
+                },
+              );
+            }).toList(),
+          ),
         )
       ],
     );
@@ -110,7 +111,7 @@ class CouponCard extends StatelessWidget {
   final String name;
   final DateTime? validFrom;
   final DateTime? validUntil;
-  final String targetItemType;
+  final DiscountType discountType;
   final int discountValue;
   final int couponDiscountAmount;
   final int couponMaxDiscountAmount;
@@ -123,7 +124,7 @@ class CouponCard extends StatelessWidget {
     required this.name,
     this.validFrom,
     this.validUntil,
-    required this.targetItemType,
+    required this.discountType,
     required this.discountValue,
     required this.couponDiscountAmount,
     required this.couponMaxDiscountAmount,
@@ -139,7 +140,7 @@ class CouponCard extends StatelessWidget {
       name: model.name,
       validFrom: model.validFrom,
       validUntil: model.validUntil,
-      targetItemType: model.targetItemType,
+      discountType: model.discountType,
       discountValue: model.discountValue,
       couponDiscountAmount: model.couponDiscountAmount,
       couponMaxDiscountAmount: model.couponMaxDiscountAmount,
@@ -151,6 +152,10 @@ class CouponCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final discountTypeValue = discountType == DiscountType.fixed
+        ? "${NumberFormat.decimalPattern().format(discountValue)}원"
+        : "$discountValue%";
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -169,12 +174,14 @@ class CouponCard extends StatelessWidget {
               Text(
                 name,
                 style: V2MITITextStyle.smallMediumNormal.copyWith(
-                    color: isSelected ? V2MITIColor.gray11 : V2MITIColor.gray1),
+                    color:
+                        isSelected ? V2MITIColor.gray11 : V2MITIColor.gray1),
               ),
               Text(
-                '$discountValue원 할인쿠폰',
+                '$discountTypeValue 할인쿠폰',
                 style: V2MITITextStyle.largeBoldNormal.copyWith(
-                    color: isSelected ? V2MITIColor.black : V2MITIColor.white),
+                    color:
+                        isSelected ? V2MITIColor.black : V2MITIColor.white),
               )
             ],
           ),
@@ -192,20 +199,23 @@ class CouponCard extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                children: [
-                  Text(
-                    "${NumberFormat.decimalPattern().format(couponMaxDiscountAmount)}원",
-                    style: V2MITITextStyle.smallMediumNormal
-                        .copyWith(color: V2MITIColor.gray2),
-                  ),
-                  if (validUntil != null)
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
                     Text(
-                      DateFormat('yyyy년 MM월 dd일').format(validUntil!),
-                      style: V2MITITextStyle.tinyMediumNormal
-                          .copyWith(color: V2MITIColor.gray3),
-                    )
-                ],
+                      "쿠폰 적용시 ${NumberFormat.decimalPattern().format(couponMaxDiscountAmount)}원 할인",
+                      style: V2MITITextStyle.smallMediumNormal
+                          .copyWith(color: V2MITIColor.gray2),
+                    ),
+                    if (validUntil != null)
+                      Text(
+                        '유효기간: ${DateFormat('yyyy년 MM월 dd일').format(validUntil!)}',
+                        style: V2MITITextStyle.tinyMediumNormal
+                            .copyWith(color: V2MITIColor.gray3),
+                      )
+                  ],
+                ),
               ),
               Visibility(
                 visible: isSelected,

@@ -1,10 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
-import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/game/view/game_detail_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
@@ -32,7 +30,7 @@ class GameCompleteScreen extends StatelessWidget {
   }) {
     title = type == GameCompleteType.create
         ? ["경기 정보를 다시 확인해 주세요!", "경기 무료 전환은 경기 시작 30분 전까지", "매치 완료 후, 리뷰 남기기"]
-        : ['경기 장소까지의 경로를 미리 검색하기', '경기 운영 정보를 확인하기', '매치 완료 후, 리뷰 남기기'];
+        : ['경기 정보를 다시 확인해 주세요!', '경기 운영 정보 확인하기', '매치 완료 후, 리뷰 남기기'];
 
     desc = type == GameCompleteType.create
         ? [
@@ -41,9 +39,9 @@ class GameCompleteScreen extends StatelessWidget {
             "경기가 종료된 후, 리뷰를 통해 함께 플레이 한 선수들에게 리뷰를 남겨주세요. 리뷰는 올바른 농구 문화를 이루는 데 도움이 됩니다!"
           ]
         : [
-            '경기 상세 정보에서 참여할 경기의 시간과 경기 장소를 확인하여, 약속 시간에 늦지 않도록 경기장까지의 경로를 미리 찾아주세요!',
-            '경기 운영 정보를 통해 경기장의 주차, 샤워실, 유니폼, 참여인원 등을 미리 확인하여 경기 참여 시 차질이 없도록 준비해 주세요.',
-            '경기가 종료된 후, 리뷰를 통해 함께 플레이 한 선수들에게 리뷰를 남겨주세요. 리뷰는 올바른 농구 문화를 이루는 데 도움이 됩니다!'
+            '경기 상세 정보에서 참여할 경기의 시간과 장소를 확인해주세요.\n경기에 늦지 않게 경기장까지의 경로를 미리 찾아주세요!',
+            '경기 운영 정보를 통해 경기장의 주차, 샤워실, 유니폼, 참여 인원 등 경기에 관한 정보들을 미리 확인해주세요!',
+            '경기가 종료된 후, 리뷰를 통해 함께 플레이한 선수들에게\n리뷰를 남겨주세요.\n리뷰는 올바른 농구 문화를 형성하는데 도움이 됩니다!'
           ];
   }
 
@@ -53,18 +51,13 @@ class GameCompleteScreen extends StatelessWidget {
       width: 24.r,
       decoration: const BoxDecoration(
         shape: BoxShape.circle,
-        color: MITIColor.primary,
+        color: V2MITIColor.primary2,
       ),
       child: Center(
         child: Text(
           idx.toString(),
-          style: TextStyle(
-            fontFamily: 'Pretendard',
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w800,
-            color: const Color(0xFF262626),
-            letterSpacing: -14.sp * 0.02,
-          ),
+          style: V2MITITextStyle.tinyBoldNormal
+              .copyWith(color: V2MITIColor.gray11),
         ),
       ),
     );
@@ -77,20 +70,20 @@ class GameCompleteScreen extends StatelessWidget {
         Row(
           children: [
             getProgress(idx + 1),
-            SizedBox(width: 16.w),
+            SizedBox(width: 8.w),
             Text(
               title[idx],
-              style: MITITextStyle.md.copyWith(
-                color: MITIColor.gray100,
+              style: V2MITITextStyle.tinyBoldNormal.copyWith(
+                color: V2MITIColor.white,
               ),
             )
           ],
         ),
-        SizedBox(height: 16.h),
+        SizedBox(height: 8.h),
         Text(
           desc[idx],
-          style: MITITextStyle.xxsmLight150.copyWith(
-            color: MITIColor.gray300,
+          style: V2MITITextStyle.tinyMediumNormal.copyWith(
+            color: V2MITIColor.gray3,
           ),
         )
       ],
@@ -104,12 +97,12 @@ class GameCompleteScreen extends StatelessWidget {
       child: Scaffold(
         body: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 21.w),
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SizedBox(
-                  height: 170.h,
+                  height: 213.h,
                   child: Stack(
                     children: [
                       Positioned(
@@ -118,7 +111,7 @@ class GameCompleteScreen extends StatelessWidget {
                         child: Lottie.asset(
                           'assets/lottie/success.json',
                           width: 200,
-                          height: 200,
+                          height: 213.h,
                           fit: BoxFit.fill,
                           repeat: true,
                         ),
@@ -130,21 +123,22 @@ class GameCompleteScreen extends StatelessWidget {
                         child: Column(
                           // crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            SizedBox(height: 52.h),
+                            SizedBox(height: 74.5.h),
                             Text(
                               type == GameCompleteType.create
                                   ? '경기 생성 완료!'
                                   : '경기 참가 완료!',
-                              style: MITITextStyle.xxl140.copyWith(
-                                color: Colors.white,
+                              style: V2MITITextStyle.title3.copyWith(
+                                color: V2MITIColor.white,
                               ),
                               textAlign: TextAlign.center,
                             ),
-                            SizedBox(height: 10.h),
+                            SizedBox(height: 12.h),
                             Text(
-                              '경기 정보를 확인해 보세요.',
-                              style: MITITextStyle.sm150.copyWith(
-                                color: MITIColor.gray300,
+                              '경기 정보를 확인해보세요',
+                              style:
+                                  V2MITITextStyle.smallRegularNormal.copyWith(
+                                color: V2MITIColor.gray2,
                               ),
                               textAlign: TextAlign.center,
                             ),
@@ -155,30 +149,31 @@ class GameCompleteScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+                SizedBox(height: 16.h),
                 Text(
                   type == GameCompleteType.create
                       ? "새로운 경기를 생성하셨습니다."
-                      : '경기 참여가 확정되었습니다.',
-                  style: MITITextStyle.md.copyWith(
-                    color: MITIColor.gray100,
+                      : '경기 참여가 확정되었습니다!',
+                  style: V2MITITextStyle.smallBoldNormal.copyWith(
+                    color: V2MITIColor.white,
                   ),
                 ),
-                SizedBox(height: 12.h),
+                SizedBox(height: 8.h),
                 Text(
-                  "경기에 참여하시기 전에 아래의 내용을 확인하세요.",
-                  style: MITITextStyle.sm150.copyWith(
-                    color: MITIColor.gray300,
+                  "경기 시작전, 아래의 내용을 다시 확인해주세요!",
+                  style: V2MITITextStyle.tinyRegularNormal.copyWith(
+                    color: V2MITIColor.white,
                   ),
                 ),
-                SizedBox(height: 25.h),
+                SizedBox(height: 24.h),
                 Container(
                   padding: EdgeInsets.symmetric(
-                    horizontal: 20.w,
-                    vertical: 30.h,
+                    horizontal: 16.w,
+                    vertical: 20.h,
                   ),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20.r),
-                    color: MITIColor.gray700,
+                    borderRadius: BorderRadius.circular(16.r),
+                    color: V2MITIColor.gray11,
                   ),
                   child: ListView.separated(
                       shrinkWrap: true,
@@ -187,7 +182,7 @@ class GameCompleteScreen extends StatelessWidget {
                         return info(idx);
                       },
                       separatorBuilder: (_, idx) {
-                        return SizedBox(height: 32.h);
+                        return SizedBox(height: 24.h);
                       },
                       itemCount: 3),
                 ),
@@ -213,8 +208,8 @@ class GameCompleteScreen extends StatelessWidget {
                           );
                         },
                         style: TextButton.styleFrom(
-                            fixedSize: Size(double.infinity, 48.h)),
-                        child: const Text('경기 상세 정보 보기'),
+                            fixedSize: Size(double.infinity, 44.h)),
+                        child: const Text('경기 정보 확인하기'),
                       ),
                     );
                   },

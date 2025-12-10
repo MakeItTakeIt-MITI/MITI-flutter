@@ -4,9 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/common/model/model_id.dart';
 
-import '../../game/model/v2/participation/participation_game_response.dart';
 import '../../game/model/v2/payment/base_payment_request_response.dart';
-import 'boot_pay_request_model.dart';
 
 part 'pay_model.g.dart';
 
@@ -20,9 +18,6 @@ class PayBaseModel {
     if (json.containsKey('order_id')) {
       log("PayReadyModel");
       return BasePaymentRequestResponse.fromJson(json);
-    } else if (json.containsKey('game')) {
-      log("PayFreeModel");
-      return ParticipationGameResponse.fromJson(json);
     } else {
       // 필요한 경우 기본 PayBaseModel을 반환
       log("_PayBaseModelFromJson");
@@ -122,5 +117,3 @@ class PayResultModel extends IModelWithId {
   factory PayResultModel.fromJson(Map<String, dynamic> json) =>
       _$PayResultModelFromJson(json);
 }
-
-

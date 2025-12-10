@@ -1,50 +1,53 @@
 import 'package:json_annotation/json_annotation.dart';
-import '../game/game_with_court_response.dart';
-import 'payment_refund_amount.dart'; // PaymentRefundAmount 클래스 import
+
+import '../../../../payment/model/base_coupon_usage_response.dart';
+import '../../../../payment/model/participation_payment_refund_info_response.dart';
+import '../../base_game_with_court_response.dart';
 
 part 'participation_refund_info_response.g.dart';
 
 @JsonSerializable()
 class ParticipationRefundInfoResponse {
-  @JsonKey(name: 'quantity')
-  final int quantity;
+  /// 참여 경기 정보
+  @JsonKey(name: 'game')
+  final BaseGameWithCourtResponse gameInfo;
 
-  @JsonKey(name: 'item_type')
-  final String itemType;
+  /// 적용 쿠폰 정보
+  @JsonKey(name: 'coupon_info')
+  final BaseCouponUsageResponse couponInfo;
 
-  @JsonKey(name: 'participation_id')
-  final int participationId;
+  /// 적용 프로모션 할인 정보
+  @JsonKey(name: 'promotion_info')
+  final Map<String, dynamic> promotionInfo;
 
-  final GameWithCourtResponse game;
-
+  /// 환불 정보
   @JsonKey(name: 'refund_info')
-  final PaymentRefundAmount refundInfo;
+  final ParticipationPaymentRefundInfoResponse refundInfo;
 
   ParticipationRefundInfoResponse({
-    required this.quantity,
-    required this.itemType,
-    required this.participationId,
-    required this.game,
+    required this.gameInfo,
+    required this.couponInfo,
+    required this.promotionInfo,
     required this.refundInfo,
   });
 
   factory ParticipationRefundInfoResponse.fromJson(Map<String, dynamic> json) =>
       _$ParticipationRefundInfoResponseFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ParticipationRefundInfoResponseToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$ParticipationRefundInfoResponseToJson(this);
 
+  // 선택 사항: copyWith 메서드 추가
   ParticipationRefundInfoResponse copyWith({
-    int? quantity,
-    String? itemType,
-    int? participationId,
-    GameWithCourtResponse? game,
-    PaymentRefundAmount? refundInfo,
+    BaseGameWithCourtResponse? gameInfo,
+    BaseCouponUsageResponse? couponInfo,
+    Map<String, dynamic>? promotionInfo,
+    ParticipationPaymentRefundInfoResponse? refundInfo,
   }) {
     return ParticipationRefundInfoResponse(
-      quantity: quantity ?? this.quantity,
-      itemType: itemType ?? this.itemType,
-      participationId: participationId ?? this.participationId,
-      game: game ?? this.game,
+      gameInfo: gameInfo ?? this.gameInfo,
+      couponInfo: couponInfo ?? this.couponInfo,
+      promotionInfo: promotionInfo ?? this.promotionInfo,
       refundInfo: refundInfo ?? this.refundInfo,
     );
   }

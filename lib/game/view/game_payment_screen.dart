@@ -299,7 +299,11 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
                                   coupons: model.couponInfo,
                                   onSelect: (BaseCouponInfoResponse coupon) {
                                     setState(() {
-                                      selectedCoupon = coupon;
+                                      if(selectedCoupon?.id == coupon.id){
+                                        selectedCoupon = null;
+                                      }else{
+                                        selectedCoupon = coupon;
+                                      }
                                     });
                                   },
                                   selectedId: selectedCoupon?.id,
@@ -756,6 +760,7 @@ class PaymentAndRefundPolicyComponent extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           spacing: 29.h,
           children: [
+            if(isPayment)
             Text(
               '경기 참가비 결제의 모든 관리와 책임의 주체는 MITI 이며, MITI는 서비스 이용 과정에서 발생하는 불만이나 분쟁을 해결하기 위하여 원이 및 피해 파악 등 필요한 조치를 시행할 것입니다.\n\n환불은 참여자가 지불한 참가비가 취소되는 방식으로 진행되며, 결제 취소 금액은 환불 정책에 따라 책정됩니다.',
               style: V2MITITextStyle.tinyRegularNormal.copyWith(
@@ -791,50 +796,49 @@ class PaymentAndRefundPolicyComponent extends StatelessWidget {
             )
           ],
         ),
-        Visibility(
-          visible: isPayment,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(height: 20.h),
-              Text(
-                '유의 사항',
-                style: V2MITITextStyle.smallBoldNormal.copyWith(
-                  color: V2MITIColor.gray1,
-                ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(height: 20.h),
+            Text(
+              '유의 사항',
+              style: V2MITITextStyle.smallBoldNormal.copyWith(
+                color: V2MITIColor.gray1,
               ),
-              SizedBox(height: 12.h),
-              Text.rich(
-                TextSpan(children: [
-                  TextSpan(
-                    text: '• 경기 시작까지 2시간 미만 남은 경기는 참여 완료시 ',
-                    style: V2MITITextStyle.tinyRegularNormal.copyWith(
-                      color: V2MITIColor.gray1,
-                    ),
+            ),
+            SizedBox(height: 12.h),
+            Text.rich(
+              TextSpan(children: [
+                TextSpan(
+                  text: '• 경기 시작까지 2시간 미만 남은 경기는 참여 완료시 ',
+                  style: V2MITITextStyle.tinyRegularNormal.copyWith(
+                    color: V2MITIColor.gray1,
                   ),
-                  TextSpan(
-                    text: '참여 취소가 불가능',
-                    style: V2MITITextStyle.tinyRegularNormal.copyWith(
-                      color: V2MITIColor.red4,
-                    ),
-                  ),
-                  TextSpan(
-                    text: '합니다.',
-                    style: V2MITITextStyle.tinyRegularNormal.copyWith(
-                      color: V2MITIColor.gray1,
-                    ),
-                  ),
-                ]),
-              ),
-              SizedBox(height: 8.h),
-              Text(
-                '• 참여가 어려운 경우, [게스트 경기 목록]에서 참여를 취소해주세요.',
-                style: V2MITITextStyle.tinyRegularNormal.copyWith(
-                  color: V2MITIColor.gray1,
                 ),
-              )
-            ],
-          ),
+                TextSpan(
+                  text: '참여 취소가 불가능',
+                  style: V2MITITextStyle.tinyRegularNormal.copyWith(
+                    color: V2MITIColor.red4,
+                  ),
+                ),
+                TextSpan(
+                  text: '합니다.',
+                  style: V2MITITextStyle.tinyRegularNormal.copyWith(
+                    color: V2MITIColor.gray1,
+                  ),
+                ),
+              ]),
+            ),
+            if(isPayment)
+            SizedBox(height: 8.h),
+            if(isPayment)
+            Text(
+              '• 참여가 어려운 경우, [게스트 경기 목록]에서 참여를 취소해주세요.',
+              style: V2MITITextStyle.tinyRegularNormal.copyWith(
+                color: V2MITIColor.gray1,
+              ),
+            )
+          ],
         ),
       ],
     );

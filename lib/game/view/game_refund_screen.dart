@@ -16,9 +16,10 @@ import 'package:miti/theme/text_theme.dart';
 import '../../common/component/defalut_flashbar.dart';
 import '../../common/component/default_appbar.dart';
 import '../../common/component/default_layout.dart';
+import '../../payment/component/small_coupon_card.dart';
+import '../../payment/model/participation_payment_refund_info_response.dart';
 import '../error/game_error.dart';
 import '../model/v2/payment/participation_refund_info_response.dart';
-import '../model/v2/payment/payment_refund_amount.dart';
 import 'game_payment_screen.dart';
 
 class GameRefundScreen extends StatefulWidget {
@@ -63,7 +64,6 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MITIColor.gray750,
       bottomNavigationBar: BottomButton(
         button: Consumer(
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
@@ -87,13 +87,14 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
                                       await refund(ref, context);
                                     },
                                     style: TextButton.styleFrom(
-                                      fixedSize: Size(double.infinity, 48.h),
-                                      backgroundColor: MITIColor.error,
+                                      fixedSize: Size(double.infinity, 44.h),
+                                      backgroundColor: V2MITIColor.red5,
                                     ),
                                     child: Text(
                                       "참여 취소하기",
-                                      style: MITITextStyle.mdBold.copyWith(
-                                        color: MITIColor.gray100,
+                                      style:
+                                          V2MITITextStyle.regularBold.copyWith(
+                                        color: V2MITIColor.white,
                                       ),
                                     ),
                                   );
@@ -104,13 +105,13 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
                     }
                   : () {},
               style: TextButton.styleFrom(
-                fixedSize: Size(double.infinity, 48.h),
-                backgroundColor: valid ? MITIColor.error : MITIColor.gray700,
+                fixedSize: Size(double.infinity, 44.h),
+                backgroundColor: valid ? V2MITIColor.red5 : V2MITIColor.gray7,
               ),
               child: Text(
                 '참여 취소하기',
-                style: MITITextStyle.btnTextBStyle.copyWith(
-                  color: valid ? MITIColor.gray100 : MITIColor.gray50,
+                style: V2MITITextStyle.regularBold.copyWith(
+                  color: valid ? V2MITIColor.white : V2MITIColor.white,
                 ),
               ),
             );
@@ -124,15 +125,13 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
             const DefaultAppBar(
               isSliver: true,
               title: '경기 환불 정보',
-              backgroundColor: MITIColor.gray750,
             ),
           ];
         },
         body: Consumer(
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
-            final result = ref.watch(refundInfoProvider(
-                gameId: widget.gameId,
-                participationId: widget.participationId));
+            final result = ref.watch(
+                refundInfoProvider(participationId: widget.participationId));
             if (result is LoadingModel) {
               return Container();
             } else if (result is ErrorModel) {
@@ -146,29 +145,59 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
             final model =
                 (result as ResponseModel<ParticipationRefundInfoResponse>)
                     .data!;
+            model.couponInfo;
 
             return CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(
-                    child: SummaryComponent.fromRefundModel(model: model.game)),
-                getDivider(),
-                _RefundInfoComponent(
-                  model: model.refundInfo,
-                ),
-                getDivider(),
-                const SliverToBoxAdapter(
-                  child: PaymentAndRefundPolicyComponent(
-                    title: '참여 취소 수수료 규정',
-                    isPayment: false,
+                  child: Padding(
+                    padding: EdgeInsetsGeometry.symmetric(horizontal: 16.w),
+                    child: Column(
+                      spacing: 36.h,
+                      children: [
+                        Padding(
+                          padding: EdgeInsetsGeometry.only(top: 20.h),
+                          child: SummaryComponent.fromRefundModel(
+                            model: model.gameInfo,
+                            fee: model.refundInfo.originAmount.toString(),
+                          ),
+                        ),
+                        Column(
+                          spacing: 24.h,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              spacing: 16.h,
+                              children: [
+                                Text(
+                                  "사용 쿠폰",
+                                  style: V2MITITextStyle.regularBold
+                                      .copyWith(color: V2MITIColor.white),
+                                ),
+                                SmallCouponCard.fromModel(
+                                    model: model.couponInfo),
+                              ],
+                            ),
+                            _RefundInfoComponent(
+                              model: model.refundInfo,
+                            ),
+                          ],
+                        ),
+                        const PaymentAndRefundPolicyComponent(
+                          title: '참여 취소 수수료 규정',
+                          isPayment: false,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 45.h),
+                          child: PaymentCheckForm(
+                            type: AgreementRequestType.participation_refund,
+                            gameId: widget.gameId,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                getDivider(),
-                SliverToBoxAdapter(
-                  child: PaymentCheckForm(
-                    type: AgreementRequestType.participation_refund,
-                    gameId: widget.gameId,
-                  ),
-                ),
+                )
               ],
             );
           },
@@ -178,9 +207,8 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
   }
 
   Future<void> refund(WidgetRef ref, BuildContext context) async {
-    final result = await ref.read(gameCancelProvider(
-            gameId: widget.gameId, participationId: widget.participationId)
-        .future);
+    final result = await ref.read(
+        gameCancelProvider(participationId: widget.participationId).future);
     if (result is ErrorModel) {
       if (context.mounted) {
         context.pop();
@@ -215,7 +243,7 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
 }
 
 class _RefundInfoComponent extends ConsumerWidget {
-  final PaymentRefundAmount model;
+  final ParticipationPaymentRefundInfoResponse model;
 
   const _RefundInfoComponent({
     super.key,
@@ -223,81 +251,69 @@ class _RefundInfoComponent extends ConsumerWidget {
   });
 
   String formatFee(int fee) {
-    return NumberFormat.decimalPattern().format(fee);
+    return "${NumberFormat.decimalPattern().format(fee)} 원";
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding:
-            EdgeInsets.only(top: 24.h, left: 21.w, right: 21.w, bottom: 28.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          '환불 정보',
+          style: V2MITITextStyle.regularBold.copyWith(
+            color: V2MITIColor.white,
+          ),
+        ),
+        SizedBox(height: 16.h),
+        getPayment(
+            title: '결제 금액',
+            fee: formatFee(model.finalAmount),
+            color: V2MITIColor.primary5),
+        SizedBox(height: 12.h),
+        getPayment(
+          title: '결제 취소 수수료',
+          fee: formatFee(model.refundCommissionAmount),
+          color: V2MITIColor.red5,
+        ),
+        getDivider(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              '환불 정보',
-              style: MITITextStyle.mdBold.copyWith(
-                color: MITIColor.gray100,
+              '총 환불 금액',
+              style: V2MITITextStyle.regularBold.copyWith(
+                color: V2MITIColor.gray1,
               ),
             ),
-            SizedBox(height: 20.h),
-            getPayment(
-                title: '경기 참여 비용',
-                fee: formatFee(model.paymentAmount.totalAmount)),
-            SizedBox(height: 12.h),
-            getPayment(
-              title: '결제 수수료',
-              fee: formatFee(
-                  model.refundCommissionAmount.paymentCommissionAmount),
-              color: MITIColor.gray100,
+            Text(
+              '₩ ${formatFee(model.finalAmount - model.refundCommissionAmount)}',
+              style: V2MITITextStyle.regularBold.copyWith(
+                color: V2MITIColor.gray1,
+              ),
             ),
-            SizedBox(height: 12.h),
-            getPayment(
-              title: '참여 취소 수수료',
-              fee: formatFee(
-                  model.refundCommissionAmount.cancelationCommissionAmount),
-              color: MITIColor.gray100,
-            ),
-            getDivider(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '총 환불 금액',
-                  style: MITITextStyle.mdBold.copyWith(
-                    color: MITIColor.gray100,
-                  ),
-                ),
-                Text(
-                  '₩ ${formatFee(model.finalRefundAmount)}',
-                  style: MITITextStyle.mdBold.copyWith(
-                    color: MITIColor.primary,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 10.h),
           ],
         ),
-      ),
+        SizedBox(height: 10.h),
+      ],
     );
   }
 
-  Row getPayment({required String title, required String fee, Color? color}) {
+  Row getPayment(
+      {required String title, required String fee, required Color color}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           title,
-          style: MITITextStyle.sm.copyWith(
-            color: MITIColor.gray100,
+          style: V2MITITextStyle.smallRegular.copyWith(
+            color: V2MITIColor.gray1,
           ),
         ),
         Text(
-          color != null ? '- ₩ $fee' : '₩ $fee',
-          style: MITITextStyle.sm.copyWith(
-            color: color ?? MITIColor.gray100,
+          color == V2MITIColor.red5 ? '- ₩ $fee' : '₩ $fee',
+          style: V2MITITextStyle.smallRegular.copyWith(
+            color: color,
           ),
         ),
       ],
@@ -306,8 +322,8 @@ class _RefundInfoComponent extends ConsumerWidget {
 
   Divider getDivider() {
     return Divider(
-      color: MITIColor.gray700,
-      height: 41.h,
+      color: V2MITIColor.gray10,
+      height: 16.h,
     );
   }
 }

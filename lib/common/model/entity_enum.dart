@@ -99,7 +99,6 @@ enum ItemType {
   final String value;
 
   static ItemType stringToEnum({required String value}) {
-
     return ItemType.values.firstWhere((e) => e.name == value);
   }
 }
@@ -774,4 +773,13 @@ enum CouponStatusType {
   final String displayName;
 
   const CouponStatusType(this.displayName);
+}
+
+enum DiscountType {
+  fixed('고정 금액 할인'),
+  percent('결제 금액 비율 할인');
+
+  final String displayName;
+
+  const DiscountType(this.displayName);
 }

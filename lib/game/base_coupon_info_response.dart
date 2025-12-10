@@ -18,8 +18,8 @@ class BaseCouponInfoResponse extends IModelWithId {
   @JsonKey(name: 'valid_until')
   final DateTime? validUntil;
 
-  @JsonKey(name: 'target_item_type')
-  final String targetItemType;
+  @JsonKey(name: 'discount_type')
+  final DiscountType discountType;
 
   @JsonKey(name: 'discount_value')
   final int discountValue;
@@ -39,7 +39,7 @@ class BaseCouponInfoResponse extends IModelWithId {
     required this.name,
     this.validFrom,
     this.validUntil,
-    required this.targetItemType,
+    required this.discountType,
     required this.discountValue,
     required this.couponDiscountAmount,
     required this.couponMaxDiscountAmount,
@@ -57,7 +57,7 @@ class BaseCouponInfoResponse extends IModelWithId {
     String? name,
     DateTime? validFrom,
     DateTime? validUntil,
-    String? targetItemType,
+    DiscountType? discountType,
     int? discountValue,
     int? couponDiscountAmount,
     int? couponMaxDiscountAmount,
@@ -69,7 +69,7 @@ class BaseCouponInfoResponse extends IModelWithId {
       name: name ?? this.name,
       validFrom: validFrom ?? this.validFrom,
       validUntil: validUntil ?? this.validUntil,
-      targetItemType: targetItemType ?? this.targetItemType,
+      discountType: discountType ?? this.discountType,
       discountValue: discountValue ?? this.discountValue,
       couponDiscountAmount: couponDiscountAmount ?? this.couponDiscountAmount,
       couponMaxDiscountAmount: couponMaxDiscountAmount ?? this.couponMaxDiscountAmount,

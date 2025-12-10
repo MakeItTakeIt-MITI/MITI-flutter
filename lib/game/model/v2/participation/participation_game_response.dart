@@ -1,25 +1,21 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:miti/common/model/entity_enum.dart';
 
-import '../../../../payment/model/pay_model.dart';
 import '../../../../user/model/v2/base_user_response.dart';
 import '../game/base_game_response.dart';
+import 'base_participation_response.dart';
 
 part 'participation_game_response.g.dart';
 
 @JsonSerializable()
-class ParticipationGameResponse extends PayBaseModel {
-  final int id;
-  @JsonKey(name: 'participation_status')
-  final ParticipationStatusType participationStatus;
-  final BaseUserResponse user;
+class ParticipationGameResponse extends BaseParticipationResponse {
   final BaseGameResponse game;
 
   ParticipationGameResponse({
-    required this.id,
+    required super.id,
     required this.game,
-    required this.user,
-    required this.participationStatus,
+    required super.user,
+    required super.participationStatus,
   });
 
   factory ParticipationGameResponse.fromJson(Map<String, dynamic> json) =>
@@ -27,6 +23,7 @@ class ParticipationGameResponse extends PayBaseModel {
 
   Map<String, dynamic> toJson() => _$ParticipationGameResponseToJson(this);
 
+  @override
   ParticipationGameResponse copyWith({
     int? id,
     ParticipationStatusType? participationStatus,

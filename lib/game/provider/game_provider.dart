@@ -26,7 +26,8 @@ class MapGameList extends _$MapGameList {
   Future<void> getList() async {
     state = LoadingModel();
     final repository = ref.watch(gameRepositoryProvider);
-    final param = ref.read(gameFilterProvider(routeName: CourtMapScreen.routeName));
+    final param =
+        ref.read(gameFilterProvider(routeName: CourtMapScreen.routeName));
     repository.getMapGameList(param: param).then((value) {
       logger.i(value);
       ref.read(selectGameListProvider.notifier).update((state) => value.data!);
@@ -134,11 +135,11 @@ Future<BaseModel> gameFree(GameFreeRef ref, {required int gameId}) async {
 
 @riverpod
 Future<BaseModel> gameCancel(GameCancelRef ref,
-    {required int gameId, required int participationId}) async {
+    { required int participationId}) async {
   final repository = ref.watch(gameRepositoryProvider);
 
   return await repository
-      .cancelGame(gameId: gameId, participationId: participationId)
+      .cancelGame(participationId: participationId)
       .then<BaseModel>((value) {
     logger.i(value);
     return value;
@@ -200,8 +201,8 @@ class Payment extends _$Payment {
 @Riverpod(keepAlive: false)
 class RefundInfo extends _$RefundInfo {
   @override
-  BaseModel build({required int gameId, required int participationId}) {
-    get(gameId: gameId, participationId: participationId);
+  BaseModel build({required int participationId}) {
+    get(participationId: participationId);
     return LoadingModel();
   }
 
@@ -209,11 +210,9 @@ class RefundInfo extends _$RefundInfo {
   // 명세 갱신 필요
   //  status_code = 403
   // error.error_code = 470
-  Future<void> get({required int gameId, required int participationId}) async {
+  Future<void> get({required int participationId}) async {
     final repository = ref.watch(gameRepositoryProvider);
-    repository
-        .refundInfo(gameId: gameId, participationId: participationId)
-        .then((value) {
+    repository.refundInfo(participationId: participationId).then((value) {
       logger.i(value);
       state = value;
     }).catchError((e) {
