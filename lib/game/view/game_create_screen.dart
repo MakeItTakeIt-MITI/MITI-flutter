@@ -17,6 +17,7 @@ import 'package:miti/common/component/custom_bottom_sheet.dart';
 import 'package:miti/common/component/custom_text_form_field.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/component/default_layout.dart';
+import 'package:miti/common/component/form/prefix_input_form.dart';
 import 'package:miti/common/model/cursor_model.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/model/entity_enum.dart';
@@ -1179,8 +1180,7 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
         Row(
           children: [
             Expanded(
-              child: CustomTextFormField(
-                required: !widget.isUpdateForm,
+              child: PrefixInputForm(
                 textEditingController: minController,
                 focusNode: widget.focusNodes[0],
                 key: widget.formKeys[0],
@@ -1189,8 +1189,6 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
                 onNext: () =>
                     FocusScope.of(context).requestFocus(widget.focusNodes[1]),
                 hintText: '00',
-                label: widget.isUpdateForm ? null : '총 모집 인원',
-                textAlign: TextAlign.right,
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
                 inputFormatters: [
@@ -1202,25 +1200,20 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
                       .update(min_invitation: val.replaceAll(',', ''));
                 },
                 prefix: Text(
-                  "최소",
-                  style: MITITextStyle.sm.copyWith(
-                    color: MITIColor.gray100,
-                  ),
+                  '최대',
+                  style: V2MITITextStyle.regularMediumNormal
+                      .copyWith(color: V2MITIColor.white),
                 ),
-                suffixIcon: Padding(
-                  padding: EdgeInsets.only(left: 12.w),
-                  child: Text(
-                    "명",
-                    style: MITITextStyle.sm.copyWith(
-                      color: MITIColor.gray100,
-                    ),
-                  ),
+                suffixIcon: Text(
+                  '명',
+                  style: V2MITITextStyle.regularMediumNormal
+                      .copyWith(color: V2MITIColor.white),
                 ),
               ),
             ),
             SizedBox(width: 12.w),
             Expanded(
-              child: CustomTextFormField(
+              child: PrefixInputForm(
                 textEditingController: maxController,
                 focusNode: widget.focusNodes[1],
                 key: widget.formKeys[1],
@@ -1229,14 +1222,8 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
                 onNext: () =>
                     FocusScope.of(context).requestFocus(widget.focusNodes[2]),
                 hintText: '00',
-                label: widget.isUpdateForm ? null : '',
-                textAlign: TextAlign.right,
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
-                borderColor:
-                    !ValidRegExp.validForm(min_invitation, max_invitation)
-                        ? MITIColor.error
-                        : null,
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
                 ],

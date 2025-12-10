@@ -402,8 +402,8 @@ class _InfoComponentState extends ConsumerState<_InfoComponent> {
               initialValue: widget.info,
               maxLines: null,
               textAlignVertical: TextAlignVertical.top,
-              style: MITITextStyle.sm150.copyWith(
-                color: MITIColor.gray100,
+              style: V2MITITextStyle.smallRegularNormal.copyWith(
+                color: V2MITIColor.white,
               ),
               onChanged: (val) {
                 ref.read(gameFormProvider.notifier).update(info: val);
@@ -419,14 +419,12 @@ class _InfoComponentState extends ConsumerState<_InfoComponent> {
                 ),
                 hintText:
                     '주차, 샤워 가능 여부, 경기 진행 방식, 필요한 유니폼 색상 등 참가들에게 공지할 정보들을 입력해주세요',
-                hintStyle: MITITextStyle.sm150.copyWith(
-                  color: MITIColor.gray500,
+                hintStyle: V2MITITextStyle.smallRegularNormal.copyWith(
+                  color: V2MITIColor.gray6,
                 ),
                 hintMaxLines: 10,
-                fillColor: MITIColor.gray700,
-                filled: true,
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+                filled: false,
+                contentPadding: EdgeInsets.zero,
                 // isDense: true,
               ),
             ),
