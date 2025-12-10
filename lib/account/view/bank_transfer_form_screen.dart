@@ -442,7 +442,7 @@ class _TransferAmountForm extends ConsumerWidget {
                     .update(
                         interactionDesc: InteractionDesc(
                             isSuccess: false, desc: '이체 가능한 금액을 초과하였습니다.'),
-                        borderColor: MITIColor.error);
+                        borderColor: V2MITIColor.red5);
               } else {
                 ref
                     .read(formInfoProvider(InputFormType.amount).notifier)

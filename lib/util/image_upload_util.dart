@@ -201,7 +201,7 @@ class ImageUploadUtil {
 
         // 사용자에게 실패 알림
         FlashUtil.showFlash(context, '이미지 업로드에 실패했습니다.',
-            textColor: MITIColor.error);
+            textColor: V2MITIColor.red5);
       }
     } catch (e) {
       log("이미지 업로드 실패: $e");
@@ -211,7 +211,7 @@ class ImageUploadUtil {
 
       // 사용자에게 실패 알림
       FlashUtil.showFlash(context, '이미지 업로드에 실패했습니다.',
-          textColor: MITIColor.error);
+          textColor: V2MITIColor.red5);
     }
   }
 }

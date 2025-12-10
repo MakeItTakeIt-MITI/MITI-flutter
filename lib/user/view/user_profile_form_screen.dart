@@ -411,7 +411,7 @@ class _NewPasswordFormState extends ConsumerState<_NewPasswordForm> {
                 ref
                     .read(formInfoProvider(InputFormType.password).notifier)
                     .update(
-                        borderColor: MITIColor.error,
+                        borderColor: V2MITIColor.red5,
                         interactionDesc: InteractionDesc(
                             isSuccess: false, desc: '올바른 비밀번호 양식이 아니에요.'));
               }
@@ -471,7 +471,7 @@ class _NewPasswordFormState extends ConsumerState<_NewPasswordForm> {
                       .read(formInfoProvider(InputFormType.passwordCheck)
                           .notifier)
                       .update(
-                          borderColor: MITIColor.error,
+                          borderColor: V2MITIColor.red5,
                           interactionDesc: InteractionDesc(
                               isSuccess: false, desc: '비밀번호가 일치하지 않습니다.'));
                 }
@@ -480,7 +480,7 @@ class _NewPasswordFormState extends ConsumerState<_NewPasswordForm> {
                     .read(
                         formInfoProvider(InputFormType.passwordCheck).notifier)
                     .update(
-                        borderColor: MITIColor.error,
+                        borderColor: V2MITIColor.red5,
                         interactionDesc: InteractionDesc(
                             isSuccess: false, desc: '올바른 비밀번호 양식이 아니에요.'));
               }

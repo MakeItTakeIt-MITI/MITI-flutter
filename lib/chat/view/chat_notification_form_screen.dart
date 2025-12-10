@@ -207,7 +207,7 @@ class _ChatNotificationFormScreenState
                       style: MITITextStyle.mdLight.copyWith(
                           color: valid
                               ? isEdit
-                                  ? MITIColor.error
+                                  ? V2MITIColor.red5
                                   : MITIColor.primary
                               : MITIColor.gray600),
                     ),
@@ -305,7 +305,7 @@ class _ChatNotificationFormScreenState
 
     if (result is ErrorModel) {
       FlashUtil.showFlash(context, '요청이 정상적으로 처리되지 않았습니다.',
-          textColor: MITIColor.error);
+          textColor: V2MITIColor.red5);
     } else {
       Map<String, String> pathParameters = {'gameId': widget.gameId.toString()};
       context.goNamed(
@@ -337,7 +337,7 @@ class _ChatNotificationFormScreenState
 
     if (result is ErrorModel) {
       FlashUtil.showFlash(context, '요청이 정상적으로 처리되지 않았습니다.',
-          textColor: MITIColor.error);
+          textColor: V2MITIColor.red5);
     } else {
       Map<String, String> pathParameters = {
         'gameId': widget.gameId.toString(),

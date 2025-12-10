@@ -511,7 +511,7 @@ class _V2DateFormState extends State<V2DateForm> {
                                       Text(
                                         "경기 종료 시간이 시작 시간의 이후가 되도록 설정해 주세요.",
                                         style: MITITextStyle.xxsm
-                                            .copyWith(color: MITIColor.error),
+                                            .copyWith(color: V2MITIColor.red5),
                                       ),
                                     ],
                                   ));
@@ -1290,7 +1290,7 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
               SizedBox(height: 16.h),
               Text(
                 '총 모집 인원은 최소 모집 이상이어야 해요.',
-                style: MITITextStyle.xxsm.copyWith(color: MITIColor.error),
+                style: MITITextStyle.xxsm.copyWith(color: V2MITIColor.red5),
               ),
             ],
           ),

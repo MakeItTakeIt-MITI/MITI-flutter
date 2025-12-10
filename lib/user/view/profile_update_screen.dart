@@ -278,7 +278,7 @@ class _NicknameUpdateScreenState extends ConsumerState<ProfileUpdateScreen> {
                                 .read(formInfoProvider(InputFormType.nickname)
                                     .notifier)
                                 .update(
-                                    borderColor: MITIColor.error,
+                                    borderColor: V2MITIColor.red5,
                                     interactionDesc: InteractionDesc(
                                         isSuccess: false,
                                         desc: '2-15자의 한글,영어,숫자로만 설정이 가능합니다.'));

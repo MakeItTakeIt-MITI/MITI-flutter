@@ -109,10 +109,10 @@ class AuthError extends ErrorBase {
     if (this.status_code == BadRequest && this.error_code == 101) {
       /// 로그인 데이터 유효성 검증 실패
       ref.read(formInfoProvider(InputFormType.email).notifier).update(
-            borderColor: MITIColor.error,
+            borderColor: V2MITIColor.red5,
           );
       ref.read(formInfoProvider(InputFormType.password).notifier).update(
-            borderColor: MITIColor.error,
+            borderColor: V2MITIColor.red5,
             interactionDesc: InteractionDesc(
               isSuccess: false,
               desc: "이메일이나 비밀번호가 일치하지 않습니다.",
@@ -121,10 +121,10 @@ class AuthError extends ErrorBase {
     } else if (this.status_code == UnAuthorized && this.error_code == 140) {
       /// 로그인 정보 일치 사용자 없음
       ref.read(formInfoProvider(InputFormType.email).notifier).update(
-            borderColor: MITIColor.error,
+            borderColor: V2MITIColor.red5,
           );
       ref.read(formInfoProvider(InputFormType.password).notifier).update(
-            borderColor: MITIColor.error,
+            borderColor: V2MITIColor.red5,
             interactionDesc: InteractionDesc(
               isSuccess: false,
               desc: "이메일이나 비밀번호가 일치하지 않습니다.",
@@ -471,7 +471,7 @@ class AuthError extends ErrorBase {
       /// 요청 시간 제한 초과
 
       ref.read(formInfoProvider(InputFormType.phone).notifier).update(
-            borderColor: MITIColor.error,
+            borderColor: V2MITIColor.red5,
             interactionDesc: InteractionDesc(
               isSuccess: false,
               desc: "인증번호 입력 시간이 초과되었습니다.",
@@ -559,7 +559,7 @@ class AuthError extends ErrorBase {
       /// 이메일, 비밀번호 찾기 인증 코드 불일치
 
       ref.read(formInfoProvider(InputFormType.phone).notifier).update(
-            borderColor: MITIColor.error,
+            borderColor: V2MITIColor.red5,
             interactionDesc: InteractionDesc(
               isSuccess: false,
               desc: "인증번호가 일치하지 않습니다.",
@@ -580,7 +580,7 @@ class AuthError extends ErrorBase {
       /// 인증 요청 횟수 초과
 
       ref.read(formInfoProvider(InputFormType.phone).notifier).update(
-            borderColor: MITIColor.error,
+            borderColor: V2MITIColor.red5,
             interactionDesc: InteractionDesc(
               isSuccess: false,
               desc: "인증번호 입력 가능 횟수를 초과하셨습니다.",
@@ -707,7 +707,7 @@ class AuthError extends ErrorBase {
     if ((this.status_code == BadRequest && this.error_code == 101) ||
         (this.status_code == UnAuthorized && this.error_code == 140)) {
       ref.read(formInfoProvider(InputFormType.updateToken).notifier).update(
-            borderColor: MITIColor.error,
+            borderColor: V2MITIColor.red5,
             interactionDesc: InteractionDesc(
               isSuccess: false,
               desc: "비밀번호가 일치하지 않습니다.",

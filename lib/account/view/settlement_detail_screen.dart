@@ -284,7 +284,7 @@ class _SettlementComponent extends StatelessWidget {
               Text(
                 "- ₩ $commission",
                 style: MITITextStyle.sm.copyWith(
-                  color: MITIColor.error,
+                  color: V2MITIColor.red5,
                 ),
               ),
             ],

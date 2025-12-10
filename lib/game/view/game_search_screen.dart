@@ -200,6 +200,9 @@ class _GameSearchAppBar extends StatelessWidget {
                               horizontal: 16.r, vertical: 8.h),
                           focusedBorder: border,
                           border: border,
+                          disabledBorder: border,
+                          enabledBorder: border,
+                          errorBorder: border,
                           hintText: '검색어를 입력해주세요',
                           hintStyle: V2MITITextStyle.smallMediumTight.copyWith(
                             color: V2MITIColor.gray7,

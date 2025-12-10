@@ -134,7 +134,7 @@ class PostError extends ErrorBase {
   /// 게시글 작성 API
   void _createPost(BuildContext context, WidgetRef ref) {
     FlashUtil.showFlash(context, "게시글 작성을 실패하였습니다.",
-        textColor: MITIColor.error);
+        textColor: V2MITIColor.red5);
   }
 
   /// 게시글 목록 조회 API
@@ -168,13 +168,13 @@ class PostError extends ErrorBase {
   /// 게시글 수정 API
   void _updatePost(BuildContext context, WidgetRef ref) {
     FlashUtil.showFlash(context, "게시글 수정을 실패하였습니다.",
-        textColor: MITIColor.error);
+        textColor: V2MITIColor.red5);
   }
 
   /// 게시글 삭제 API
   void _deletePost(BuildContext context, WidgetRef ref) {
     FlashUtil.showFlash(context, "게시글 삭제를 실패하였습니다.",
-        textColor: MITIColor.error);
+        textColor: V2MITIColor.red5);
   }
 
   /// 게시글 댓글 목록 조회 API
@@ -187,7 +187,7 @@ class PostError extends ErrorBase {
   /// 게시글 댓글 작성 API
   void _createComment(BuildContext context, WidgetRef ref) {
     FlashUtil.showFlash(context, "댓글 작성을 실패하였습니다.",
-        textColor: MITIColor.error);
+        textColor: V2MITIColor.red5);
   }
 
   /// 게시글 댓글 상세 조회 API
@@ -200,66 +200,66 @@ class PostError extends ErrorBase {
   /// 댓글 수정 API
   void _updateComment(BuildContext context, WidgetRef ref) {
     FlashUtil.showFlash(context, "댓글 수정을 실패하였습니다.",
-        textColor: MITIColor.error);
+        textColor: V2MITIColor.red5);
   }
 
   /// 댓글 삭제 API
   void _deleteComment(BuildContext context, WidgetRef ref) {
     FlashUtil.showFlash(context, "댓글 삭제를 실패하였습니다.",
-        textColor: MITIColor.error);
+        textColor: V2MITIColor.red5);
   }
 
   /// 대댓글 작성 API
   void _createReplyComment(BuildContext context, WidgetRef ref) {
     FlashUtil.showFlash(context, "대댓글 작성을 실패하였습니다.",
-        textColor: MITIColor.error);
+        textColor: V2MITIColor.red5);
   }
 
   /// 대댓글 수정 API
   void _updateReplyComment(BuildContext context, WidgetRef ref) {
     FlashUtil.showFlash(context, "대댓글 수정을 실패하였습니다.",
-        textColor: MITIColor.error);
+        textColor: V2MITIColor.red5);
   }
 
   /// 대댓글 삭제 API
   void _deleteReplyComment(BuildContext context, WidgetRef ref) {
     FlashUtil.showFlash(context, "대댓글 삭제를 실패하였습니다.",
-        textColor: MITIColor.error);
+        textColor: V2MITIColor.red5);
   }
 
   /// 게시글 좋아요 API
   void _likePost(BuildContext context, WidgetRef ref) {
     FlashUtil.showFlash(context, "게시글 좋아요를 실패하였습니다.",
-        textColor: MITIColor.error);
+        textColor: V2MITIColor.red5);
   }
 
   /// 게시글 좋아요 취소 API
   void _unLikePost(BuildContext context, WidgetRef ref) {
     FlashUtil.showFlash(context, "게시글 좋아요 취소를 실패하였습니다.",
-        textColor: MITIColor.error);
+        textColor: V2MITIColor.red5);
   }
 
   /// 댓글 좋아요 API
   void _likeComment(BuildContext context, WidgetRef ref) {
     FlashUtil.showFlash(context, "댓글 좋아요를 실패하였습니다.",
-        textColor: MITIColor.error);
+        textColor: V2MITIColor.red5);
   }
 
   /// 댓글 좋아요 취소 API
   void _unLikeComment(BuildContext context, WidgetRef ref) {
     FlashUtil.showFlash(context, "댓글 좋아요 취소를 실패하였습니다.",
-        textColor: MITIColor.error);
+        textColor: V2MITIColor.red5);
   }
 
   /// 대댓글 좋아요 API
   void _likeReplyComment(BuildContext context, WidgetRef ref) {
     FlashUtil.showFlash(context, "대댓글 좋아요를 실패하였습니다.",
-        textColor: MITIColor.error);
+        textColor: V2MITIColor.red5);
   }
 
   /// 대댓글 좋아요 취소 API
   void _unLikeReplyComment(BuildContext context, WidgetRef ref) {
     FlashUtil.showFlash(context, "대댓글 좋아요 취소를 실패하였습니다.",
-        textColor: MITIColor.error);
+        textColor: V2MITIColor.red5);
   }
 }

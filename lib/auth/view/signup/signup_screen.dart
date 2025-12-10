@@ -14,6 +14,7 @@ import 'package:lottie/lottie.dart';
 import 'package:miti/auth/param/signup_param.dart';
 import 'package:miti/auth/provider/signup_provider.dart';
 import 'package:miti/auth/provider/widget/sign_up_form_provider.dart';
+import 'package:miti/common/component/custom_bottom_sheet.dart';
 import 'package:miti/common/component/default_appbar.dart';
 import 'package:miti/common/provider/secure_storage_provider.dart';
 import 'package:miti/common/provider/widget/form_provider.dart';
@@ -58,13 +59,12 @@ class SignUpScreen extends ConsumerWidget {
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
         return const DefaultAppBar(
           title: '회원가입',
+          hasBorder: false,
         );
       },
     );
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
     return PopScope(
-      // onPopInvokedWithResult: (bool didPop, T? result){}
-      // canPop: false,
       onPopInvoked: (didPop) {
         log("didPop = $didPop");
       },
@@ -78,15 +78,15 @@ class SignUpScreen extends ConsumerWidget {
           body: SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.only(
-                left: 21.w,
-                right: 21.w,
+                left: 16.w,
+                right: 16.w,
                 bottom: bottomPadding,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SizedBox(height: 20.h),
+                  SizedBox(height: 16.h),
                   progressComponent(),
                   DescComponent(type: type),
                   signUpComponent(ref),
@@ -105,7 +105,7 @@ class SignUpScreen extends ConsumerWidget {
         _ProgressComponent(
           type: type,
         ),
-        SizedBox(height: 40.h),
+        SizedBox(height: 42.h),
       ],
     );
   } //김정현
@@ -177,21 +177,15 @@ class _ProgressComponent extends ConsumerWidget {
       width: 24.r,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: progress == currentIdx ? MITIColor.primary : MITIColor.gray700,
+        color:
+            progress == currentIdx ? V2MITIColor.primary2 : V2MITIColor.gray9,
       ),
       child: Center(
         child: Text(
           progress.toString(),
-          style: TextStyle(
-            fontFamily: 'Pretendard',
-            fontSize: 14.sp,
-            fontWeight:
-                progress == currentIdx ? FontWeight.w800 : FontWeight.w500,
-            color: progress == currentIdx
-                ? const Color(0xFF262626)
-                : MITIColor.gray300,
-            letterSpacing: -14.sp * 0.02,
-          ),
+          style: progress == currentIdx
+              ? V2MITITextStyle.smallBold.copyWith(color: V2MITIColor.gray12)
+              : V2MITITextStyle.smallRegular.copyWith(color: V2MITIColor.gray4),
         ),
       ),
     );
@@ -200,13 +194,13 @@ class _ProgressComponent extends ConsumerWidget {
   Widget divideChip(int progress, int currentIdx) {
     return Row(
       children: [
-        SizedBox(width: 8.w),
+        SizedBox(width: 6.w),
         dot(progress, currentIdx),
         SizedBox(width: 4.w),
         dot(progress, currentIdx),
         SizedBox(width: 4.w),
         dot(progress, currentIdx),
-        SizedBox(width: 8.w),
+        SizedBox(width: 6.w),
       ],
     );
   }
@@ -217,7 +211,7 @@ class _ProgressComponent extends ConsumerWidget {
       height: 2.r,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: progress < currentIdx ? MITIColor.primary : MITIColor.gray500,
+        color: progress < currentIdx ? V2MITIColor.primary2 : V2MITIColor.gray8,
       ),
     );
   }
@@ -507,23 +501,25 @@ class _PasswordFormState extends ConsumerState<PasswordForm> {
         ref.watch(passwordVisibleProvider(PasswordFormType.passwordCheck));
     return Column(
       children: [
-        SizedBox(height: 12.h),
         Container(
           height: 74.h,
           width: double.infinity,
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8.r),
-              color: MITIColor.gray700),
+              color: V2MITIColor.gray11),
           child: Text(
             '비밀번호는 특수문자(!@#\$%^&), 숫자, 영어 대소문자를 반드시 포함해야 합니다.',
-            style: MITITextStyle.sm150.copyWith(
-              color: MITIColor.gray100,
+            style: V2MITITextStyle.smallRegularNormal.copyWith(
+              color: V2MITIColor.gray2,
             ),
+            textAlign: TextAlign.center,
           ),
         ),
-        SizedBox(height: 32.h),
+        SizedBox(height: 53.h),
         CustomTextFormField(
+          required: true,
+          label: '비밀번호',
           hintText: '비밀번호를 입력해주세요.',
           textEditingController: passwordController,
           focusNode: focusNodes[0],
@@ -543,7 +539,7 @@ class _PasswordFormState extends ConsumerState<PasswordForm> {
                 .read(formInfoProvider(InputFormType.signUpPassword).notifier)
                 .update(
                     borderColor:
-                        validPassword ? MITIColor.correct : MITIColor.error,
+                        validPassword ? V2MITIColor.primary5 : V2MITIColor.red5,
                     interactionDesc: InteractionDesc(
                       isSuccess: validPassword,
                       desc:
@@ -573,8 +569,10 @@ class _PasswordFormState extends ConsumerState<PasswordForm> {
                 )
               : null,
         ),
-        SizedBox(height: 12.h),
+        SizedBox(height: 36.h),
         CustomTextFormField(
+          required: true,
+          label: '비밀번호 확인',
           textEditingController: checkPasswordController,
           textInputAction: TextInputAction.send,
           borderColor: pwCheckInfo.borderColor,
@@ -616,7 +614,7 @@ class _PasswordFormState extends ConsumerState<PasswordForm> {
     final valid = ref.read(signUpFormProvider.notifier).isSamePassword();
     ref.read(progressProvider.notifier).updateValidNext(validNext: valid);
     ref.read(formInfoProvider(InputFormType.passwordCheck).notifier).update(
-        borderColor: valid ? MITIColor.correct : MITIColor.error,
+        borderColor: valid ? V2MITIColor.primary5 : V2MITIColor.red5,
         interactionDesc: InteractionDesc(
           isSuccess: valid,
           desc: valid ? "비밀번호가 일치해요!" : "비밀번호가 일치하지 않아요.",
@@ -676,61 +674,91 @@ class _EmailFormState extends ConsumerState<EmailForm> {
 
     return Column(
       children: [
-        SizedBox(height: 32.h),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        SizedBox(height: 16.h),
+        Column(
+          spacing: 4.h,
           children: [
-            Expanded(
-              child: CustomTextFormField(
-                hintText: '이메일을 입력해주세요.',
-                borderColor: formInfo.borderColor,
-                interactionDesc: formInfo.interactionDesc,
-                onNext: () async {
-                  if (ref.read(signUpFormProvider.notifier).validEmail()) {
-                    _throttler.setValue(throttleCnt + 1);
-                  }
-                },
-                onChanged: (val) {
-                  ref
-                      .read(
-                          formInfoProvider(InputFormType.signUpEmail).notifier)
-                      .reset();
-                  ref
-                      .read(progressProvider.notifier)
-                      .updateValidNext(validNext: false);
-                  ref
-                      .read(signUpFormProvider.notifier)
-                      .updateForm(email: val, showAutoComplete: true);
-                },
-                textEditingController: controller,
-              ),
-            ),
-            SizedBox(width: 13.w),
-            SizedBox(
-              width: 98.w,
-              height: 48.h,
-              child: TextButton(
-                onPressed: () async {
-                  if (ref.read(signUpFormProvider.notifier).validEmail()) {
-                    _throttler.setValue(throttleCnt + 1);
-                  }
-                },
-                style: TextButton.styleFrom(
-                  backgroundColor:
-                      ref.watch(signUpFormProvider.notifier).validEmail()
-                          ? MITIColor.primary
-                          : MITIColor.gray500,
-                  padding: EdgeInsets.symmetric(vertical: 8.h),
-                ),
-                child: Text(
-                  '중복확인',
-                  style: MITITextStyle.md.copyWith(
-                    color: ref.watch(signUpFormProvider.notifier).validEmail()
-                        ? MITIColor.gray800
-                        : MITIColor.gray50,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '이메일',
+                  style: V2MITITextStyle.smallRegularNormal.copyWith(
+                    color: V2MITIColor.white,
                   ),
                 ),
-              ),
+                Container(
+                  height: 4.r,
+                  width: 4.r,
+                  alignment: Alignment.center,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: V2MITIColor.primary5,
+                    ),
+                    width: 2.r,
+                    height: 2.r,
+                  ),
+                )
+              ],
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: CustomTextFormField(
+                    hintText: '이메일을 입력해주세요.',
+                    borderColor: formInfo.borderColor,
+                    interactionDesc: formInfo.interactionDesc,
+                    onNext: () async {
+                      if (ref.read(signUpFormProvider.notifier).validEmail()) {
+                        _throttler.setValue(throttleCnt + 1);
+                      }
+                    },
+                    onChanged: (val) {
+                      ref
+                          .read(formInfoProvider(InputFormType.signUpEmail)
+                              .notifier)
+                          .reset();
+                      ref
+                          .read(progressProvider.notifier)
+                          .updateValidNext(validNext: false);
+                      ref
+                          .read(signUpFormProvider.notifier)
+                          .updateForm(email: val, showAutoComplete: true);
+                    },
+                    textEditingController: controller,
+                  ),
+                ),
+                SizedBox(width: 12.w),
+                SizedBox(
+                  width: 98.w,
+                  height: 44.h,
+                  child: TextButton(
+                    onPressed: () async {
+                      if (ref.read(signUpFormProvider.notifier).validEmail()) {
+                        _throttler.setValue(throttleCnt + 1);
+                      }
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor:
+                          ref.watch(signUpFormProvider.notifier).validEmail()
+                              ? V2MITIColor.primary5
+                              : V2MITIColor.gray7,
+                      padding: EdgeInsets.symmetric(vertical: 8.h),
+                    ),
+                    child: Text(
+                      '중복확인',
+                      style: V2MITITextStyle.regularBold.copyWith(
+                        color:
+                            ref.watch(signUpFormProvider.notifier).validEmail()
+                                ? V2MITIColor.black
+                                : V2MITIColor.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -754,7 +782,7 @@ class _EmailFormState extends ConsumerState<EmailForm> {
             .read(progressProvider.notifier)
             .updateValidNext(validNext: !duplicate);
         ref.read(formInfoProvider(InputFormType.signUpEmail).notifier).update(
-            borderColor: duplicate ? MITIColor.error : MITIColor.correct,
+            borderColor: duplicate ? V2MITIColor.red5 : V2MITIColor.primary5,
             interactionDesc: InteractionDesc(
                 isSuccess: !duplicate,
                 desc: duplicate ? '이미 회원으로 등록된 이메일이에요.' : '사용 가능한 이메일이에요!'));
@@ -777,21 +805,21 @@ class DescComponent extends ConsumerWidget {
     String desc = '';
     if (ref.watch(progressProvider).progress == 1) {
       title = '닉네임을 입력해주세요.';
-      desc = '닉네임은  MITI 프로필에서 표시되는 이름이에요.\n개인정보 보호를 위해 되도록 실명은 삼가해주세요.';
+      desc = '닉네임은 MITI 프로필로\n다른 유저들에게 보여지는 이름이에요.';
     } else if (ref.watch(progressProvider).progress == 2) {
       if (type == SignupMethodType.email) {
         title = '이메일을 입력해주세요.';
         desc = '이메일은 사용자의 아이디로 사용됩니다.\n입력하신 이메일로 MITI의 공지사항이 전달돼요.';
       } else {
         title = '본인확인을 위한\n정보를 입력해주세요.';
-        desc = '입력하신 정보는 안전하게 보관되며 공개되지 않아요.';
+        desc = '입력하신 정보는 안전하게 보관되면 공개되지 않아요.';
       }
     } else if (ref.watch(progressProvider).progress == 3) {
       if (type == SignupMethodType.email) {
         title = '비밀번호를 입력해주세요.';
       } else {
-        title = '경기 참여에 필요한\n선수 프로필을 작성해주세요';
-        desc = '입력하신 정보는 경기 참여 시 참고용으로 사용되어요.';
+        title = '선수 프로필을 입력해주세요.';
+        desc = '입력하신 정보는 같은 경기 참가자들에게 공개됩니다.';
       }
     } else if (ref.watch(progressProvider).progress == 4) {
       if (type == SignupMethodType.email) {
@@ -802,30 +830,27 @@ class DescComponent extends ConsumerWidget {
         desc = '약관에 동의하시면 회원가입이 완료됩니다.';
       }
     } else if (ref.watch(progressProvider).progress == 5) {
-      title = '경기 참여에 필요한\n선수 프로필을 작성해주세요';
-      desc = '입력하신 정보는 경기 참여 시 참고용으로 사용되어요.';
+      title = '선수 프로필을 입력해주세요.';
+      desc = '입력하신 정보는 같은 경기 참가자들에게 공개됩니다.';
     } else {
       title = 'MITI 회원 이용약관';
       desc = '약관에 동의하시면 회원가입이 완료됩니다.';
     }
 
-    // final showDetail =
-    //     ref.watch(signUpFormProvider.select((value) => value.showDetail));
-    // final show = showDetail.where((e) => e).isEmpty;
-
     return Column(
+      spacing: 12.h,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
           title,
-          style: MITITextStyle.xxl140.copyWith(
-            color: MITIColor.white,
+          style: V2MITITextStyle.title3.copyWith(
+            color: V2MITIColor.white,
           ),
         ),
         Text(
           desc,
-          style: MITITextStyle.sm150.copyWith(
-            color: MITIColor.gray300,
+          style: V2MITITextStyle.smallRegularNormal.copyWith(
+            color: V2MITIColor.gray2,
           ),
         ),
       ],
@@ -853,17 +878,18 @@ class _NicknameFormState extends ConsumerState<NicknameForm> {
     ref.watch(signUpFormProvider.select((form) => form.nickname));
     return Column(
       children: [
-        SizedBox(height: 32.h),
+        SizedBox(height: 16.h),
         CustomTextFormField(
           hintText: '닉네임을 입력해주세요.',
-          // interactionDesc: formInfo.interactionDesc,
-          // borderColor: formInfo.borderColor,
+          required: true,
+          label: '닉네임',
           onChanged: (val) {
             ref.read(signUpFormProvider.notifier).updateForm(nickname: val);
             ref
                 .read(progressProvider.notifier)
                 .updateValidNext(validNext: ValidRegExp.userNickname(val));
           },
+          borderColor: V2MITIColor.gray6,
           onNext: () async {
             if (ref.read(signUpFormProvider.notifier).validNickname()) {
               await onSubmit(context);
@@ -876,22 +902,6 @@ class _NicknameFormState extends ConsumerState<NicknameForm> {
 
   Future<void> onSubmit(BuildContext context) async {
     FocusScope.of(context).requestFocus(FocusNode());
-    // final nickname = ref.read(signUpFormProvider).nickname;
-    // final param = NicknameCheckParam(nickname: nickname);
-    // final result = await ref.read(signUpCheckProvider(param: param).future);
-    // if (result is ResponseModel<SignUpCheckModel>) {
-    //   if (!result.data!.nickname!.is_duplicated) {
-    //     ref.read(progressProvider.notifier).updateValidNext(validNext: true);
-    //   }
-    //   setState(() {
-    //     final duplicate = result.data!.email!.is_duplicated;
-    //     ref.read(formInfoProvider(InputFormType.email).notifier).update(
-    //         borderColor: duplicate ? MITIColor.error : MITIColor.correct,
-    //         interactionDesc: InteractionDesc(
-    //             isSuccess: !duplicate,
-    //             desc: duplicate ? '이미 회원으로 등록된 이메일이에요.' : '사용 가능한 이메일이에요!'));
-    //   });
-    // }
   }
 }
 
@@ -963,10 +973,12 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SizedBox(height: 32.h),
+        SizedBox(height: 16.h),
         CustomTextFormField(
           label: '이름',
-          hintText: '성함을 입력해주세요.',
+          required: true,
+          borderColor: V2MITIColor.gray6,
+          hintText: '이름을 입력해주세요',
           textInputAction: TextInputAction.next,
           onChanged: (val) {
             ref.read(signUpFormProvider.notifier).updateForm(name: val);
@@ -976,11 +988,11 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
             FocusScope.of(context).requestFocus(focusNodes[1]);
           },
         ),
-        SizedBox(height: 40.h),
+        SizedBox(height: 36.h),
         _BirthForm(
           type: widget.type,
         ),
-        SizedBox(height: 40.h),
+        SizedBox(height: 36.h),
         if (widget.type != SignupMethodType.kakao)
           const PhoneForm(
             type: PhoneAuthenticationPurposeType.signup,
@@ -1018,131 +1030,114 @@ class _BirthFormState extends ConsumerState<_BirthForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          '생년월일',
-          style: MITITextStyle.sm.copyWith(
-            color: MITIColor.gray300,
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '생년월일',
+              style: V2MITITextStyle.smallRegularNormal.copyWith(
+                color: V2MITIColor.white,
+              ),
+            ),
+            Container(
+              height: 4.r,
+              width: 4.r,
+              alignment: Alignment.center,
+              child: Container(
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: V2MITIColor.primary5,
+                ),
+                width: 2.r,
+                height: 2.r,
+              ),
+            )
+          ],
         ),
-        SizedBox(height: 8.h),
+        SizedBox(height: 4.h),
         GestureDetector(
           onTap: () {
+            final maximumDate =
+                DateTime.now().subtract(const Duration(days: 1));
             FocusScope.of(context).requestFocus(FocusNode());
-            showCupertinoDialog(
-                barrierDismissible: true,
+            CustomBottomSheet.showWidgetContent(
                 context: context,
-                builder: (_) {
-                  final maximumDate =
-                      DateTime.now().subtract(const Duration(days: 1));
-
-                  return Center(
-                    child: Container(
-                      height: 332.h,
-                      width: 333.w,
-                      padding: EdgeInsets.all(20.r),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20.r),
-                        color: MITIColor.gray700,
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            InkWell(
-                              onTap: () => context.pop(),
-                              child: Icon(Icons.close, size: 24.r),
-                            ),
-                            Expanded(
-                              child: CupertinoDatePicker(
-                                mode: CupertinoDatePickerMode.date,
-                                minimumYear: 1900,
-                                initialDateTime: maximumDate,
-                                maximumDate: maximumDate,
-                                dateOrder: DatePickerDateOrder.ymd,
-                                onDateTimeChanged: (DateTime value) {
-                                  setState(() {
-                                    birthdayFormat(value);
-                                    ref
-                                        .read(signUpFormProvider.notifier)
-                                        .updateForm(
-                                            birthDate: "$year / $month / $day");
-                                    if (ref
-                                        .read(signUpFormProvider.notifier)
-                                        .validPersonalInfo(widget.type)) {
-                                      ref
-                                          .read(progressProvider.notifier)
-                                          .updateValidNext(validNext: true);
-                                    }
-                                  });
-                                },
-                              ),
-                            ),
-                            TextButton(
-                                onPressed: () {
-                                  // birthdayFormat(maximumDate);
-                                  ref
-                                      .read(signUpFormProvider.notifier)
-                                      .updateForm(
-                                          birthDate: "$year / $month / $day");
-                                  context.pop();
-                                },
-                                child: Text(
-                                  '생년월일 선택 완료',
-                                  style: MITITextStyle.mdBold.copyWith(
-                                    color: MITIColor.gray800,
-                                  ),
-                                ))
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                });
+                content: SizedBox(
+                  height: 200.h,
+                  child: CupertinoDatePicker(
+                    mode: CupertinoDatePickerMode.date,
+                    minimumYear: 1900,
+                    initialDateTime: maximumDate,
+                    maximumDate: maximumDate,
+                    dateOrder: DatePickerDateOrder.ymd,
+                    onDateTimeChanged: (DateTime value) {
+                      setState(() {
+                        birthdayFormat(value);
+                        ref
+                            .read(signUpFormProvider.notifier)
+                            .updateForm(birthDate: "$year / $month / $day");
+                        if (ref
+                            .read(signUpFormProvider.notifier)
+                            .validPersonalInfo(widget.type)) {
+                          ref
+                              .read(progressProvider.notifier)
+                              .updateValidNext(validNext: true);
+                        }
+                      });
+                    },
+                  ),
+                ),
+                onPressed: () {
+                  ref
+                      .read(signUpFormProvider.notifier)
+                      .updateForm(birthDate: "$year / $month / $day");
+                  context.pop();
+                },
+                buttonText: '선택');
           },
           child: Container(
-            height: 48.h,
+            height: 44.h,
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.r),
-              color: MITIColor.gray700,
-            ),
+                borderRadius: BorderRadius.circular(4.r),
+                border: Border.all(color: V2MITIColor.gray6)),
             child: Row(
               children: [
                 Expanded(
                     child: Text(
                   year ?? 'YYYY',
                   textAlign: TextAlign.center,
-                  style: MITITextStyle.md.copyWith(
-                    color: year == null ? MITIColor.gray500 : MITIColor.gray100,
+                  style: V2MITITextStyle.regularMediumNormal.copyWith(
+                    color: year == null ? V2MITIColor.gray6 : V2MITIColor.white,
                   ),
                 )),
                 Text(
                   '/',
-                  style: MITITextStyle.md.copyWith(
-                    color: MITIColor.gray300,
+                  style: V2MITITextStyle.regularMediumNormal.copyWith(
+                    color: V2MITIColor.gray6,
                   ),
                 ),
                 Expanded(
                     child: Text(
                   month ?? 'MM',
                   textAlign: TextAlign.center,
-                  style: MITITextStyle.md.copyWith(
+                  style: V2MITITextStyle.regularMediumNormal.copyWith(
                     color:
-                        month == null ? MITIColor.gray500 : MITIColor.gray100,
+                        month == null ? V2MITIColor.gray6 : V2MITIColor.white,
                   ),
                 )),
                 Text(
                   '/',
-                  style: MITITextStyle.md.copyWith(
-                    color: MITIColor.gray300,
+                  style: V2MITITextStyle.regularMediumNormal.copyWith(
+                    color: V2MITIColor.gray6,
                   ),
                 ),
                 Expanded(
                     child: Text(
                   day ?? 'DD',
                   textAlign: TextAlign.center,
-                  style: MITITextStyle.md.copyWith(
-                    color: day == null ? MITIColor.gray500 : MITIColor.gray100,
+                  style: V2MITITextStyle.regularMediumNormal.copyWith(
+                    color: day == null ? V2MITIColor.gray6 : V2MITIColor.white,
                   ),
                 )),
               ],
@@ -1240,7 +1235,7 @@ class _NextButtonState extends ConsumerState<_NextButton> {
         (progress == 4 && SignupMethodType.email != widget.type)) {
       buttonText = '가입하기';
     } else {
-      buttonText = '다음으로';
+      buttonText = '다음';
     }
 
     bool isVisible = false;
@@ -1274,9 +1269,9 @@ class _NextButtonState extends ConsumerState<_NextButton> {
           ),
         ),
         Padding(
-          padding: EdgeInsets.only(left: 21.w, right: 21.w, bottom: 41.h),
+          padding: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 41.h),
           child: SizedBox(
-            height: 48.h,
+            height: 44.h,
             child: TextButton(
                 onPressed: () async {
                   if (validNext) {
@@ -1291,11 +1286,11 @@ class _NextButtonState extends ConsumerState<_NextButton> {
                 },
                 style: TextButton.styleFrom(
                     backgroundColor:
-                        validNext ? MITIColor.primary : MITIColor.gray500),
+                        validNext ? V2MITIColor.primary5 : V2MITIColor.gray7),
                 child: Text(
                   buttonText,
-                  style: MITITextStyle.mdBold.copyWith(
-                    color: validNext ? MITIColor.gray800 : MITIColor.gray50,
+                  style: V2MITITextStyle.regularBold.copyWith(
+                    color: validNext ? V2MITIColor.black : V2MITIColor.white,
                   ),
                 )),
           ),

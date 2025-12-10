@@ -739,27 +739,27 @@ class GameError extends ErrorBase {
     if (this.status_code == Forbidden && this.error_code == 940) {
       /// 요청 권한 없음
       FlashUtil.showFlash(context, "경기 무료 전환에 실패하였습니다.",
-          textColor: MITIColor.error);
+          textColor: V2MITIColor.red5);
     } else if (this.status_code == Forbidden && this.error_code == 941) {
       /// 변경 불가능한 경기
       FlashUtil.showFlash(context, "경기 무료 전환에 실패하였습니다.",
-          textColor: MITIColor.error);
+          textColor: V2MITIColor.red5);
     } else if (this.status_code == Forbidden && this.error_code == 942) {
       /// 무료 참여인 경기
       FlashUtil.showFlash(context, "경기 무료 전환에 실패하였습니다.",
-          textColor: MITIColor.error);
+          textColor: V2MITIColor.red5);
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 경기 정보 조회 결과 없음
       FlashUtil.showFlash(context, "경기 무료 전환에 실패하였습니다.",
-          textColor: MITIColor.error);
+          textColor: V2MITIColor.red5);
     } else if (this.status_code == ServerError && this.error_code == 340) {
       /// 서버 내부 오류
       FlashUtil.showFlash(context, "경기 무료 전환에 실패하였습니다.",
-          textColor: MITIColor.error);
+          textColor: V2MITIColor.red5);
     } else {
       /// 서버 오류
       FlashUtil.showFlash(context, "경기 무료 전환에 실패하였습니다.",
-          textColor: MITIColor.error);
+          textColor: V2MITIColor.red5);
     }
   }
 
@@ -768,23 +768,23 @@ class GameError extends ErrorBase {
     if (this.status_code == UnAuthorized && this.error_code == 501) {
       /// 액세스 토큰 오류
       FlashUtil.showFlash(context, "경기 모집 취소에 실패하였습니다.",
-          textColor: MITIColor.error);
+          textColor: V2MITIColor.red5);
     } else if (this.status_code == Forbidden && this.error_code == 940) {
       /// 경기 취소 권한 없음
       FlashUtil.showFlash(context, "경기 모집 취소에 실패하였습니다.",
-          textColor: MITIColor.error);
+          textColor: V2MITIColor.red5);
     } else if (this.status_code == Forbidden && this.error_code == 941) {
       /// 취소 불가능한 경기 상태
       FlashUtil.showFlash(context, "경기 모집 취소에 실패하였습니다.",
-          textColor: MITIColor.error);
+          textColor: V2MITIColor.red5);
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 경기 정보 조회 실패
       FlashUtil.showFlash(context, "경기 모집 취소에 실패하였습니다.",
-          textColor: MITIColor.error);
+          textColor: V2MITIColor.red5);
     } else {
       /// 서버 오류
       FlashUtil.showFlash(context, "경기 모집 취소에 실패하였습니다.",
-          textColor: MITIColor.error);
+          textColor: V2MITIColor.red5);
     }
   }
 
@@ -804,7 +804,7 @@ class GameError extends ErrorBase {
                   },
                   style: TextButton.styleFrom(
                     fixedSize: Size(double.infinity, 48.h),
-                    backgroundColor: MITIColor.error,
+                    backgroundColor: V2MITIColor.red5,
                   ),
                   child: Text(
                     "돌아가기",
@@ -821,35 +821,35 @@ class GameError extends ErrorBase {
     // if (this.status_code == BadRequest && this.error_code == 940) {
     //   /// 경기 및 참여 정보 불일치
     //   FlashUtil.showFlash(context, "경기 모집 취소에 실패하였습니다.",
-    //       textColor: MITIColor.error);
+    //       textColor: V2MITIColor.red5);
     // } else if (this.status_code == Forbidden && this.error_code == 940) {
     //   /// 요청 권한 없음
     //   FlashUtil.showFlash(context, "경기 모집 취소에 실패하였습니다.",
-    //       textColor: MITIColor.error);
+    //       textColor: V2MITIColor.red5);
     // } else if (this.status_code == Forbidden && this.error_code == 941) {
     //   /// 취소 불가 참여
     //   FlashUtil.showFlash(context, "경기 모집 취소에 실패하였습니다.",
-    //       textColor: MITIColor.error);
+    //       textColor: V2MITIColor.red5);
     // } else if (this.status_code == Forbidden && this.error_code == 942) {
     //   /// 참여 취소 불가 경기
     //   FlashUtil.showFlash(context, "경기 모집 취소에 실패하였습니다.",
-    //       textColor: MITIColor.error);
+    //       textColor: V2MITIColor.red5);
     // } else if (this.status_code == Forbidden && this.error_code == 960) {
     //   /// 참여 미확정 경기
     //   FlashUtil.showFlash(context, "경기 모집 취소에 실패하였습니다.",
-    //       textColor: MITIColor.error);
+    //       textColor: V2MITIColor.red5);
     // } else if (this.status_code == Forbidden && this.error_code == 961) {
     //   /// 결제 취소 실패
     //   FlashUtil.showFlash(context, "경기 모집 취소에 실패하였습니다.",
-    //       textColor: MITIColor.error);
+    //       textColor: V2MITIColor.red5);
     // } else if (this.status_code == NotFound && this.error_code == 940) {
     //   /// 참여 정보 조회 실패
     //   FlashUtil.showFlash(context, "경기 모집 취소에 실패하였습니다.",
-    //       textColor: MITIColor.error);
+    //       textColor: V2MITIColor.red5);
     // } else {
     //   /// 서버 오류
     //   FlashUtil.showFlash(context, "경기 모집 취소에 실패하였습니다.",
-    //       textColor: MITIColor.error);
+    //       textColor: V2MITIColor.red5);
     // }
   }
 }

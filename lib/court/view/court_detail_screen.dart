@@ -71,7 +71,6 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
       focusNode: focusNode,
       selectionControls: materialTextSelectionControls,
       child: Scaffold(
-        backgroundColor: MITIColor.gray750,
         floatingActionButtonLocation: ExpandableFab.location,
         floatingActionButton: Consumer(
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
@@ -89,7 +88,6 @@ class _CourtGameListScreenState extends ConsumerState<CourtDetailScreen> {
             return [
               DefaultAppBar(
                 title: model.name,
-                backgroundColor: MITIColor.gray750,
                 isSliver: true,
                 hasBorder: false,
               )

@@ -262,7 +262,7 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
           /// 3. 정상 응답 시 로그인 처리
           if (result.status_code == Forbidden && result.error_code == 590) {
             final deleteUser = BaseDeletedUserResponse.fromJson(result.data!);
-            await _routeRestoreUserInfo(deleteUser, ref, context, mounted);
+            await routeRestoreUserInfo(deleteUser, ref, context, mounted);
           } else {
             AuthError.fromModel(model: result)
                 .responseError(context, AuthApiType.login, ref);
@@ -361,7 +361,7 @@ class KakaoLoginButton extends ConsumerWidget {
           if (context.mounted) {
             if (result.status_code == Forbidden && result.error_code == 590) {
               final deleteUser = BaseDeletedUserResponse.fromJson(result.data!);
-              await _routeRestoreUserInfo(
+              await routeRestoreUserInfo(
                   deleteUser, ref, context, context.mounted);
             } else {
               AuthError.fromModel(model: result).responseError(
@@ -487,7 +487,7 @@ class AppleLoginButton extends ConsumerWidget {
         if (context.mounted) {
           if (result.status_code == Forbidden && result.error_code == 590) {
             final deleteUser = BaseDeletedUserResponse.fromJson(result.data!);
-            await _routeRestoreUserInfo(
+            await routeRestoreUserInfo(
                 deleteUser, ref, context, context.mounted);
           } else {
             AuthError.fromModel(model: result).responseError(
@@ -558,7 +558,7 @@ class HelpComponent extends StatelessWidget {
   }
 }
 
-Future<void> _routeRestoreUserInfo(BaseDeletedUserResponse deleteUser,
+Future<void> routeRestoreUserInfo(BaseDeletedUserResponse deleteUser,
     WidgetRef ref, BuildContext context, bool mounted) async {
   final formattedDeleteUser = deleteUser.copyWith(
       phone: "${deleteUser.phone.substring(0, 3)}-${deleteUser.phone.substring(3, 7)}-${deleteUser.phone.substring(7)}",

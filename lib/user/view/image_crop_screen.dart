@@ -152,14 +152,14 @@ class _ImageCropScreenState extends ConsumerState<ImageCropScreen> {
         ref.read(userInfoProvider.notifier).getUserInfo();
         Future.delayed(const Duration(milliseconds: 200), () {
           FlashUtil.showFlash(context, '프로필 이미지 변경을 실패했습니다.',
-              textColor: MITIColor.error);
+              textColor: V2MITIColor.red5);
         });
       }
     } catch (e) {
       ref.read(userInfoProvider.notifier).getUserInfo();
       Future.delayed(const Duration(milliseconds: 200), () {
         FlashUtil.showFlash(context, '프로필 이미지 변경을 실패했습니다.',
-            textColor: MITIColor.error);
+            textColor: V2MITIColor.red5);
       });
     }
   }
@@ -196,7 +196,7 @@ class _ImageCropScreenState extends ConsumerState<ImageCropScreen> {
               children: [
                 Text(
                   "이미지 크기가 20MB 이상입니다.",
-                  style: MITITextStyle.md.copyWith(color: MITIColor.error),
+                  style: MITITextStyle.md.copyWith(color: V2MITIColor.red5),
                 ),
                 SizedBox(height: 20.h),
               ],

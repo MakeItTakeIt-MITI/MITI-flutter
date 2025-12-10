@@ -210,7 +210,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
         .sendMessage(message: textController.text);
     if (result is ErrorModel) {
       FlashUtil.showFlash(context, "요청이 정상적으로 처리되지 않았습니다.",
-          textColor: MITIColor.error);
+          textColor: V2MITIColor.red5);
     } else {
       textController.clear();
     }
@@ -302,7 +302,7 @@ class _ChatFormState extends State<_ChatForm> {
                                 // if (result is ErrorModel) {
                                 //   FlashUtil.showFlash(
                                 //       context, "요청이 정상적으로 처리되지 않았습니다.",
-                                //       textColor: MITIColor.error);
+                                //       textColor: V2MITIColor.red5);
                                 // } else {
                                 //   widget.textController.clear();
                                 //   widget.scrollController.jumpTo(0);

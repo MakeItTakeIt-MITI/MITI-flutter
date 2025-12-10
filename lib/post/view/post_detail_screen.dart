@@ -217,7 +217,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                                               color: MITIColor.gray700,
                                               child: const Icon(
                                                 Icons.error,
-                                                color: MITIColor.error,
+                                                color: V2MITIColor.red5,
                                               ),
                                             );
                                           },

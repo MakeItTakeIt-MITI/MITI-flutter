@@ -104,7 +104,7 @@ class _ReportFormScreenState extends ConsumerState<ReportFormScreen> {
                     : () {},
                 style: TextButton.styleFrom(
                   backgroundColor:
-                      valid && !isLoading ? MITIColor.error : MITIColor.gray500,
+                      valid && !isLoading ? V2MITIColor.red5 : MITIColor.gray500,
                 ),
                 child: Text(
                   '신고하기',

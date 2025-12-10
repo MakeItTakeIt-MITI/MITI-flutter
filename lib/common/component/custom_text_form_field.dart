@@ -189,7 +189,7 @@ class CustomTextFormField extends StatelessWidget {
         //     controller: textEditingController!,
         //   ),
         if (interactionDesc != null) SizedBox(height: 4.h),
-        if (interactionDesc != null)
+        if (interactionDesc != null && interactionDesc!.desc.isNotEmpty)
           Row(
             children: [
               SizedBox(

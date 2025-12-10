@@ -132,7 +132,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                                 child: Text(
                                   "신고하기",
                                   style: MITITextStyle.md
-                                      .copyWith(color: MITIColor.error),
+                                      .copyWith(color: V2MITIColor.red5),
                                 ),
                               ),
                             ),

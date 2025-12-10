@@ -12,9 +12,11 @@ import 'package:miti/common/provider/widget/form_provider.dart';
 import '../../../auth/error/auth_error.dart';
 import '../../../auth/provider/widget/find_info_provider.dart';
 import '../../../auth/provider/widget/phone_auth_provider.dart';
+import '../../../auth/view/login_screen.dart';
 import '../../../dio/response_code.dart';
 import '../../../theme/color_theme.dart';
 import '../../../theme/text_theme.dart';
+import '../../../user/model/v2/base_deleted_user_response.dart';
 import '../../model/default_model.dart';
 import '../../model/entity_enum.dart';
 import '../../provider/form_util_provider.dart';
@@ -50,10 +52,10 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
   bool onSend = false;
   String phoneBtnDesc = '인증 요청';
   String codeBtnDesc = '인증하기';
-  Color phoneBtnColor = MITIColor.gray500;
-  Color phoneBtnTextColor = MITIColor.gray50;
-  Color codeBtnColor = MITIColor.gray500;
-  Color codeBtnTextColor = MITIColor.gray50;
+  Color phoneBtnColor = V2MITIColor.gray7;
+  Color phoneBtnTextColor = V2MITIColor.white;
+  Color codeBtnColor = V2MITIColor.gray7;
+  Color codeBtnTextColor = V2MITIColor.white;
   Color? borderColor;
 
   @override
@@ -109,7 +111,8 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
     return RegExp(r"^\d{3}-\d{4}-\d{4}$").hasMatch(phone);
   }
 
-  Future<void> requestValidCode(String phone, PhoneAuthenticationPurposeType type) async {
+  Future<void> requestValidCode(
+      String phone, PhoneAuthenticationPurposeType type) async {
     FocusScope.of(context).requestFocus(FocusNode());
     timerReset();
     final result = await ref.read(sendCodeProvider(authType: type).future);
@@ -118,10 +121,10 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
       codeBtnDesc = "인증하기";
       phoneBtnDesc = '요청 완료';
       onSend = true;
-      phoneBtnColor = MITIColor.gray500;
-      phoneBtnTextColor = MITIColor.primary;
-      codeBtnColor = MITIColor.gray500;
-      codeBtnTextColor = MITIColor.gray50;
+      phoneBtnColor = V2MITIColor.gray7;
+      phoneBtnTextColor = V2MITIColor.white;
+      codeBtnColor = V2MITIColor.gray7;
+      codeBtnTextColor = V2MITIColor.white;
       borderColor = null;
       canRequest = false;
       ref.read(codeDescProvider(widget.type).notifier).update((state) => null);
@@ -146,11 +149,11 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
           if (timer.tick == 180) {
             timer.cancel();
             showTime = false;
-            borderColor = MITIColor.error;
+            borderColor = V2MITIColor.red5;
             setReRequest(phone);
 
             ref.read(formInfoProvider(InputFormType.phone).notifier).update(
-                  borderColor: MITIColor.error,
+                  borderColor: V2MITIColor.red5,
                   interactionDesc: InteractionDesc(
                     isSuccess: false,
                     desc: "인증번호 입력 시간이 초과되었습니다.",
@@ -169,8 +172,8 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
     if (validPhone(phone)) {
       canRequest = true;
       phoneBtnDesc = '인증 재요청';
-      phoneBtnColor = MITIColor.primary;
-      phoneBtnTextColor = MITIColor.gray800;
+      phoneBtnColor = V2MITIColor.primary5;
+      phoneBtnTextColor = V2MITIColor.black;
     }
   }
 
@@ -181,27 +184,40 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
         await ref.read(verifyPhoneProvider(type: widget.type).future);
     if (context.mounted) {
       if (result is ErrorModel) {
-        AuthError.fromModel(model: result).responseError(
-            context, AuthApiType.send_code, ref,
-            object: widget.type);
-        if (PhoneAuthenticationPurposeType.signup != widget.type) {
-          if ((result.status_code == BadRequest &&
-                  (result.error_code == 440 || result.error_code == 441)) ||
-              (result.status_code == NotFound && result.error_code == 440)) {
-            onSend = false;
-            ref.read(formInfoProvider(InputFormType.phone).notifier).reset();
-            codeBtnDesc = "인증완료";
-            codeBtnColor = MITIColor.gray500;
-            codeBtnTextColor = MITIColor.primary;
-            timerReset();
+        if ((PhoneAuthenticationPurposeType.signup == widget.type &&
+                result.status_code == CONFLICT &&
+                result.error_code == 990) ||
+            (PhoneAuthenticationPurposeType.signup != widget.type &&
+                result.status_code == Forbidden &&
+                result.error_code == 590)) {
+
+          /// 회원가입 시 탈퇴 사용자 복구 로직
+          final deleteUser = BaseDeletedUserResponse.fromJson(result.data!);
+          await routeRestoreUserInfo(deleteUser, ref, context, mounted);
+        } else {
+          AuthError.fromModel(model: result).responseError(
+              context, AuthApiType.send_code, ref,
+              object: widget.type);
+
+          if (PhoneAuthenticationPurposeType.signup != widget.type) {
+            if ((result.status_code == BadRequest &&
+                    (result.error_code == 440 || result.error_code == 441)) ||
+                (result.status_code == NotFound && result.error_code == 440)) {
+              onSend = false;
+              ref.read(formInfoProvider(InputFormType.phone).notifier).reset();
+              codeBtnDesc = "인증완료";
+              codeBtnColor = V2MITIColor.gray7;
+              codeBtnTextColor = V2MITIColor.primary5;
+              timerReset();
+            }
           }
         }
       } else {
         onSend = false;
         ref.read(formInfoProvider(InputFormType.phone).notifier).reset();
         codeBtnDesc = "인증완료";
-        codeBtnColor = MITIColor.gray500;
-        codeBtnTextColor = MITIColor.primary;
+        codeBtnColor = V2MITIColor.gray7;
+        codeBtnTextColor = V2MITIColor.primary5;
         timerReset();
         if (widget.type == PhoneAuthenticationPurposeType.signup) {
           final phoneNumber = ref.read(phoneNumberProvider(widget.type));
@@ -228,29 +244,49 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (widget.hasLabel)
-          Text(
-            '휴대폰 번호',
-            style: MITITextStyle.sm.copyWith(
-              color: MITIColor.gray300,
-            ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '전화번호',
+                style: V2MITITextStyle.smallRegularNormal.copyWith(
+                  color: V2MITIColor.white,
+                ),
+              ),
+              Container(
+                height: 4.r,
+                width: 4.r,
+                alignment: Alignment.center,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: V2MITIColor.primary5,
+                  ),
+                  width: 2.r,
+                  height: 2.r,
+                ),
+              )
+            ],
           ),
-        if (widget.hasLabel) SizedBox(height: 8.h),
+        if (widget.hasLabel) SizedBox(height: 4.h),
         Row(
           children: [
             Expanded(
               child: CustomTextFormField(
+                required: true,
+                borderColor: V2MITIColor.gray6,
                 focusNode: focusNodes[0],
-                hintText: '휴대폰 번호 입력',
+                hintText: '휴대폰 번호를 입력해주세요',
                 onChanged: (val) {
                   ref
                       .read(phoneNumberProvider(widget.type).notifier)
                       .update((state) => val);
                   if (validPhone(val)) {
-                    phoneBtnTextColor = MITIColor.gray800;
-                    phoneBtnColor = MITIColor.primary;
+                    phoneBtnTextColor = V2MITIColor.black;
+                    phoneBtnColor = V2MITIColor.primary5;
                   } else {
-                    phoneBtnColor = MITIColor.gray500;
-                    phoneBtnTextColor = MITIColor.gray50;
+                    phoneBtnColor = V2MITIColor.gray7;
+                    phoneBtnTextColor = V2MITIColor.white;
                   }
                   phoneBtnDesc = '인증 요청';
                   canRequest = false;
@@ -267,9 +303,9 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
                 inputFormatters: <TextInputFormatter>[PhoneNumberFormatter()],
               ),
             ),
-            SizedBox(width: 13.w),
+            SizedBox(width: 12.w),
             SizedBox(
-              height: 48.h,
+              height: 44.h,
               width: 98.w,
               child: Align(
                 alignment: Alignment.centerRight,
@@ -287,7 +323,7 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
                       backgroundColor: phoneBtnColor, padding: EdgeInsets.zero),
                   child: Text(
                     phoneBtnDesc,
-                    style: MITITextStyle.md.copyWith(
+                    style: V2MITITextStyle.regularBold.copyWith(
                       color: phoneBtnTextColor,
                     ),
                   ),
@@ -310,18 +346,19 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
                   child: CustomTextFormField(
                     enabled: enabled,
                     focusNode: focusNodes[1],
-                    hintText: '인증번호 6자리 입력',
+                    hintText: '인증번호를 입력해주세요',
                     interactionDesc: phoneInfo.interactionDesc,
                     onChanged: (val) {
                       ref
                           .read(phoneAuthProvider(type: widget.type).notifier)
                           .update(code: val);
+
                       if (val.length == 6) {
-                        codeBtnTextColor = MITIColor.gray800;
-                        codeBtnColor = MITIColor.primary;
+                        codeBtnTextColor = V2MITIColor.black;
+                        codeBtnColor = V2MITIColor.primary5;
                       } else {
-                        codeBtnTextColor = MITIColor.gray50;
-                        codeBtnColor = MITIColor.gray500;
+                        codeBtnColor = V2MITIColor.gray7;
+                        codeBtnTextColor = V2MITIColor.white;
                         codeBtnDesc = "인증하기";
                       }
                     },
@@ -338,8 +375,8 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
                     suffixIcon: showTime
                         ? Text(
                             format(),
-                            style: MITITextStyle.md.copyWith(
-                              color: MITIColor.primary,
+                            style: V2MITITextStyle.regularBold.copyWith(
+                              color: V2MITIColor.primary5,
                             ),
                           )
                         : null,
@@ -348,7 +385,7 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
                 ),
                 SizedBox(width: 13.w),
                 SizedBox(
-                  height: 48.h,
+                  height: 44.h,
                   width: 98.w,
                   child: TextButton(
                     onPressed: onSend
@@ -363,7 +400,7 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
                     ),
                     child: Text(
                       codeBtnDesc,
-                      style: MITITextStyle.md.copyWith(
+                      style: V2MITITextStyle.regularBold.copyWith(
                         color: codeBtnTextColor,
                       ),
                     ),

@@ -36,7 +36,7 @@ class PostBottomSheetButton extends StatelessWidget {
                         backgroundColor: MITIColor.gray800),
                     child: Text(
                       "삭제하기",
-                      style: MITITextStyle.md.copyWith(color: MITIColor.error),
+                      style: MITITextStyle.md.copyWith(color: V2MITIColor.red5),
                     ),
                   ),
                 ),
@@ -66,7 +66,7 @@ class PostBottomSheetButton extends StatelessWidget {
                 style: TextButton.styleFrom(backgroundColor: MITIColor.gray800),
                 child: Text(
                   "신고하기",
-                  style: MITITextStyle.md.copyWith(color: MITIColor.error),
+                  style: MITITextStyle.md.copyWith(color: V2MITIColor.red5),
                 ),
               ),
             ),

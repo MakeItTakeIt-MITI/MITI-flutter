@@ -492,7 +492,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                     Expanded(
                       child: TextButton(
                         style: TextButton.styleFrom(
-                            backgroundColor: MITIColor.error),
+                            backgroundColor: V2MITIColor.red5),
                         onPressed: () {
                           Map<String, String> queryParameters = {
                             'gameId': widget.gameId.toString(),

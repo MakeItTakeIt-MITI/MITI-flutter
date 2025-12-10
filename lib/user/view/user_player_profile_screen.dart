@@ -215,7 +215,7 @@ class _PlayerProfileFormState extends ConsumerState<_PlayerProfileForm> {
               child: Text(
                 errorMessage,
                 style: MITITextStyle.xxsm.copyWith(
-                  color: MITIColor.error,
+                  color: V2MITIColor.red5,
                 ),
               ),
             ),

@@ -487,7 +487,7 @@ class UserError extends ErrorBase {
     if (this.status_code == Forbidden && this.error_code == 940) {
       /// 요청 권한 없음
       FlashUtil.showFlash(context, "선수 프로필 수정에 실패하였습니다.",
-          textColor: MITIColor.error);
+          textColor: V2MITIColor.red5);
     } else {
       /// 서버 오류
       WidgetsBinding.instance.addPostFrameCallback(
@@ -500,11 +500,11 @@ class UserError extends ErrorBase {
     if (this.status_code == Forbidden && this.error_code == 940) {
       /// 요청 권한 없음
       FlashUtil.showFlash(context, "프로필 이미지 초기화에 실패하였습니다.",
-          textColor: MITIColor.error);
+          textColor: V2MITIColor.red5);
     } else if (this.status_code == NotFound && this.error_code == 940) {
       /// 요청 권한 없음
       FlashUtil.showFlash(context, "프로필 이미지 초기화에 실패하였습니다.",
-          textColor: MITIColor.error);
+          textColor: V2MITIColor.red5);
     } else {
       /// 서버 오류
       WidgetsBinding.instance.addPostFrameCallback(
