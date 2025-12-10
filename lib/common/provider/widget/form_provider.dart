@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:miti/theme/color_theme.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../component/custom_text_form_field.dart';
@@ -31,7 +32,9 @@ class FormModel {
 class FormInfo extends _$FormInfo {
   @override
   FormModel build(InputFormType type) {
-    return FormModel();
+    return FormModel(
+      borderColor: V2MITIColor.gray6
+    );
   }
 
   void update({
@@ -45,6 +48,6 @@ class FormInfo extends _$FormInfo {
   }
 
   void reset(){
-    state = FormModel();
+    state = FormModel(borderColor: V2MITIColor.gray6);
   }
 }

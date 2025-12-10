@@ -116,7 +116,6 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                                 onPressed: () {
                                   context.pop();
 
-
                                   Map<String, String> queryParameters = {
                                     'gameId': widget.gameId.toString(),
                                     'participationId':
@@ -348,12 +347,16 @@ class _MultiLineTextFormFieldState extends State<MultiLineTextFormField> {
 
   @override
   Widget build(BuildContext context) {
+    final border = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(4.r),
+      borderSide: const BorderSide(color: V2MITIColor.gray6),
+    );
     return KeyboardVisibilityBuilder(
       onVisibilityChange: (bool isKeyboardVisible) {},
       child: Align(
         child: RawScrollbar(
           controller: _scrollController,
-          thumbColor: MITIColor.gray500,
+          // thumbColor: MITIColor.gray500,
           crossAxisMargin: 4.w,
           thickness: 2.w,
           radius: Radius.circular(100.r),
@@ -367,28 +370,24 @@ class _MultiLineTextFormFieldState extends State<MultiLineTextFormField> {
               maxLines: null,
               autocorrect: true,
               expands: true,
-              style: MITITextStyle.sm150.copyWith(
-                color: MITIColor.gray100,
+              style: V2MITITextStyle.smallRegularNormal.copyWith(
+                color: V2MITIColor.white,
               ),
               textAlignVertical: TextAlignVertical.top,
               onChanged: widget.onChanged,
               decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                  borderSide: BorderSide.none,
-                ),
-                // constraints: BoxConstraints(
-                //   minHeight: 68.h,
-                //   maxHeight: 200.h,
-                // ),
+                border: border,
+                focusedBorder: border,
+                enabledBorder: border,
+                errorBorder: border,
+                disabledBorder: border,
                 hintText: widget.hint,
-                hintStyle:
-                    MITITextStyle.sm150.copyWith(color: MITIColor.gray500),
+                hintStyle: V2MITITextStyle.smallRegularNormal
+                    .copyWith(color: V2MITIColor.gray6),
                 hintMaxLines: 10,
-                fillColor: MITIColor.gray700,
-                filled: true,
+                filled: false,
                 contentPadding:
-                    EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+                    EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
                 // isDense: true,
               )),
         ),

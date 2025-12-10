@@ -50,6 +50,7 @@ class CustomTextFormField extends StatelessWidget {
   final VoidCallback? onTap;
   final double height;
   final bool required;
+  final bool filled;
 
   const CustomTextFormField({
     super.key,
@@ -78,6 +79,7 @@ class CustomTextFormField extends StatelessWidget {
     this.borderRadius,
     this.height = 48,
     this.required = false,
+    this.filled = false,
   });
 
   @override
@@ -92,30 +94,29 @@ class CustomTextFormField extends StatelessWidget {
               Text(
                 label!,
                 style: labelTextStyle ??
-                    MITITextStyle.sm.copyWith(
-                      color: MITIColor.gray300,
+                    V2MITITextStyle.smallRegularNormal.copyWith(
+                      color: V2MITIColor.white,
                     ),
               ),
-              SizedBox(width: 3.w),
               Visibility(
                 visible: required,
                 child: Container(
-                  height: 6.r,
-                  width: 6.r,
+                  height: 4.r,
+                  width: 4.r,
                   alignment: Alignment.center,
                   child: Container(
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: MITIColor.primary,
+                      color: V2MITIColor.primary5,
                     ),
-                    width: 4.r,
-                    height: 4.r,
+                    width: 2.r,
+                    height: 2.r,
                   ),
                 ),
               )
             ],
           ),
-        if (label != null) SizedBox(height: 8.h),
+        if (label != null) SizedBox(height: 4.h),
         TextFormField(
           onTap: onTap,
           initialValue: initialValue,
@@ -129,39 +130,39 @@ class CustomTextFormField extends StatelessWidget {
           textAlign: textAlign,
           enabled: enabled,
           style: textStyle ??
-              MITITextStyle.md.copyWith(
-                color: MITIColor.gray100,
+              V2MITITextStyle.regularMediumNormal.copyWith(
+                color: V2MITIColor.white,
               ),
           decoration: InputDecoration(
             contentPadding:
-                EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+                EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
             constraints:
                 BoxConstraints(maxHeight: height.h, minHeight: height.h),
             focusedBorder: OutlineInputBorder(
-              borderRadius: borderRadius ?? BorderRadius.circular(8.r),
+              borderRadius: borderRadius ?? BorderRadius.circular(4.r),
               borderSide: borderColor == null
                   ? BorderSide.none
                   : BorderSide(color: borderColor!),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: borderRadius ?? BorderRadius.circular(8.r),
+              borderRadius: borderRadius ?? BorderRadius.circular(4.r),
               borderSide: borderColor == null
                   ? BorderSide.none
                   : BorderSide(color: borderColor!),
             ),
             border: OutlineInputBorder(
-              borderRadius: borderRadius ?? BorderRadius.circular(8.r),
+              borderRadius: borderRadius ?? BorderRadius.circular(4.r),
               borderSide: borderColor == null
                   ? BorderSide.none
                   : BorderSide(color: borderColor!),
             ),
             hintText: hintText,
             hintStyle: hintTextStyle ??
-                MITITextStyle.md.copyWith(
-                  color: MITIColor.gray500,
+                V2MITITextStyle.regularMediumNormal.copyWith(
+                  color: V2MITIColor.gray6,
                 ),
-            fillColor: MITIColor.gray700,
-            filled: true,
+            fillColor: V2MITIColor.gray10,
+            filled: filled,
             prefixIcon: prefix == null
                 ? null
                 : Padding(
@@ -187,32 +188,37 @@ class CustomTextFormField extends StatelessWidget {
         //   AutoCompleteComponent(
         //     controller: textEditingController!,
         //   ),
-        if (interactionDesc != null) SizedBox(height: 16.h),
+        if (interactionDesc != null) SizedBox(height: 4.h),
         if (interactionDesc != null)
-          Text(
-            interactionDesc!.desc,
-            style: MITITextStyle.xxsm.copyWith(
-              color: interactionDesc!.isSuccess
-                  ? MITIColor.correct
-                  : MITIColor.error,
-            ),
+          Row(
+            children: [
+              SizedBox(
+                height: 14.r,
+                width: 14.r,
+                child: SvgPicture.asset(
+                  interactionDesc!.isSuccess
+                      ? 'assets/images/icon/system_success.svg'
+                      : 'assets/images/icon/system_alert.svg',
+                  colorFilter: ColorFilter.mode(
+                      interactionDesc!.isSuccess
+                          ? V2MITIColor.primary5
+                          : V2MITIColor.red5,
+                      BlendMode.srcIn),
+                ),
+              ),
+              SizedBox(
+                width: 4.w,
+              ),
+              Text(
+                interactionDesc!.desc,
+                style: V2MITITextStyle.tinyMediumNormal.copyWith(
+                  color: interactionDesc!.isSuccess
+                      ? V2MITIColor.primary5
+                      : V2MITIColor.red5,
+                ),
+              ),
+            ],
           ),
-
-        // Row(
-        //   children: [
-        //     SizedBox(
-        //       height: 14.r,
-        //       width: 14.r,
-        //       child: SvgPicture.asset(interactionDesc!.isSuccess
-        //           ? 'assets/images/icon/system_success.svg'
-        //           : 'assets/images/icon/system_alert.svg'),
-        //     ),
-        //     SizedBox(
-        //       width: 4.w,
-        //     ),
-        //
-        //   ],
-        // ),
       ],
     );
   }
@@ -389,59 +395,6 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
                     ),
                   );
                   context.pushNamed(DialogPage.routeName, extra: extra);
-                  // showDialog(
-                  //     context: context,
-                  //     builder: (context) {
-                  //       return StatefulBuilder(
-                  //         builder: (BuildContext context,
-                  //             void Function(void Function()) setState) {
-                  //           return Consumer(
-                  //             builder: (BuildContext context, WidgetRef ref,
-                  //                 Widget? child) {
-                  //
-                  //
-                  //               return Dialog(
-                  //                 backgroundColor: Colors.white,
-                  //                 shape: RoundedRectangleBorder(
-                  //                     borderRadius: BorderRadius.circular(8.r)),
-                  //                 child: Column(
-                  //                   mainAxisSize: MainAxisSize.min,
-                  //                   children: [
-                  //                     CustomCalendar(
-                  //                       rangeSelectionMode:
-                  //                           widget.isRangeCalendar
-                  //                               ? RangeSelectionMode.toggledOn
-                  //                               : null,
-                  //                     ),
-                  //                     if (widget.isRangeCalendar)
-                  //                       const Divider(
-                  //                         height: 1,
-                  //                         color: Color(0xFFE8E8E8),
-                  //                       ),
-                  //                     if (widget.isRangeCalendar)
-                  //                       const TimePicker(
-                  //                         type: DateTimeType.start,
-                  //                       ),
-                  //                     if (widget.isRangeCalendar)
-                  //                       const TimePicker(
-                  //                         type: DateTimeType.end,
-                  //                       ),
-                  //                     Container(
-                  //                       height: 20.h,
-                  //                       decoration: BoxDecoration(
-                  //                         borderRadius: BorderRadius.vertical(
-                  //                             bottom: Radius.circular(8.r)),
-                  //                         color: Colors.white,
-                  //                       ),
-                  //                     ),
-                  //                   ],
-                  //                 ),
-                  //               );
-                  //             },
-                  //           );
-                  //         },
-                  //       );
-                  //     });
                 },
                 style: ButtonStyle(
                     shape: WidgetStateProperty.all(RoundedRectangleBorder(
@@ -456,11 +409,7 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
                 )),
           ],
         ),
-        // if (widget.showAutoComplete)
-        //   AutoCompleteComponent(
-        //     controller: widget.textEditingController!,
-        //   ),
-        if (widget.interactionDesc != null) SizedBox(height: 8.h),
+        if (widget.interactionDesc != null) SizedBox(height: 4.h),
         if (widget.interactionDesc != null)
           Row(
             children: [
@@ -476,13 +425,10 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
               ),
               Text(
                 widget.interactionDesc!.desc,
-                style: TextStyle(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w400,
-                  letterSpacing: -0.25.sp,
+                style: V2MITITextStyle.tinyMediumNormal.copyWith(
                   color: widget.interactionDesc!.isSuccess
-                      ? const Color(0xFF00BA34)
-                      : const Color(0xFFE92C2C),
+                      ? V2MITIColor.primary5
+                      : V2MITIColor.red5,
                 ),
               ),
             ],
@@ -491,108 +437,6 @@ class _DateInputFormState extends ConsumerState<DateInputForm> {
     );
   }
 }
-
-// class AutoCompleteComponent extends ConsumerStatefulWidget {
-//   final TextEditingController controller;
-//
-//   const AutoCompleteComponent({
-//     super.key,
-//     required this.controller,
-//   });
-//
-//   @override
-//   ConsumerState<AutoCompleteComponent> createState() =>
-//       _AutoCompleteComponentState();
-// }
-//
-// class _AutoCompleteComponentState extends ConsumerState<AutoCompleteComponent> {
-//   @override
-//   void initState() {
-//     super.initState();
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     List<String> emailSuffixes = [
-//       'naver.com',
-//       'gmail.com',
-//       'hanmail.net',
-//       'daum.net',
-//       'nate.com'
-//     ];
-//     final showAutoComplete =
-//         ref.watch(signUpFormProvider.select((form) => form.showAutoComplete));
-//     final email = ref.watch(signUpFormProvider).email;
-//     final cnt = '@'.allMatches(email).length;
-//     if (email.contains('@') && cnt == 1 && showAutoComplete) {
-//       final prefixEmail = email.substring(0, email.indexOf('@') + 1);
-//       final suffixEmail = email.substring(
-//         email.indexOf('@') + 1,
-//       );
-//       if (suffixEmail.isNotEmpty) {
-//         emailSuffixes = emailSuffixes
-//             .where((suffix) {
-//               return suffix.startsWith(suffixEmail);
-//             })
-//             .map((e) => e)
-//             .toList();
-//       }
-//
-//       return Container(
-//         width: double.infinity,
-//         decoration: BoxDecoration(
-//             color: const Color(0xFFF7F7F7),
-//             borderRadius: BorderRadius.vertical(bottom: Radius.circular(8.r))),
-//         padding: EdgeInsets.symmetric(horizontal: 16.w),
-//         child: Container(
-//           decoration: BoxDecoration(
-//             border: Border(
-//               top: BorderSide(color: const Color(0xFFE8E8E8), width: 1.h),
-//             ),
-//           ),
-//           child: Column(
-//             children: [
-//               SizedBox(height: 10.h),
-//               ListView.separated(
-//                 shrinkWrap: true,
-//                 itemBuilder: (BuildContext context, int index) {
-//                   return InkWell(
-//                     onTap: () {
-//                       ref
-//                           .read(signUpFormProvider.notifier)
-//                           .updateForm(showAutoComplete: false);
-//                       widget.controller.text =
-//                           prefixEmail + emailSuffixes[index];
-//                       ref.read(signUpFormProvider.notifier).updateForm(
-//                           email: prefixEmail + emailSuffixes[index]);
-//                       FocusScope.of(context).requestFocus(FocusNode());
-//                     },
-//                     child: Text(
-//                       prefixEmail + emailSuffixes[index],
-//                       style: TextStyle(
-//                         fontSize: 16.sp,
-//                         letterSpacing: -0.25.sp,
-//                         fontWeight: FontWeight.w500,
-//                         color: const Color(0xFF000000),
-//                       ),
-//                     ),
-//                   );
-//                 },
-//                 separatorBuilder: (BuildContext context, int index) {
-//                   return SizedBox(height: 14.h);
-//                 },
-//                 itemCount: emailSuffixes.length,
-//               ),
-//               SizedBox(height: 16.h),
-//             ],
-//           ),
-//         ),
-//       );
-//     } else {
-//       return Container();
-//     }
-//   }
-// }
 
 class PhoneNumberFormatter extends TextInputFormatter {
   @override

@@ -175,8 +175,8 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
         ),
         body: Padding(
           padding: EdgeInsets.only(
-            left: 21.w,
-            right: 21.w,
+            left: 16.w,
+            right: 16.w,
             // bottom: bottomPadding,
           ),
           child: CustomScrollView(
@@ -184,7 +184,7 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
             controller: _scrollController,
             slivers: <Widget>[
               // const SliverToBoxAdapter(child: GameQuillComponent()),
-              getSpacer(height: 20),
+              getSpacer(height: 12),
               _TitleForm(
                 focusNode: focusNodes[0],
                 globalKey: formKeys[0],
@@ -294,7 +294,7 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
     }
   }
 
-  SliverToBoxAdapter getSpacer({double height = 32}) => SliverToBoxAdapter(
+  SliverToBoxAdapter getSpacer({double height = 20}) => SliverToBoxAdapter(
         child: SizedBox(height: height.h),
       );
 }
@@ -336,6 +336,7 @@ class _TitleFormState extends State<_TitleForm> {
           textEditingController: widget.titleController,
           hintText: '경기 제목을 입력해주세요.',
           label: '경기 제목',
+          borderColor: V2MITIColor.gray6,
           key: widget.globalKey,
           focusNode: widget.focusNode,
           onTap: () => FocusScope.of(context).requestFocus(widget.focusNode),
@@ -374,81 +375,81 @@ class _V2DateFormState extends State<V2DateForm> {
             children: [
               Text(
                 "경기 시간",
-                style: MITITextStyle.sm.copyWith(
-                  color: MITIColor.gray300,
+                style: V2MITITextStyle.smallRegularNormal.copyWith(
+                  color: V2MITIColor.white,
                 ),
               ),
-              SizedBox(width: 3.w),
               Container(
-                height: 6.r,
-                width: 6.r,
+                height: 4.r,
+                width: 4.r,
                 alignment: Alignment.center,
                 child: Container(
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    color: MITIColor.primary,
+                    color: V2MITIColor.primary5,
                   ),
-                  width: 4.r,
-                  height: 4.r,
+                  width: 2.r,
+                  height: 2.r,
                 ),
               )
             ],
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 4.h),
           Row(
             children: [
-              Container(
-                height: 48.r,
-                width: 273.w,
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                alignment: Alignment.centerLeft,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(
-                    8.r,
-                  ),
-                  color: MITIColor.gray700,
-                ),
-                child: Consumer(
-                  builder:
-                      (BuildContext context, WidgetRef ref, Widget? child) {
-                    final date = ref.watch(dateFormProvider);
-                    final painter = TextPainter(
-                        maxLines: 1,
-                        textScaler: const TextScaler.linear(1.0),
-                        textDirection: TextDirection.ltr,
-                        text: TextSpan(
-                            text: date ?? "경기 날짜와 시간을 선택해 주세요.",
-                            style: MITITextStyle.md
-                                .copyWith(color: MITIColor.white)));
-                    painter.layout(maxWidth: 233.w);
+              Expanded(
+                child: Container(
+                  height: 44.r,
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(horizontal: 12.w),
+                  alignment: Alignment.centerLeft,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        4.r,
+                      ),
+                      border: Border.all(color: V2MITIColor.gray6)),
+                  child: Consumer(
+                    builder:
+                        (BuildContext context, WidgetRef ref, Widget? child) {
+                      final date = ref.watch(dateFormProvider);
+                      final painter = TextPainter(
+                          maxLines: 1,
+                          textScaler: const TextScaler.linear(1.0),
+                          textDirection: TextDirection.ltr,
+                          text: TextSpan(
+                              text: date ?? "경기 날짜와 시간을 선택해 주세요.",
+                              style: V2MITITextStyle.regularMediumNormal
+                                  .copyWith(color: V2MITIColor.white)));
+                      painter.layout(maxWidth: 233.w);
 
-                    log("painter.didExceedMaxLines = ${painter.didExceedMaxLines}");
-                    if (painter.didExceedMaxLines) {
-                      return Marquee(
-                        text: date ?? "경기 날짜와 시간을 선택해 주세요.",
-                        textScaleFactor: 1,
-                        velocity: 20,
-                        blankSpace: 20.w,
-                        style: MITITextStyle.md.copyWith(
+                      log("painter.didExceedMaxLines = ${painter.didExceedMaxLines}");
+                      if (painter.didExceedMaxLines) {
+                        return Marquee(
+                          text: date ?? "경기 날짜와 시간을 선택해 주세요.",
+                          textScaleFactor: 1,
+                          velocity: 20,
+                          blankSpace: 20.w,
+                          style: V2MITITextStyle.regularMediumNormal.copyWith(
+                            color: date == null
+                                ? V2MITIColor.gray6
+                                : V2MITIColor.white,
+                          ),
+                        );
+                      }
+
+                      return Text(
+                        date ?? "경기 날짜와 시간을 선택해 주세요.",
+                        style: V2MITITextStyle.regularMediumNormal.copyWith(
                           color: date == null
-                              ? MITIColor.gray500
-                              : MITIColor.gray100,
+                              ? V2MITIColor.gray6
+                              : V2MITIColor.white,
                         ),
                       );
-                    }
-
-                    return Text(
-                      date ?? "경기 날짜와 시간을 선택해 주세요.",
-                      style: MITITextStyle.md.copyWith(
-                        color: date == null
-                            ? MITIColor.gray500
-                            : MITIColor.gray100,
-                      ),
-                    );
-                  },
+                    },
+                  ),
                 ),
               ),
-              const Spacer(),
+              SizedBox(width: 12.w),
               GestureDetector(
                 onTap: () {
                   FocusScope.of(context).requestFocus(FocusNode());
@@ -547,18 +548,18 @@ class _V2DateFormState extends State<V2DateForm> {
                       ));
                 },
                 child: Container(
-                  height: 48.r,
-                  width: 48.r,
+                  height: 44.r,
+                  width: 44.r,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.r),
-                    color: MITIColor.primary,
+                    borderRadius: BorderRadius.circular(4.r),
+                    color: V2MITIColor.primary5,
                   ),
                   alignment: Alignment.center,
                   child: SvgPicture.asset(
                     height: 24.r,
                     width: 24.r,
                     colorFilter: const ColorFilter.mode(
-                        MITIColor.gray900, BlendMode.srcIn),
+                        V2MITIColor.black, BlendMode.srcIn),
                     AssetUtil.getAssetPath(
                       type: AssetType.icon,
                       name: "clock",
@@ -850,63 +851,63 @@ class _AddressComponentState extends State<AddressComponent> {
           children: [
             Text(
               '경기 주소',
-              style: MITITextStyle.sm.copyWith(
-                color: MITIColor.gray300,
+              style: V2MITITextStyle.smallRegularNormal.copyWith(
+                color: V2MITIColor.white,
               ),
             ),
-            SizedBox(width: 3.w),
             Container(
-              height: 6.r,
-              width: 6.r,
+              height: 4.r,
+              width: 4.r,
               alignment: Alignment.center,
               child: Container(
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: MITIColor.primary,
+                  color: V2MITIColor.primary5,
                 ),
-                width: 4.r,
-                height: 4.r,
+                width: 2.r,
+                height: 2.r,
               ),
             )
           ],
         ),
-        SizedBox(height: 8.h),
+        SizedBox(height: 4.h),
         Row(
           children: [
-            Container(
-              height: 48.h,
-              width: 222.w,
-              decoration: ShapeDecoration(
-                color: MITIColor.gray700,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.r)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Flexible(
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 16.w),
-                      child: Text(
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        address.isEmpty ? '주소를 검색해주세요.' : address,
-                        style: address.isEmpty
-                            ? MITITextStyle.md
-                                .copyWith(color: MITIColor.gray500)
-                            : MITITextStyle.md
-                                .copyWith(color: MITIColor.gray100),
+            Expanded(
+              child: Container(
+                height: 44.h,
+                decoration: ShapeDecoration(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4.r),
+                    side: const BorderSide(color: V2MITIColor.gray6),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 12.w),
+                        child: Text(
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          address.isEmpty ? '주소를 검색해주세요.' : address,
+                          style: V2MITITextStyle.regularMediumNormal.copyWith(
+                              color: address.isEmpty
+                                  ? V2MITIColor.gray6
+                                  : V2MITIColor.white),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-            const Spacer(),
+            SizedBox(width: 12.w),
             SizedBox(
-              height: 48.h,
-              width: 98.w,
+              height: 44.h,
+              width: 96.w,
               child: Align(
                 alignment: Alignment.centerRight,
                 child: Consumer(
@@ -964,10 +965,14 @@ class _AddressComponentState extends State<AddressComponent> {
                           ),
                         );
                       },
+                      style: TextButton.styleFrom(
+                          backgroundColor: V2MITIColor.primary5,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4.r))),
                       child: Text(
                         '주소검색',
-                        style: MITITextStyle.md.copyWith(
-                          color: MITIColor.gray800,
+                        style: V2MITITextStyle.regularBold.copyWith(
+                          color: V2MITIColor.black,
                         ),
                       ),
                     );
@@ -1033,7 +1038,7 @@ class _AddressFormState extends ConsumerState<_AddressForm> {
               nameController.text = court.name;
             },
           ),
-          SizedBox(height: 32.h),
+          SizedBox(height: 20.h),
           CustomTextFormField(
             key: widget.globalKeys[1],
             focusNode: widget.focusNodes[1],
@@ -1047,12 +1052,13 @@ class _AddressFormState extends ConsumerState<_AddressForm> {
             hintText: '(선택) 상세 주소를 입력해주세요.',
             label: '경기 상세 주소',
             textEditingController: addressDetailController,
+            borderColor: V2MITIColor.gray6,
             onChanged: (val) {
               final newCourt = court.copyWith(address_detail: val);
               ref.read(gameFormProvider.notifier).update(court: newCourt);
             },
           ),
-          SizedBox(height: 32.h),
+          SizedBox(height: 20.h),
           CustomTextFormField(
             required: true,
             key: widget.globalKeys[2],
@@ -1065,6 +1071,7 @@ class _AddressFormState extends ConsumerState<_AddressForm> {
             textEditingController: nameController,
             hintText: '경기장 이름을 입력해주세요.',
             label: '경기장 이름',
+            borderColor: V2MITIColor.gray6,
             onChanged: (val) {
               final newCourt = court.copyWith(name: val);
               ref.read(gameFormProvider.notifier).update(court: newCourt);
@@ -1176,7 +1183,32 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: 4.h,
       children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '모집인원',
+              style: V2MITITextStyle.smallRegularNormal.copyWith(
+                color: V2MITIColor.white,
+              ),
+            ),
+            Container(
+              height: 4.r,
+              width: 4.r,
+              alignment: Alignment.center,
+              child: Container(
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: V2MITIColor.primary5,
+                ),
+                width: 2.r,
+                height: 2.r,
+              ),
+            )
+          ],
+        ),
         Row(
           children: [
             Expanded(
@@ -1334,7 +1366,6 @@ class _FeeFormState extends ConsumerState<_FeeForm> {
       onNext: () => FocusScope.of(context).requestFocus(widget.focusNodes[6]),
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
-        // NumberFormatter(),
       ],
       interactionDesc: formInfo.interactionDesc,
       onChanged: (val) {
@@ -1343,7 +1374,7 @@ class _FeeFormState extends ConsumerState<_FeeForm> {
           ref.read(formInfoProvider(InputFormType.fee).notifier).reset();
         } else {
           ref.read(formInfoProvider(InputFormType.fee).notifier).update(
-                borderColor: MITIColor.error,
+                borderColor: V2MITIColor.red5,
                 interactionDesc: InteractionDesc(
                   isSuccess: false,
                   desc: "참가비는 0원 혹은 500원 이상이어야합니다.",
@@ -1354,8 +1385,8 @@ class _FeeFormState extends ConsumerState<_FeeForm> {
       suffixIcon: Text(
         '원',
         textAlign: TextAlign.center,
-        style: MITITextStyle.sm.copyWith(
-          color: MITIColor.gray100,
+        style: V2MITITextStyle.regularMediumNormal.copyWith(
+          color: V2MITIColor.white,
         ),
       ),
     ));
@@ -1406,25 +1437,25 @@ class _AdditionalInfoFormState extends ConsumerState<_AdditionalInfoForm> {
             children: [
               Text(
                 '경기 운영 정보',
-                style: MITITextStyle.sm.copyWith(color: MITIColor.gray300),
+                style: V2MITITextStyle.smallRegularNormal
+                    .copyWith(color: V2MITIColor.white),
               ),
-              SizedBox(width: 3.w),
               Container(
-                height: 6.r,
-                width: 6.r,
+                height: 4.r,
+                width: 4.r,
                 alignment: Alignment.center,
                 child: Container(
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     color: MITIColor.primary,
                   ),
-                  width: 4.r,
-                  height: 4.r,
+                  width: 2.r,
+                  height: 2.r,
                 ),
               )
             ],
           ),
-          SizedBox(height: 10.h),
+          SizedBox(height: 4.h),
           IntrinsicHeight(
             child: ConstrainedBox(
               constraints: BoxConstraints(
