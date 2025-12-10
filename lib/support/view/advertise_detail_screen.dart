@@ -51,7 +51,7 @@ class AdvertiseDetailScreen extends ConsumerWidget {
               Text(
                 model.title,
                 style: MITITextStyle.xl150.copyWith(
-                  color: MITIColor.white,
+                  color: V2MITIColor.white,
                 ),
               ),
               SizedBox(height: 5.h),
@@ -59,7 +59,7 @@ class AdvertiseDetailScreen extends ConsumerWidget {
                 Text(
                   model.subtitle!,
                   style: MITITextStyle.xl150.copyWith(
-                    color: MITIColor.white,
+                    color: V2MITIColor.white,
                   ),
                 ),
               SizedBox(height: 12.h),

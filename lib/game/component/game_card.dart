@@ -154,13 +154,13 @@ class GameCard extends StatelessWidget {
                           Text(
                             '$month',
                             style: V2MITITextStyle.miniMedium
-                                .copyWith(color: MITIColor.white),
+                                .copyWith(color: V2MITIColor.white),
                           ),
                           SizedBox(width: 2.w),
                           Text(
                             '월',
                             style: V2MITITextStyle.miniRegular
-                                .copyWith(color: MITIColor.white),
+                                .copyWith(color: V2MITIColor.white),
                           ),
                         ],
                       ),
@@ -168,7 +168,7 @@ class GameCard extends StatelessWidget {
                       Text(
                         '$day',
                         style: V2MITITextStyle.smallBoldTight.copyWith(
-                          color: MITIColor.white,
+                          color: V2MITIColor.white,
                         ),
                       )
                     ],

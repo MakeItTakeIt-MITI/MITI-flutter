@@ -21,7 +21,7 @@ class QnaLabel extends StatelessWidget {
         style: MITITextStyle.xxxsmBold.copyWith(
             color: num_of_answers == 0
                 ? MITIColor.gray100
-                : MITIColor.primary),
+                : V2MITIColor.primary5),
       ),
     );
   }

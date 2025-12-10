@@ -38,7 +38,7 @@ class CustomBottomSheet {
             constraints: BoxConstraints.tight(Size(24.r, 24.r)),
             icon: const Icon(
               Icons.close,
-              color: MITIColor.white,
+              color: V2MITIColor.white,
             )));
   }
 

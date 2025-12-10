@@ -39,7 +39,7 @@ class ErrorScreen extends StatelessWidget {
             const Spacer(),
             Text(
               '서비스 오류',
-              style: MITITextStyle.xxl140.copyWith(color: MITIColor.white),
+              style: MITITextStyle.xxl140.copyWith(color: V2MITIColor.white),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 20.h),
@@ -62,7 +62,7 @@ class ErrorScreen extends StatelessWidget {
                 child: Text(
                   '같은 문제가 반복되시나요?',
                   style: MITITextStyle.smBold.copyWith(
-                    color: MITIColor.primary,
+                    color: V2MITIColor.primary5,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -74,7 +74,3 @@ class ErrorScreen extends StatelessWidget {
     );
   }
 }
-
-
-
-

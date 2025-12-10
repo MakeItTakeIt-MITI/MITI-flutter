@@ -41,10 +41,10 @@ class LoginScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: MITIColor.black,
+        backgroundColor: V2MITIColor.black,
         resizeToAvoidBottomInset: false,
         appBar: const DefaultAppBar(
-          backgroundColor: MITIColor.black,
+          backgroundColor: V2MITIColor.black,
           hasBorder: false,
         ),
         body: Padding(
@@ -228,7 +228,7 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
           style: ButtonStyle(
             backgroundColor: WidgetStateProperty.all(
               ref.watch(loginFormProvider.notifier).isValid()
-                  ? MITIColor.primary
+                  ? V2MITIColor.primary5
                   : MITIColor.gray500,
             ),
           ),
@@ -301,7 +301,7 @@ class OtherWayComponent extends StatelessWidget {
               Text(
                 way,
                 style: MITITextStyle.sm.copyWith(
-                  color: MITIColor.primary,
+                  color: V2MITIColor.primary5,
                 ),
               ),
               SvgPicture.asset(
@@ -310,7 +310,7 @@ class OtherWayComponent extends StatelessWidget {
                 width: 24.r,
                 height: 24.r,
               )
-              // const Icon(Icons.chevron_right, color: MITIColor.primary),
+              // const Icon(Icons.chevron_right, color: V2MITIColor.primary5),
             ],
           ),
         )
@@ -436,7 +436,7 @@ class AppleLoginButton extends ConsumerWidget {
       child: Container(
         height: 48.h,
         decoration: BoxDecoration(
-            color: MITIColor.white, borderRadius: BorderRadius.circular(8.r)),
+            color: V2MITIColor.white, borderRadius: BorderRadius.circular(8.r)),
         child: Row(
           children: [
             SizedBox(width: 27.w),

@@ -80,7 +80,7 @@ class GameParticipationScreen extends StatelessWidget {
                     child: Text(
                       '참가한 게스트가 없습니다.',
                       style:
-                      MITITextStyle.xxl140.copyWith(color: MITIColor.white),
+                      MITITextStyle.xxl140.copyWith(color: V2MITIColor.white),
                     ),
                   ),
                 );
@@ -321,7 +321,7 @@ class _ParticipationFilterButtonState
                                               style: MITITextStyle.smSemiBold
                                                   .copyWith(
                                                   color: selectStatus == i
-                                                      ? MITIColor.primary
+                                                      ? V2MITIColor.primary5
                                                       : MITIColor.gray100),
                                             ),
                                             if (selectStatus == i)
@@ -362,7 +362,7 @@ class _ParticipationFilterButtonState
                       ),
                       Icon(
                         Icons.keyboard_arrow_down,
-                        color: MITIColor.primary,
+                        color: V2MITIColor.primary5,
                         size: 16.r,
                       )
                     ],

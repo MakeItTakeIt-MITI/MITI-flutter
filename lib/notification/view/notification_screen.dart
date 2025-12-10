@@ -197,7 +197,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
                           unconfirmed ? '모두 읽기' : '모두 읽음',
                           style: MITITextStyle.xxsm.copyWith(
                               color: unconfirmed
-                                  ? MITIColor.primary
+                                  ? V2MITIColor.primary5
                                   : MITIColor.gray300),
                         ),
                       );
@@ -294,7 +294,7 @@ class _TabBar extends StatelessWidget {
             smallSize: 4.r,
             largeSize: 4.r,
             backgroundColor:
-                unconfirmed ? MITIColor.primary : MITIColor.gray800,
+                unconfirmed ? V2MITIColor.primary5 : MITIColor.gray800,
             child: SizedBox(
               height: 6.h,
               width: 60.w,
@@ -468,7 +468,7 @@ class _PushCardState extends ConsumerState<PushCard> {
                           Badge(
                             smallSize: 4.r,
                             largeSize: 4.r,
-                            backgroundColor: MITIColor.primary,
+                            backgroundColor: V2MITIColor.primary5,
                           )
                         ],
                       ),

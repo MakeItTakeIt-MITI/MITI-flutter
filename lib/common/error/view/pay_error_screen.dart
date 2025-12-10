@@ -55,7 +55,7 @@ class PayErrorScreen extends ConsumerWidget {
           Text(
             '결제 승인에 실패했습니다.',
             style: MITITextStyle.xxl140.copyWith(
-              color: MITIColor.white,
+              color: V2MITIColor.white,
             ),
             textAlign: TextAlign.center,
           ),

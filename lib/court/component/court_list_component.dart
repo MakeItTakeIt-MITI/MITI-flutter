@@ -170,7 +170,7 @@ class _CourtListComponentState extends ConsumerState<CourtListComponent> {
                     : () {},
                 style: ButtonStyle(
                     backgroundColor: WidgetStateProperty.all(selected != null
-                        ? MITIColor.primary
+                        ? V2MITIColor.primary5
                         : MITIColor.gray500)),
                 child: Text(
                   "경기장 정보 불러오기",

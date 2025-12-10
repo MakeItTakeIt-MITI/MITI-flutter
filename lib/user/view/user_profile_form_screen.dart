@@ -206,7 +206,7 @@ class _PasswordFormState extends ConsumerState<_PasswordForm> {
                   : () {},
               style: TextButton.styleFrom(
                 backgroundColor:
-                    valid && !isLoading ? MITIColor.primary : MITIColor.gray500,
+                    valid && !isLoading ? V2MITIColor.primary5 : MITIColor.gray500,
               ),
               child: Text(
                 '입력 완료',
@@ -404,7 +404,7 @@ class _NewPasswordFormState extends ConsumerState<_NewPasswordForm> {
                 ref
                     .read(formInfoProvider(InputFormType.password).notifier)
                     .update(
-                        borderColor: MITIColor.correct,
+                        borderColor: V2MITIColor.primary5,
                         interactionDesc: InteractionDesc(
                             isSuccess: true, desc: '안전한 비밀번호에요!'));
               } else {
@@ -463,7 +463,7 @@ class _NewPasswordFormState extends ConsumerState<_NewPasswordForm> {
                       .read(formInfoProvider(InputFormType.passwordCheck)
                           .notifier)
                       .update(
-                          borderColor: MITIColor.correct,
+                          borderColor: V2MITIColor.primary5,
                           interactionDesc: InteractionDesc(
                               isSuccess: true, desc: '비밀번호가 일치해요!'));
                 } else {
@@ -495,7 +495,7 @@ class _NewPasswordFormState extends ConsumerState<_NewPasswordForm> {
                   : () {},
               style: TextButton.styleFrom(
                 backgroundColor:
-                    valid && !isLoading ? MITIColor.primary : MITIColor.gray500,
+                    valid && !isLoading ? V2MITIColor.primary5 : MITIColor.gray500,
               ),
               child: Text(
                 '비밀번호 재설정',

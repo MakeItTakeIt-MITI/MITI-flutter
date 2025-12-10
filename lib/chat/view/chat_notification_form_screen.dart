@@ -165,7 +165,7 @@ class _ChatNotificationFormScreenState
               button: TextButton(
                   style: TextButton.styleFrom(
                       backgroundColor:
-                          valid ? MITIColor.primary : MITIColor.gray500),
+                          valid ? V2MITIColor.primary5 : MITIColor.gray500),
                   onPressed: valid
                       ? () async {
                           _updateThrottler.setValue(updateThrottleCnt + 1);
@@ -208,7 +208,7 @@ class _ChatNotificationFormScreenState
                           color: valid
                               ? isEdit
                                   ? V2MITIColor.red5
-                                  : MITIColor.primary
+                                  : V2MITIColor.primary5
                               : MITIColor.gray600),
                     ),
                   ),
@@ -428,7 +428,7 @@ class UserChatNoticeComponent extends ConsumerWidget {
                 onPressed: selected != null ? onSelect : () {},
                 style: ButtonStyle(
                     backgroundColor: WidgetStateProperty.all(selected != null
-                        ? MITIColor.primary
+                        ? V2MITIColor.primary5
                         : MITIColor.gray500)),
                 child: Text(
                   "공지사항 불러오기",

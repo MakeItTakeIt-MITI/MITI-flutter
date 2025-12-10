@@ -1394,7 +1394,7 @@ class SignUpCompleteScreen extends StatelessWidget {
       width: 24.r,
       decoration: const BoxDecoration(
         shape: BoxShape.circle,
-        color: MITIColor.primary,
+        color: V2MITIColor.primary5,
       ),
       child: Center(
         child: Text(

@@ -26,7 +26,7 @@ class BankCard extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 8.h),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color:isSelected ? MITIColor.primary : MITIColor.gray800) ,
+        border: Border.all(color:isSelected ? V2MITIColor.primary5 : MITIColor.gray800) ,
         color: MITIColor.gray750,
       ),
       alignment: Alignment.center,

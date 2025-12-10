@@ -72,7 +72,7 @@ class _OverlayNumberPickerState extends State<OverlayNumberPicker> {
               '$actualValue',
               style: MITITextStyle.md.copyWith(
                 color: selectedNumber == actualValue
-                    ? MITIColor.primary
+                    ? V2MITIColor.primary5
                     : MITIColor.gray300,
               ),
             ),
@@ -86,7 +86,7 @@ class _OverlayNumberPickerState extends State<OverlayNumberPicker> {
         decoration: BoxDecoration(
           borderRadius: BorderRadiusDirectional.all(Radius.circular(8.r)),
           color: CupertinoDynamicColor.resolve(
-              MITIColor.white.withValues(alpha: 0.1), context),
+              V2MITIColor.white.withValues(alpha: 0.1), context),
         ),
       );
 }

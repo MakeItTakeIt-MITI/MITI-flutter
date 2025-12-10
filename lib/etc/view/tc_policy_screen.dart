@@ -55,7 +55,7 @@ class TcPolicyScreen extends StatelessWidget {
                           child: Text(
                             m.name,
                             style: MITITextStyle.sm150.copyWith(
-                              color: MITIColor.white,
+                              color: V2MITIColor.white,
                             ),
                           )),
                     ))
@@ -107,7 +107,7 @@ class TcPolicyDetailScreen extends ConsumerWidget {
               Text(
                 model.name,
                 style: MITITextStyle.xl150.copyWith(
-                  color: MITIColor.white,
+                  color: V2MITIColor.white,
                 ),
               ),
               SizedBox(height: 20.h),

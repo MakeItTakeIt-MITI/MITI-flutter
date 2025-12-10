@@ -132,7 +132,7 @@ class _CommentFormState extends ConsumerState<PostCommentFormComponent> {
                           style: TextButton.styleFrom(
                               padding: EdgeInsets.zero,
                               backgroundColor: enabled
-                                  ? MITIColor.primary
+                                  ? V2MITIColor.primary5
                                   : MITIColor.gray500),
                           child: Text(
                             "작성",

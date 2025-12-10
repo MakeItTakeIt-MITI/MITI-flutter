@@ -47,7 +47,7 @@ class CourtAddressCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(8.r),
           color: MITIColor.gray600,
           border: Border.all(
-              color: selected ? MITIColor.primary : Colors.transparent),
+              color: selected ? V2MITIColor.primary5 : Colors.transparent),
         ),
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
         child: Row(
@@ -80,7 +80,7 @@ class CourtAddressCard extends StatelessWidget {
               height: 24.r,
               width: 24.r,
               colorFilter: ColorFilter.mode(
-                  selected ? MITIColor.primary : MITIColor.gray800,
+                  selected ? V2MITIColor.primary5 : MITIColor.gray800,
                   BlendMode.srcIn),
             )
           ],

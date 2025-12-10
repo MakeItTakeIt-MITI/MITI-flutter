@@ -45,7 +45,7 @@ class ResetPasswordScreen extends StatelessWidget {
               Text(
                 '비밀번호를 입력해주세요.',
                 style: MITITextStyle.xxl140.copyWith(
-                  color: MITIColor.white,
+                  color: V2MITIColor.white,
                 ),
               ),
               const PasswordForm(),
@@ -88,7 +88,7 @@ class ResetPasswordScreen extends StatelessWidget {
                           : () {},
                       style: TextButton.styleFrom(
                           backgroundColor: validNext
-                              ? MITIColor.primary
+                              ? V2MITIColor.primary5
                               : MITIColor.gray500),
                       child: Text(
                         '비밀번호 재설정',
@@ -143,7 +143,7 @@ class CompleteRestPasswordScreen extends StatelessWidget {
               Text(
                 '비밀번호 설정 완료',
                 style: MITITextStyle.xxl140.copyWith(
-                  color: MITIColor.white,
+                  color: V2MITIColor.white,
                 ),
               ),
               SizedBox(height: 40.h),

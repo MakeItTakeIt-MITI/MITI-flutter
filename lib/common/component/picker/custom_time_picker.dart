@@ -107,7 +107,7 @@ class _CustomDateTimePickerState extends ConsumerState<CustomDateTimePicker> {
                 '일'
               ][date.weekday - 1]})',
               style: MITITextStyle.md.copyWith(
-                color: dateIdx == idx ? MITIColor.primary : MITIColor.gray300,
+                color: dateIdx == idx ? V2MITIColor.primary5 : MITIColor.gray300,
               )),
         ),
       );
@@ -130,7 +130,7 @@ class _CustomDateTimePickerState extends ConsumerState<CustomDateTimePicker> {
         decoration: BoxDecoration(
           borderRadius: BorderRadiusDirectional.all(Radius.circular(8.r)),
           color: CupertinoDynamicColor.resolve(
-              MITIColor.white.withOpacity(0.1), context),
+              V2MITIColor.white.withOpacity(0.1), context),
         ),
       );
 
@@ -179,7 +179,7 @@ class _CustomDateTimePickerState extends ConsumerState<CustomDateTimePicker> {
                   child: Text(oneDigitFormat(index),
                       style: MITITextStyle.md.copyWith(
                         color: selectedHour == index
-                            ? MITIColor.primary
+                            ? V2MITIColor.primary5
                             : MITIColor.gray300,
                       )));
             }),
@@ -208,7 +208,7 @@ class _CustomDateTimePickerState extends ConsumerState<CustomDateTimePicker> {
                 oneDigitFormat(index * 10),
                 style: MITITextStyle.md.copyWith(
                   color: selectedMinute ~/ 10 == index
-                      ? MITIColor.primary
+                      ? V2MITIColor.primary5
                       : MITIColor.gray300,
                 ),
               ));

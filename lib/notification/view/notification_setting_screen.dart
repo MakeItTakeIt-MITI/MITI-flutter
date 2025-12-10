@@ -329,7 +329,7 @@ class _SwitchTile extends StatelessWidget {
           value: isOn,
           padding: 4.w,
           onToggle: onToggle,
-          activeColor: MITIColor.primary,
+          activeColor: V2MITIColor.primary5,
           toggleColor: MITIColor.gray800,
           inactiveColor: MITIColor.gray500,
         )

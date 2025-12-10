@@ -145,7 +145,7 @@ class _NicknameUpdateScreenState extends ConsumerState<ProfileUpdateScreen> {
                                       child: Text(
                                         '앨범에서 택하기',
                                         style: MITITextStyle.md.copyWith(
-                                          color: MITIColor.primary,
+                                          color: V2MITIColor.primary5,
                                         ),
                                       ),
                                     ),
@@ -188,7 +188,7 @@ class _NicknameUpdateScreenState extends ConsumerState<ProfileUpdateScreen> {
                                       child: Text(
                                         '기본 프로필로 변경하기',
                                         style: MITITextStyle.md.copyWith(
-                                          color: MITIColor.primary,
+                                          color: V2MITIColor.primary5,
                                         ),
                                       ),
                                     ),
@@ -303,7 +303,7 @@ class _NicknameUpdateScreenState extends ConsumerState<ProfileUpdateScreen> {
                               : () {},
                           style: TextButton.styleFrom(
                             backgroundColor:
-                                valid ? MITIColor.primary : MITIColor.gray500,
+                                valid ? V2MITIColor.primary5 : MITIColor.gray500,
                           ),
                           child: Text(
                             '저장하기',

@@ -72,7 +72,7 @@ class _MultiLineTextFieldState extends State<SearchForm> {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(4.r),
                   borderSide: BorderSide.none,
-                  // borderSide: BorderSide(color: MITIColor.primary),
+                  // borderSide: BorderSide(color: V2MITIColor.primary5),
                 ),
                 fillColor: MITIColor.gray750.withOpacity(.5),
                 // 최소 높이 설정 및 contentPadding 을 적용하기 위해  isDense true 설정

@@ -76,11 +76,9 @@ class ParticipationPlayerCard extends StatelessWidget {
       child: Text(
         title,
         style: MITITextStyle.xxxsmBold.copyWith(
-          color: MITIColor.primary,
+          color: V2MITIColor.primary5,
         ),
       ),
     );
   }
 }
-
-

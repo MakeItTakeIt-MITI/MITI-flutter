@@ -191,7 +191,7 @@ class _FAQScreenState extends State<FAQScreen> {
                                     style: MITITextStyle.mdBold.copyWith(
                                       color:
                                           selectCategory == faqCategories[idx]
-                                              ? MITIColor.primary
+                                              ? V2MITIColor.primary5
                                               : MITIColor.gray500,
                                     ),
                                   ),

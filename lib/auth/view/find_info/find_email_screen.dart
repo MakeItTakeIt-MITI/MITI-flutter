@@ -94,7 +94,7 @@ class NotFoundAccountScreen extends StatelessWidget {
               Text(
                 "유저 정보 없음",
                 style: MITITextStyle.xxl140.copyWith(
-                  color: MITIColor.white,
+                  color: V2MITIColor.white,
                 ),
               ),
               SizedBox(height: 40.h),
@@ -146,7 +146,7 @@ class _OauthComponent extends StatelessWidget {
         Text(
           phoneType == PhoneAuthenticationPurposeType.find_email ? "이메일 찾기" : "비밀번호 찾기",
           style: MITITextStyle.xxl140.copyWith(
-            color: MITIColor.white,
+            color: V2MITIColor.white,
           ),
         ),
         SizedBox(height: 40.h),
@@ -191,7 +191,7 @@ class _EmailComponent extends StatelessWidget {
         Text(
           '이메일 찾기',
           style: MITITextStyle.xxl140.copyWith(
-            color: MITIColor.white,
+            color: V2MITIColor.white,
           ),
         ),
         SizedBox(height: 40.h),
@@ -245,7 +245,7 @@ class _EmailComponent extends StatelessWidget {
                       child: Text(
                         '비밀번호 재설정',
                         style: MITITextStyle.mdBold.copyWith(
-                          color: MITIColor.primary,
+                          color: V2MITIColor.primary5,
                         ),
                       ));
                 },

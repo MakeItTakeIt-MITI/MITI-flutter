@@ -255,7 +255,7 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
                       : () {},
                   style: TextButton.styleFrom(
                       backgroundColor: valid && !isLoading
-                          ? MITIColor.primary
+                          ? V2MITIColor.primary5
                           : MITIColor.gray500,
                       fixedSize: Size(double.infinity, 48.h)),
                   child: Text(
@@ -532,7 +532,7 @@ class _V2DateFormState extends State<V2DateForm> {
                                 style: ButtonStyle(
                                     backgroundColor: WidgetStateProperty.all(
                                         valid
-                                            ? MITIColor.primary
+                                            ? V2MITIColor.primary5
                                             : MITIColor.gray500)),
                                 child: Text(
                                   "선택 완료",
@@ -685,7 +685,7 @@ class _GameTimePickerState extends State<_GameTimePicker> {
                       return Text(
                         text,
                         style: MITITextStyle.smSemiBold.copyWith(
-                          color: MITIColor.primary,
+                          color: V2MITIColor.primary5,
                         ),
                       );
                     },
@@ -743,7 +743,7 @@ class _TimePickerState extends State<_TimePicker> {
       // backgroundColor: MITIColor.gray700,
       looping: true,
       selectionOverlay: CupertinoPickerDefaultSelectionOverlay(
-        background: MITIColor.white.withOpacity(0.1),
+        background: V2MITIColor.white.withOpacity(0.1),
       ),
       children: List.generate(
           12,
@@ -752,7 +752,7 @@ class _TimePickerState extends State<_TimePicker> {
                 child: Text(
                   "${index + 1}",
                   style: MITITextStyle.md.copyWith(
-                    color: v == index ? MITIColor.primary : MITIColor.gray300,
+                    color: v == index ? V2MITIColor.primary5 : MITIColor.gray300,
                   ),
                 ),
               )),
@@ -1447,7 +1447,7 @@ class _AdditionalInfoFormState extends ConsumerState<_AdditionalInfoForm> {
                 child: Container(
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    color: MITIColor.primary,
+                    color: V2MITIColor.primary5,
                   ),
                   width: 2.r,
                   height: 2.r,

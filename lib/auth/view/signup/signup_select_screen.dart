@@ -21,10 +21,10 @@ class SignUpSelectScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MITIColor.black,
+      backgroundColor: V2MITIColor.black,
       resizeToAvoidBottomInset: false,
       appBar: const DefaultAppBar(
-        backgroundColor: MITIColor.black,
+        backgroundColor: V2MITIColor.black,
         hasBorder: false,
       ),
       body: Padding(
@@ -70,12 +70,12 @@ class _IntroductionComponent extends StatelessWidget {
         SizedBox(height: 25.5.h),
         Text(
           '만나서 반가워요!',
-          style: MITITextStyle.xxl.copyWith(color: MITIColor.white),
+          style: MITITextStyle.xxl.copyWith(color: V2MITIColor.white),
         ),
         SizedBox(height: 12.h),
         Text(
           '어떤 방식으로 MITI에 가입하시겠어요?',
-          style: MITITextStyle.sm.copyWith(color: MITIColor.white),
+          style: MITITextStyle.sm.copyWith(color: V2MITIColor.white),
         )
       ],
     );
@@ -117,7 +117,7 @@ class EmailSignUpButton extends StatelessWidget {
       child: Container(
         height: 48.h,
         decoration: BoxDecoration(
-            color: MITIColor.primary, borderRadius: BorderRadius.circular(8.r)),
+            color: V2MITIColor.primary5, borderRadius: BorderRadius.circular(8.r)),
         child: Row(
           children: [
             SizedBox(width: 20.w),

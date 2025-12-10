@@ -103,7 +103,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MITIColor.black,
+      backgroundColor: V2MITIColor.black,
       body: Center(
         child: Lottie.asset(
           'assets/lottie/splash.json',

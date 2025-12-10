@@ -203,7 +203,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                             width: 24.r,
                             height: 24.r,
                             colorFilter: const ColorFilter.mode(
-                                MITIColor.white, BlendMode.srcIn),
+                                V2MITIColor.white, BlendMode.srcIn),
                           ),
                         ),
                       ),
@@ -341,7 +341,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                                             "취소하기",
                                             style:
                                                 MITITextStyle.mdBold.copyWith(
-                                              color: MITIColor.primary,
+                                              color: V2MITIColor.primary5,
                                             ),
                                           ))),
                                   SizedBox(width: 6.w),

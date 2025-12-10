@@ -379,7 +379,7 @@ class _SearchComponentState extends State<SearchComponent> {
                                         style: TextButton.styleFrom(
                                             backgroundColor:
                                                 selectRegion.isNotEmpty
-                                                    ? MITIColor.primary
+                                                    ? V2MITIColor.primary5
                                                     : MITIColor.gray500),
                                         child: Text(
                                           '확인',
@@ -414,7 +414,7 @@ class _SearchComponentState extends State<SearchComponent> {
                       ),
                       Icon(
                         Icons.keyboard_arrow_down,
-                        color: MITIColor.primary,
+                        color: V2MITIColor.primary5,
                         size: 16.r,
                       )
                     ],
@@ -444,7 +444,7 @@ class RegionCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8.r),
         border: Border.all(
-            color: isSelected ? MITIColor.primary : MITIColor.gray800),
+            color: isSelected ? V2MITIColor.primary5 : MITIColor.gray800),
         color: MITIColor.gray750,
       ),
       alignment: Alignment.center,

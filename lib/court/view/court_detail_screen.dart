@@ -204,7 +204,7 @@ class _CourtInfoComponent extends ConsumerWidget {
               child: Text(
                 "${model.address} ${model.addressDetail ?? ''}",
                 style: MITITextStyle.sm.copyWith(
-                  color: MITIColor.primary,
+                  color: V2MITIColor.primary5,
                 ),
               ),
             ),
@@ -321,7 +321,7 @@ class SoonestGamesComponent extends StatelessWidget {
                           padding: EdgeInsets.only(left: 12.w, right: 16.w),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50.r),
-                            color: MITIColor.primary,
+                            color: V2MITIColor.primary5,
                           ),
                           height: 36.h,
                           child: Row(

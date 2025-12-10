@@ -90,7 +90,7 @@ class GameNoticeComponent extends ConsumerWidget {
                 height: 150.h,
                 child: Text(
                   "아직 작성된 공지사항이 없습니다.",
-                  style: MITITextStyle.smBold.copyWith(color: MITIColor.white),
+                  style: MITITextStyle.smBold.copyWith(color: V2MITIColor.white),
                 ),
               );
             }
@@ -205,7 +205,7 @@ class NoticeItem extends StatelessWidget {
                     Text(
                       title,
                       style: MITITextStyle.md.copyWith(
-                        color: MITIColor.white,
+                        color: V2MITIColor.white,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

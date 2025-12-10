@@ -274,7 +274,7 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
                                         style: TextButton.styleFrom(
                                             backgroundColor:
                                                 selectBank.isNotEmpty
-                                                    ? MITIColor.primary
+                                                    ? V2MITIColor.primary5
                                                     : MITIColor.gray500),
                                         child: Text(
                                           '확인',
@@ -409,7 +409,7 @@ class _TransferAmountForm extends ConsumerWidget {
               SizedBox(width: 20.w),
               Text(
                 '$amount 원',
-                style: MITITextStyle.smBold.copyWith(color: MITIColor.primary),
+                style: MITITextStyle.smBold.copyWith(color: V2MITIColor.primary5),
               ),
             ],
           ),
@@ -606,7 +606,7 @@ class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
                 : () {},
             style: TextButton.styleFrom(
               backgroundColor:
-                  valid && !isLoading ? MITIColor.primary : MITIColor.gray500,
+                  valid && !isLoading ? V2MITIColor.primary5 : MITIColor.gray500,
             ),
             child: Text(
               '이체 신청하기',

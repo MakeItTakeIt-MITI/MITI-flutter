@@ -48,7 +48,7 @@ class ChatNotificationListScreen extends StatelessWidget {
                   child: Text(
                     "작성",
                     style: MITITextStyle.xxsmLight
-                        .copyWith(color: MITIColor.primary),
+                        .copyWith(color: V2MITIColor.primary5),
                   ),
                 ),
               ),

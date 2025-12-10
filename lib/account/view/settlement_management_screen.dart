@@ -309,7 +309,7 @@ class _AccountInfo extends ConsumerWidget {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
               decoration: BoxDecoration(
-                color: MITIColor.primary,
+                color: V2MITIColor.primary5,
                 borderRadius: BorderRadius.circular(20.r),
               ),
               child: Text(

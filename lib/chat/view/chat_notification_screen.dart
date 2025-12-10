@@ -92,7 +92,7 @@ class _ChatNotificationScreenState extends State<ChatNotificationScreen> {
                     child: Text(
                       "수정",
                       style: MITITextStyle.xxsmLight
-                          .copyWith(color: MITIColor.primary),
+                          .copyWith(color: V2MITIColor.primary5),
                     ),
                   ),
                 ),

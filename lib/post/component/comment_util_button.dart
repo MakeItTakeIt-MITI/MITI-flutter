@@ -34,20 +34,20 @@ class CommentUtilButton extends StatelessWidget {
             width: 12.r,
             height: 12.r,
             colorFilter: ColorFilter.mode(
-                isSelected ? MITIColor.primary : MITIColor.gray100,
+                isSelected ? V2MITIColor.primary5 : MITIColor.gray100,
                 BlendMode.srcIn),
           ),
           SizedBox(width: 3.w),
           Text(
             title,
             style: MITITextStyle.xxsm.copyWith(
-                color: isSelected ? MITIColor.primary : MITIColor.gray500),
+                color: isSelected ? V2MITIColor.primary5 : MITIColor.gray500),
           ),
           SizedBox(width: 1.w),
           Text(
             cnt.toString(),
             style: MITITextStyle.xxsm.copyWith(
-                color: isSelected ? MITIColor.primary : MITIColor.gray500),
+                color: isSelected ? V2MITIColor.primary5 : MITIColor.gray500),
           ),
         ],
       ),

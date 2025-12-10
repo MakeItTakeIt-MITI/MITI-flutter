@@ -82,7 +82,7 @@ class _IdxButton extends StatelessWidget {
         child: Text(
           "${idx + 1}",
           style: MITITextStyle.xxsmBold.copyWith(
-              color: selected ? MITIColor.primary : MITIColor.gray500),
+              color: selected ? V2MITIColor.primary5 : MITIColor.gray500),
         ),
       ),
     );

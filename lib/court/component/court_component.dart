@@ -159,7 +159,7 @@ class _CustomMapMakerState extends ConsumerState<CustomMapMaker> {
             decoration: BoxDecoration(
               // boxShadow: [shadow],
               shape: BoxShape.circle,
-              color: widget.selected ? MITIColor.gray700 : MITIColor.white,
+              color: widget.selected ? MITIColor.gray700 : V2MITIColor.white,
               border: Border.all(
                   color:
                       widget.selected ? MITIColor.gray700 : MITIColor.gray100),
@@ -168,7 +168,7 @@ class _CustomMapMakerState extends ConsumerState<CustomMapMaker> {
             child: Text(
               "${widget.model.moreCnt}",
               style: MITITextStyle.xxxsmBold.copyWith(
-                  color: widget.selected ? MITIColor.white : MITIColor.gray600),
+                  color: widget.selected ? V2MITIColor.white : MITIColor.gray600),
             ),
           ),
         ),

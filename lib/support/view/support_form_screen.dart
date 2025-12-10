@@ -83,7 +83,7 @@ class _SupportFormScreenState extends ConsumerState<SupportFormScreen> {
                     : () {},
                 style: TextButton.styleFrom(
                     backgroundColor: valid && !isLoading
-                        ? MITIColor.primary
+                        ? V2MITIColor.primary5
                         : MITIColor.gray500),
                 child: Text(
                   '문의하기',

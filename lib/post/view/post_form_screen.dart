@@ -167,7 +167,7 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
                 icon: Text(
                   buttonText,
                   style: MITITextStyle.xxsmLight.copyWith(
-                      color: valid ? MITIColor.primary : MITIColor.gray400),
+                      color: valid ? V2MITIColor.primary5 : MITIColor.gray400),
                 ),
               );
             },
@@ -479,14 +479,14 @@ class _UtilButton extends StatelessWidget {
             width: 20.r,
             height: 20.r,
             colorFilter: ColorFilter.mode(
-                isSelected ? MITIColor.primary : MITIColor.gray600,
+                isSelected ? V2MITIColor.primary5 : MITIColor.gray600,
                 BlendMode.srcIn),
           ),
           SizedBox(width: 5.w),
           Text(
             title,
             style: MITITextStyle.xxsm.copyWith(
-                color: isSelected ? MITIColor.primary : MITIColor.gray600),
+                color: isSelected ? V2MITIColor.primary5 : MITIColor.gray600),
           )
         ],
       ),

@@ -89,7 +89,7 @@ class ImageFormComponent extends StatelessWidget {
                   width: 12.r,
                   height: 12.r,
                   colorFilter:
-                      const ColorFilter.mode(MITIColor.white, BlendMode.srcIn),
+                      const ColorFilter.mode(V2MITIColor.white, BlendMode.srcIn),
                 ),
               ),
             ),

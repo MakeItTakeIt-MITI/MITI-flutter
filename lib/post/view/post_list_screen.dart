@@ -96,7 +96,7 @@ class _PostListScreenState extends ConsumerState<PostListScreen> {
               EdgeInsets.only(left: 12.w, right: 16.w, top: 10.h, bottom: 10.h),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50.r),
-            color: MITIColor.primary,
+            color: V2MITIColor.primary5,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,

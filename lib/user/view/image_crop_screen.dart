@@ -75,7 +75,7 @@ class _ImageCropScreenState extends ConsumerState<ImageCropScreen> {
             button: TextButton(
               style: TextButton.styleFrom(
                   backgroundColor:
-                      valid ? MITIColor.primary : MITIColor.gray500),
+                      valid ? V2MITIColor.primary5 : MITIColor.gray500),
               onPressed: valid
                   ? () {
                       _registProfileImage();

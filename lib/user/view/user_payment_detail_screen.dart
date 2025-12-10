@@ -232,7 +232,7 @@ class _PaymentInfoComponent extends StatelessWidget {
             Text(
               '원',
               style: V2MITITextStyle.smallRegularTight.copyWith(
-                color: MITIColor.white,
+                color: V2MITIColor.white,
               ),
             ),
           ],

@@ -84,7 +84,7 @@ class GameRecentComponent extends ConsumerWidget {
                     : () {},
                 style: ButtonStyle(
                     backgroundColor: WidgetStateProperty.all(selected != null
-                        ? MITIColor.primary
+                        ? V2MITIColor.primary5
                         : MITIColor.gray500)),
                 child: Text(
                   "경기 정보 불러오기",
@@ -158,7 +158,7 @@ class GameBottomSheetCard extends ConsumerWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
-              color: selected ? MITIColor.primary : Colors.transparent),
+              color: selected ? V2MITIColor.primary5 : Colors.transparent),
           color: MITIColor.gray600,
         ),
         child: Row(
@@ -190,7 +190,7 @@ class GameBottomSheetCard extends ConsumerWidget {
               AssetUtil.getAssetPath(
                   type: AssetType.icon, name: 'active_check'),
               colorFilter: ColorFilter.mode(
-                  selected ? MITIColor.primary : MITIColor.gray800,
+                  selected ? V2MITIColor.primary5 : MITIColor.gray800,
                   BlendMode.srcIn),
             ),
           ],

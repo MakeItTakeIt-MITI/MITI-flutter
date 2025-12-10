@@ -158,7 +158,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                 height: 24.r,
                 width: 24.r,
                 colorFilter:
-                    const ColorFilter.mode(MITIColor.white, BlendMode.srcIn),
+                    const ColorFilter.mode(V2MITIColor.white, BlendMode.srcIn),
               ),
             ),
           )
@@ -181,7 +181,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                     : () {},
                 style: TextButton.styleFrom(
                     backgroundColor: valid && !isLoading
-                        ? MITIColor.primary
+                        ? V2MITIColor.primary5
                         : MITIColor.gray500),
                 child: Text(
                   '작성 완료',

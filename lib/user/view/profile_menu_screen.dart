@@ -91,7 +91,7 @@ class _ProfileBodyState extends ConsumerState<ProfileBody> {
                       },
                       child: Badge(
                         backgroundColor:
-                            unconfirmed ? MITIColor.primary : MITIColor.gray800,
+                            unconfirmed ? V2MITIColor.primary5 : MITIColor.gray800,
                         // alignment: const Alignment(1,-1),
                         smallSize: 4.r,
                         largeSize: 4.r,
@@ -258,7 +258,7 @@ class _MenuComponent extends ConsumerWidget {
       child: Text(
         title,
         style: MITITextStyle.xxxsmBold.copyWith(
-          color: MITIColor.primary,
+          color: V2MITIColor.primary5,
         ),
       ),
     );

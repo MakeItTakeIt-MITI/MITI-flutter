@@ -107,7 +107,7 @@ class _PushDetailScreenState extends ConsumerState<NoticeDetailScreen> {
               Text(
                 title,
                 style: MITITextStyle.xl150.copyWith(
-                  color: MITIColor.white,
+                  color: V2MITIColor.white,
                 ),
               ),
               SizedBox(height: 12.h),

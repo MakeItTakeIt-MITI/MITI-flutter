@@ -109,7 +109,7 @@ class _MemberSkeleton extends StatelessWidget {
                         child: Text(
                           "호스트",
                           style: MITITextStyle.xxxsmBold
-                              .copyWith(color: MITIColor.primary),
+                              .copyWith(color: V2MITIColor.primary5),
                         ),
                       ),
                     )

@@ -108,7 +108,7 @@ class _GameReviewListScreenState extends State<GameReviewListScreen> {
                       child: Text(
                         '리뷰를 작성할\n플레이어가 없습니다.',
                         style: MITITextStyle.xxl140
-                            .copyWith(color: MITIColor.white),
+                            .copyWith(color: V2MITIColor.white),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -337,7 +337,7 @@ class _PlayerComponent extends StatelessWidget {
                       minimumSize: Size(75.w, 30.h),
                       maximumSize: Size(90.w, 30.h),
                       backgroundColor: !isWrittenReview
-                          ? MITIColor.primary
+                          ? V2MITIColor.primary5
                           : MITIColor.gray800,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20.r))),
@@ -346,7 +346,7 @@ class _PlayerComponent extends StatelessWidget {
                     style: MITITextStyle.smSemiBold.copyWith(
                       color: !isWrittenReview
                           ? MITIColor.gray800
-                          : MITIColor.primary,
+                          : V2MITIColor.primary5,
                     ),
                   ));
             },

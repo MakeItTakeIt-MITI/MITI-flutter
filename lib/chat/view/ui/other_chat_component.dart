@@ -115,7 +115,7 @@ class ChatBox extends StatelessWidget {
         constraints: BoxConstraints(maxWidth: 240.w),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8.r),
-            color: isMine ? MITIColor.primary : MITIColor.gray750),
+            color: isMine ? V2MITIColor.primary5 : MITIColor.gray750),
         child: Text(
           message,
           style: MITITextStyle.sm.copyWith(

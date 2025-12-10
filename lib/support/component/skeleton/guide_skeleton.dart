@@ -68,7 +68,7 @@ class GuideImageSkeleton extends StatelessWidget {
                 margin: EdgeInsets.symmetric(horizontal: 4.w),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: idx == 0 ? MITIColor.primary : MITIColor.gray400,
+                  color: idx == 0 ? V2MITIColor.primary5 : MITIColor.gray400,
                 ),
               ),
             ),

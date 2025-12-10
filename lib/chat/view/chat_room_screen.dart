@@ -312,7 +312,7 @@ class _ChatFormState extends State<_ChatForm> {
                         style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
                             backgroundColor: enabled
-                                ? MITIColor.primary
+                                ? V2MITIColor.primary5
                                 : MITIColor.gray500),
                         child: Text(
                           "전송",
@@ -437,7 +437,7 @@ class _MultiLineTextFieldState extends State<MultiLineTextField> {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.r),
                   borderSide: BorderSide.none,
-                  // borderSide: BorderSide(color: MITIColor.primary),
+                  // borderSide: BorderSide(color: V2MITIColor.primary5),
                 ),
 
                 // 최소 높이 설정 및 contentPadding 을 적용하기 위해  isDense true 설정

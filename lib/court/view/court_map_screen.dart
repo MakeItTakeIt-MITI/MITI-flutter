@@ -791,7 +791,7 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
                 width: double.infinity,
                 child: const Icon(
                   Icons.keyboard_arrow_up_outlined,
-                  color: MITIColor.primary,
+                  color: V2MITIColor.primary5,
                 ),
               ),
             )
@@ -1209,7 +1209,7 @@ class CourtMapBackground extends ConsumerWidget {
                   shape: BoxShape.circle,
                   border: Border.all(
                     color:
-                        position != null ? MITIColor.primary : MITIColor.gray50,
+                        position != null ? V2MITIColor.primary5 : MITIColor.gray50,
                   ),
                   boxShadow: [
                     BoxShadow(

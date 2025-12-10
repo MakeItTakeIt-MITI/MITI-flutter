@@ -107,7 +107,7 @@ class V2BottomDialog extends StatelessWidget {
             constraints: BoxConstraints.tight(Size(24.r, 24.r)),
             icon: const Icon(
               Icons.close,
-              color: MITIColor.white,
+              color: V2MITIColor.white,
             )));
   }
 
@@ -167,7 +167,7 @@ class BottomDialog extends StatelessWidget {
             constraints: BoxConstraints.tight(Size(24.r, 24.r)),
             icon: const Icon(
               Icons.close,
-              color: MITIColor.white,
+              color: V2MITIColor.white,
             )));
   }
 
@@ -253,7 +253,7 @@ class PermissionDialog extends StatelessWidget {
                       child: Text(
                         '확인',
                         style: MITITextStyle.mdSemiBold.copyWith(
-                          color: MITIColor.primary,
+                          color: V2MITIColor.primary5,
                         ),
                       ),
                     ),

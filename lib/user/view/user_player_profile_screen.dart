@@ -52,7 +52,7 @@ class UserPlayerProfileScreen extends StatelessWidget {
                     : null,
                 style: TextButton.styleFrom(
                   backgroundColor:
-                      valid ? MITIColor.primary : MITIColor.gray500,
+                      valid ? V2MITIColor.primary5 : MITIColor.gray500,
                 ),
                 child: Text(
                   "수정하기",

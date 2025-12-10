@@ -194,7 +194,7 @@ class _PostCommentFormScreenState extends ConsumerState<PostCommentFormScreen> {
                 icon: Text(
                   '수정',
                   style: MITITextStyle.xxsmLight.copyWith(
-                      color: valid ? MITIColor.primary : MITIColor.gray400),
+                      color: valid ? V2MITIColor.primary5 : MITIColor.gray400),
                 ),
               );
             },
@@ -325,7 +325,7 @@ class _PostCommentFormScreenState extends ConsumerState<PostCommentFormScreen> {
                               : '이미지 ${localImages.length}개',
                           style: MITITextStyle.xxsm.copyWith(
                             color: loadingCount > 0
-                                ? MITIColor.primary
+                                ? V2MITIColor.primary5
                                 : MITIColor.gray300,
                           ),
                         ),

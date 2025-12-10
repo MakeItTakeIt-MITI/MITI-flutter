@@ -153,7 +153,7 @@ class _GuideScreenState extends ConsumerState<GuideScreen> {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: entry.key == currentIdx
-                                  ? MITIColor.primary
+                                  ? V2MITIColor.primary5
                                   : MITIColor.gray400,
                             ),
                           );
@@ -213,7 +213,7 @@ class _GuideChip extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.r),
-          color: selected ? MITIColor.primary : MITIColor.gray700,
+          color: selected ? V2MITIColor.primary5 : MITIColor.gray700,
         ),
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         alignment: Alignment.center,

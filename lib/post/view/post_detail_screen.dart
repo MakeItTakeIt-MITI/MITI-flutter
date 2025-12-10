@@ -482,7 +482,7 @@ class _LikeButton extends StatelessWidget {
               height: 24.r,
               width: 24.r,
               colorFilter: ColorFilter.mode(
-                  isSelected ? MITIColor.primary : MITIColor.gray500,
+                  isSelected ? V2MITIColor.primary5 : MITIColor.gray500,
                   BlendMode.srcIn),
             ),
             SizedBox(width: 10.w),

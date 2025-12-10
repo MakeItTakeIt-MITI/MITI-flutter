@@ -300,7 +300,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                         //                 '취소하기',
                         //                 style: MITITextStyle.mdBold
                         //                     .copyWith(
-                        //                   color: MITIColor.primary,
+                        //                   color: V2MITIColor.primary5,
                         //                 ),
                         //               ),
                         //             ),

@@ -87,7 +87,7 @@ class _ChatMemberComponent extends StatelessWidget {
             height: 150.h,
             child: Text(
               "아직 참가자가 없습니다.",
-              style: MITITextStyle.smBold.copyWith(color: MITIColor.white),
+              style: MITITextStyle.smBold.copyWith(color: V2MITIColor.white),
             ),
           )
         else
@@ -187,7 +187,7 @@ class _MemberCard extends StatelessWidget {
                         child: Text(
                           "호스트",
                           style: MITITextStyle.xxxsmBold
-                              .copyWith(color: MITIColor.primary),
+                              .copyWith(color: V2MITIColor.primary5),
                         ),
                       )
                   ],

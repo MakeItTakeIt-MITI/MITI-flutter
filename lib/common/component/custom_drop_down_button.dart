@@ -97,12 +97,12 @@ class _CustomDropDownButtonState extends ConsumerState<CustomDropDownButton> {
         iconStyleData: IconStyleData(
             openMenuIcon: Icon(
               Icons.keyboard_arrow_up,
-              color: MITIColor.primary,
+              color: V2MITIColor.primary5,
               size: 16.r,
             ),
             icon: Icon(
               Icons.keyboard_arrow_down,
-              color: MITIColor.primary,
+              color: V2MITIColor.primary5,
               size: 16.r,
             )),
         dropdownStyleData: DropdownStyleData(

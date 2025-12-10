@@ -155,7 +155,7 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
           SizedBox(height: 80.h),
           Text(
             widget.type == PhoneAuthenticationPurposeType.find_email ? '이메일 찾기' : '비밀번호 재설정',
-            style: MITITextStyle.xxl140.copyWith(color: MITIColor.white),
+            style: MITITextStyle.xxl140.copyWith(color: V2MITIColor.white),
           ),
           SizedBox(height: 12.h),
           Text(
@@ -236,7 +236,7 @@ class _FindInfoBodyState extends ConsumerState<FindInfoBody> {
                     : () {},
                 style: TextButton.styleFrom(
                     backgroundColor:
-                        model != null ? MITIColor.primary : MITIColor.gray500),
+                        model != null ? V2MITIColor.primary5 : MITIColor.gray500),
                 child: Text(
                   '확인',
                   style: MITITextStyle.mdBold.copyWith(

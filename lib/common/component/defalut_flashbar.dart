@@ -8,7 +8,7 @@ import '../../theme/text_theme.dart';
 
 class FlashUtil {
   static void showFlash(BuildContext context, String content,
-      {Color textColor = MITIColor.correct}) {
+        {Color textColor = V2MITIColor.primary5}) {
     context.showFlash(
         builder: (BuildContext context, FlashController controller) {
       Future.delayed(const Duration(seconds: 1), () {

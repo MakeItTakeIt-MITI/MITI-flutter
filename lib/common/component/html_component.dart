@@ -39,7 +39,7 @@ class HtmlComponent extends StatelessWidget {
           margin: Margins.only(top: 0, left: 0, bottom: 2.h, right: 0),
         ),
         'b': Style(
-          color: MITIColor.primary,
+          color: V2MITIColor.primary5,
         ),
       },
       onLinkTap: (url, _, __) async {

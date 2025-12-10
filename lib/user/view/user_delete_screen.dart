@@ -83,7 +83,7 @@ class _UserDeleteScreenState extends ConsumerState<UserDeleteScreen> {
                 }
               : () {},
           style: TextButton.styleFrom(
-            backgroundColor: valid ? MITIColor.primary : MITIColor.gray500,
+            backgroundColor: valid ? V2MITIColor.primary5 : MITIColor.gray500,
           ),
           child: Text(
             '회원 탈퇴하기',
