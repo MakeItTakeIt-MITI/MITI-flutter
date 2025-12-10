@@ -162,23 +162,26 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
                         );
                       },
                       separatorBuilder: (_, idx) => SizedBox(
-                        height: 12.h,
-                      ),
+                            height: 12.h,
+                          ),
                       itemCount: model.length),
                   SizedBox(height: 20.h),
                   Consumer(
-                    builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                    builder:
+                        (BuildContext context, WidgetRef ref, Widget? child) {
                       final selected = ref.watch(selectedProvider);
                       return TextButton(
                           onPressed: selected != null
                               ? () {
-                            selectRecentGame(model, selected, ref, context);
-                          }
+                                  selectRecentGame(
+                                      model, selected, ref, context);
+                                }
                               : () {},
                           style: ButtonStyle(
-                              backgroundColor: WidgetStateProperty.all(selected != null
-                                  ? V2MITIColor.primary5
-                                  : V2MITIColor.gray7)),
+                              backgroundColor: WidgetStateProperty.all(
+                                  selected != null
+                                      ? V2MITIColor.primary5
+                                      : V2MITIColor.gray7)),
                           child: Text(
                             "정보 불러오기",
                             style: V2MITITextStyle.regularBold.copyWith(
@@ -516,41 +519,21 @@ class _V2DateFormState extends State<V2DateForm> {
               GestureDetector(
                 onTap: () {
                   FocusScope.of(context).requestFocus(FocusNode());
-                  showCustomModalBottomSheet(
-                      context,
-                      Column(
+                  CustomBottomSheet.showWidgetContent(
+                      title: '경기 시간 설정',
+                      hasPop: true,
+                      context: context,
+                      content: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "경기 시간 설정",
-                                style: MITITextStyle.mdBold
-                                    .copyWith(color: MITIColor.gray100),
-                              ),
-                              IconButton(
-                                  onPressed: () => context.pop(),
-                                  style: const ButtonStyle(
-                                      tapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap),
-                                  constraints:
-                                      BoxConstraints.tight(Size(24.r, 24.r)),
-                                  padding: EdgeInsets.zero,
-                                  icon: const Icon(
-                                    Icons.close,
-                                    color: MITIColor.gray100,
-                                  ))
-                            ],
-                          ),
-                          SizedBox(height: 40.h),
+                          SizedBox(height: 22.h),
                           const _GameTimePicker(
                             isStart: true,
                           ),
                           Divider(
-                            height: 41.h,
-                            color: MITIColor.gray600,
+                            height: 25.h,
+                            color: V2MITIColor.gray10,
                           ),
                           const _GameTimePicker(
                             isStart: false,
@@ -580,7 +563,7 @@ class _V2DateFormState extends State<V2DateForm> {
                                   ));
                             },
                           ),
-                          SizedBox(height: 40.h),
+                          SizedBox(height: 20.h),
                           Consumer(
                             builder: (BuildContext context, WidgetRef ref,
                                 Widget? child) {
@@ -596,19 +579,21 @@ class _V2DateFormState extends State<V2DateForm> {
                                     backgroundColor: WidgetStateProperty.all(
                                         valid
                                             ? V2MITIColor.primary5
-                                            : MITIColor.gray500)),
+                                            : V2MITIColor.gray7)),
                                 child: Text(
-                                  "선택 완료",
-                                  style: MITITextStyle.mdBold.copyWith(
+                                  "설정하기",
+                                  style: V2MITITextStyle.regularBold.copyWith(
                                       color: valid
-                                          ? MITIColor.gray800
-                                          : MITIColor.gray50),
+                                          ? V2MITIColor.black
+                                          : V2MITIColor.white),
                                 ),
                               );
                             },
-                          )
+                          ),
+                          SizedBox(height: 20.h),
                         ],
-                      ));
+                      ),
+                      buttonText: '설정하기');
                 },
                 child: Container(
                   height: 44.r,
@@ -719,6 +704,7 @@ class _GameTimePickerState extends State<_GameTimePicker> {
       mainAxisSize: MainAxisSize.min,
       children: [
         GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: () {
             setState(() {
               isOpen = !isOpen;
