@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,7 +13,7 @@ import 'package:miti/support/provider/support_provider.dart';
 import 'package:miti/support/provider/widget/support_form_provider.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/util/util.dart';
-import 'package:expandable/expandable.dart';
+
 import '../../common/component/default_appbar.dart';
 import '../../game/model/v2/support/frequently_asked_question_response.dart';
 import '../../theme/text_theme.dart';
@@ -77,6 +78,7 @@ class _FAQScreenState extends State<FAQScreen> {
                           (BuildContext context, WidgetRef ref, Widget? child) {
                         return CustomTextFormField(
                           height: 40,
+                          borderColor: V2MITIColor.gray6,
                           hintText: '궁금한 내용을 검색해보세요.',
                           borderRadius: BorderRadius.circular(12.r),
                           textStyle: MITITextStyle.sm

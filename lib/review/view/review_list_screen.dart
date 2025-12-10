@@ -37,7 +37,6 @@ class ReviewListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MITIColor.gray800,
       body: NestedScrollView(
           headerSliverBuilder: (_, __) {
             return [
@@ -55,7 +54,6 @@ class ReviewListScreen extends StatelessWidget {
                       isSliver: true,
                       title: '리뷰 내용',
                       hasBorder: false,
-                      backgroundColor: MITIColor.gray750,
                     );
                   }
                   late String nickname;
@@ -75,7 +73,6 @@ class ReviewListScreen extends StatelessWidget {
                   return DefaultAppBar(
                     isSliver: true,
                     hasBorder: false,
-                    backgroundColor: MITIColor.gray750,
                     title: '$nickname님의 리뷰 내용',
                   );
                 },
@@ -282,13 +279,13 @@ class ReviewCard extends StatelessWidget {
       ),
     );
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(
           horizontal: 21.w,
           vertical: 24.h,
         ),
-        color: MITIColor.gray750,
         child: Row(
           children: [
             Expanded(

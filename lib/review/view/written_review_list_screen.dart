@@ -48,14 +48,12 @@ class _WrittenReviewListScreenState
   Widget build(BuildContext context) {
     final userId = ref.watch(authProvider)!.id!;
     return Scaffold(
-      backgroundColor: MITIColor.gray900,
       body: NestedScrollView(
           headerSliverBuilder: (_, __) {
             return [
               const DefaultAppBar(
                 isSliver: true,
                 title: '내가 작성한 리뷰',
-                backgroundColor: MITIColor.gray750,
                 hasBorder: false,
               )
             ];

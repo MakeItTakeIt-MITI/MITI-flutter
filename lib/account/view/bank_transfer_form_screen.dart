@@ -1,10 +1,9 @@
 import 'dart:developer';
 
+import 'package:collection/collection.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -29,7 +28,6 @@ import '../../common/view/operation_term_screen.dart';
 import '../../game/model/v2/account/base_account_response.dart';
 import '../../util/util.dart';
 import '../component/bank_card.dart';
-import 'package:collection/collection.dart';
 
 class BankTransferFormScreen extends StatefulWidget {
   static String get routeName => 'transferForm';
@@ -98,7 +96,6 @@ class _BankTransferFormScreenState extends State<BankTransferFormScreen> {
       child: Scaffold(
         appBar: const DefaultAppBar(
           title: '정산금 수령 신청',
-          backgroundColor: MITIColor.gray750,
           hasBorder: false,
         ),
         body: CustomScrollView(
@@ -146,7 +143,6 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: MITIColor.gray750,
       padding:
           EdgeInsets.only(left: 21.w, right: 21.w, top: 24.h, bottom: 28.h),
       child: Column(
@@ -164,6 +160,7 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
             hintText: '이체할 계좌번호의 예금주를 입력해 주세요.',
             hintTextStyle: MITITextStyle.sm.copyWith(color: MITIColor.gray500),
             label: '예금주',
+            borderColor: V2MITIColor.gray6,
             textStyle: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
             focusNode: widget.focusNodes[0],
             onTap: () {
@@ -295,7 +292,7 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
                   height: 48.h,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8.r),
-                    color: MITIColor.gray700,
+                    border: Border.all(color: V2MITIColor.gray6),
                   ),
                   padding: EdgeInsets.symmetric(horizontal: 20.w),
                   alignment: Alignment.centerLeft,
@@ -341,6 +338,7 @@ class _AccountFormState extends ConsumerState<_AccountForm> {
               FocusScope.of(context).requestFocus(widget.focusNodes[1]);
             },
             label: '계좌번호',
+            borderColor: V2MITIColor.gray6,
             textStyle: MITITextStyle.sm.copyWith(color: MITIColor.gray100),
             focusNode: widget.focusNodes[1],
             onNext: () {
@@ -389,7 +387,6 @@ class _TransferAmountForm extends ConsumerWidget {
     final amount =
         NumberUtil.format(model.transferRequestableAmount.toString());
     return Container(
-      color: MITIColor.gray750,
       padding:
           EdgeInsets.only(left: 21.w, right: 21.w, top: 24.h, bottom: 28.h),
       child: Column(
@@ -409,7 +406,8 @@ class _TransferAmountForm extends ConsumerWidget {
               SizedBox(width: 20.w),
               Text(
                 '$amount 원',
-                style: MITITextStyle.smBold.copyWith(color: V2MITIColor.primary5),
+                style:
+                    MITITextStyle.smBold.copyWith(color: V2MITIColor.primary5),
               ),
             ],
           ),
@@ -486,7 +484,7 @@ class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
       setState(() {
         isLoading = true;
       });
-       Future.delayed(const Duration(seconds: 1), () {
+      Future.delayed(const Duration(seconds: 1), () {
         throttleCnt++;
       });
       await requestTransfer(ref, context);
@@ -536,7 +534,6 @@ class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
             .valid(model.transferRequestableAmount) &&
         validCheckBox;
     return Container(
-      color: MITIColor.gray750,
       padding:
           EdgeInsets.only(left: 21.w, right: 21.w, top: 24.h, bottom: 28.h),
       child: Column(
@@ -605,8 +602,9 @@ class _AgreementTermFormState extends ConsumerState<_AgreementTermForm> {
                   }
                 : () {},
             style: TextButton.styleFrom(
-              backgroundColor:
-                  valid && !isLoading ? V2MITIColor.primary5 : MITIColor.gray500,
+              backgroundColor: valid && !isLoading
+                  ? V2MITIColor.primary5
+                  : MITIColor.gray500,
             ),
             child: Text(
               '이체 신청하기',
