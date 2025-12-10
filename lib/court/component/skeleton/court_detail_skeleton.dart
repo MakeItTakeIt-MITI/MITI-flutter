@@ -18,7 +18,6 @@ class CourtDetailSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MITIColor.gray700,
       appBar: AppBar(),
       body: SingleChildScrollView(
         child: Column(
@@ -89,7 +88,7 @@ class CourtGameSkeleton extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "이 경기장에 생성된 경기",
+                "이 경기장에서 모집 중인 경기",
                 style: MITITextStyle.lgBold.copyWith(
                   color: MITIColor.gray100,
                 ),

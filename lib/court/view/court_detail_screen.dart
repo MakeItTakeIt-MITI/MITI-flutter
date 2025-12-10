@@ -3,7 +3,6 @@ import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/court/provider/court_provider.dart';
@@ -240,9 +239,9 @@ class SoonestGamesComponent extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "이 경기장에 생성된 경기",
-                  style: MITITextStyle.lgBold.copyWith(
-                    color: MITIColor.gray100,
+                  "이 경기장에서 모집 중인 경기",
+                  style: V2MITITextStyle.regularBold.copyWith(
+                    color: V2MITIColor.white,
                   ),
                 ),
                 Consumer(
@@ -265,25 +264,11 @@ class SoonestGamesComponent extends StatelessWidget {
                       onTap: () {
                         pushGameList(context);
                       },
-                      child: Row(
-                        children: [
-                          Text(
-                            '더보기',
-                            style: MITITextStyle.xxsmLight.copyWith(
-                              color: MITIColor.gray100,
-                            ),
-                          ),
-                          SvgPicture.asset(
-                            AssetUtil.getAssetPath(
-                              type: AssetType.icon,
-                              name: 'chevron_right',
-                            ),
-                            colorFilter: const ColorFilter.mode(
-                              MITIColor.gray400,
-                              BlendMode.srcIn,
-                            ),
-                          ),
-                        ],
+                      child: Text(
+                        '더보기',
+                        style: MITITextStyle.xxsmLight.copyWith(
+                          color: V2MITIColor.gray8,
+                        ),
                       ),
                     );
                   },
@@ -400,7 +385,6 @@ class SoonestGamesComponent extends StatelessWidget {
   }
 
   void pushGameList(BuildContext context) {
-
     print("클릭된 CourtId = ${courtId}");
     Map<String, String> pathParameters = {'courtId': courtId.toString()};
     context.pushNamed(CourtGameListScreen.routeName,

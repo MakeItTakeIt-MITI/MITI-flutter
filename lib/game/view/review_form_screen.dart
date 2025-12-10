@@ -202,8 +202,11 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
           SliverToBoxAdapter(
             child: Column(
               children: [
-                UserShortInfoComponent.fromModel(
-                  model: widget.userInfoModel,
+                Padding(
+                  padding:  EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
+                  child: UserShortInfoComponent.fromModel(
+                    model: widget.userInfoModel,
+                  ),
                 ),
                 getDivider(),
                 _RatingForm(

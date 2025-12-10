@@ -132,12 +132,67 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
           final model =
               (result as ResponseListModel<GameWithCourtResponse>).data!;
           if (model.isNotEmpty) {
-            showCustomModalBottomSheet(
-                context,
-                GameRecentComponent(
-                  models: model,
-                  textEditingControllers: textEditingControllers,
-                ));
+            CustomBottomSheet.showWidgetContent(
+              title: '최근 경기 목록',
+              hasPop: true,
+              context: context,
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(height: 4.h),
+                      Text(
+                        "최근 게스트를 모집한 경기 목록입니다.\n같은 정보로 경기를 생성하시겠습니까?",
+                        style: V2MITITextStyle.tinyRegularNormal.copyWith(
+                          color: V2MITIColor.gray3,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10.h),
+                  ListView.separated(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (_, idx) {
+                        return GameBottomSheetCard.fromRecentModel(
+                          model: model[idx],
+                        );
+                      },
+                      separatorBuilder: (_, idx) => SizedBox(
+                        height: 12.h,
+                      ),
+                      itemCount: model.length),
+                  SizedBox(height: 20.h),
+                  Consumer(
+                    builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                      final selected = ref.watch(selectedProvider);
+                      return TextButton(
+                          onPressed: selected != null
+                              ? () {
+                            selectRecentGame(model, selected, ref, context);
+                          }
+                              : () {},
+                          style: ButtonStyle(
+                              backgroundColor: WidgetStateProperty.all(selected != null
+                                  ? V2MITIColor.primary5
+                                  : V2MITIColor.gray7)),
+                          child: Text(
+                            "정보 불러오기",
+                            style: V2MITITextStyle.regularBold.copyWith(
+                                color: selected != null
+                                    ? V2MITIColor.black
+                                    : V2MITIColor.white),
+                          ));
+                    },
+                  ),
+                  SizedBox(height: 20.h),
+                ],
+              ),
+              buttonText: '정보 불라오기',
+            );
           }
         }
       } else {
@@ -156,6 +211,14 @@ class _GameCreateScreenState extends ConsumerState<GameCreateScreen> {
         textEditingControllers[3].text = name;
       }
     });
+  }
+
+  void selectRecentGame(List<GameWithCourtResponse> models, int selected,
+      WidgetRef ref, BuildContext context) {
+    final model = models.firstWhere((m) => m.id == selected);
+    ref.read(gameFormProvider.notifier).selectGameHistory(
+        model: model, textEditingControllers: textEditingControllers);
+    context.pop();
   }
 
   @override
@@ -752,7 +815,8 @@ class _TimePickerState extends State<_TimePicker> {
                 child: Text(
                   "${index + 1}",
                   style: MITITextStyle.md.copyWith(
-                    color: v == index ? V2MITIColor.primary5 : MITIColor.gray300,
+                    color:
+                        v == index ? V2MITIColor.primary5 : MITIColor.gray300,
                   ),
                 ),
               )),
