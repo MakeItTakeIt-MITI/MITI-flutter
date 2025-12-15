@@ -301,12 +301,12 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
     final gameStatus = model.game_status;
     final startTime = DateTime.parse('${model.startdate} ${model.starttime}');
     final createdAt = DateTime.parse('${model.created_at}');
-    final policyValid = startTime.difference(DateTime.now()).inHours >= 2;
-    final policyCreatedAtValid =
-        createdAt.difference(DateTime.now()).inHours >= -2;
-    log('policyValid $policyValid policyCreatedAtValid = $policyCreatedAtValid ');
-    log('DateTime.now().difference(createdAt).inHours = ${createdAt.difference(DateTime.now()).inHours}');
-    final editValid = policyValid && policyCreatedAtValid;
+// 경기 시작 시간(startTime)과 현재 시각(DateTime.now())의 차이를 계산하여 4시간 이상인지 확인합니다.
+    final isCancellable = startTime.difference(DateTime.now()).inHours >= 4;
+
+// 취소 버튼 활성화 여부를 로그로 출력합니다.
+    log('경기 시작까지 ${startTime.difference(DateTime.now()).inHours} 시간 남았습니다.');
+    log('취소 버튼 활성화 (isCancellable) = $isCancellable');
 
     final buttonTextStyle = V2MITITextStyle.regularBold.copyWith(
       color: Colors.white,
@@ -316,7 +316,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
         SizedBox(
           width: 98.w,
           child: TextButton(
-            onPressed: editValid
+            onPressed: isCancellable
                 ? () {
                     showModalBottomSheet(
                         context: context,
@@ -356,15 +356,15 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                 : null,
             style: ButtonStyle(
               side: WidgetStateProperty.all(BorderSide(
-                  color: editValid ? Colors.transparent : V2MITIColor.gray6)),
+                  color: isCancellable ? Colors.transparent : V2MITIColor.gray6)),
               backgroundColor: WidgetStateProperty.all(
-                editValid ? V2MITIColor.red5 : Colors.transparent,
+                isCancellable ? V2MITIColor.red5 : Colors.transparent,
               ),
             ),
             child: Text(
               "경기 취소",
               style: V2MITITextStyle.regularBold.copyWith(
-                  color: editValid ? V2MITIColor.white : V2MITIColor.gray6),
+                  color: isCancellable ? V2MITIColor.white : V2MITIColor.gray6),
             ),
           ),
         ),
@@ -415,7 +415,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 17.h),
         child: Text(
-          '경기 시작 2시간 이내에는 참여 취소가 불가합니다.',
+          '경기 시작 4시간 이내에는 참여 취소가 불가합니다.',
           style: V2MITITextStyle.smallRegularNormal.copyWith(
             color: V2MITIColor.gray4,
           ),
@@ -558,7 +558,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
               gameStatus == GameStatusType.closed) {
             button = disabledParticipationButton;
           } else if (model.user_participation_id != null) {
-            if (policyValid) {
+            if (isCancellable) {
               button = cancelButton;
             } else {
               button = cancelDisableButton;
