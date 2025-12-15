@@ -22,7 +22,7 @@ import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../../common/component/custom_text_form_field.dart';
-import '../../../common/component/form/phoen_form.dart';
+import '../../../common/component/form/phone_form.dart';
 import '../../../common/model/default_model.dart';
 import '../../../common/model/entity_enum.dart';
 import '../../../common/provider/form_util_provider.dart';

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,14 +8,12 @@ import 'package:miti/auth/provider/widget/find_info_provider.dart';
 import 'package:miti/auth/view/find_info/find_email_screen.dart';
 import 'package:miti/auth/view/find_info/find_password_screen.dart';
 import 'package:miti/common/provider/widget/form_provider.dart';
-
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 
 import '../../../common/component/default_appbar.dart';
-import '../../../common/component/form/phoen_form.dart';
+import '../../../common/component/form/phone_form.dart';
 import '../../../common/model/entity_enum.dart';
-
 import '../../model/find_info_model.dart';
 
 class FindInfoScreen extends ConsumerStatefulWidget {
