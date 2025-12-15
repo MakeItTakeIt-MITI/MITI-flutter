@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miti/common/model/default_model.dart';
-import 'package:miti/game/model/v2/game/game_response.dart';
 import 'package:miti/game/param/game_param.dart';
 import 'package:miti/report/model/agreement_policy_model.dart';
 import 'package:miti/report/provider/report_provider.dart';
@@ -12,8 +11,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../common/component/custom_text_form_field.dart';
 import '../../../common/model/entity_enum.dart';
-import '../../model/game_recent_host_model.dart';
-import '../../model/v2/game/base_game_with_court_response.dart';
 import '../../model/v2/game/game_with_court_response.dart';
 
 part 'game_form_provider.g.dart';
@@ -143,11 +140,18 @@ class GameForm extends _$GameForm {
   bool validFee() {
     if (state.fee.isNotEmpty) {
       final fee = int.parse(state.fee);
+
+      // 1. 100원 단위로 입력 가능한지 확인 (fee % 100 == 0)
+      if (fee % 100 != 0) {
+        return false; // 100원 단위가 아니면 유효성 검사 실패
+      }
+
+      // 2. 기존 규칙 확인 (0원 또는 500원 이상)
       if (!(fee == 0 || fee >= 500)) {
-        return false;
+        return false; // 기존 규칙 위반이면 유효성 검사 실패
       }
     }
-    return true;
+    return true; // 모든 조건 통과
   }
 
   bool validDateTime() {

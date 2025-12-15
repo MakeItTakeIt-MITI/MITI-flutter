@@ -1384,6 +1384,10 @@ class _FeeFormState extends ConsumerState<_FeeForm> {
   Widget build(BuildContext context) {
     ref.listen(gameFormProvider, (previous, next) {
       if (previous?.fee != next.fee) {
+        if (next.fee.isEmpty) {
+          return;
+        }
+
         /// 중간에 입력할 경우 offset이 맨 뒤로 가는 문제를 방지
         // 새로 입력된 값을 포멧
         final int parsedValue = int.parse(
@@ -1420,14 +1424,45 @@ class _FeeFormState extends ConsumerState<_FeeForm> {
       interactionDesc: formInfo.interactionDesc,
       onChanged: (val) {
         ref.read(gameFormProvider.notifier).update(fee: val);
-        if (ref.read(gameFormProvider.notifier).validFee()) {
+
+        final gameFormNotifier = ref.read(gameFormProvider.notifier);
+
+        if (val.isEmpty) {
+          // 값이 비어있을 경우 유효성 검사를 리셋
+          ref.read(formInfoProvider(InputFormType.fee).notifier).reset();
+          return;
+        }
+
+        // 쉼표를 제거한 실제 숫자 값
+        final feeValue = int.tryParse(val.replaceAll(',', ''));
+
+        if (feeValue == null) {
+          // 숫자로 변환할 수 없으면 유효성 오류 처리 (이 경우는 FilteringTextInputFormatter 때문에 발생할 가능성 낮음)
+          return;
+        }
+
+        String errorMessage = '';
+
+        // 1. 100원 단위 체크 (새로 추가된 로직)
+        if (feeValue % 100 != 0) {
+          errorMessage = "경기 참가비는 100원 단위로 입력 가능합니다.";
+        }
+        // 2. 0원 또는 500원 이상 체크 (기존 로직)
+        else if (!(feeValue == 0 || feeValue >= 500)) {
+          errorMessage = "참가비는 0원 혹은 500원 이상이어야합니다.";
+        }
+
+        // 최종 유효성 검사 및 UI 업데이트
+        if (errorMessage.isEmpty) {
+          // 유효성 검사 통과
           ref.read(formInfoProvider(InputFormType.fee).notifier).reset();
         } else {
+          // 유효성 검사 실패 시 해당 메시지 출력
           ref.read(formInfoProvider(InputFormType.fee).notifier).update(
                 borderColor: V2MITIColor.red5,
                 interactionDesc: InteractionDesc(
                   isSuccess: false,
-                  desc: "참가비는 0원 혹은 500원 이상이어야합니다.",
+                  desc: errorMessage,
                 ),
               );
         }
@@ -1590,7 +1625,6 @@ class AgreeTermComponent extends ConsumerWidget {
                     showDialog(
                         context: context,
                         barrierColor: V2MITIColor.gray12,
-
                         builder: (context) {
                           return OperationTermScreen(
                             title: model[idx].policy.name,
