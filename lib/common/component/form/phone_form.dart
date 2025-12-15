@@ -116,32 +116,47 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
     FocusScope.of(context).requestFocus(FocusNode());
     timerReset();
     final result = await ref.read(sendCodeProvider(authType: type).future);
-    setState(() {
-      enabled = true;
-      codeBtnDesc = "인증하기";
-      phoneBtnDesc = '요청 완료';
-      onSend = true;
-      phoneBtnColor = V2MITIColor.gray7;
-      phoneBtnTextColor = V2MITIColor.white;
-      codeBtnColor = V2MITIColor.gray7;
-      codeBtnTextColor = V2MITIColor.white;
-      borderColor = null;
-      canRequest = false;
-      ref.read(codeDescProvider(widget.type).notifier).update((state) => null);
-      ref.read(formInfoProvider(InputFormType.phone).notifier).reset();
-    });
 
-    /// 처음 인증 요청
+    // 처음 인증 요청 플래그 업데이트
     if (firstSend) {
       firstSend = false;
-    } else {}
+    }
+
     if (result is ErrorModel) {
+      // API 실패 시 - 기존 상태 유지하고 에러만 표시
       if (mounted) {
         FocusScope.of(context).requestFocus(FocusNode());
         AuthError.fromModel(model: result)
             .responseError(context, AuthApiType.requestSMS, ref);
+
+        // 실패 시 재요청 가능하도록 상태 설정
+        setState(() {
+          if (validPhone(phone)) {
+            canRequest = true;
+            phoneBtnDesc = '인증 요청';
+            phoneBtnColor = V2MITIColor.primary5;
+            phoneBtnTextColor = V2MITIColor.black;
+          }
+        });
       }
     } else {
+      // API 성공 시에만 상태 업데이트
+      setState(() {
+        enabled = true;
+        codeBtnDesc = "인증하기";
+        phoneBtnDesc = '요청 완료';
+        onSend = true;
+        phoneBtnColor = V2MITIColor.gray7;
+        phoneBtnTextColor = V2MITIColor.white;
+        codeBtnColor = V2MITIColor.gray7;
+        codeBtnTextColor = V2MITIColor.white;
+        borderColor = null;
+        canRequest = false;
+        ref.read(codeDescProvider(widget.type).notifier).update((state) => null);
+        ref.read(formInfoProvider(InputFormType.phone).notifier).reset();
+      });
+
+      // 타이머 시작 (성공 시에만)
       showTime = true;
       timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         setState(() {
@@ -153,20 +168,22 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
             setReRequest(phone);
 
             ref.read(formInfoProvider(InputFormType.phone).notifier).update(
-                  borderColor: V2MITIColor.red5,
-                  interactionDesc: InteractionDesc(
-                    isSuccess: false,
-                    desc: "인증번호 입력 시간이 초과되었습니다.",
-                  ),
-                );
+              borderColor: V2MITIColor.red5,
+              interactionDesc: InteractionDesc(
+                isSuccess: false,
+                desc: "인증번호 입력 시간이 초과되었습니다.",
+              ),
+            );
           }
         });
       });
+
       if (mounted) {
         FocusScope.of(context).requestFocus(focusNodes[1]);
       }
     }
   }
+
 
   void setReRequest(String phone) {
     if (validPhone(phone)) {
