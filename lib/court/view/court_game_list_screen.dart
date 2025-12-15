@@ -33,7 +33,7 @@ class _CourtGameListScreenState extends ConsumerState<CourtGameListScreen> {
   void initState() {
     super.initState();
     _scrollController = ScrollController()..addListener(_scrollListener);
-    ;
+
     // todo 지우기 여부 확인
     WidgetsBinding.instance.addPostFrameCallback((s) {
       ref

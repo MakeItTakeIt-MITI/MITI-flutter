@@ -11,6 +11,7 @@ import 'package:miti/notification/view/notification_screen.dart';
 import 'package:miti/support/view/guide_screen.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/component/skeleton/profile_skeleton.dart';
+import 'package:miti/user/view/coupon_list_screen.dart';
 import 'package:miti/user/view/profile_screen.dart';
 import 'package:miti/user/view/profile_update_screen.dart';
 import 'package:miti/user/view/user_payment_screen.dart';
@@ -202,6 +203,10 @@ class _MenuComponent extends ConsumerWidget {
           onTap: () => context.pushNamed(SettlementManagementScreen.routeName),
           title: '정산 관리',
           option: getOption('호스트'),
+        ),
+        _MenuItem(
+          onTap: () => context.pushNamed(CouponListScreen.routeName),
+          title: '쿠폰함',
         ),
       ],
       '계정 설정': [

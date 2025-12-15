@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:miti/user/model/coupon_response.dart';
 
 import '../../common/model/default_model.dart';
 import '../../common/param/pagination_param.dart';
@@ -79,4 +80,29 @@ class UserPaymentPageStateNotifier extends CursorPaginationProvider<
     super.param,
     super.path,
   });
+}
+
+final userCouponProvider = StateNotifierProvider.family.autoDispose<
+    UserCouponPageStateNotifier,
+    BaseModel,
+    PaginationStateParam<UserCouponParam>>((ref, param) {
+  final repository = ref.watch(couponRepositoryProvider);
+  return UserCouponPageStateNotifier(
+    repository: repository,
+    cursorPageParams: const CursorPaginationParam(),
+    param: param.param,
+    path: param.path,
+  );
+});
+
+class UserCouponPageStateNotifier extends CursorPaginationProvider<
+    CouponResponse, UserCouponParam, UserCouponRepository> {
+  UserCouponPageStateNotifier({
+    required super.repository,
+    required super.cursorPageParams,
+    super.param,
+    super.path,
+  });
+
+
 }

@@ -73,6 +73,7 @@ import '../../splash_screen.dart';
 import '../../support/view/support_detail_screen.dart';
 import '../../support/view/support_screen.dart';
 import '../../user/provider/user_provider.dart';
+import '../../user/view/coupon_list_screen.dart';
 import '../../user/view/profile_menu_screen.dart';
 import '../../user/view/profile_screen.dart';
 import '../../user/view/profile_update_screen.dart';
@@ -1135,6 +1136,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                     name: SettlementManagementScreen.routeName,
                     builder: (context, state) {
                       return const SettlementManagementScreen();
+                    },
+                  ),
+                  GoRoute(
+                    path: 'couponList',
+                    parentNavigatorKey: rootNavKey,
+                    name: CouponListScreen.routeName,
+                    builder: (context, state) {
+                      return const CouponListScreen();
                     },
                   ),
                   GoRoute(

@@ -12,11 +12,11 @@ import '../../common/repository/base_pagination_repository.dart';
 import '../../dio/provider/dio_provider.dart';
 import '../../game/model/base_game_meta_response.dart';
 import '../../game/model/v2/auth/login_response.dart';
-import '../../game/model/v2/game/base_game_response.dart';
 import '../../game/model/v2/payment/base_payment_result_response.dart';
 import '../../game/model/v2/payment/payment_result_response.dart';
 import '../../review/model/v2/base_received_review_response.dart';
 import '../../review/model/v2/base_written_review_response.dart';
+import '../model/coupon_response.dart';
 import '../model/v2/base_player_profile_response.dart';
 import '../model/v2/base_user_profile_response.dart';
 import '../model/v2/user_info_response.dart';
@@ -223,6 +223,32 @@ abstract class UserPaymentPRepository extends IBaseCursorPaginationRepository<
       paginate({
     @Queries() required CursorPaginationParam cursorPaginationParams,
     @Queries() UserPaymentParam? param,
+    @Path('userId') int? path,
+  });
+}
+
+
+final couponRepositoryProvider = Provider<UserCouponRepository>((ref) {
+  final baseUrl =
+  dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
+  final dio = ref.watch(dioProvider);
+  return UserCouponRepository(dio, baseUrl: baseUrl);
+});
+
+@RestApi()
+abstract class UserCouponRepository extends IBaseCursorPaginationRepository<
+    CouponResponse, UserCouponParam> {
+  factory UserCouponRepository(Dio dio, {String baseUrl}) =
+  _UserCouponRepository;
+
+  /// 유저 쿠폰 목록 조회 API
+  @override
+  @Headers({'token': 'true'})
+  @GET('/users/{userId}/coupons')
+  Future<ResponseModel<CursorPaginationModel<CouponResponse>>>
+  paginate({
+    @Queries() required CursorPaginationParam cursorPaginationParams,
+    @Queries() UserCouponParam? param,
     @Path('userId') int? path,
   });
 }

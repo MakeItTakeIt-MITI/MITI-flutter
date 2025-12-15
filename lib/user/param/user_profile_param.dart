@@ -102,15 +102,13 @@ class UserPaymentParam extends DefaultParam {
   bool? get stringify => true;
 }
 
-
-
 @JsonSerializable()
 class UserRestoreInfoParam extends DefaultParam {
   @JsonKey(name: 'user_restore_token')
   final String userRestoreToken;
 
   UserRestoreInfoParam({
-   required this.userRestoreToken,
+    required this.userRestoreToken,
   });
 
   @override
@@ -118,6 +116,23 @@ class UserRestoreInfoParam extends DefaultParam {
 
   @override
   Map<String, dynamic> toJson() => _$UserRestoreInfoParamToJson(this);
+
+  @override
+  bool? get stringify => true;
+}
+
+@JsonSerializable()
+class UserCouponParam extends DefaultParam {
+  final List<CouponStatusType>? status;
+
+  UserCouponParam({
+    this.status,
+  });
+
+  @override
+  List<Object?> get props => [status];
+
+  Map<String, dynamic> toJson() => _$UserCouponParamToJson(this);
 
   @override
   bool? get stringify => true;

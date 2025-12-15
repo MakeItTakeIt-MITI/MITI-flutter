@@ -70,6 +70,13 @@ class V2MITITextStyle {
     fontWeight: FontWeight.bold,
   );
 
+  static final TextStyle regularBoldNormal = TextStyle(
+    fontSize: 16.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.bold,
+    height: 1.5
+  );
+
   static final TextStyle regularRegularTight = TextStyle(
       fontSize: 16.sp,
       fontFamily: 'Pretendard',
