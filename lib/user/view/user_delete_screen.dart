@@ -1,22 +1,16 @@
-import 'dart:developer';
-
 import 'package:debounce_throttle/debounce_throttle.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
-import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/auth/view/signup/signup_screen.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/common/model/entity_enum.dart';
 import 'package:miti/common/provider/router_provider.dart';
-import 'package:miti/court/view/court_map_screen.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
-import 'package:miti/user/model/user_model.dart';
 import 'package:miti/user/provider/user_provider.dart';
 
 import '../../auth/provider/delete_provider.dart';
@@ -116,7 +110,7 @@ class _UserDeleteScreenState extends ConsumerState<UserDeleteScreen> {
                   SizedBox(height: 24.h),
                   CustomCheckBox(
                       title:
-                          '탈퇴하시는 경우, 해당 계정 정보는 즉시 삭제되며\n입금되지 않은 송금요쳥과 보유금 전부 삭제됩니다.',
+                          '탈퇴하시는 경우, 해당 계정 정보는 즉시 삭제되며\n송금요쳥과 보유금 전부 삭제됩니다.',
                       textStyle: MITITextStyle.sm150
                           .copyWith(color: MITIColor.gray200),
                       check: true,
@@ -124,7 +118,7 @@ class _UserDeleteScreenState extends ConsumerState<UserDeleteScreen> {
                   SizedBox(height: 12.h),
                   CustomCheckBox(
                       title:
-                          '완료되지 않은 경기 일정이 있는 경우 탈퇴가 거절됩니다',
+                          '완료되지 않은 경기 일정이 있는 경우 탈퇴가 거절됩니다.',
                       textStyle: MITITextStyle.sm150
                           .copyWith(color: MITIColor.gray200),
                       check: true,
