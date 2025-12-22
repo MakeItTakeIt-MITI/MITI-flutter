@@ -115,6 +115,8 @@ dependencies:
 
   flutter_linkify: ^6.0.0
 
+  video_player: ^2.10.1
+
 dependency_overrides:
   #  analyzer: ^5.13.0  # 6.9.0 → 6.4.0으로 낮춤
   # 기존 다른 overrides 유지
@@ -213,6 +215,7 @@ flutter:
     - assets/images/v2/logo/bank/
     - .env.prod
     - .env.dev
+    - assets/mp4/
   #   - images/a_dot_ham.jpeg
   #  flavorDimensions:
   #    - environment
