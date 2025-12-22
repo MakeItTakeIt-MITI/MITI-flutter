@@ -39,7 +39,6 @@ import '../../util/naver_map_util.dart';
 import '../../util/util.dart';
 import '../component/skeleton/game_detail_skeleton.dart';
 import '../model/base_game_meta_response.dart';
-import '../model/base_game_with_court_response.dart';
 import '../model/v2/game/game_detail_response.dart';
 import '../model/v2/participation/base_participation_response.dart';
 import 'game_participation_screen.dart';
@@ -974,7 +973,7 @@ class SummaryComponent extends StatelessWidget {
   }
 
   factory SummaryComponent.fromRefundModel(
-      {required BaseGameWithCourtResponse model, required String fee}) {
+      {required BaseGameMetaResponse model, required String fee}) {
     final start = DateTime.parse("${model.startDate} ${model.startTime}");
     final end = DateTime.parse("${model.endDate} ${model.endTime}");
     final startDate = model.startDate.replaceAll('-', '. ');
@@ -985,16 +984,14 @@ class SummaryComponent extends StatelessWidget {
     final gameDate = startDate == endDate
         ? '$startDate $time'
         : '$startDate ${model.startTime.substring(0, 5)} ~ $endDate ${model.endTime.substring(0, 5)}';
-    final address = '${model.court.address} ${model.court.addressDetail ?? ''}';
+    final address = '${model.address} ${model.addressDetail ?? ''}';
     return SummaryComponent(
       gameStatus: model.gameStatus,
       title: model.title,
       gameDate: gameDate,
       address: address,
-      max_invitation: 0,
-      // model.maxInvitation,
-      num_of_participations: 0,
-      // model.numOfParticipations,
+      max_invitation: model.maxInvitation,
+      num_of_participations: model.numOfParticipations,
       duration: end.difference(start).inMinutes.toString(),
       gameTime: time,
       fee: fee,

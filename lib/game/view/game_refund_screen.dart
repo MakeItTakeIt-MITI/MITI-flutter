@@ -158,31 +158,32 @@ class _GameRefundScreenState extends State<GameRefundScreen> {
                         Padding(
                           padding: EdgeInsetsGeometry.only(top: 20.h),
                           child: SummaryComponent.fromRefundModel(
-                            model: model.gameInfo,
+                            model: model.game,
                             fee: model.refundInfo.originAmount.toString(),
                           ),
                         ),
-                        Column(
-                          spacing: 24.h,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              spacing: 16.h,
-                              children: [
-                                Text(
-                                  "사용 쿠폰",
-                                  style: V2MITITextStyle.regularBold
-                                      .copyWith(color: V2MITIColor.white),
-                                ),
-                                SmallCouponCard.fromModel(
-                                    model: model.couponInfo),
-                              ],
-                            ),
-                            _RefundInfoComponent(
-                              model: model.refundInfo,
-                            ),
-                          ],
-                        ),
+                          Column(
+                            spacing: 24.h,
+                            children: [
+                              if (model.couponInfo != null)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                spacing: 16.h,
+                                children: [
+                                  Text(
+                                    "사용 쿠폰",
+                                    style: V2MITITextStyle.regularBold
+                                        .copyWith(color: V2MITIColor.white),
+                                  ),
+                                  SmallCouponCard.fromModel(
+                                      model: model.couponInfo!),
+                                ],
+                              ),
+                              _RefundInfoComponent(
+                                model: model.refundInfo,
+                              ),
+                            ],
+                          ),
                         const PaymentAndRefundPolicyComponent(
                           title: '참여 취소 수수료 규정',
                           isPayment: false,

@@ -207,7 +207,9 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
                               ParticipationPaymentDetailResponse>) {
                         // 데이터가 로드된 직후 실행할 로직 (모달 띄우기)
                         // 화면이 빌드된 직후 실행되도록 microtask 사용 추천
-                        Future.microtask(() {
+                        // 경기가 유료 경기일 때만 쿠폰 나오기
+                        if(next.data!.game.fee != 0) {
+                          Future.microtask(() {
                           final coupons = next.data!.couponInfo;
                           if (coupons.isEmpty) return;
 
@@ -254,6 +256,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
                                   },
                               buttonText: '사용하기');
                         });
+                        }
                       }
                     },
                   );
@@ -285,7 +288,7 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
                         spacing: 36.h,
                         children: [
                           SummaryComponent.fromPaymentModel(model: model.game),
-                          if (model.couponInfo.isNotEmpty)
+                          if (model.couponInfo.isNotEmpty && model.game.fee != 0)
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               spacing: 16.h,
@@ -354,6 +357,10 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
             Map<String, String> pathParameters = {
               'gameId': widget.gameId.toString()
             };
+
+            ref
+                .read(gameDetailProvider(gameId: widget.gameId).notifier)
+                .get(gameId: widget.gameId);
             const GameCompleteType extra = GameCompleteType.payment;
 
             context.goNamed(
@@ -507,6 +514,9 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
           case PaymentResultStatusType.approved:
             {
               Bootpay().transactionConfirm();
+              ref
+                  .read(gameDetailProvider(gameId: widget.gameId).notifier)
+                  .get(gameId: widget.gameId);
               // Bootpay().dismiss(context); //명시적으로 부트페이 뷰 종료 호출
               break;
             }

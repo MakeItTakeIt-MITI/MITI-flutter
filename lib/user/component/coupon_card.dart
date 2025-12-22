@@ -71,8 +71,6 @@ class CouponCard extends StatelessWidget {
   Widget _buildCouponLeft({
     required bool isPercent,
   }) {
-    final textColor = isExpired ? const Color(0xFFC2C2C2) : Colors.white;
-
     NumberFormat.decimalPattern('ko_KR');
     final discountFormatValue =
         NumberFormat.decimalPattern().format(policy.discountValue);
@@ -174,6 +172,8 @@ class CouponCard extends StatelessWidget {
   }
 
   Widget _buildCouponRight() {
+    final formatedAmount =
+        NumberFormat.decimalPattern().format(policy.maxDiscountAmount);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -192,7 +192,7 @@ class CouponCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '최대 ${policy.maxDiscountAmount}원 할인',
+              '최대 $formatedAmount원 할인',
               style: V2MITITextStyle.miniMediumNormal
                   .copyWith(color: V2MITIColor.gray5),
             ),
