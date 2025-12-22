@@ -2,6 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class V2MITITextStyle {
+  static final TextStyle poppinsMs = TextStyle(
+    fontSize: 12.sp,
+    fontFamily: 'Poppins',
+    fontWeight: FontWeight.bold,
+  );
+  static final TextStyle freemanL = TextStyle(
+    fontSize: 36.sp,
+    fontFamily: 'Freeman',
+    fontWeight: FontWeight.w400,
+    letterSpacing: 1.8,
+  );
+
+  static final TextStyle freemanM = TextStyle(
+    fontSize: 30.sp,
+    fontFamily: 'Freeman',
+    fontWeight: FontWeight.w400,
+  );
+
+
+  static final TextStyle freemanMS = TextStyle(
+    fontSize: 26.sp,
+    fontFamily: 'Freeman',
+    fontWeight: FontWeight.w400,
+  );
+
   static final TextStyle largeMediumTight = TextStyle(
     fontSize: 18.sp,
     fontFamily: 'Pretendard',

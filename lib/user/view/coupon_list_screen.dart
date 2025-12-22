@@ -170,7 +170,7 @@ class _CouponListScreenState extends ConsumerState<CouponListScreen>
           itemBuilder: (BuildContext context, int index, Base pModel) {
             pModel as CouponResponse;
 
-            return CouponCard.fromModel(model: pModel);
+            return CouponCard.fromModel(model: pModel, isExpired: !isActive);
           },
           skeleton: const PaymentCardListSkeleton(),
           param: UserCouponParam(

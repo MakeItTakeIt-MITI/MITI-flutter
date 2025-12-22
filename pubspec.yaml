@@ -70,7 +70,7 @@ dependencies:
   #  android_intent_plus: ^5.0.2
   #  timezone: ^0.9.2
   sign_in_with_apple: ^6.1.0
-#  app_links: ^6.3.2
+  #  app_links: ^6.3.2
   flutter_rating_bar: ^4.0.1
   flutter_local_notifications: ^17.1.2
 
@@ -98,8 +98,8 @@ dependencies:
   connectivity_plus: ^6.1.0
   bootpay: ^5.0.17
 
-#  flutter_quill: ^10.8.5
-#  flutter_quill_extensions: ^10.8.5
+  #  flutter_quill: ^10.8.5
+  #  flutter_quill_extensions: ^10.8.5
 
   flutter_dotenv: ^5.2.1
 
@@ -116,7 +116,7 @@ dependencies:
   flutter_linkify: ^6.0.0
 
 dependency_overrides:
-#  analyzer: ^5.13.0  # 6.9.0 → 6.4.0으로 낮춤
+  #  analyzer: ^5.13.0  # 6.9.0 → 6.4.0으로 낮춤
   # 기존 다른 overrides 유지
   intl: ^0.20.2
   fading_edge_scrollview: ^4.1.1
@@ -175,6 +175,33 @@ flutter:
           weight: 800
         - asset: assets/fonts/Pretendard/Pretendard-Black.ttf
           weight: 900
+
+    - family: Freeman
+      fonts:
+        - asset: assets/fonts/Freeman/Freeman-Regular.ttf
+          weight: 400
+
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins/Poppins-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/Poppins/Poppins-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Poppins/Poppins-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Poppins/Poppins-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Poppins/Poppins-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Poppins/Poppins-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Poppins/Poppins-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Poppins/Poppins-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Poppins/Poppins-Black.ttf
+          weight: 900
+
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/logo/MITI.png

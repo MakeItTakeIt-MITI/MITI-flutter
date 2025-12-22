@@ -23,6 +23,8 @@ class CouponCard extends StatelessWidget {
 
   final BaseCouponPolicyResponse policy;
 
+  final bool isExpired;
+
   const CouponCard(
       {super.key,
       required this.id,
@@ -30,9 +32,11 @@ class CouponCard extends StatelessWidget {
       required this.issuedAt,
       required this.validFrom,
       required this.validUntil,
-      required this.policy});
+      required this.policy,
+      required this.isExpired});
 
-  factory CouponCard.fromModel({required CouponResponse model}) {
+  factory CouponCard.fromModel(
+      {required CouponResponse model, required bool isExpired}) {
     return CouponCard(
       id: model.id,
       status: model.status,
@@ -40,12 +44,12 @@ class CouponCard extends StatelessWidget {
       validFrom: model.validFrom,
       validUntil: model.validUntil,
       policy: model.policy,
+      isExpired: isExpired,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final isExpired = DateTime.now().isAfter(validUntil);
     final isPercent = policy.discountType == DiscountType.percent;
 
     return SizedBox(
@@ -54,7 +58,7 @@ class CouponCard extends StatelessWidget {
       child: Row(
         children: [
           // 왼쪽 할인 표시 부분
-          _buildCouponLeft(isPercent: isPercent, isExpired: isExpired),
+          _buildCouponLeft(isPercent: isPercent),
           // 오른쪽 쿠폰 정보 부분
           Expanded(
             child: _buildCouponRight(),
@@ -66,7 +70,6 @@ class CouponCard extends StatelessWidget {
 
   Widget _buildCouponLeft({
     required bool isPercent,
-    required bool isExpired,
   }) {
     final textColor = isExpired ? const Color(0xFFC2C2C2) : Colors.white;
 
@@ -89,6 +92,12 @@ class CouponCard extends StatelessWidget {
             ? fixedColors
             : percentColors;
 
+    final couponTextColor = isExpired
+        ? V2MITIColor.gray3
+        : isPercent
+            ? V2MITIColor.white
+            : V2MITIColor.black;
+
     return SizedBox(
       width: 170.w,
       height: 120.h,
@@ -109,12 +118,8 @@ class CouponCard extends StatelessWidget {
               children: [
                 Text(
                   'DISCOUNT',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w700,
-                    color: textColor,
-                  ),
+                  style: V2MITITextStyle.poppinsMs
+                      .copyWith(color: couponTextColor),
                 ),
                 SizedBox(height: 2.h),
                 if (isPercent) ...[
@@ -124,35 +129,20 @@ class CouponCard extends StatelessWidget {
                     children: [
                       Text(
                         '${policy.discountValue}',
-                        style: TextStyle(
-                          fontFamily: 'Freeman',
-                          fontSize: 36.sp,
-                          fontWeight: FontWeight.w400,
-                          color: textColor,
-                          letterSpacing: 1.8,
-                        ),
+                        style: V2MITITextStyle.freemanL
+                            .copyWith(color: couponTextColor),
                       ),
                       SizedBox(width: 5.w),
                       Text(
                         '%',
-                        style: TextStyle(
-                          fontFamily: 'Freeman',
-                          fontSize: 26.sp,
-                          fontWeight: FontWeight.w400,
-                          color: textColor,
-                          letterSpacing: 2.6,
-                        ),
+                        style: V2MITITextStyle.freemanMS
+                            .copyWith(color: couponTextColor),
                       ),
                       SizedBox(width: 5.w),
                       Text(
                         'OFF',
-                        style: TextStyle(
-                          fontFamily: 'Freeman',
-                          fontSize: 26.sp,
-                          fontWeight: FontWeight.w400,
-                          color: textColor,
-                          letterSpacing: 2.6,
-                        ),
+                        style: V2MITITextStyle.freemanMS
+                            .copyWith(color: couponTextColor),
                       ),
                     ],
                   ),
@@ -162,23 +152,15 @@ class CouponCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        '$discountFormatValue',
-                        style: TextStyle(
-                          fontFamily: 'Freeman',
-                          fontSize: 30.sp,
-                          fontWeight: FontWeight.w400,
-                          color: textColor,
-                        ),
+                        discountFormatValue,
+                        style: V2MITITextStyle.freemanM
+                            .copyWith(color: couponTextColor),
                       ),
                       SizedBox(width: 5.w),
                       Text(
                         '₩',
-                        style: TextStyle(
-                          fontFamily: 'Freeman',
-                          fontSize: 26.sp,
-                          fontWeight: FontWeight.w400,
-                          color: textColor,
-                        ),
+                        style: V2MITITextStyle.freemanMS
+                            .copyWith(color: couponTextColor),
                       ),
                     ],
                   ),
