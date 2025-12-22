@@ -1282,7 +1282,7 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
                       .update(min_invitation: val.replaceAll(',', ''));
                 },
                 prefix: Text(
-                  '최대',
+                  '최소',
                   style: V2MITITextStyle.regularMediumNormal
                       .copyWith(color: V2MITIColor.white),
                 ),
@@ -1316,18 +1316,13 @@ class _ApplyFormState extends ConsumerState<ApplyForm> {
                 },
                 prefix: Text(
                   "최대",
-                  style: MITITextStyle.sm.copyWith(
-                    color: MITIColor.gray100,
-                  ),
+                  style: V2MITITextStyle.regularMediumNormal
+                      .copyWith(color: V2MITIColor.white),
                 ),
-                suffixIcon: Padding(
-                  padding: EdgeInsets.only(left: 12.w),
-                  child: Text(
-                    "명",
-                    style: MITITextStyle.sm.copyWith(
-                      color: MITIColor.gray100,
-                    ),
-                  ),
+                suffixIcon: Text(
+                  "명",
+                  style: V2MITITextStyle.regularMediumNormal
+                      .copyWith(color: V2MITIColor.white),
                 ),
               ),
             ),
