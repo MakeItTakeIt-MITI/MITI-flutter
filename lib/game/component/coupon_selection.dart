@@ -204,7 +204,7 @@ class CouponCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      "쿠폰 적용시 ${NumberFormat.decimalPattern().format(couponMaxDiscountAmount)}원 할인",
+                      "쿠폰 적용시 ${NumberFormat.decimalPattern().format(couponDiscountAmount)}원 할인",
                       style: V2MITITextStyle.smallMediumNormal
                           .copyWith(color: V2MITIColor.gray2),
                     ),

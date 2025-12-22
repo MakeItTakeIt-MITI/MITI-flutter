@@ -117,31 +117,32 @@ class CustomBottomSheet {
       required Widget content,
       VoidCallback? onPressed,
       required String buttonText,
-      EdgeInsetsGeometry contentPadding = EdgeInsets.zero,
+      EdgeInsetsGeometry? contentPadding,
       Color backgroundColor = V2MITIColor.gray12,
       bool useRootNavigator = false,
+      ShapeBorder? shapeBorder,
       bool hasHandle = true,
       bool hasPop = false}) {
     return showModalBottomSheet(
         isScrollControlled: true,
-
         context: context,
         useRootNavigator: useRootNavigator,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(20.r),
-          ),
-        ),
+        shape: shapeBorder ??
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(20.r),
+              ),
+            ),
         backgroundColor: backgroundColor,
         builder: (context) {
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // drag handle
-                if (hasHandle)
-                  Container(
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // drag handle
+              if (hasHandle)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: Container(
                     decoration: BoxDecoration(
                       color: V2MITIColor.white,
                       borderRadius: BorderRadius.circular(4.r),
@@ -150,8 +151,11 @@ class CustomBottomSheet {
                     width: 140.w,
                     margin: EdgeInsets.symmetric(vertical: 8.h),
                   ),
-                if (hasPop)
-                  Row(
+                ),
+              if (hasPop)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
@@ -163,18 +167,25 @@ class CustomBottomSheet {
                       popButton(context),
                     ],
                   ),
+                ),
 
-                content,
-                if (onPressed != null)
-                  Padding(
+              Padding(
+                padding:
+                    contentPadding ?? EdgeInsets.symmetric(horizontal: 16.w),
+                child: content,
+              ),
+              if (onPressed != null)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: Padding(
                     padding: EdgeInsets.only(top: 12.h, bottom: 24.h),
                     child: TextButton(
                       onPressed: onPressed,
                       child: Text(buttonText),
                     ),
                   ),
-              ],
-            ),
+                ),
+            ],
           );
         });
   }

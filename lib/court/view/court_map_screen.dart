@@ -101,47 +101,59 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
         backgroundColor: V2MITIColor.black.withValues(alpha: .95),
         hasHandle: false,
         useRootNavigator: true,
+        contentPadding: EdgeInsets.zero,
+        shapeBorder: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.zero,
+        ),
         content: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                  onTap: () async {
-                    await DailyModalManager.setDontShowToday();
-                    if (mounted) {
-                      context.pop();
-                    }
-                  },
-                  child: Text(
-                    '오늘 하루 보지않기',
-                    style: V2MITITextStyle.tinyRegularNormal.copyWith(
-                        color: V2MITIColor.white,
-                        decoration: TextDecoration.underline,
-                        decorationColor: V2MITIColor.white),
-                  ),
-                ),
-                IconButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () => context.pop(),
-                  style: IconButton.styleFrom(
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    visualDensity: VisualDensity.compact,
-                  ),
-                  icon: SvgPicture.asset(
-                    AssetUtil.getAssetPath(
-                      type: AssetType.icon,
-                      name: 'close',
+            Padding(
+              padding: EdgeInsetsGeometry.symmetric(vertical: 8.h),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () async {
+                        await DailyModalManager.setDontShowToday();
+                        if (mounted) {
+                          context.pop();
+                        }
+                      },
+                      child: Text(
+                        '오늘 하루 보지않기',
+                        style: V2MITITextStyle.tinyRegularNormal.copyWith(
+                            color: V2MITIColor.white,
+                            decoration: TextDecoration.underline,
+                            decorationColor: V2MITIColor.white),
+                      ),
                     ),
-                  ),
-                )
-              ],
+                    IconButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () => context.pop(),
+                      style: IconButton.styleFrom(
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        visualDensity: VisualDensity.compact,
+                      ),
+                      icon: SvgPicture.asset(
+                        AssetUtil.getAssetPath(
+                          type: AssetType.icon,
+                          name: 'close',
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
             ),
             Container(
               width: 375.w,
               height: 260.h,
               decoration: const BoxDecoration(
                 image: DecorationImage(
+                  fit: BoxFit.fitWidth,
                   image: AssetImage(
                     'assets/images/coupon_referral.png',
                   ),
