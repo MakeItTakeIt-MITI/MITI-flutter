@@ -208,54 +208,55 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
                         // 데이터가 로드된 직후 실행할 로직 (모달 띄우기)
                         // 화면이 빌드된 직후 실행되도록 microtask 사용 추천
                         // 경기가 유료 경기일 때만 쿠폰 나오기
-                        if(next.data!.game.fee != 0) {
+                        if (next.data!.game.fee != 0) {
                           Future.microtask(() {
-                          final coupons = next.data!.couponInfo;
-                          if (coupons.isEmpty) return;
+                            final coupons = next.data!.couponInfo;
+                            if (coupons.isEmpty) return;
 
-                          if (!context.mounted) return; // 위젯이 살아있는지 확인
+                            if (!context.mounted) return; // 위젯이 살아있는지 확인
 
-                          /// 쿠폰 가격이 제일 작으면서 최종 할인이 제일 큰 순으로 정렬
-                          coupons.sort((c1, c2) {
-                            // 1순위: 최종 할인 금액 (내림차순: c2 vs c1)
-                            int compareResult = c2.couponFinalDiscountAmount
-                                .compareTo(c1.couponFinalDiscountAmount);
+                            /// 쿠폰 가격이 제일 작으면서 최종 할인이 제일 큰 순으로 정렬
+                            coupons.sort((c1, c2) {
+                              // 1순위: 최종 할인 금액 (내림차순: c2 vs c1)
+                              int compareResult = c2.couponFinalDiscountAmount
+                                  .compareTo(c1.couponFinalDiscountAmount);
 
-                            // 1순위가 같지 않으면(0이 아니면) 그 결과를 바로 반환
-                            if (compareResult != 0) {
-                              return compareResult;
-                            }
+                              // 1순위가 같지 않으면(0이 아니면) 그 결과를 바로 반환
+                              if (compareResult != 0) {
+                                return compareResult;
+                              }
 
-                            // 1순위가 같으면 2순위 비교: 쿠폰 할인 금액 (오름차순: c2 vs c1)
-                            return c1.couponDiscountAmount
-                                .compareTo(c2.couponDiscountAmount);
+                              // 1순위가 같으면 2순위 비교: 쿠폰 할인 금액 (오름차순: c2 vs c1)
+                              return c1.couponDiscountAmount
+                                  .compareTo(c2.couponDiscountAmount);
+                            });
+
+                            CustomBottomSheet.showWidgetContent(
+                                title: '쿠폰 사용하기',
+                                hasPop: true,
+                                context: context,
+                                content: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  spacing: 10.h,
+                                  children: [
+                                    Text(
+                                      '사용가능한 쿠폰이 있습니다! 쿠폰을 하시시고 참가비를 할인받아보세요!',
+                                      style: V2MITITextStyle.tinyRegularNormal
+                                          .copyWith(color: V2MITIColor.gray3),
+                                    ),
+                                    CouponCard.fromModel(
+                                        model: coupons.first, isSelected: true),
+                                  ],
+                                ),
+                                onPressed: () => {
+                                      setState(() {
+                                        selectedCoupon = coupons.first;
+                                      }),
+                                      context.pop()
+                                    },
+                                buttonText: '사용하기');
                           });
-
-                          CustomBottomSheet.showWidgetContent(
-                              title: '쿠폰 사용하기',
-                              hasPop: true,
-                              context: context,
-                              content: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                spacing: 10.h,
-                                children: [
-                                  Text(
-                                    '사용가능한 쿠폰이 있습니다! 쿠폰을 하시시고 참가비를 할인받아보세요!',
-                                    style: V2MITITextStyle.tinyRegularNormal
-                                        .copyWith(color: V2MITIColor.gray3),
-                                  ),
-                                  CouponCard.fromModel(
-                                      model: coupons.first, isSelected: true),
-                                ],
-                              ),
-                              onPressed: () => {
-                                    setState(() {
-                                      selectedCoupon = coupons.first;
-                                    }),
-                                    context.pop()
-                                  },
-                              buttonText: '사용하기');
-                        });
                         }
                       }
                     },
@@ -288,7 +289,8 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
                         spacing: 36.h,
                         children: [
                           SummaryComponent.fromPaymentModel(model: model.game),
-                          if (model.couponInfo.isNotEmpty && model.game.fee != 0)
+                          if (model.couponInfo.isNotEmpty &&
+                              model.game.fee != 0)
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               spacing: 16.h,
@@ -351,29 +353,27 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
         final payBaseModel =
             (result as ResponseModel<PaymentReadyResponse>).data!;
 
-        switch (type) {
-          case PaymentMethodType.empty_pay:
-            log("무료 경기 참여 완료");
-            Map<String, String> pathParameters = {
-              'gameId': widget.gameId.toString()
-            };
+        if (PaymentMethodType.empty_pay == type ||
+            payBaseModel.price.toDouble() < 100) {
+          log("무료 경기 참여 완료");
+          Map<String, String> pathParameters = {
+            'gameId': widget.gameId.toString()
+          };
 
-            ref
-                .read(gameDetailProvider(gameId: widget.gameId).notifier)
-                .get(gameId: widget.gameId);
-            const GameCompleteType extra = GameCompleteType.payment;
+          ref
+              .read(gameDetailProvider(gameId: widget.gameId).notifier)
+              .get(gameId: widget.gameId);
+          const GameCompleteType extra = GameCompleteType.payment;
 
-            context.goNamed(
-              GameCompleteScreen.routeName,
-              pathParameters: pathParameters,
-              extra: extra,
-            );
-            break;
-          default:
-            final model = payBaseModel;
-            bootpayReqeustDataInit(model);
-            goBootpayTest(context);
-            break;
+          context.goNamed(
+            GameCompleteScreen.routeName,
+            pathParameters: pathParameters,
+            extra: extra,
+          );
+        } else {
+          final model = payBaseModel;
+          bootpayReqeustDataInit(model);
+          goBootpayTest(context);
         }
 
         // payload.pg = '나이스페이';
@@ -435,8 +435,6 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
     Bootpay().requestPayment(
       context: context,
       payload: payload,
-      // showCloseButton: true,
-      // closeButton: Icon(Icons.close, size: 35.0, color: Colors.black54),
       onCancel: (String data) {
         print('------- onCancel: $data');
       },
@@ -483,19 +481,21 @@ class _GamePaymentScreenState extends ConsumerState<GamePaymentScreen> {
       // },
       onDone: (String data) {
         print('------- onDone: $data');
-        ref
-            .read(gameDetailProvider(gameId: widget.gameId).notifier)
-            .get(gameId: widget.gameId);
-        Map<String, String> pathParameters = {
-          'gameId': widget.gameId.toString()
-        };
-        const GameCompleteType extra = GameCompleteType.payment;
-        context.goNamed(
-          GameCompleteScreen.routeName,
-          pathParameters: pathParameters,
-          extra: extra,
-        );
+        routingAfterPayment(context);
       },
+    );
+  }
+
+  void routingAfterPayment(BuildContext context) {
+    ref
+        .read(gameDetailProvider(gameId: widget.gameId).notifier)
+        .get(gameId: widget.gameId);
+    Map<String, String> pathParameters = {'gameId': widget.gameId.toString()};
+    const GameCompleteType extra = GameCompleteType.payment;
+    context.goNamed(
+      GameCompleteScreen.routeName,
+      pathParameters: pathParameters,
+      extra: extra,
     );
   }
 

@@ -301,6 +301,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
     final startTime = DateTime.parse('${model.startdate} ${model.starttime}');
     final createdAt = DateTime.parse('${model.created_at}');
 // 경기 시작 시간(startTime)과 현재 시각(DateTime.now())의 차이를 계산하여 4시간 이상인지 확인합니다.
+    final isParticipationCancellable = startTime.difference(DateTime.now()).inHours >= 2;
     final isCancellable = startTime.difference(DateTime.now()).inHours >= 4;
 
 // 취소 버튼 활성화 여부를 로그로 출력합니다.
@@ -414,7 +415,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 17.h),
         child: Text(
-          '경기 시작 4시간 이내에는 참여 취소가 불가합니다.',
+          '경기 시작 2시간 이내에는 참여 취소가 불가합니다.',
           style: V2MITITextStyle.smallRegularNormal.copyWith(
             color: V2MITIColor.gray4,
           ),
@@ -557,7 +558,7 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
               gameStatus == GameStatusType.closed) {
             button = disabledParticipationButton;
           } else if (model.user_participation_id != null) {
-            if (isCancellable) {
+            if (isParticipationCancellable) {
               button = cancelButton;
             } else {
               button = cancelDisableButton;
