@@ -165,7 +165,6 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
               title: '알림',
               isSliver: true,
               hasBorder: false,
-              backgroundColor: MITIColor.gray800,
               actions: [
                 Padding(
                   padding: EdgeInsets.only(right: 16.w),
@@ -211,7 +210,6 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
                 delegate: SliverAppBarDelegate(
                   height: 54.h,
                   child: Container(
-                    color: MITIColor.gray800,
                     height: 54.h,
                     padding: EdgeInsets.symmetric(horizontal: 21.w),
                     child: Column(

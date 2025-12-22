@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -7,11 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:miti/auth/provider/auth_provider.dart';
 import 'package:miti/common/component/html_component.dart';
 import 'package:miti/common/model/default_model.dart';
-import 'package:miti/notification/model/notice_model.dart';
-import 'package:miti/notification/model/push_model.dart';
 import 'package:miti/notification/provider/notification_provider.dart';
-import 'package:miti/notification_provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../common/component/default_appbar.dart';
 import '../../common/param/pagination_param.dart';
@@ -91,9 +86,7 @@ class _PushDetailScreenState extends ConsumerState<NoticeDetailScreen> {
 
     final createAt = DateFormat('yyyy년 MM월 dd일', "ko").format(date);
     return Dialog.fullscreen(
-      backgroundColor: MITIColor.gray800,
       child: Scaffold(
-        backgroundColor: MITIColor.gray800,
         appBar: const DefaultAppBar(
           hasBorder: false,
           leadingIcon: "remove",
