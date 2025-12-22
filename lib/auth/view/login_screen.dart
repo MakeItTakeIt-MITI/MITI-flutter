@@ -29,6 +29,7 @@ import '../../court/view/court_map_screen.dart';
 import '../../dio/response_code.dart';
 import '../../theme/color_theme.dart';
 import '../../user/view/restore_user_screen.dart';
+import '../component/logo_video.dart';
 import '../param/auth_param.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -53,10 +54,10 @@ class LoginScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(height: 34.h),
-              SvgPicture.asset(
-                AssetUtil.getAssetPath(type: AssetType.logo, name: 'MITI'),
-                width: 80.w,
+              SizedBox(
+                width: 82.w,
                 height: 42.h,
+                child: const LogoVideoWidget(),
               ),
               SizedBox(height: 44.h),
               const LoginComponent(),
@@ -561,7 +562,8 @@ class HelpComponent extends StatelessWidget {
 Future<void> routeRestoreUserInfo(BaseDeletedUserResponse deleteUser,
     WidgetRef ref, BuildContext context, bool mounted) async {
   final formattedDeleteUser = deleteUser.copyWith(
-      phone: "${deleteUser.phone.substring(0, 3)}-${deleteUser.phone.substring(3, 7)}-${deleteUser.phone.substring(7)}",
+      phone:
+          "${deleteUser.phone.substring(0, 3)}-${deleteUser.phone.substring(3, 7)}-${deleteUser.phone.substring(7)}",
       birthday: deleteUser.birthday.replaceAll('-', '.'));
 
   context.goNamed(

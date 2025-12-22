@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miti/auth/component/logo_video.dart';
 import 'package:miti/auth/view/login_screen.dart';
 import 'package:miti/auth/view/signup/signup_screen.dart';
 import 'package:miti/theme/color_theme.dart';
@@ -62,11 +62,7 @@ class _IntroductionComponent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SvgPicture.asset(
-          AssetUtil.getAssetPath(type: AssetType.logo, name: 'MITI'),
-          width: 110.w,
-          height: 54.h,
-        ),
+        const LogoVideoWidget(),
         SizedBox(height: 25.5.h),
         Text(
           '만나서 반가워요!',
@@ -117,7 +113,8 @@ class EmailSignUpButton extends StatelessWidget {
       child: Container(
         height: 48.h,
         decoration: BoxDecoration(
-            color: V2MITIColor.primary5, borderRadius: BorderRadius.circular(8.r)),
+            color: V2MITIColor.primary5,
+            borderRadius: BorderRadius.circular(8.r)),
         child: Row(
           children: [
             SizedBox(width: 20.w),
@@ -134,8 +131,6 @@ class EmailSignUpButton extends StatelessWidget {
               ),
             ),
             const Spacer(),
-
-
             Text(
               '이메일로 계속하기',
               style: MITITextStyle.smBold.copyWith(
@@ -143,8 +138,9 @@ class EmailSignUpButton extends StatelessWidget {
               ),
             ),
             const Spacer(),
-
-            SizedBox(width: 20.w + 24.r,)
+            SizedBox(
+              width: 20.w + 24.r,
+            )
           ],
         ),
       ),

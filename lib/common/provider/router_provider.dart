@@ -87,6 +87,7 @@ import '../model/entity_enum.dart';
 import '../view/not_found_screen.dart';
 import 'firebase_analytics_provider.dart';
 
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 final GlobalKey<NavigatorState> rootNavKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> shellNavKey = GlobalKey<NavigatorState>();
 final signUpPopProvider = StateProvider.autoDispose<bool>((ref) => false);
@@ -123,7 +124,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         return const NotFoundScreen();
       },
       observers: [
-        analyticsObserver
+        analyticsObserver,
+        routeObserver
       ],
       routes: <RouteBase>[
         GoRoute(
@@ -1152,8 +1154,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                           parentNavigatorKey: rootNavKey,
                           name: CouponRegistrationScreen.routeName,
                           builder: (context, state) {
-                            final isReferral =
-                            state.extra! as bool;
+                            final isReferral = state.extra! as bool;
 
                             return CouponRegistrationScreen(
                               isReferral: isReferral,
