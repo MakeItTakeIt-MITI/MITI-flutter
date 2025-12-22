@@ -189,7 +189,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       body: Stack(
         children: [
           _buildVideoWidget(),
-          _buildDebugInfo(), // 개발 중에만 사용
+          // _buildDebugInfo(), // 개발 중에만 사용
         ],
       ),
     );
