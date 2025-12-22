@@ -118,10 +118,13 @@ class CustomBottomSheet {
       VoidCallback? onPressed,
       required String buttonText,
       EdgeInsetsGeometry contentPadding = EdgeInsets.zero,
+      Color backgroundColor = V2MITIColor.gray12,
       bool useRootNavigator = false,
+      bool hasHandle = true,
       bool hasPop = false}) {
     return showModalBottomSheet(
         isScrollControlled: true,
+
         context: context,
         useRootNavigator: useRootNavigator,
         shape: RoundedRectangleBorder(
@@ -129,7 +132,7 @@ class CustomBottomSheet {
             top: Radius.circular(20.r),
           ),
         ),
-        backgroundColor: V2MITIColor.gray12,
+        backgroundColor: backgroundColor,
         builder: (context) {
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -137,28 +140,29 @@ class CustomBottomSheet {
               mainAxisSize: MainAxisSize.min,
               children: [
                 // drag handle
-                Container(
-                  decoration: BoxDecoration(
-                    color: V2MITIColor.white,
-                    borderRadius: BorderRadius.circular(4.r),
-                  ),
-                  height: 5.h,
-                  width: 140.w,
-                  margin: EdgeInsets.symmetric(vertical: 8.h),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      title ?? '',
-                      style: V2MITITextStyle.regularBoldTight
-                          .copyWith(color: V2MITIColor.gray1),
+                if (hasHandle)
+                  Container(
+                    decoration: BoxDecoration(
+                      color: V2MITIColor.white,
+                      borderRadius: BorderRadius.circular(4.r),
                     ),
-                    const Spacer(),
-                    // title,
-                    if (hasPop) popButton(context),
-                  ],
-                ),
+                    height: 5.h,
+                    width: 140.w,
+                    margin: EdgeInsets.symmetric(vertical: 8.h),
+                  ),
+                if (hasPop)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        title ?? '',
+                        style: V2MITITextStyle.regularBoldTight
+                            .copyWith(color: V2MITIColor.gray1),
+                      ),
+                      const Spacer(),
+                      popButton(context),
+                    ],
+                  ),
 
                 content,
                 if (onPressed != null)

@@ -15,6 +15,7 @@ import 'package:miti/util/util.dart';
 import '../../firebase_options_dev.dart' as dev;
 import '../../firebase_options_prod.dart' as prod;
 import '../../post/repository/search_history_repository.dart';
+import '../../util/daily_modal_manager.dart';
 
 class AppInitializationService {
   /// 환경 초기화
@@ -65,7 +66,7 @@ class AppInitializationService {
     await Hive.initFlutter();
     await Hive.openBox<bool>('permission');
     await Hive.openBox<String>('recentUpdateVersion');
-
+    await DailyModalManager.init();
     // Search History 초기화
     await SearchHistoryRepository().initialize();
 

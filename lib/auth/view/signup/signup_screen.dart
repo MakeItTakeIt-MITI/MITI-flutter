@@ -35,6 +35,7 @@ import '../../../report/provider/report_provider.dart';
 import '../../../user/model/v2/base_player_profile_response.dart';
 import '../../../user/provider/user_form_provider.dart';
 import '../../../user/view/user_player_profile_screen.dart';
+import '../../../util/daily_modal_manager.dart';
 import '../../../util/util.dart';
 import '../../error/auth_error.dart';
 import '../../model/signup_model.dart';
@@ -1337,7 +1338,10 @@ class _NextButtonState extends ConsumerState<_NextButton> {
     } else {
       log('회원가입!');
       if (context.mounted) {
-        context.goNamed(SignUpCompleteScreen.routeName);
+        await DailyModalManager.resetAll();
+        if (context.mounted) {
+          context.goNamed(SignUpCompleteScreen.routeName);
+        }
       }
     }
   }

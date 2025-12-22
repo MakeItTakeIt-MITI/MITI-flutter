@@ -213,6 +213,7 @@ flutter:
     - assets/images/v2/icon/
     - assets/images/v2/logo/
     - assets/images/v2/logo/bank/
+    - assets/images/coupon_referral.png
     - .env.prod
     - .env.dev
     - assets/mp4/

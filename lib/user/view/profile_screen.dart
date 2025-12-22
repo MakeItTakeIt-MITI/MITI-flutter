@@ -16,6 +16,7 @@ import 'package:miti/user/provider/user_provider.dart';
 import 'package:miti/user/view/user_delete_screen.dart';
 import 'package:miti/user/view/user_player_profile_screen.dart';
 import 'package:miti/user/view/user_profile_form_screen.dart';
+import 'package:miti/util/daily_modal_manager.dart';
 
 import '../../auth/error/auth_error.dart';
 import '../../common/component/custom_dialog.dart';
@@ -97,8 +98,8 @@ class _UserInfoComponent extends ConsumerWidget {
     final birth = DateTime.parse(model.birthday);
     final df = DateFormat('yy.MM.dd');
     birthday = df.format(birth);
-      phone = formatPhoneNumber(model.phone);
-      String loginType = model.signupMethod == SignupMethodType.email
+    phone = formatPhoneNumber(model.phone);
+    String loginType = model.signupMethod == SignupMethodType.email
         ? 'Email'
         : model.signupMethod == SignupMethodType.apple
             ? 'Apple ID'
@@ -153,11 +154,8 @@ class _PlayerProfileComponent extends StatelessWidget {
         ),
       ],
     );
-
   }
 }
-
-
 
 class _PasswordResetting extends ConsumerWidget {
   const _PasswordResetting({super.key});
@@ -300,6 +298,8 @@ class _AuthComponentState extends ConsumerState<_AuthComponent> {
             .responseError(context, AuthApiType.logout, ref);
       } else {
         AppBadgePlus.updateBadge(0);
+        // 인앱 메시지 리셋
+        DailyModalManager.resetAll();
         context.pop();
       }
     }

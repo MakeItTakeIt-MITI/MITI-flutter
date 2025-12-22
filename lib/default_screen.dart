@@ -80,7 +80,6 @@ class _DefaultShellScreenState extends ConsumerState<DefaultShellScreen> {
                   if (GoRouterState.of(context)
                       .matchedLocation
                       .startsWith('/home')) {
-                    _scrollTop(scrollController);
                   } else {
                     context.goNamed(CourtMapScreen.routeName);
                   }

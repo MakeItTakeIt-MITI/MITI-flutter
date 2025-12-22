@@ -324,6 +324,7 @@ Future<BaseModel> registerCoupon(RegisterCouponRef ref,
                 .notifier)
         .paginate(
             cursorPaginationParams: const CursorPaginationParam(),
+            path: userId,
             param: param,
             forceRefetch: true);
     return value;

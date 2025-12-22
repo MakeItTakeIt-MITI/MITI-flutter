@@ -24,11 +24,14 @@ import 'package:miti/util/util.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:snapping_sheet/snapping_sheet.dart';
 
+import '../../common/component/custom_bottom_sheet.dart';
 import '../../common/model/entity_enum.dart';
 import '../../game/component/game_card.dart';
 import '../../game/model/game_model.dart';
 import '../../game/model/v2/game/game_with_court_map_response.dart';
 import '../../game/view/game_detail_screen.dart';
+import '../../user/model/coupon_registration_screen.dart';
+import '../../util/daily_modal_manager.dart';
 
 final selectGameListProvider =
     StateProvider.autoDispose<List<GameWithCourtMapResponse>>((ref) => []);
@@ -65,6 +68,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     super.initState();
     log('page init!!');
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _checkAndShowModal();
       startApp();
     });
   }
@@ -81,6 +85,76 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
             });
       }
     }
+  }
+
+  Future<void> _checkAndShowModal() async {
+    final shouldShow = await DailyModalManager.shouldShowModal();
+
+    if (shouldShow && mounted) {
+      _showDailyModal();
+    }
+  }
+
+  void _showDailyModal() {
+    CustomBottomSheet.showWidgetContent(
+        context: context,
+        backgroundColor: V2MITIColor.black.withValues(alpha: .95),
+        hasHandle: false,
+        useRootNavigator: true,
+        content: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: () async {
+                    await DailyModalManager.setDontShowToday();
+                    if (mounted) {
+                      context.pop();
+                    }
+                  },
+                  child: Text(
+                    '오늘 하루 보지않기',
+                    style: V2MITITextStyle.tinyRegularNormal.copyWith(
+                        color: V2MITIColor.white,
+                        decoration: TextDecoration.underline,
+                        decorationColor: V2MITIColor.white),
+                  ),
+                ),
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () => context.pop(),
+                  style: IconButton.styleFrom(
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                  icon: SvgPicture.asset(
+                    AssetUtil.getAssetPath(
+                      type: AssetType.icon,
+                      name: 'close',
+                    ),
+                  ),
+                )
+              ],
+            ),
+            Container(
+              width: 375.w,
+              height: 260.h,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(
+                    'assets/images/coupon_referral.png',
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        onPressed: () {
+          context.pushNamed(CouponRegistrationScreen.routeName, extra: true);
+          context.pop();
+        },
+        buttonText: '추천인 등록하기');
   }
 
   @override
@@ -437,8 +511,9 @@ class DateBox extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectDay = day.day;
-    final startdateByString =
-        ref.watch(gameFilterProvider(routeName: CourtMapScreen.routeName).select((value) => value.startdate));
+    final startdateByString = ref.watch(
+        gameFilterProvider(routeName: CourtMapScreen.routeName)
+            .select((value) => value.startdate));
 
     final selectedDay = startdateByString != null
         ? DateTime.parse(startdateByString)
@@ -518,7 +593,8 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
 
     _dayScrollController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      joinFilter = ref.read(gameFilterProvider(routeName: CourtMapScreen.routeName));
+      joinFilter =
+          ref.read(gameFilterProvider(routeName: CourtMapScreen.routeName));
       final time = joinFilter.starttime!.split(':');
       final hour = int.parse(time[0]);
       final min = int.parse(time[1]);
@@ -529,7 +605,9 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
   }
 
   void selectDay(List<List<String>> day, int idx) {
-    ref.read(gameFilterProvider(routeName: CourtMapScreen.routeName).notifier).update(startdate: day[idx][0]);
+    ref
+        .read(gameFilterProvider(routeName: CourtMapScreen.routeName).notifier)
+        .update(startdate: day[idx][0]);
     Scrollable.ensureVisible(
       dayKeys[idx].currentContext!,
       alignment: 0.5,
@@ -714,7 +792,8 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
                                   (status) => status != GameStatusType.canceled)
                               .toList();
                           final selectedGameStatus = ref.watch(
-                              gameFilterProvider(routeName: CourtMapScreen.routeName)
+                              gameFilterProvider(
+                                      routeName: CourtMapScreen.routeName)
                                   .select((value) => value.gameStatus));
 
                           return Row(
@@ -786,7 +865,11 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
             /// todo 수정 필요
             GestureDetector(
               onTap: () {
-                ref.read(gameFilterProvider(routeName: CourtMapScreen.routeName).notifier).rollback(joinFilter);
+                ref
+                    .read(
+                        gameFilterProvider(routeName: CourtMapScreen.routeName)
+                            .notifier)
+                    .rollback(joinFilter);
                 ref.read(showFilterProvider.notifier).update((state) => false);
               },
               child: SizedBox(
@@ -805,7 +888,9 @@ class _FilterComponentState extends ConsumerState<_FilterComponent> {
   }
 
   void filterClear() {
-    ref.read(gameFilterProvider(routeName: CourtMapScreen.routeName).notifier).clear();
+    ref
+        .read(gameFilterProvider(routeName: CourtMapScreen.routeName).notifier)
+        .clear();
     _dayScrollController.animateTo(
       0,
       duration: const Duration(milliseconds: 600),
@@ -840,20 +925,31 @@ class _GameStatusButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       onTap: () {
-        final filterStatus = ref.read(gameFilterProvider(routeName: CourtMapScreen.routeName)).gameStatus;
+        final filterStatus = ref
+            .read(gameFilterProvider(routeName: CourtMapScreen.routeName))
+            .gameStatus;
         //선택 된 상태면 선택 해제
         if (selected) {
           log("선택 된 상태면 선택 해제");
-          ref.read(gameFilterProvider(routeName: CourtMapScreen.routeName).notifier).deleteStatus(status);
+          ref
+              .read(gameFilterProvider(routeName: CourtMapScreen.routeName)
+                  .notifier)
+              .deleteStatus(status);
         } else {
           if (filterStatus.isNotEmpty) {
             // 하나 이상 선택된 상태
             log("하나 이상 선택된 상태");
-            ref.read(gameFilterProvider(routeName: CourtMapScreen.routeName).notifier).addStatus(status);
+            ref
+                .read(gameFilterProvider(routeName: CourtMapScreen.routeName)
+                    .notifier)
+                .addStatus(status);
           } else {
             //아무것도 선택 안된 상태
             log("아무것도 선택 안된 상태");
-            ref.read(gameFilterProvider(routeName: CourtMapScreen.routeName).notifier).initStatus(status);
+            ref
+                .read(gameFilterProvider(routeName: CourtMapScreen.routeName)
+                    .notifier)
+                .initStatus(status);
           }
         }
       },
@@ -986,7 +1082,8 @@ class _FilterChipsComponent extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
-          final filter = ref.watch(gameFilterProvider(routeName: CourtMapScreen.routeName));
+          final filter = ref
+              .watch(gameFilterProvider(routeName: CourtMapScreen.routeName));
 
           String gameStatus = parsingStatus(filter);
 
@@ -1003,7 +1100,9 @@ class _FilterChipsComponent extends StatelessWidget {
                 selected: filter.startdate != null,
                 onTap: () {
                   ref
-                      .read(gameFilterProvider(routeName: CourtMapScreen.routeName).notifier)
+                      .read(gameFilterProvider(
+                              routeName: CourtMapScreen.routeName)
+                          .notifier)
                       .removeFilter(FilterType.date);
                 },
                 inFilter: inFilter,
@@ -1014,7 +1113,9 @@ class _FilterChipsComponent extends StatelessWidget {
                 selected: filter.startdate != null,
                 onTap: () {
                   ref
-                      .read(gameFilterProvider(routeName: CourtMapScreen.routeName).notifier)
+                      .read(gameFilterProvider(
+                              routeName: CourtMapScreen.routeName)
+                          .notifier)
                       .removeFilter(FilterType.time);
                 },
                 inFilter: inFilter,
@@ -1025,7 +1126,9 @@ class _FilterChipsComponent extends StatelessWidget {
                 selected: filter.gameStatus.isNotEmpty,
                 onTap: () {
                   ref
-                      .read(gameFilterProvider(routeName: CourtMapScreen.routeName).notifier)
+                      .read(gameFilterProvider(
+                              routeName: CourtMapScreen.routeName)
+                          .notifier)
                       .removeFilter(FilterType.status);
                 },
                 inFilter: inFilter,
@@ -1211,8 +1314,9 @@ class CourtMapBackground extends ConsumerWidget {
                       position != null ? const Color(0xFFE9FFFF) : Colors.white,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color:
-                        position != null ? V2MITIColor.primary5 : MITIColor.gray50,
+                    color: position != null
+                        ? V2MITIColor.primary5
+                        : MITIColor.gray50,
                   ),
                   boxShadow: [
                     BoxShadow(

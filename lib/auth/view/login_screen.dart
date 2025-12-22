@@ -17,6 +17,7 @@ import 'package:miti/common/provider/form_util_provider.dart';
 import 'package:miti/common/provider/secure_storage_provider.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/model/v2/base_deleted_user_response.dart';
+import 'package:miti/util/daily_modal_manager.dart';
 import 'package:miti/util/util.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -32,11 +33,16 @@ import '../../user/view/restore_user_screen.dart';
 import '../component/logo_video.dart';
 import '../param/auth_param.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   static String get routeName => 'login';
 
   const LoginScreen({super.key});
 
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -269,7 +275,10 @@ class _LoginComponentState extends ConsumerState<LoginComponent> {
                 .responseError(context, AuthApiType.login, ref);
           }
         } else {
-          context.goNamed(CourtMapScreen.routeName);
+          await DailyModalManager.resetAll();
+          if (mounted) {
+            context.goNamed(CourtMapScreen.routeName);
+          }
         }
       }
     }
@@ -372,7 +381,10 @@ class KakaoLoginButton extends ConsumerWidget {
           }
           throw Exception();
         } else {
-          context.goNamed(CourtMapScreen.routeName);
+          await DailyModalManager.resetAll();
+          if (context.mounted) {
+            context.goNamed(CourtMapScreen.routeName);
+          }
         }
       }
     } catch (error) {
@@ -497,7 +509,10 @@ class AppleLoginButton extends ConsumerWidget {
           }
         }
       } else {
-        context.goNamed(CourtMapScreen.routeName);
+        await DailyModalManager.resetAll();
+        if (context.mounted) {
+          context.goNamed(CourtMapScreen.routeName);
+        }
       }
     }
 
