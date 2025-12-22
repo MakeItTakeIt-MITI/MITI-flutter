@@ -216,7 +216,7 @@ class CouponCard extends StatelessWidget {
             ),
             SizedBox(height: 4.h),
             Text(
-              '${validUntil}',
+              '유효기간: ${DateFormat('yyyy년 MM월 dd일').format(validUntil)}',
               style: V2MITITextStyle.miniMediumNormal
                   .copyWith(color: V2MITIColor.gray5),
             ),

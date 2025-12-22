@@ -272,10 +272,13 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
           return GameCard.fromModel(model: modelList[idx]);
         },
         separatorBuilder: (_, idx) {
-          return Divider(
-            color: V2MITIColor.gray10,
-            height: 16.h,
-            thickness: 1.h,
+          return Padding(
+            padding: EdgeInsetsGeometry.symmetric(vertical: 8.h),
+            child: Divider(
+              color: V2MITIColor.gray10,
+              height: 16.h,
+              thickness: 1.h,
+            ),
           );
         },
         itemCount: modelList.length,

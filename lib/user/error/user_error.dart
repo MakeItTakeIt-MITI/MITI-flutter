@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miti/auth/view/login_screen.dart';
+import 'package:miti/common/component/custom_bottom_sheet.dart';
 import 'package:miti/common/error/view/error_screen.dart';
 import 'package:miti/dio/response_code.dart';
 import 'package:miti/game/provider/widget/game_form_provider.dart';
@@ -23,6 +25,7 @@ enum UserApiType {
   paymentResultDetail,
   getPlayerProfile,
   updatePlayerProfile,
+  registerCoupon
 }
 
 class UserError extends ErrorBase {
@@ -72,7 +75,8 @@ class UserError extends ErrorBase {
       case UserApiType.resetProfileImage:
         _resetProfileImage(context, ref);
         break;
-      default:
+      case UserApiType.registerCoupon:
+        _registerCoupon(context, ref);
         break;
     }
   }
@@ -511,4 +515,30 @@ class UserError extends ErrorBase {
           (s) => context.pushReplacementNamed(ErrorScreen.routeName));
     }
   }
+
+  /// 유저 쿠폰 발급 API
+  void _registerCoupon(BuildContext context, WidgetRef ref) {
+    if (status_code == BadRequest && error_code == 101) {
+      /// 데이터 유효성 오류
+    } else if (status_code == Forbidden && error_code == 940) {
+      /// 지급 완료 쿠폰
+      _showBottomSheet(context, '이미 지급이 완료된 쿠폰입니다.');
+    } else if (status_code == NotFound && error_code == 940) {
+      /// 일치 쿠폰정보 없음
+      _showBottomSheet(context, '일치하는 쿠폰이 없습니다.');
+    } else {
+      /// 서버 오류
+      WidgetsBinding.instance.addPostFrameCallback(
+          (s) => context.pushReplacementNamed(ErrorScreen.routeName));
+    }
+  }
+}
+
+void _showBottomSheet(BuildContext context, String content) {
+  CustomBottomSheet.showStringContent(
+      context: context,
+      content: content,
+      onPressed: () => context.pop(),
+      buttonText: '확인',
+      contentPadding: EdgeInsetsGeometry.symmetric(vertical: 48.h));
 }

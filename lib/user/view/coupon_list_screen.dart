@@ -8,6 +8,7 @@ import 'package:miti/common/component/system_button_bottom.dart';
 import 'package:miti/theme/color_theme.dart';
 import 'package:miti/theme/text_theme.dart';
 import 'package:miti/user/component/coupon_card.dart';
+import 'package:miti/user/model/coupon_registration_screen.dart';
 import 'package:miti/user/model/coupon_response.dart';
 import 'package:miti/user/param/user_profile_param.dart';
 import 'package:miti/user/provider/user_pagination_provider.dart';
@@ -93,6 +94,11 @@ class _CouponListScreenState extends ConsumerState<CouponListScreen>
     );
   }
 
+  void _pushRegistrationScreen(bool isReferral) {
+    context.pushNamed(CouponRegistrationScreen.routeName, extra: isReferral);
+    context.pop();
+  }
+
   void _onTapMenu() {
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
@@ -101,20 +107,18 @@ class _CouponListScreenState extends ConsumerState<CouponListScreen>
         return SystemButtonBottom(
           buttons: [
             TextButton(
-                onPressed: () => context.pop(),
+                onPressed: () => _pushRegistrationScreen(true),
                 style:
-                TextButton.styleFrom(
-                    backgroundColor: V2MITIColor.gray11),
+                    TextButton.styleFrom(backgroundColor: V2MITIColor.gray11),
                 child: Text(
                   "추천인 입력하기",
                   style: V2MITITextStyle.regularBoldNormal
                       .copyWith(color: V2MITIColor.primary5),
                 )),
             TextButton(
-                onPressed: () => context.pop(),
+                onPressed: () => _pushRegistrationScreen(false),
                 style:
-                    TextButton.styleFrom(
-                        backgroundColor: V2MITIColor.gray11),
+                    TextButton.styleFrom(backgroundColor: V2MITIColor.gray11),
                 child: Text(
                   "쿠폰코드 입력하기",
                   style: V2MITITextStyle.regularBoldNormal
@@ -156,8 +160,12 @@ class _CouponListScreenState extends ConsumerState<CouponListScreen>
           provider: userCouponProvider(PaginationStateParam(
               param: UserCouponParam(
                   status: isActive
-                      ? [CouponStatusType.active]
-                      : [CouponStatusType.expired]),
+                      ? [CouponStatusType.active, CouponStatusType.reserved]
+                      : [
+                          CouponStatusType.expired,
+                          CouponStatusType.disabled,
+                          CouponStatusType.used
+                        ]),
               path: userId)),
           itemBuilder: (BuildContext context, int index, Base pModel) {
             pModel as CouponResponse;
@@ -167,8 +175,12 @@ class _CouponListScreenState extends ConsumerState<CouponListScreen>
           skeleton: const PaymentCardListSkeleton(),
           param: UserCouponParam(
               status: isActive
-                  ? [CouponStatusType.active]
-                  : [CouponStatusType.expired]),
+                  ? [CouponStatusType.active, CouponStatusType.reserved]
+                  : [
+                      CouponStatusType.expired,
+                      CouponStatusType.disabled,
+                      CouponStatusType.used
+                    ]),
           controller: _scrollController,
           separateSize: 0,
           emptyWidget: Column(

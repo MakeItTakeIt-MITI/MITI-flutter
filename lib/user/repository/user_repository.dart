@@ -97,6 +97,14 @@ abstract class UserRepository {
     @Path() required int userId,
     @Body() required UserRestoreInfoParam userRestoreToken,
   });
+
+  /// 유저 쿠폰 발급 API
+  @Headers({'token': 'true'})
+  @POST('/users/{userId}/coupons')
+  Future<ResponseModel<CouponResponse>> registerCoupon({
+    @Path() required int userId,
+    @Body() required UserCouponRegisterParam param,
+  });
 }
 
 final userParticipationPRepositoryProvider =
@@ -109,7 +117,8 @@ final userParticipationPRepositoryProvider =
 
 @RestApi()
 abstract class UserParticipationPRepository
-    extends IBaseCursorPaginationRepository<BaseGameMetaResponse, UserGameParam> {
+    extends IBaseCursorPaginationRepository<BaseGameMetaResponse,
+        UserGameParam> {
   factory UserParticipationPRepository(Dio dio, {String baseUrl}) =
       _UserParticipationPRepository;
 
@@ -186,8 +195,8 @@ final userHostingPRepositoryProvider = Provider<UserHostingPRepository>((ref) {
 });
 
 @RestApi()
-abstract class UserHostingPRepository
-    extends IBaseCursorPaginationRepository<BaseGameMetaResponse, UserGameParam> {
+abstract class UserHostingPRepository extends IBaseCursorPaginationRepository<
+    BaseGameMetaResponse, UserGameParam> {
   factory UserHostingPRepository(Dio dio, {String baseUrl}) =
       _UserHostingPRepository;
 
@@ -227,26 +236,24 @@ abstract class UserPaymentPRepository extends IBaseCursorPaginationRepository<
   });
 }
 
-
 final couponRepositoryProvider = Provider<UserCouponRepository>((ref) {
   final baseUrl =
-  dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
+      dotenv.get('API_URL', fallback: 'https://api.makeittakeit.kr');
   final dio = ref.watch(dioProvider);
   return UserCouponRepository(dio, baseUrl: baseUrl);
 });
 
 @RestApi()
-abstract class UserCouponRepository extends IBaseCursorPaginationRepository<
-    CouponResponse, UserCouponParam> {
+abstract class UserCouponRepository
+    extends IBaseCursorPaginationRepository<CouponResponse, UserCouponParam> {
   factory UserCouponRepository(Dio dio, {String baseUrl}) =
-  _UserCouponRepository;
+      _UserCouponRepository;
 
   /// 유저 쿠폰 목록 조회 API
   @override
   @Headers({'token': 'true'})
   @GET('/users/{userId}/coupons')
-  Future<ResponseModel<CursorPaginationModel<CouponResponse>>>
-  paginate({
+  Future<ResponseModel<CursorPaginationModel<CouponResponse>>> paginate({
     @Queries() required CursorPaginationParam cursorPaginationParams,
     @Queries() UserCouponParam? param,
     @Path('userId') int? path,

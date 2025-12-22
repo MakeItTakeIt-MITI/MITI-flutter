@@ -15,6 +15,13 @@ class V2MITITextStyle {
     fontWeight: FontWeight.bold,
   );
 
+  static final TextStyle title2 = TextStyle(
+    fontSize: 32.sp,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.bold,
+    height: 1.125,
+  );
+
   static final TextStyle title3 = TextStyle(
       fontSize: 24.sp,
       fontFamily: 'Pretendard',
@@ -76,7 +83,11 @@ class V2MITITextStyle {
     fontWeight: FontWeight.bold,
     height: 1.5
   );
-
+  static final TextStyle regularRegularNormal = TextStyle(
+      fontSize: 16.sp,
+      fontFamily: 'Pretendard',
+      fontWeight: FontWeight.w400,
+      height: 1.5);
   static final TextStyle regularRegularTight = TextStyle(
       fontSize: 16.sp,
       fontFamily: 'Pretendard',

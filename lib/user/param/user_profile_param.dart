@@ -137,3 +137,18 @@ class UserCouponParam extends DefaultParam {
   @override
   bool? get stringify => true;
 }
+
+@JsonSerializable()
+class UserCouponRegisterParam extends DefaultParam {
+  final String code;
+
+  UserCouponRegisterParam({required this.code});
+
+  @override
+  List<Object?> get props => [code];
+
+  Map<String, dynamic> toJson() => _$UserCouponRegisterParamToJson(this);
+
+  @override
+  bool? get stringify => true;
+}

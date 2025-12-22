@@ -111,6 +111,8 @@ class _PhoneFormState extends ConsumerState<PhoneForm> {
     return RegExp(r"^\d{3}-\d{4}-\d{4}$").hasMatch(phone);
   }
 
+
+
   Future<void> requestValidCode(
       String phone, PhoneAuthenticationPurposeType type) async {
     FocusScope.of(context).requestFocus(FocusNode());
