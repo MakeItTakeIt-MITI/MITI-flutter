@@ -43,7 +43,7 @@ class GameForm extends _$GameForm {
       info: '',
       fee: '',
       court: GameCourtParam(name: '', address: '', address_detail: ''),
-      checkBoxes: [false, false, false, false],
+      checkBoxes: [false, false, false],
     );
   }
 

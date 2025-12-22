@@ -1590,7 +1590,8 @@ class AgreeTermComponent extends ConsumerWidget {
         children: [
           CustomCheckBox(
             title: '약관 전체 동의하기',
-            textStyle: MITITextStyle.md.copyWith(color: MITIColor.gray100),
+            textStyle: V2MITITextStyle.regularMediumNormal
+                .copyWith(color: V2MITIColor.white),
             isCheckBox: true,
             check: checkBoxes[0],
             onTap: () {
@@ -1610,7 +1611,7 @@ class AgreeTermComponent extends ConsumerWidget {
                 return CustomCheckBox(
                   title: title[idx],
                   textStyle:
-                      MITITextStyle.sm.copyWith(color: MITIColor.gray200),
+                      V2MITITextStyle.smallMediumTight.copyWith(color: V2MITIColor.gray1),
                   hasDetail: true,
                   check: checkBoxes[idx + 1],
                   onTap: () {
