@@ -102,16 +102,25 @@ class _CouponRegistrationScreenState
       final inputValue = _textEditingController.text;
       if (kDebugMode) {
         print('발급 요청: $inputValue');
-      } // 디버깅용
+      }
 
       // TODO: 쿠폰 발급 로직 구현
-      final result = await ref.read(registerCouponProvider(
-              param: UserCouponRegisterParam(code: inputValue))
-          .future);
+      final result = widget.isReferral
+          ? await ref.read(registerReferralCouponProvider(
+                  param: ReferralCouponRegisterParam(
+                      phone: inputValue.replaceAll("-", '')))
+              .future)
+          : await ref.read(registerCouponProvider(
+                  param: UserCouponRegisterParam(code: inputValue))
+              .future);
       if (mounted) {
         if (result is ErrorModel) {
-          UserError.fromModel(model: result)
-              .responseError(context, UserApiType.registerCoupon, ref);
+          UserError.fromModel(model: result).responseError(
+              context,
+              widget.isReferral
+                  ? UserApiType.registerReferralCoupon
+                  : UserApiType.registerCoupon,
+              ref);
         } else {
           context.pop();
           Future.delayed(const Duration(milliseconds: 100), () {

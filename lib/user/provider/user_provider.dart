@@ -315,7 +315,35 @@ Future<BaseModel> registerCoupon(RegisterCouponRef ref,
       .registerCoupon(userId: userId, param: param)
       .then<BaseModel>((value) {
     logger.i(value);
-    // todo 쿠폰 리스트 갱신
+    final param = UserCouponParam(
+        status: const [CouponStatusType.active, CouponStatusType.reserved]);
+    ref
+        .read(
+            userCouponProvider(PaginationStateParam(param: param, path: userId))
+                .notifier)
+        .paginate(
+            cursorPaginationParams: const CursorPaginationParam(),
+            path: userId,
+            param: param,
+            forceRefetch: true);
+    return value;
+  }).catchError((e) {
+    final error = ErrorModel.respToError(e);
+    logger.e(
+        'status_code = ${error.status_code}\nerror.error_code = ${error.error_code}\nmessage = ${error.message}\ndata = ${error.data}');
+    return error;
+  });
+}
+
+@riverpod
+Future<BaseModel> registerReferralCoupon(RegisterReferralCouponRef ref,
+    {required ReferralCouponRegisterParam param}) async {
+  final userId = ref.watch(authProvider)!.id!;
+  return await ref
+      .watch(userRepositoryProvider)
+      .registerReferralCoupon(param: param)
+      .then<BaseModel>((value) {
+    logger.i(value);
     final param = UserCouponParam(
         status: const [CouponStatusType.active, CouponStatusType.reserved]);
     ref

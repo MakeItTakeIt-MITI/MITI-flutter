@@ -152,3 +152,18 @@ class UserCouponRegisterParam extends DefaultParam {
   @override
   bool? get stringify => true;
 }
+
+@JsonSerializable()
+class ReferralCouponRegisterParam extends DefaultParam {
+  final String phone;
+
+  ReferralCouponRegisterParam({required this.phone});
+
+  @override
+  List<Object?> get props => [phone];
+
+  Map<String, dynamic> toJson() => _$ReferralCouponRegisterParamToJson(this);
+
+  @override
+  bool? get stringify => true;
+}

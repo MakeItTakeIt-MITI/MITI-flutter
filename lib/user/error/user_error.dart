@@ -25,7 +25,8 @@ enum UserApiType {
   paymentResultDetail,
   getPlayerProfile,
   updatePlayerProfile,
-  registerCoupon
+  registerCoupon,
+  registerReferralCoupon
 }
 
 class UserError extends ErrorBase {
@@ -77,6 +78,9 @@ class UserError extends ErrorBase {
         break;
       case UserApiType.registerCoupon:
         _registerCoupon(context, ref);
+        break;
+      case UserApiType.registerReferralCoupon:
+        _registerReferralCoupon(context, ref);
         break;
     }
   }
@@ -526,6 +530,26 @@ class UserError extends ErrorBase {
     } else if (status_code == NotFound && error_code == 940) {
       /// 일치 쿠폰정보 없음
       _showBottomSheet(context, '일치하는 쿠폰이 없습니다.');
+    } else {
+      /// 서버 오류
+      WidgetsBinding.instance.addPostFrameCallback(
+          (s) => context.pushReplacementNamed(ErrorScreen.routeName));
+    }
+  }
+
+  /// 유저 추천인 등록 API
+  void _registerReferralCoupon(BuildContext context, WidgetRef ref) {
+    if (status_code == BadRequest && error_code == 101) {
+      /// 데이터 유효성 오류
+    } else if (status_code == BadRequest && error_code == 940) {
+      /// 자신을 추천인으로 등록하는 경우
+      _showBottomSheet(context, '자신을 추천인으로 등록할 수 없습니다.');
+    } else if (status_code == NotFound && error_code == 940) {
+      /// 일치 유저 정보 없음
+      _showBottomSheet(context, '일치하는 유저 정보를 찾을 수 없습니다.');
+    } else if (status_code == CONFLICT && error_code == 940) {
+      /// 이미 추천을 완료한 사용자
+      _showBottomSheet(context, '이미 추천인을 등록하셨습니다.');
     } else {
       /// 서버 오류
       WidgetsBinding.instance.addPostFrameCallback(

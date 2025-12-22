@@ -105,6 +105,13 @@ abstract class UserRepository {
     @Path() required int userId,
     @Body() required UserCouponRegisterParam param,
   });
+
+  /// 유저 추천인 등록 API
+  @Headers({'token': 'true'})
+  @POST('/user-referrals')
+  Future<ResponseModel<CouponResponse>> registerReferralCoupon({
+    @Body() required ReferralCouponRegisterParam param,
+  });
 }
 
 final userParticipationPRepositoryProvider =
