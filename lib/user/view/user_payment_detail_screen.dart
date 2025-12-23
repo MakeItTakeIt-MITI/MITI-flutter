@@ -53,10 +53,10 @@ class UserPaymentDetailScreen extends StatelessWidget {
           final model = (result as ResponseModel<PaymentResultResponse>).data!;
 
           final approvedAt = model.approvedAt != null
-              ? DateTimeUtil.formatDateTimeToString(model.approvedAt!)
+              ? DateTimeUtil.formatDateTimeToString(model.approvedAt!.toLocal())
               : null;
           final String? canceledAt = model.canceledAt != null
-              ? DateTimeUtil.formatDateTimeToString(model.canceledAt!)
+              ? DateTimeUtil.formatDateTimeToString(model.canceledAt!.toLocal())
               : null;
           return Column(
             children: [
