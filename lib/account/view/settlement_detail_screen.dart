@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -82,7 +80,7 @@ class _SettlementDetailScreenState
                   } else if (result is ErrorModel) {
                     AccountError.fromModel(model: result).responseError(
                         context, AccountApiType.getSettlementInfo, ref);
-                    return Text('에러');
+                    return const Text('에러');
                   }
                   final model =
                       (result as ResponseModel<GameSettlementDetailResponse>)
