@@ -19,7 +19,7 @@ import '../component/filter_chip_group.dart';
 import '../component/game_card.dart';
 import '../component/game_status_chip.dart';
 import '../component/skeleton/game_search_skeleton.dart';
-import '../model/v2/game/game_with_court_map_response.dart';
+import '../model/base_game_meta_response.dart';
 import '../provider/game_pagination_provider.dart';
 import '../provider/widget/game_search_provider.dart';
 
@@ -593,7 +593,7 @@ class _GameListSection extends ConsumerWidget {
     return DisposeSliverCursorPaginationListView(
       provider: gamePageProvider(PaginationStateParam()),
       itemBuilder: (context, index, model) {
-        final gameModel = model as GameWithCourtMapResponse;
+        final gameModel = model as BaseGameMetaResponse;
         return GameCard.fromModel(
           model: gameModel,
           showDate: true,

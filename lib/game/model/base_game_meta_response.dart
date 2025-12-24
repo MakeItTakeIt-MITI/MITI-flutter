@@ -45,6 +45,8 @@ class BaseGameMetaResponse extends IModelWithId {
 
   final String latitude;
   final String longitude;
+  @JsonKey(name: 'court_images')
+  final List<String> courtImages;
 
   BaseGameMetaResponse({
     required this.gameStatus,
@@ -63,6 +65,7 @@ class BaseGameMetaResponse extends IModelWithId {
     required this.latitude,
     required this.longitude,
     required super.id,
+    required this.courtImages,
   });
 
   factory BaseGameMetaResponse.fromJson(Map<String, dynamic> json) =>
@@ -88,6 +91,7 @@ class BaseGameMetaResponse extends IModelWithId {
     String? addressDetail,
     String? latitude,
     String? longitude,
+    List<String>? courtImages,
   }) {
     return BaseGameMetaResponse(
       id: id ?? this.id,
@@ -106,6 +110,7 @@ class BaseGameMetaResponse extends IModelWithId {
       addressDetail: addressDetail ?? this.addressDetail,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
+      courtImages: courtImages ?? this.courtImages,
     );
   }
 

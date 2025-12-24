@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart' hide Headers;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:miti/game/model/base_game_meta_response.dart';
 import 'package:retrofit/http.dart';
 
 import '../../common/model/cursor_model.dart';
@@ -36,7 +37,7 @@ abstract class GameRepository {
 
   /// 경기 지도 목록 조회 API
   @GET('/games/map')
-  Future<ResponseListModel<GameWithCourtMapResponse>> getMapGameList(
+  Future<ResponseListModel<BaseGameMetaResponse>> getMapGameList(
       {@Queries() required GameListParam param});
 
   /// 경기 상세 조회 API
@@ -162,13 +163,13 @@ final gameCursorPaginationRepositoryProvider = Provider<GamePRepository>((ref) {
 
 @RestApi()
 abstract class GamePRepository extends IBaseCursorPaginationRepository<
-    GameWithCourtMapResponse, GamePaginationParam> {
+    BaseGameMetaResponse, GamePaginationParam> {
   factory GamePRepository(Dio dio, {String baseUrl}) = _GamePRepository;
 
   /// 경기 리스트 목록 조회 API
   @override
   @GET('/games/list')
-  Future<ResponseModel<CursorPaginationModel<GameWithCourtMapResponse>>>
+  Future<ResponseModel<CursorPaginationModel<BaseGameMetaResponse>>>
       paginate({
     @Queries() required CursorPaginationParam cursorPaginationParams,
     @Queries() GamePaginationParam? param,

@@ -14,6 +14,7 @@ import 'package:miti/common/component/custom_dialog.dart';
 import 'package:miti/common/component/picker/custom_time_picker.dart';
 import 'package:miti/common/model/default_model.dart';
 import 'package:miti/court/component/court_component.dart';
+import 'package:miti/game/model/base_game_meta_response.dart';
 import 'package:miti/game/param/game_param.dart';
 import 'package:miti/game/provider/game_provider.dart';
 import 'package:miti/game/provider/widget/game_filter_provider.dart';
@@ -28,13 +29,12 @@ import '../../common/component/custom_bottom_sheet.dart';
 import '../../common/model/entity_enum.dart';
 import '../../game/component/game_card.dart';
 import '../../game/model/game_model.dart';
-import '../../game/model/v2/game/game_with_court_map_response.dart';
 import '../../game/view/game_detail_screen.dart';
 import '../../user/model/coupon_registration_screen.dart';
 import '../../util/daily_modal_manager.dart';
 
 final selectGameListProvider =
-    StateProvider.autoDispose<List<GameWithCourtMapResponse>>((ref) => []);
+    StateProvider.autoDispose<List<BaseGameMetaResponse>>((ref) => []);
 final selectMakerProvider = StateProvider.autoDispose<int?>((ref) => null);
 final scrollControllerProvider =
     StateProvider.autoDispose<ScrollController?>((ref) => null);
@@ -334,7 +334,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     );
   }
 
-  Widget _getCourtComponent(List<GameWithCourtMapResponse> modelList) {
+  Widget _getCourtComponent(List<BaseGameMetaResponse> modelList) {
     if (modelList.isEmpty) {
       return SliverToBoxAdapter(
           child: Column(
@@ -375,13 +375,13 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
   void refreshMarker(BaseModel response) async {
     // log('refreshMarker');
     final model =
-        (response as ResponseListModel<GameWithCourtMapResponse>).data!;
-    Map<MapPosition, List<GameWithCourtMapResponse>> markers = {};
+        (response as ResponseListModel<BaseGameMetaResponse>).data!;
+    Map<MapPosition, List<BaseGameMetaResponse>> markers = {};
 
-    for (GameWithCourtMapResponse value in model) {
+    for (BaseGameMetaResponse value in model) {
       final mapPosition = MapPosition(
-          longitude: double.parse(value.court.longitude),
-          latitude: double.parse(value.court.latitude));
+          longitude: double.parse(value.longitude),
+          latitude: double.parse(value.latitude));
       // log('mapPosition ${mapPosition}');
       if (markers.containsKey(mapPosition)) {
         markers[mapPosition]!.add(value);
@@ -395,7 +395,7 @@ class _HomeScreenState extends ConsumerState<CourtMapScreen>
     await _mapController?.clearOverlays();
     final List<MapMarkerModel> markerList = [];
     for (MapPosition key in markers.keys) {
-      final GameWithCourtMapResponse model = markers[key]!.first;
+      final BaseGameMetaResponse model = markers[key]!.first;
       final fee = model.fee == 0
           ? "무료 경기"
           : '₩${NumberFormat.decimalPattern().format(model.fee)}';

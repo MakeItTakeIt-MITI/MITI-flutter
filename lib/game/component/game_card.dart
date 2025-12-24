@@ -11,7 +11,6 @@ import '../../theme/text_theme.dart';
 import '../../util/util.dart';
 import '../model/base_game_meta_response.dart';
 import '../model/v2/game/game_response.dart';
-import '../model/v2/game/game_with_court_map_response.dart';
 import '../view/game_detail_screen.dart';
 import 'game_state_label.dart';
 
@@ -48,8 +47,7 @@ class GameCard extends StatelessWidget {
   });
 
   factory GameCard.fromModel(
-      {required GameWithCourtMapResponse model, bool showDate = false}) {
-    final detail = model.court.addressDetail ?? '';
+      {required BaseGameMetaResponse model, bool showDate = false}) {
     return GameCard(
       game_status: model.gameStatus,
       title: model.title,
@@ -62,10 +60,11 @@ class GameCard extends StatelessWidget {
       max_invitation: model.maxInvitation,
       id: model.id,
       showDate: showDate,
-      courtName: model.court.name,
-      courtAddress: "${model.court.address} $detail",
+      courtName: model.courtName,
+      courtAddress: "${model.address} ${model.addressDetail}",
     );
   }
+  
 
   factory GameCard.fromMetaModel({required BaseGameMetaResponse model}) {
     return GameCard(
