@@ -51,12 +51,8 @@ class GameDetail extends _$GameDetail {
   }
 
   Future<void> get({required int gameId}) async {
+    state = LoadingModel();
     final repository = ref.watch(gameRepositoryProvider);
-    // final response =
-    //     await Dio().request('https://dev.makeittakeit.kr/games/1229');
-    // final data = response.data['data'];
-    // log('data $data');
-
     repository.getGameDetail(gameId: gameId).then((value) {
       logger.i(value);
       log('value.data!.is_host = ${value.data!.is_host} value.data!.user_participation_id ${value.data!.user_participation_id}');
@@ -135,7 +131,7 @@ Future<BaseModel> gameFree(GameFreeRef ref, {required int gameId}) async {
 
 @riverpod
 Future<BaseModel> gameCancel(GameCancelRef ref,
-    { required int participationId}) async {
+    {required int participationId}) async {
   final repository = ref.watch(gameRepositoryProvider);
 
   return await repository
