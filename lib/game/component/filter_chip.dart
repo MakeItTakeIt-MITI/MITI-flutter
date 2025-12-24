@@ -23,7 +23,6 @@ class FilterChip extends StatelessWidget {
       child: Chip(
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
-        backgroundColor: isSelected ? V2MITIColor.primary5 : V2MITIColor.gray12,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(50.r),
           side: BorderSide(
@@ -33,7 +32,7 @@ class FilterChip extends StatelessWidget {
         label: Text(
           text,
           style: V2MITITextStyle.tinyMedium.copyWith(
-            color: isSelected ? V2MITIColor.black : V2MITIColor.gray5,
+            color: isSelected ? V2MITIColor.primary5 : V2MITIColor.gray5,
           ),
         ),
       ),

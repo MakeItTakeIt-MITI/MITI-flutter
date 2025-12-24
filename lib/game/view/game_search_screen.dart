@@ -353,12 +353,12 @@ class GameFilterModal extends ConsumerWidget {
     return Column(
       children: [
         _GameStatusFilterSection(
-          selectedItems: gameSearchFilter.gameStatus?.toSet() ?? {},
+          selectedItems: gameSearchFilter.gameStatus.toSet() ,
           onItemTap: (category) => _handleStatusToggle(ref, category),
         ),
         SizedBox(height: _Constants.modalSpacing.h),
         _ProvinceFilterSection(
-          selectedItems: gameSearchFilter.province?.toSet() ?? {},
+          selectedItems: gameSearchFilter.province.toSet() ,
           onItemTap: (district) => _handleProvinceToggle(ref, district),
         ),
         SizedBox(height: _Constants.buttonSpacing.h),
